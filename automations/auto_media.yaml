@@ -1,0 +1,22 @@
+#################################################
+# Media automatization
+#################################################
+
+- alias: 'PowerOff all media when nobody at home'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: group.family_persons
+    to: "not_home"
+    for:
+      minutes: 5
+  action:
+    - service: media_player.turn_off
+      data:
+        entity_id: group.all_tv
+    - service: switch.turn_off
+      data:
+        entity_id: switch.samsung_7_series_43
+    - service: media_player.media_stop
+      data:
+        entity_id: group.all_chromecasts

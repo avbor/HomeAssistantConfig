@@ -1,0 +1,56 @@
+#################################################
+# System
+#################################################
+
+- alias: "HASS Shutdown"
+  initial_state: true
+  trigger:
+    platform: homeassistant
+    event: shutdown
+  action:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: automation.restart_ffmpeg_process
+
+- alias: "Restart FFmpeg process"
+  initial_state: false
+  trigger:
+    platform: state
+    entity_id: binary_sensor.dvizhenie_v_detskoi
+    to: 'unavailable'
+  action:
+    - service: ffmpeg.restart
+    - service: notify.telegram_stall
+      data:
+        message: "_INFO:_ Перезапущен процесс ffmpeg"
+    - delay:
+        seconds: 10
+
+#- alias: "Temporary - Dismiss Discovery Notifications"
+#  initial_state: true
+#  trigger:
+#    - platform: event
+#      event_type: config_entry_discovered
+#  action:
+#    - service: persistent_notification.dismiss
+#      data:
+#        notification_id: config_entry_discovery
+
+- alias: 'HASSIO: Create Snapshot [notify to stall]'
+  initial_state: true
+  trigger:
+    - platform: time
+      at: '02:45:00'
+  condition:
+    - condition: time
+      weekday:
+        - thu
+  action:
+    - service: auto_backup.snapshot_full
+      data_template:
+        name: >
+          hassio_weekly_backup_{{ now().strftime('%Y%m%d') }}
+        keep_days: 14
+    - service: notify.telegram_stall
+      data:
+        message: Создан еженедельный бэкап HASSIO

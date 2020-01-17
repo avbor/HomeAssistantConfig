@@ -1,0 +1,28 @@
+#################################################
+# Humidifiers automatization
+#################################################
+
+### Smartmi Humidifier 01 - Детская #############
+
+- alias: 'Smartmi Humidifier 01 - Заданчивается вода'
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id:
+      - sensor.smartmi_humidifier_01_water_level
+    below: 15
+  action:
+    - service: notify.telegram_stall
+      data_template:
+        message: >
+          *Smartmi Humidifier 01*: заканчивается вода (осталось *{{ trigger.to_state.state }}*%)!
+
+- alias: 'Smartmi Humidifier 01 - Выбор скорости'
+  trigger:
+    platform: state
+    entity_id: input_select.smartmi_humidifier_01_speed
+  action:
+    service: script.set_smartmi_humidifier_speed
+    data_template:
+      fan_entity: fan.xiaomi_miio_device
+      fan_speed: "{{ trigger.to_state.state }}"

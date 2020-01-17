@@ -1,0 +1,151 @@
+#################################################
+# Telegram Bot Automations
+#################################################
+
+# ---- Mirror all text messages
+- alias: 'Telegram Bot - Mirror text'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_text
+  action:
+    service: notify.telegram_stall
+    data_template:
+      message: |
+        *{{ trigger.event.data.from_first }} {{ trigger.event.data.from_last }} [{{ trigger.event.data.user_id }}] пишет:*
+        {{ trigger.event.data.text }}
+# ---- /start
+- alias: 'Telegram Bot - Start'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data: 
+      command: '/start'
+  action:
+    service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.user_id }}'
+      message: 'Привет! Помощь - /help'
+# ---- /help
+- alias: 'Telegram Bot - Help'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data: 
+      command: '/help'
+  action:
+    service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.user_id }}'
+      message: |
+        Доступные комманды:
+        /status - Текущий статус устройств
+        /whoishome - Узнать кто дома
+        /weather - Погода за окном
+        /ping - Проверить доступность сервиса HASS
+# ---- /ping
+- alias: 'Telegram Bot - Ping'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data: 
+      command: '/ping'
+  action:
+    service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.user_id }}'
+      message: |
+        Pong! _{{ now().strftime("%d.%m.%Y %H:%M:%S") }}_
+        Current version: {{ states('sensor.current_version') }}
+        DB Size: {{ states('sensor.hass_db_size') }} {{ state_attr('sensor.hass_db_size','unit_of_measurement') }}
+        Uptime: {{ states('sensor.uptime') }} {{ state_attr('sensor.uptime','unit_of_measurement') }}
+# ---- /whoishome
+- alias: 'Telegram Bot - Who is home?'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data: 
+      command: '/whoishome'
+  action:
+    service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.user_id }}'
+      message: |
+        Сейчас дома:
+        {%- set entites = expand('group.family_persons') %}{% for prs in entites %}{% if prs.state == "home" %}
+        {{ prs.attributes.friendly_name }}{% endif %}{% endfor %}
+        {% if is_state("group.family_persons", "not_home") %}Никого нет{% endif %}
+# ---- /weather
+- alias: 'Telegram Bot - Weather'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data: 
+      command: '/weather'
+  action:
+    - service: telegram_bot.send_sticker
+      data_template:
+        target: '{{ trigger.event.data.user_id }}'
+        file: '/config/www/weather_icons/{{ states.weather.gismeteo.state }}.png'
+        caption: '{{ states.weather.gismeteo.state }}'
+    - service: telegram_bot.send_message
+      data_template:
+        target: '{{ trigger.event.data.user_id }}'
+        message: |
+          Температура {{ state_attr('weather.gismeteo', 'temperature') }}°C
+          Влажность {{ state_attr('weather.gismeteo', 'humidity') }}%
+          Давление {{ state_attr('weather.gismeteo', 'pressure') }} hPa ({{ states('sensor.gismeteo_pressure_mmhg') }} mmHg)
+# ---- /status
+- alias: 'Telegram Bot - Status'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data: 
+      command: '/status'
+  action:
+    service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.user_id }}'
+      message: |
+        *Климат*
+        Гостинная: *{{ states('sensor.temperature_158d0003230618') }}°C*, {{ states('sensor.humidity_158d0003230618') }}%
+        Детская: *{{ states('sensor.temperature_158d0003931aec') }}°C*, {{ states('sensor.humidity_158d0003931aec') }}%
+        Спальня: *{{ states('sensor.temperature_158d0003931b0e') }}°C*, {{ states('sensor.humidity_158d0003931b0e') }}%
+        Ванная: *{{ states('sensor.temperature_158d0003931a55') }}°C*, {{ states('sensor.humidity_158d0003931a55') }}%
+        Кладовая: *{{ states('sensor.temperature_158d00039e2ecb') }}°C*, {{ states('sensor.humidity_158d00039e2ecb') }}%
+
+        *Статус устройств*
+        `-= Кондиционеры =-`
+        Детская: *{{ states('binary_sensor.door_window_sensor_158d00039cf974') }}*
+        Гостинная: *{{ states('binary_sensor.door_window_sensor_158d0003d54725') }}*
+        Спальня: *{{ states('binary_sensor.door_window_sensor_158d0004073b67') }}*
+        `-= Свет =-`
+        Лампа в спальне: *{{ states('light.spalnia_stol') }}*
+        Люстра в детской: *{{ states('light.detskaia') }}*
+        Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
+        Люстра на кухне: *{{ states('light.kukhnia_liustra') }}*
+        `-= Розетки =-`
+        Розетка TP-Link SmartPlug 01: *{{ states('switch.tplink_smartplug_01') }}*
+        Розетка TP-Link SmartPlug 02: *{{ states('switch.tplink_smartplug_02') }}*
+        Розетка Xiaomi ZigBee Plug 01: *{{ states('switch.plug_158d00033b702e') }}*
+        `-= ТВ =-`
+        Спальня: *{{ states('media_player.samsungtv_ue43ru7470') }}*
+        Гостинная: *{{ states('media_player.samsungtv_ue46es5507') }}*
+        Кухня: *{{ states('media_player.samsungtv_ue32es5500') }}*
+        Детская: *{{ states('media_player.samsungtv_ue40c5100') }}*
+        `-= Chromecast =-`
+        Гостинная: *{{ states('media_player.gostinaia') }}*
+        Гостинная (Home Mini): *{{ states('media_player.googlehome9967') }}*
+        Детская: *{{ states('media_player.detskaia') }}*
+        `-= Разное =-`
+        Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*
+        Водонагреватель: *{{ states('sensor.boiler_status') }}* ({{ states('sensor.tplinksmartplug01_watts') }} W)
+        Transmission Status: *{{ states('sensor.transmission_status') }}*
+        Plex Users: *{{ states('sensor.plex_plexonubuntu') }}*
+        Входная дверь: *{{ states('sensor.entrance_door_status') }}*

@@ -1,0 +1,135 @@
+#################################################
+# Notifications
+#################################################
+
+- alias: 'Home Presence Alert'
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: person.alexander, person.irina, person.galina, person.tatiana, person.olga
+#    entity_id: person.alexander, person.irina, person.olga
+  action:
+    - service: notify.telegram_stall
+      data_template:
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }}
+          {% if trigger.to_state.state == 'home' %}дома!
+          {% else %}скорее всего вне дома.
+          {% endif %}
+
+- alias: 'HASSIO: New Version Available [notify to stall]'
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: template
+    value_template: "{{ states('sensor.current_version') < states('sensor.latest_version') }}"
+  action:
+    service: notify.telegram_stall
+    data_template:
+      message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
+
+- alias: Torrent Completed [notify to stall]
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: event
+    event_type: transmission_downloaded_torrent
+  action:
+    service: notify.telegram_stall
+    data_template:
+      message: "Загрузка torrent-файла завершена"
+
+- alias: Полнолуние [notify to stall]
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: sensor.moon
+    to: "full_moon"
+  action:
+    service: notify.telegram_stall
+    data_template:
+      message: "Сегодня полнолуние!"
+
+- alias: Оповещение о протечке [notify to stall]
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: sensor.saures_5555_000_111
+    to: "1"
+  action:
+    service: notify.telegram_stall
+    data:
+      title: "*Внимание!*"
+      message: |
+        Сработал датчик протечки.
+        Водопроводные краны перекрыты!
+
+- alias: Оповещение о протечке Aqara в Кладовой [notify to stall]
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.water_leak_sensor_158d000400e77d
+    from: "off"
+    to: "on"
+  action:
+    service: notify.telegram_stall
+    data:
+      title: "*Внимание!*"
+      message: |
+        Сработал датчик протечки Aqara в *Кладовой*.
+        Необходимо проверить наличие воды за стиральной машиной. 
+
+- alias: 'Low Battery Alert'
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id:
+      - sensor.battery_status_158d0003230618
+      - sensor.battery_status_158d0003931aec
+      - sensor.battery_status_158d0003931b0e
+      - sensor.battery_status_158d00035ff631
+      - sensor.battery_status_158d0003045123
+      - sensor.battery_status_158d0003931a55
+      - sensor.battery_status_158d00039e2ecb
+      - sensor.battery_status_158d000400e77d
+      - sensor.battery_status_158d000309920a
+      - sensor.battery_status_158d00044cea8e
+      - sensor.battery_status_158d00031c790f
+      - sensor.battery_status_158d00039cf974
+      - sensor.battery_status_158d0004073b67
+      - sensor.battery_status_158d0003d54725
+    below: 15
+  action:
+    - service: notify.telegram_stall
+      data_template:
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} {{ trigger.to_state.state }}%!
+
+- alias: Entrance Door - Opened
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.door_window_sensor_158d00031c790f
+    from: 'off'
+    to: 'on'
+  action:
+    service: notify.telegram_stall
+    data:
+      message: Открыта входная дверь!
+
+- alias: Entrance Door - Closed
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.door_window_sensor_158d00031c790f
+    from: 'on'
+    to: 'off'
+  action:
+    service: notify.telegram_stall
+    data:
+      message: Входная дверь закрыта.

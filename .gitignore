@@ -9,16 +9,16 @@
 !*.md
 !*.yaml
 !*.sh
-!automations/*
-!binary_sensors/*
-!custom_components/*
-!influxdb_conf/*
+!automations/
+!binary_sensors/
+!custom_components/
+!influxdb_conf/
 !inputs/
 !inputs/*
 !lovelace/
 !lovelace/*
-!scripts/*
-!sensors/*
+!scripts/
+!sensors/
 #################################
 # Don't include this
 #################################

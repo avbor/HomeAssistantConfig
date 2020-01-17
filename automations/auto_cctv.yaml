@@ -1,0 +1,29 @@
+#################################################
+# CCTV
+#################################################
+
+- alias: Движение в детской (камера)
+  initial_state: false
+  trigger:
+    platform: state
+    entity_id: binary_sensor.dvizhenie_v_detskoi
+    from: 'off'
+    to: 'on'
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: "В *Детской* обнаружено движение:"
+    - service: notify.telegram_stall
+      data_template:
+        message: "Camera Snapshot 1"
+        data:
+          photo:
+            - url: !secret cloudcam01_url
+    - delay:
+        seconds: 1
+    - service: notify.telegram_stall
+      data:
+        message: "Camera Snapshot 2"
+        data:
+          photo:
+            - url: !secret cloudcam01_url

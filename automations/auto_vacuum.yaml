@@ -1,0 +1,129 @@
+#################################################
+# Vacuum Cleaner Automations
+#################################################
+
+- alias: 'Оповещение о начале уборки [notify to stall]'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: vacuum.xiaomi_vacuum_cleaner
+    to: "cleaning"
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: "Mi Robot начал уборку."
+
+- alias: 'Оповещение о возращении пылесоса на базу [notify to stall]'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: vacuum.xiaomi_vacuum_cleaner
+    to: "docked"
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: "Mi Robot вернулся на базу (закончил уборку)."
+
+- alias: 'Оповещение о забытом пылесосе [notify to stall]'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: vacuum.xiaomi_vacuum_cleaner
+    to: "idle"
+    for:
+      minutes: 15
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: "Mi Robot потерялся и бездельничает, отправляем на базу."
+    - service: vacuum.return_to_base
+      data:
+        entity_id: vacuum.xiaomi_vacuum_cleaner
+
+- alias: 'Оповещение об ошибке [notify to stall]'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: vacuum.xiaomi_vacuum_cleaner
+    to: "error"
+  action:
+    - service: notify.telegram_stall
+      data_template:
+        message: |
+          Mi Robot: Произошла *ошибка*!
+          {{ state_attr('vacuum.xiaomi_vacuum_cleaner', "error") }}
+
+- alias: 'Ежедневная уборка по будням [утро]'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: group.family_persons
+    to: "not_home"
+    for:
+      minutes: 20
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: "08:30:00"
+        before: "10:30:00"
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+      - condition: template
+        value_template: '{{ now().day != states.automation.ezhednevnaia_uborka_po_budniam_utro.attributes.last_triggered.day | default(0) }}'
+  action:
+    - service: vacuum.set_fan_speed
+      data:
+        entity_id: vacuum.xiaomi_vacuum_cleaner
+        fan_speed: Turbo
+    - service: vacuum.start
+      data:
+        entity_id: vacuum.xiaomi_vacuum_cleaner
+
+- alias: 'Регулярная уборка прихожей'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.door_window_sensor_158d00031c790f
+    from: 'on'
+    to: 'off'
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: "09:30:00"
+        before: "21:30:00"
+      - condition: template
+        value_template: '{{ (as_timestamp(now())-(as_timestamp(state_attr("automation.reguliarnaia_uborka_prikhozhei", "last_triggered")))>480) }}'
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: vacuum.xiaomi_vacuum_cleaner
+            state: "docked"
+          - condition: state
+            entity_id: vacuum.xiaomi_vacuum_cleaner
+            state: "idle"
+  action:
+    - service: script.turn_on
+      data:
+        entity_id: script.start_vacuum_hallway_by_door_sensor
+
+- alias: 'Set cleaning mode'
+  trigger:
+    platform: state
+    entity_id: input_select.vacuum_power
+  action:
+    - service_template: >
+        {% if trigger.to_state.state == 'Quiet' %}
+          script.set_vacuum_power_quiet
+        {% elif trigger.to_state.state == 'Balanced' %}
+          script.set_vacuum_power_balanced
+        {% elif trigger.to_state.state == 'Turbo' %}
+          script.set_vacuum_power_turbo
+        {% elif trigger.to_state.state == 'Max' %}
+          script.set_vacuum_power_max
+        {% endif %}

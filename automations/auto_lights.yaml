@@ -1,0 +1,80 @@
+#################################################
+# Lights Automations
+#################################################
+
+- alias: 'Kids must sleep at night'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: light.detskaia
+    to: 'on'
+    for:
+      minutes: 2
+  condition:
+    condition: time
+    after: '0:00'
+    before: '6:30'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: light.detskaia
+    - service: notify.telegram_stall
+      data:
+        message: _{{ now().strftime("%d.%m.%Y %H:%M:%S") }}_ автоматически выключен свет в детской.
+
+- alias: 'Подсветка на кухне (кнопка Xiaomi)'
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.switch_158d00035ff631
+      click_type: single
+  action:
+    service: light.toggle
+    data:
+      entity_id: light.kukhnia_lenta
+
+- alias: 'Подсветка на кухне (сенсор движения - вкл)'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.motion_sensor_158d0003fac0ec
+    to: 'on'
+  condition:
+    condition: time
+    after: '23:30'
+    before: '6:30'
+  action:
+    service: homeassistant.turn_on
+    entity_id: light.kukhnia_lenta
+
+- alias: 'Подсветка на кухне (сенсор движения - выкл)'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.motion_sensor_158d0003fac0ec
+    to: 'off'
+    for:
+      minutes: 3
+  condition:
+    condition: time
+    after: '23:30'
+    before: '6:30'
+  action:
+    service: homeassistant.turn_off
+    entity_id: light.kukhnia_lenta
+
+- alias: 'Вкл-Выкл включения подсветки от сенсора движения'
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.switch_158d00035ff631
+      click_type: double
+  action:
+    service: homeassistant.toggle
+    data:
+      entity_id:
+        - automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
+#        - automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
