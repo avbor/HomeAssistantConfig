@@ -1,0 +1,3 @@
+# Home Assistant
+
+Конфигурация домашнего Home Assistant'а...
