@@ -29,7 +29,7 @@
       unit_of_measurement: '%'
       device_class: "battery"
     battery_status_158d0003045123:
-      friendly_name: "Заряд батареи датчика движения (Кухня)"
+      friendly_name: "Заряд батареи датчика движения (Кладовая)"
       value_template: >
         {{ state_attr('binary_sensor.motion_sensor_158d0003045123', 'battery_level') | int }}
       unit_of_measurement: '%'
@@ -53,13 +53,13 @@
       unit_of_measurement: '%'
       device_class: "battery"
     battery_status_158d000309920a:
-      friendly_name: "Заряд батареи датчика движения (Прихожая)"
+      friendly_name: "Заряд батареи датчика движения Aqara (Прихожая)"
       value_template: >
         {{ state_attr('binary_sensor.motion_sensor_158d000309920a', 'battery_level') | int }}
       unit_of_measurement: '%'
       device_class: "battery"
     battery_status_158d00044cea8e:
-      friendly_name: "Заряд батареи датчика движения (Детская)"
+      friendly_name: "Заряд батареи датчика движения Aqara (Детская)"
       value_template: >
         {{ state_attr('binary_sensor.motion_sensor_158d00044cea8e', 'battery_level') | int }}
       unit_of_measurement: '%'

@@ -1,0 +1,68 @@
+person.alexander:
+  entity_picture: /local/stall.png
+device_tracker.oneplus_a3003:
+  entity_picture: /local/stall.png
+person.irina:
+  entity_picture: /local/Irina.jpg
+person.galina:
+  entity_picture: /local/galina.jpg
+person.tatiana:
+  entity_picture: /local/female_128.png
+person.olga:
+  entity_picture: /local/female_128.png
+script.radio_play:
+  friendly_name: Включить
+  icon: mdi:play
+script.radio_stop:
+  friendly_name: Выключить
+  icon: mdi:stop
+sensor.temperature_158d0003230618:
+  friendly_name: Гостинная
+sensor.humidity_158d0003230618:
+  friendly_name: Гостинная
+sensor.pressure_158d0003230618:
+  friendly_name: Гостинная
+sensor.temperature_158d0003931aec:
+  friendly_name: Детская
+sensor.humidity_158d0003931aec:
+  friendly_name: Детская
+sensor.temperature_158d0003931b0e:
+  friendly_name: Спальня
+sensor.humidity_158d0003931b0e:
+  friendly_name: Спальня
+sensor.temperature_158d00039e2ecb:
+  friendly_name: Кладовая
+sensor.humidity_158d00039e2ecb:
+  friendly_name: Кладовая
+sensor.temperature_158d0003931a55:
+  friendly_name: Ванная
+sensor.humidity_158d0003931a55:
+  friendly_name: Ванная
+binary_sensor.switch_158d00035ff631:
+  friendly_name: Кнопка на кухне
+binary_sensor.motion_sensor_158d0003045123:
+  friendly_name: Датчик движения в Кладовке
+binary_sensor.motion_sensor_158d0003fac0ec:
+  friendly_name: Датчик движения на Кухне (Aqara)
+switch.plug_158d00033b702e:
+  friendly_name: Розетка Xiaomi ZigBee Plug 01
+switch.plug_158d000391fb00:
+  friendly_name: Розетка Xiaomi ZigBee Plug 02
+binary_sensor.water_leak_sensor_158d000400e77d:
+  friendly_name: Датчик протечки - Кладовая
+sensor.illumination_158d000309920a:
+  friendly_name: Датчик света - Прихожая
+sensor.illumination_158d00044cea8e:
+  friendly_name: Датчик света - Детская
+binary_sensor.motion_sensor_158d000309920a:
+  friendly_name: Датчик движения в Прихожей (Aqara)
+binary_sensor.motion_sensor_158d00044cea8e:
+  friendly_name: Датчик движения в Детской (Aqara)
+binary_sensor.door_window_sensor_158d00031c790f:
+  friendly_name: Входная дверь
+binary_sensor.door_window_sensor_158d00039cf974:
+  friendly_name: Кондиционер в Детской
+binary_sensor.door_window_sensor_158d0004073b67:
+  friendly_name: Кондиционер в Спальне
+binary_sensor.door_window_sensor_158d0003d54725:
+  friendly_name: Кондиционер в Гостиной

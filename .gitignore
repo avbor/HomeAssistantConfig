@@ -24,7 +24,7 @@
 #################################
 .cloud
 .storage
-customize.yaml
+#customize.yaml
 ip_bans.yaml
 known_devices.yaml
 secrets.yaml
