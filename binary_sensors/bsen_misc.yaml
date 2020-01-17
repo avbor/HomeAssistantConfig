@@ -1,0 +1,20 @@
+#################################################
+# Miscellaneous binary sensors
+#################################################
+
+- platform: workday
+  country: RU
+- platform: tod
+  name: time_between_17_21
+  after: '17:00'
+  before: '21:00'
+- platform: tod
+  name: time_between_7_10
+  after: '7:00'
+  before: '10:00'
+#  - platform: ffmpeg_motion
+#    name: Движение в детской
+#    input: rtsp://admin:@172.16.16.223:554/0/av0
+#    extra_arguments: -an
+#    changes: 10
+#    reset: 10

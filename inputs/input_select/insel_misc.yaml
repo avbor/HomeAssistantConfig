@@ -1,0 +1,56 @@
+#################################################
+# Input select
+#################################################
+
+radio_station:
+  name: 'Радиостанция:'
+  options:
+    - Радио Jazz
+    - Monte Carlo
+    - Monte Carlo Lounge
+    - Наше Радио
+    - ENERGY
+    - Русское Радио
+    - Maximum
+    - Детское Радио
+    - Детское Радио (Старое радио)
+
+output_device:
+    name: 'Где включить:'
+    options:
+      - Гостинная (Home Mini)
+      - Гостинная
+      - Детская
+    initial: Гостинная (Home Mini)
+    icon: mdi:speaker-wireless
+
+room_to_vacuum:
+  name: 'Где убрать:'
+  options:
+    - Прихожая
+    - Детская
+    - Гостинная
+    - Кухня
+    - Спальня
+  initial: Прихожая
+  icon: mdi:crosshairs-gps
+
+vacuum_power:
+  name: 'Выбор режима:'
+  options:
+    - Quiet
+    - Balanced
+    - Turbo
+    - Max
+  initial: Balanced
+  icon: mdi:speedometer
+
+smartmi_humidifier_01_speed:
+  name: 'Выбор скорости:'
+  options:
+    - Silent
+    - Medium
+    - High
+    - Auto
+  initial: Auto
+  icon: mdi:speedometer

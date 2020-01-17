@@ -1,0 +1,181 @@
+title: System
+id: system
+icon: mdi:settings-outline
+cards:
+  - type: vertical-stack
+    cards:
+    - type: markdown
+      content: >
+        ### System information:
+    - type: entities
+      show_header_toggle: false
+      entities:
+        - entity: sensor.current_version
+          name: "HASS.IO текущая версия:"
+        - entity: sensor.latest_version
+          name: "HASS.IO последняя версия:"
+        - entity: sensor.hacs
+          name: "Обновления HACS:"
+        - entity: sensor.hass_db_size
+          name: "Размер БД:"
+    - type: markdown
+      content: >
+        ### Control:
+    - type: horizontal-stack
+      cards:
+        - type: entity-button
+          name: HASS Check Config
+          icon: mdi:reload
+          icon_height: 64px
+          tap_action:
+            action: call-service
+            service: script.turn_on
+            service_data:
+              entity_id: script.hass_check_config
+          entity: script.hass_check_config
+        - type: entity-button
+          name: HASS Restart
+          icon: mdi:restart
+          icon_height: 64px
+          tap_action:
+            action: call-service
+            service: script.turn_on
+            service_data:
+              entity_id: script.hass_restart
+          entity: script.hass_restart
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Automations on\off:
+      - type: entities
+        entities:
+          - entity: automation.poweroff_all_media_when_nobody_at_home
+            name: Выключать ТВ когда никого нет дома
+          - entity: automation.kids_must_sleep_at_night
+            name: Выключать свет в детской между 0:00 и 06:30
+          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
+            name: Автоподсветка кухни [сенсор] (23:30 - 06:30)
+#          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
+#            name: Выкл подсветку кухни [сенсор] (23:30 - 06:30)
+          - type: section
+          - entity: automation.opoveshchenie_o_zabytom_pylesose_notify_to_stall
+            name: Возвращать забытый пылесос на базу
+          - entity: automation.ezhednevnaia_uborka_po_budniam_utro
+            name: Ежедневная уборка по будням [Утро]
+          - entity: automation.reguliarnaia_uborka_prikhozhei
+            name: Регулярная уборка прихожей [Датчик двери]
+          - type: section
+          - entity: automation.dvizhenie_v_detskoi_kamera
+            name: Контроль движения в Детской
+      - type: markdown
+        content: >
+          ### Stop Sequence:
+      - type: glance
+        entities:
+        - entity: script.start_vacuum_hallway_by_door_sensor
+          name: Уборка прихожей (Датчик)
+          icon: mdi:script-text-outline
+          tap_action: 
+            action: call-service
+            service: script.turn_off
+            service_data:
+              entity_id: script.start_vacuum_hallway_by_door_sensor
+#      - type: entity-button
+#        name: Уборка прихожей
+#        tap_action:
+#          action: call-service
+#          service: script.turn_off
+#          service_data:
+#            entity_id: script.start_vacuum_hallway_by_door_sensor
+#        entity: script.start_vacuum_hallway_by_door_sensor
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Заряд батарей:
+      - type: entities
+        entities:
+          - entity: sensor.battery_status_158d0003230618
+            name: Датчик температуры (Гостинная)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d0003931aec
+            name: Датчик температуры (Детская)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d0003931b0e
+            name: Датчик температуры (Спальня)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d0003931a55
+            name: Датчик температуры (Ванная)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d00039e2ecb
+            name: Датчик температуры (Кладовая)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d00035ff631
+            name: Кнопка (Кухня)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d0003045123
+            name: Датчик движения (Кухня)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d000400e77d
+            name: Датчик протечки (Кладовая)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d000309920a
+            name: Датчик движения (Прихожая)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d00044cea8e
+            name: Датчик движения (Детская)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d0003fac0ec
+            name: Датчик движения Aqara (Кухня)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d00031c790f
+            name: Датчик входной двери
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d00039cf974
+            name: Датчик кондиционера (Детская)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d0004073b67
+            name: Датчик кондиционера (Спальня)
+            icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d0003d54725
+            name: Датчик кондиционера (Гостиная)
+            icon: mdi:battery-outline
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Разное:
+      - type: entities
+        entities:
+          - entity: switch.plug_158d00033b702e
+            name: Розетка Xiaomi ZigBee Plug 01
+          - entity: switch.plug_158d000391fb00
+            name: Розетка Xiaomi ZigBee Plug 02
+          - entity: switch.tplink_smartplug_01
+            name: Розетка TP-Link SmartPlug 01
+          - entity: switch.tplink_smartplug_02
+            name: Розетка TP-Link SmartPlug 02
+#      - type: entity-button
+#        name: Reboot Beurer CareCam 01
+#        icon: mdi:reload
+#        icon_height: 32px
+#        tap_action:
+#          action: call-service
+#          service: script.turn_on
+#          service_data:
+#            entity_id: script.reboot_beurer_carecam_01
+#        entity: script.reboot_beurer_carecam_01
+      - type: markdown
+        content: >
+          ### Недоступные розетки:
+      - type: entity-filter
+        entities:
+          - switch.tplink_smartplug_01
+          - switch.tplink_smartplug_02
+          - switch.plug_158d00033b702e
+          - switch.plug_158d000391fb00
+        state_filter:
+          - unavailable

@@ -1,0 +1,18 @@
+#################################################
+# Lamp binary sensors
+#################################################
+
+- platform: template
+  sensors:
+    lamp_status_spalnia_stol:
+      device_class: power
+      value_template: "{{ is_state('light.spalnia_stol', 'on') }}"
+    lamp_status_detskaia:
+      device_class: power
+      value_template: "{{ is_state('light.detskaia', 'on') }}"
+    lamp_status_kukhnia_lenta:
+      device_class: power
+      value_template: "{{ is_state('light.kukhnia_lenta', 'on') }}"
+    lamp_status_kukhnia_liustra:
+      device_class: power
+      value_template: "{{ is_state('light.kukhnia_liustra', 'on') }}"

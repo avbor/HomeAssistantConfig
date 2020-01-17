@@ -1,0 +1,213 @@
+title: Media
+id: media
+icon: mdi:television-play
+cards:
+# --- Radio
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: > 
+          ### Радио:
+      - type: entities
+        entities:
+          - input_select.radio_station
+          - input_select.output_device
+      - type: entities
+        entities:
+          - input_number.volume_radio
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            show_name: false
+            icon_height: 32px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.radio_play
+            entity: script.radio_play
+          - type: entity-button
+            show_name: false
+            icon_height: 32px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.radio_stop
+            entity: script.radio_stop
+
+# --- Chromecast
+  - type: vertical-stack
+    cards:
+    - type: markdown
+      content: > 
+        ### Chromecasts:
+    - type: conditional
+      conditions:
+        - entity: media_player.samsungtv_ue46es5507
+          state_not: "on"
+        - entity: media_player.samsungtv_ue40c5100
+          state_not: "on"
+      card:
+        type: markdown
+        content: >
+          *Нет включенных устройств...*
+    - type: conditional
+      conditions:
+        - entity: media_player.samsungtv_ue46es5507
+          state_not: "unknown"
+      card:
+        type: media-control
+        entity: media_player.gostinaia
+    - type: conditional
+      conditions:
+        - entity: media_player.samsungtv_ue40c5100
+          state_not: "unknown"
+      card:
+        type: media-control
+        entity: media_player.detskaia
+    - type: conditional
+      conditions:
+        - entity: media_player.googlehome9967
+          state_not: "off"
+      card:
+        type: media-control
+        entity: media_player.googlehome9967
+
+# --- Television
+  - type: vertical-stack
+    cards:
+    - type: markdown
+      content: >
+        ### TVs:
+    - type: markdown
+      content: >
+        *Спальня:*
+    - type: horizontal-stack
+      cards:
+        - type: entity-button
+          show_name: false
+          icon_height: 32px
+          icon: mdi:television
+          entity: media_player.samsungtv_ue43ru7470
+          tap_action:
+            action: call-service
+            service: media_player.turn_on
+            service_data:
+              entity_id: media_player.samsungtv_ue43ru7470
+        - type: entity-button
+          show_name: false
+          icon_height: 32px
+          icon: mdi:television-off
+          entity: switch.samsung_7_series_43
+          tap_action:
+            action: call-service
+            service: switch.turn_off
+            service_data:
+              entity_id: switch.samsung_7_series_43
+#    - type: conditional
+#      conditions:
+#        - entity: media_player.samsungtv_ue43ru7470
+#          state_not: "off"
+#        - entity: media_player.samsungtv_ue43ru7470
+#          state_not: "unavailable"
+#      card:
+#        type: vertical-stack
+#        cards:
+#          - type: entities
+#            show_header_toggle: false
+#            entities:
+#              - entity: sensor.samsung_7_series_43_media_input_source
+#                name: "Источник сигнала:"
+#              - entity: sensor.samsung_7_series_43_tv_channel
+#                name: "Канал:"
+#              - entity: sensor.samsung_7_series_43_volume
+#                name: "Громкость:"
+#          - type: media-control
+#            entity: media_player.samsungtv_ue43ru7470
+    - type: conditional
+      conditions:
+        - entity: media_player.samsungtv_ue46es5507
+          state_not: "off"
+        - entity: media_player.samsungtv_ue46es5507
+          state_not: "unknown"
+      card:
+        type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              *Гостинная:*
+          - type: media-control
+            entity: media_player.samsungtv_ue46es5507
+    - type: conditional
+      conditions:
+        - entity: media_player.samsungtv_ue32es5500
+          state_not: "off"
+        - entity: media_player.samsungtv_ue32es5500
+          state_not: "unknown"
+      card:
+        type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              *Кухня:*
+          - type: media-control
+            entity: media_player.samsungtv_ue32es5500
+    - type: conditional
+      conditions:
+        - entity: media_player.samsungtv_ue40c5100
+          state_not: "off"
+        - entity: media_player.samsungtv_ue40c5100
+          state_not: "unknown"
+      card:
+        type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              *Детская:*
+          - type: media-control
+            entity: media_player.samsungtv_ue40c5100
+
+# --- Plex
+  - type: vertical-stack
+    cards:
+    - type: markdown
+      content: >
+        ### Plex:
+    - type: conditional
+      conditions:
+        - entity: media_player.plex_tv_ue46es5507
+          state: "unavailable"
+        - entity: media_player.plex_tv_ue32es5500
+          state: "unavailable"
+      card:
+        type: markdown
+        content: >
+          *Все выключенно...*
+    - type: conditional
+      conditions:
+        - entity: media_player.plex_tv_ue46es5507
+          state_not: "off"
+        - entity: media_player.plex_tv_ue46es5507
+          state_not: "unavailable"
+      card:
+        type: media-control
+        entity: media_player.plex_tv_ue46es5507
+    - type: conditional
+      conditions:
+        - entity: media_player.plex_tv_ue32es5500
+          state_not: "off"
+        - entity: media_player.plex_tv_ue32es5500
+          state_not: "unavailable"
+      card:
+        type: media-control
+        entity: media_player.plex_tv_ue32es5500
+    - type: conditional
+      conditions:
+        - entity: media_player.plex_tv_ue43ru7470uxru
+          state_not: "off"
+        - entity: media_player.plex_tv_ue43ru7470uxru
+          state_not: "unavailable"
+      card:
+        type: media-control
+        entity: media_player.plex_tv_ue43ru7470uxru

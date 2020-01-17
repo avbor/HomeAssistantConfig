@@ -1,0 +1,250 @@
+#################################################
+# Core config
+#################################################
+
+homeassistant:
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - 172.16.16.0/24
+      trusted_users:
+        172.16.16.0/24: 5eb99a825ace48779fad323aac28014d
+  name: Home, Sweeet Home...
+  time_zone: !secret home_timezone
+  unit_system: metric
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  elevation: !secret home_elevation
+  customize: !include customize.yaml
+  whitelist_external_dirs:
+    - /config/
+    - /config/www/weather_icons/
+    - /config/www/cam_snapshots/
+
+#################################################
+# Features
+#################################################
+
+config:
+hassio:
+system_health:
+stream:
+zeroconf:
+ssdp:
+sun:
+map:
+mobile_app:
+wwlln:
+wake_on_lan:
+person:
+logbook:
+history:
+
+http:
+  base_url: !secret external_url
+  use_x_forwarded_for: true
+  trusted_proxies: 127.0.0.1
+  ip_ban_enabled: true
+  login_attempts_threshold: 3
+
+frontend:
+  javascript_version: latest
+
+recorder:
+  db_url: !secret mysql_url
+  purge_keep_days: 7
+
+logger:
+  default: warn
+#  logs:
+#    homeassistant.components.tuya: debug
+#    homeassistant.components.http.ban: warning
+#    homeassistant.components.device_tracker: debug
+
+lovelace:
+  mode: yaml
+
+tts:
+  - platform: google_translate
+    language: 'ru'
+
+updater:
+  include_used_components: true
+
+weather:
+  - platform: gismeteo
+    mode: daily
+
+discovery:
+  ignore:
+    - yeelight
+    - igd
+
+auto_backup:
+  auto_purge: true
+
+influxdb:
+  host: a0d7b954-influxdb
+  port: 8086
+  database: homeassistant
+  username: !secret influxdb_user
+  password: !secret influxdb_pass
+  max_retries: 5
+  default_measurement: state
+#  exclude:
+#    domains:
+#      - automation
+#      - sun
+  include:
+    entities: !include influxdb_conf/influxdb_include_entities.yaml
+
+xiaomi_aqara:
+  discovery_retry: 30
+  gateways:
+    - mac: 04cf8ca0db1e
+      host: 172.16.16.215
+      key: !secret xiaomi_aqara_key
+
+yeelight:
+  devices:
+    172.16.16.202:
+      name: Спальня - Стол
+    172.16.16.222:
+      name: Детская
+    172.16.16.214:
+      name: Кухня - Лента
+    172.16.16.203:
+      name: Кухня - Люстра
+
+vacuum:
+  - platform: xiaomi_miio
+    host: 172.16.16.219
+    token: !secret mi_vacuum_1s_token
+
+fan:
+  - platform: xiaomi_miio
+    host: 172.16.16.224
+    name: Smartmi Humidifier 01
+    token: !secret xiaomi_air_humidifier_01_token
+
+tuya:
+  platform: smart_life
+  username: !secret tuya_user
+  password: !secret tuya_pass
+  country_code: "7"
+
+camera:
+#  - platform: generic
+#    name: Baurer Camera
+#    still_image_url: 'http://172.16.16.217/cgi/jpg/image.cgi'
+#    stream_source: !secret baurercamera_stream_url
+#    verify_ssl: false
+#    framerate: 30
+#  - platform: ffmpeg
+#    name: Baurer Camera
+#    input: !secret baurercamera_stream_url
+#    extra_arguments: -an
+  - platform: generic
+    name: CloudCam01
+    still_image_url: http://172.16.16.223:554/snapshot
+    stream_source: !secret cloudcam01_stream_url
+
+tplink:
+  discovery: false
+  switch:
+    - host: 172.16.16.213
+    - host: 172.16.16.216
+
+transmission:
+  host: 172.16.16.253
+
+#zabbix:
+#  host: home.intra
+#  username: !secret zbx_user
+#  password: !secret zbx_pass
+
+media_player:
+  - platform: plex
+  - platform: samsungtv
+    name: SamsungTV-UE43RU7470
+    host: 172.16.16.205
+    port: 8001
+    mac: 8c:79:f5:51:2f:d1
+  - platform: samsungtv
+    name: SamsungTV-UE40C5100
+    host: 172.16.16.206
+    mac: e4:7c:f9:89:49:99
+  - platform: samsungtv
+    name: SamsungTV-UE32ES5500
+    host: 172.16.16.207
+    mac: 48:44:f7:f7:b5:fa
+  - platform: samsungtv
+    name: SamsungTV-UE46ES5507
+    host: 172.16.16.208
+    mac: 1c:5a:3e:a6:d4:a6
+
+device_tracker:
+  - platform: keenetic_ndms2
+    host: 172.16.16.254
+    username: !secret keen_user
+    password: !secret keen_passwd
+    interval_seconds: 30
+    new_device_defaults:
+      track_new_devices: true
+      hide_if_away: false
+#  - platform: nmap_tracker
+#    interval_seconds: 15
+#    new_device_defaults:
+#      track_new_devices: true
+#      hide_if_away: false
+#    hosts: 172.16.16.101-200
+#    home_interval: 5
+#    scan_options: " -sP --host-timeout 1s "
+#  - platform: google_maps
+#    interval_seconds: 60
+#    username: !secret google_maps_username
+
+#asuswrt:
+#  host: 172.16.16.252
+#  username: !secret asuswrt_user
+#  password: !secret asuswrt_pass
+#  mode: ap
+#  require_ip: false
+
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_bot_token
+    allowed_chat_ids:
+      - !secret tlg_stall_id
+      - !secret tlg_iborisochka_id
+
+notify:
+  - name: telegram_stall
+    platform: telegram
+    chat_id: !secret tlg_stall_id
+  - name: telegram_iborisochka
+    platform: telegram
+    chat_id: !secret tlg_iborisochka_id
+
+#################################################
+# Shell commands
+#################################################
+
+shell_command:
+  chromecast_tv_on: "curl -X POST -H \"Content-Type: application/json\" -H \"Host: {{ ip_addr }}:8008\" -d '{\"use_channel\":true,\"allow_restart\":true,\"allow_empty_post_data\":true,\"app_id\":\"00000000-0000-0000-0000-000000000000\",\"url\":\"chrome://home?remote_url=https%3A%2F%2Fclients3.google.com%2Fcast%2Fchromecast%2Fhome%3Fchs%3D1\",\"dial_enabled\":true}' http://{{ ip_addr }}:8008/apps/00000000-0000-0000-0000-000000000000"
+  reboot_beurer_carecam: "curl -X GET \"http://{{ ip_addr }}/?action=command&command=restart_system\""
+  delete_file_by_path: "rm -f \"{{ file_path }}\""
+  delete_all_cam_snapshots: "rm -f /config/www/cam_snapshots/*.jpg"
+
+#################################################
+# Inclusions
+#################################################
+
+group: !include groups.yaml
+sensor: !include_dir_merge_list sensors
+binary_sensor: !include_dir_merge_list binary_sensors
+automation: !include_dir_merge_list automations
+script: !include_dir_merge_named scripts
+input_select: !include_dir_merge_named inputs/input_select
+input_number: !include_dir_merge_named inputs/input_number

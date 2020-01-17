@@ -1,0 +1,53 @@
+#################################################
+# Miscellaneous sensors
+#################################################
+
+- platform: sql
+  db_url: !secret mysql_url
+  queries:
+    - name: HASS DB Size
+      query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1048576, 2) "value" FROM information_schema.tables WHERE table_schema="homeassistant" GROUP BY table_schema;'
+      column: 'value'
+      unit_of_measurement: MB
+- platform: saures
+  email: !secret saures_user
+  password: !secret saures_pass
+  flat_id: !secret saures_flat_id
+  serial_numbers: 
+    - "13193152"
+    - 09-104476
+    - 000-111
+- platform: plex
+- platform: time_date
+  display_options:
+    - 'time'
+    - 'date'
+- platform: moon
+- platform: version
+  source: local
+- platform: version
+  source: hassio
+- platform: uptime
+  unit_of_measurement: hours
+- platform: template
+  sensors:
+    entrance_door_status:
+      value_template: >
+        {% if is_state('binary_sensor.door_window_sensor_158d00031c790f', "on") %}Открыта
+        {% elif is_state('binary_sensor.door_window_sensor_158d00031c790f', "off") %}Закрыта
+        {% else %}Unavailable
+        {% endif %}
+    local_pressure_mmhg:
+      value_template: '{{ (((states.sensor.pressure_158d0003230618.state) | float) / 1.333) | round(2) }}'
+      unit_of_measurement: mmHg
+    boiler_status:
+      friendly_name: "Electrolux Centurio IQ Status"
+      value_template: >
+        {% if (states('sensor.tplinksmartplug01_amps') | float) > 4 %}On{% else %}Off{% endif %}
+    mirobot_current_fan_speed:
+      value_template: >
+        {% if state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 101 %}Quiet
+        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 102 %}Balanced
+        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 103 %}Turbo
+        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 104 %}Max
+        {% endif %}

@@ -1,0 +1,23 @@
+#################################################
+# Humidifier sensors
+#################################################
+
+- platform: template
+  sensors:
+    smartmi_humidifier_01_temperature:
+      friendly_name: "Температура"
+      value_template: "{{ state_attr('fan.xiaomi_miio_device', 'temperature') | float }}"
+      unit_of_measurement: °C
+      device_class: temperature
+    smartmi_humidifier_01_humidity:
+      friendly_name: "Влажность"
+      value_template: "{{ state_attr('fan.xiaomi_miio_device', 'humidity') | int }}"
+      unit_of_measurement: '%'
+      device_class: humidity
+    smartmi_humidifier_01_water_level:
+      friendly_name: "Остаток воды"
+      value_template: "{{ ((state_attr('fan.xiaomi_miio_device', 'depth') / 120) * 100) | int }}"
+      unit_of_measurement: '%'
+    smartmi_humidifier_01_speed:
+      friendly_name: "Скорость работы"
+      value_template: "{{ state_attr('fan.xiaomi_miio_device', 'speed') }}"

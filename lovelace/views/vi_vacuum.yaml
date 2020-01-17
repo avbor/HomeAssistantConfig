@@ -1,0 +1,64 @@
+title: Vacuum
+id: vacuum
+icon: mdi:broom
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Уборка:
+      - type: entities
+        entities:
+          - entity: vacuum.xiaomi_vacuum_cleaner
+            name: 'Статус:'
+            secondary_info: last-changed
+          - entity: sensor.mirobot_current_fan_speed
+            name: 'Текущий режим:'
+            icon: mdi:speedometer
+          - type: section
+          - input_select.room_to_vacuum
+          - input_select.vacuum_power
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            show_name: false
+            icon: mdi:run-fast
+            icon_height: 32px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.start_vacuum_room
+            entity: script.start_vacuum_room
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            show_name: false
+            icon: mdi:broom
+            icon_height: 48px
+            tap_action:
+              action: call-service
+              service: vacuum.start
+              service_data:
+                entity_id: vacuum.xiaomi_vacuum_cleaner
+            entity: vacuum.xiaomi_vacuum_cleaner
+          - type: entity-button
+            show_name: false
+            icon: mdi:pause-circle-outline
+            icon_height: 48px
+            tap_action:
+              action: call-service
+              service: vacuum.pause
+              service_data:
+                entity_id: vacuum.xiaomi_vacuum_cleaner
+            entity: vacuum.xiaomi_vacuum_cleaner
+          - type: entity-button
+            show_name: false
+            icon: mdi:home-import-outline
+            icon_height: 48px
+            tap_action:
+              action: call-service
+              service: vacuum.return_to_base
+              service_data:
+                entity_id: vacuum.xiaomi_vacuum_cleaner
+            entity: vacuum.xiaomi_vacuum_cleaner

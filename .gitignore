@@ -1,0 +1,30 @@
+#################################
+# By default, ignore all files
+#################################
+*
+#################################
+# Share this stuff
+#################################
+!.gitignore
+!*.md
+!*.yaml
+!*.sh
+!automations/*
+!binary_sensors/*
+!custom_components/*
+!influxdb_conf/*
+!inputs/
+!inputs/*
+!lovelace/
+!lovelace/*
+!scripts/*
+!sensors/*
+#################################
+# Don't include this
+#################################
+.cloud
+.storage
+customize.yaml
+ip_bans.yaml
+known_devices.yaml
+secrets.yaml

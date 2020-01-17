@@ -1,0 +1,51 @@
+#################################################
+# Entities to include in InfluxDB
+#################################################
+- sensor.gismeteo_temperature
+- sensor.illumination_158d000309920a
+- sensor.illumination_158d00044cea8e
+- sensor.illumination_158d0003fac0ec
+- binary_sensor.motion_sensor_158d0003045123
+- binary_sensor.motion_sensor_158d000309920a
+- binary_sensor.motion_sensor_158d00044cea8e
+- binary_sensor.motion_sensor_158d0003fac0ec
+- sensor.temperature_158d0003931a55
+- sensor.temperature_158d0003931aec
+- sensor.temperature_158d0003230618
+- sensor.temperature_158d0003931b0e
+- sensor.temperature_158d00039e2ecb
+- sensor.humidity_158d0003931a55
+- sensor.humidity_158d0003931aec
+- sensor.humidity_158d0003230618
+- sensor.humidity_158d0003931b0e
+- sensor.humidity_158d00039e2ecb
+- sensor.pressure_158d0003230618
+- sensor.local_pressure_mmhg
+- binary_sensor.door_window_sensor_158d00031c790f
+- device_tracker.mi8_miphone
+- device_tracker.oneplus3t
+- device_tracker.redmi5a_redmi5a
+# Sensor batteries
+- sensor.battery_status_158d0003230618
+- sensor.battery_status_158d0003931aec
+- sensor.battery_status_158d0003931b0e
+- sensor.battery_status_158d0003931a55
+- sensor.battery_status_158d00039e2ecb
+- sensor.battery_status_158d00035ff631
+- sensor.battery_status_158d0003045123
+- sensor.battery_status_158d000400e77d
+- sensor.battery_status_158d000309920a
+- sensor.battery_status_158d00044cea8e
+- sensor.battery_status_158d0003fac0ec
+- sensor.battery_status_158d00031c790f
+- sensor.battery_status_158d00039cf974
+- sensor.battery_status_158d0004073b67
+- sensor.battery_status_158d0003d54725
+# Power sensors
+- sensor.tplinksmartplug01_volts
+- sensor.tplinksmartplug01_amps
+- sensor.tplinksmartplug01_watts
+- sensor.tplinksmartplug02_volts
+- sensor.tplinksmartplug02_amps
+- sensor.tplinksmartplug02_watts
+- sensor.mipowerplug01_watts

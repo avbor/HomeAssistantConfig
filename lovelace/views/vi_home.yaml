@@ -1,0 +1,168 @@
+title: Home
+id: home
+icon: 'hass:home-assistant'
+#    badges:
+# Настройка карточек:
+cards:
+# --- Сейчас дома
+  - type: vertical-stack
+    cards:
+      - type: entities
+        entities:
+          - sensor.date
+          - sensor.time
+    # --- Сейчас дома:
+      - type: markdown
+        content: >
+          ### Сейчас дома:
+      - type: conditional
+        conditions:
+          - entity: group.family_persons
+            state: "not_home"
+        card:
+          type: markdown
+          content: >
+            *Никого нет...*
+      - type: conditional
+        conditions:
+          - entity: group.family_persons
+            state: "home"
+        card:
+          type: entity-filter
+          entities:
+            - person.alexander
+            - person.irina
+            - person.tatiana
+            - person.galina
+            - person.olga
+          state_filter:
+            - home
+          card:
+            type: glance
+      # --- Время в пути (Утро)
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.time_between_7_10
+            state: "on"
+          - entity: binary_sensor.workday_sensor
+            state: "on"
+        card:
+          type: vertical-stack
+          cards:
+            - type: markdown
+              content: >
+                ### Время в пути:
+            - type: entities
+              entities:
+                - sensor.do_raboty_sasha
+                - sensor.do_raboty_ira_luxoft
+            - type: history-graph
+              hours_to_show: 2
+              refresh_interval: 60
+              entities:
+                - sensor.do_raboty_sasha
+                - sensor.do_raboty_ira_luxoft
+      # --- Время в пути (Утро)
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.time_between_17_21
+            state: "on"
+          - entity: binary_sensor.workday_sensor
+            state: "on"
+        card:
+          type: vertical-stack
+          cards:
+            - type: markdown
+              content: >
+                ### Время в пути:
+            - type: entities
+              entities:
+                - sensor.do_doma_sasha
+                - sensor.do_doma_ira_luxoft
+            - type: history-graph
+              hours_to_show: 2
+              refresh_interval: 60
+              entities:
+                - sensor.do_doma_sasha
+                - sensor.do_doma_ira_luxoft
+
+# --- Статус всякого
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Статус:
+      - type: entities
+        entities:
+          - entity: sensor.transmission_status
+            icon: mdi:download
+          - entity: sensor.plex_plexonubuntu
+            name: PlexSpy
+            icon: mdi:plex
+          - entity: sensor.entrance_door_status
+            name: 'Входная дверь'
+            icon: mdi:door
+          - entity: vacuum.xiaomi_vacuum_cleaner
+            name: "Пылесос Mi Robot"
+#          - entity: sensor.boiler_status
+#            name: "Бойлер"
+            icon: mdi:water-boiler
+          - entity: binary_sensor.lamp_status_detskaia
+            name: Свет в детской
+            icon: mdi:ceiling-light
+          - entity: binary_sensor.lamp_status_spalnia_stol
+            name: Лампа в спальне
+            icon: mdi:desk-lamp
+          - entity: binary_sensor.lamp_status_kukhnia_lenta
+            name: Подсветка кухни
+            icon: mdi:led-strip-variant
+          - entity: binary_sensor.lamp_status_kukhnia_liustra
+            name: Люстра на  кухне
+            icon: mdi:ceiling-light
+          - entity: binary_sensor.ac_nursery_status
+            name: A/C Детская
+            icon: mdi:air-conditioner
+          - entity: binary_sensor.ac_living_room_status
+            name: A/C Гостиная
+            icon: mdi:air-conditioner
+          - entity: binary_sensor.ac_bedroom_status
+            name: A/C Спальня
+            icon: mdi:air-conditioner
+          #- type: divider
+          - type: section
+          - entity: sensor.temperature_158d0003230618
+            name: Гостинная
+          - entity: sensor.temperature_158d0003931aec
+            name: Детская
+          - entity: sensor.temperature_158d0003931b0e
+            name: Спальня
+          - entity: sensor.temperature_158d0003931a55
+            name: Ванная
+          - entity: sensor.temperature_158d00039e2ecb
+            name: Кладовая
+
+# --- Weather
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Погода:
+    # --- Погода:
+      #- type: weather-forecast
+      #  entity: weather.home_assistant
+      - type: weather-forecast
+        entity: weather.gismeteo
+      - type: history-graph
+        hours_to_show: 72
+        refresh_interval: 600
+        entities:
+          - entity:  sensor.gismeteo_pressure_mmhg
+            name: Gismeteo
+          - entity: sensor.local_pressure_mmhg
+            name: Датчик (Гостинная)
+    # --- Солнце\Луна:
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - sun.sun
+          - sensor.moon

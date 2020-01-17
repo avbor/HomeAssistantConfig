@@ -1,0 +1,57 @@
+title: Light
+id: light
+icon: mdi:lightbulb-on-outline
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Управление светом:
+      - type: conditional
+        conditions:
+          - entity: light.spalnia_stol
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.spalnia_stol
+          name: Спальня
+      - type: conditional
+        conditions:
+          - entity: light.detskaia
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.detskaia
+      - type: conditional
+        conditions:
+          - entity: light.kukhnia_lenta
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.kukhnia_lenta
+      - type: conditional
+        conditions:
+          - entity: light.kukhnia_liustra
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.kukhnia_liustra
+      - type: markdown
+        content: >
+          ### Недоступные лампы:
+      - type: entity-filter
+        entities:
+          - entity: sensor.lamp_status_detskaia
+            name: Свет в Детской
+            icon: mdi:ceiling-light
+          - entity: sensor.lamp_status_kukhnia_lenta
+            name: Подсветка Кухни
+            icon: mdi:led-strip-variant
+          - entity: sensor.lamp_status_kukhnia_liustra
+            name: Люстра на  Кухне
+            icon: mdi:ceiling-light
+          - entity: sensor.lamp_status_spalnia_stol
+            name: Лампа в Спальне
+            icon: mdi:desk-lamp
+        state_filter:
+          - unavailable

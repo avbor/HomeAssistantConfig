@@ -1,0 +1,79 @@
+title: Stats
+id: stats
+icon: mdi:chart-line
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Водонагреватель:
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - sensor.tplinksmartplug01_watts
+          - sensor.tplinksmartplug01_amps
+          - sensor.tplinksmartplug01_volts
+      - type: entities
+        entities:
+          - entity: sensor.tplinksmartplug01_today_kwh
+            name: "Потрачено сегодня:"
+            icon: mdi:flash-outline
+          - entity: sensor.tplinksmartplug01_total_kwh
+            name: "Потрачено всего:"
+            icon: mdi:flash
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Стиральная машина:
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - sensor.tplinksmartplug02_watts
+          - sensor.tplinksmartplug02_amps
+          - sensor.tplinksmartplug02_volts
+      - type: entities
+        entities:
+          - entity: sensor.tplinksmartplug02_today_kwh
+            name: "Потрачено сегодня:"
+            icon: mdi:flash-outline
+          - entity: sensor.tplinksmartplug02_total_kwh
+            name: "Потрачено всего:"
+            icon: mdi:flash
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Температура:
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - sensor.temperature_158d0003230618
+          - sensor.temperature_158d0003931aec
+          - sensor.temperature_158d0003931b0e
+          - sensor.temperature_158d0003931a55
+          - sensor.temperature_158d00039e2ecb
+      - type: markdown
+        content: >
+          ### Влажность:
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - sensor.humidity_158d0003230618
+          - sensor.humidity_158d0003931aec
+          - sensor.humidity_158d0003931b0e
+          - sensor.humidity_158d0003931a55
+          - sensor.humidity_158d00039e2ecb
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Счетчики воды:
+      - type: entities
+        entities:
+          - entity: sensor.saures_5555_09_104476
+          - entity: sensor.saures_5555_13193152

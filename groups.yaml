@@ -1,0 +1,23 @@
+family_persons:
+  name: Семья
+  entities:
+    - person.alexander
+    - person.irina
+    - person.galina
+    - person.tatiana
+    - person.olga
+
+all_tv:
+  name: Все телевизоры
+  entities:
+    - media_player.samsungtv_ue32es5500
+    - media_player.samsungtv_ue40c5100
+    - media_player.samsungtv_ue46es5507
+    - media_player.samsungtv_ue43ru7470
+
+all_chromecasts:
+  name: Все хромкасты
+  entities:
+    - media_player.detskaia
+    - media_player.gostinaia
+    - media_player.googlehome9967

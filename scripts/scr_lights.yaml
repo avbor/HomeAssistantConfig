@@ -1,0 +1,11 @@
+#################################################
+# Scripts for lights
+#################################################
+
+toggle_kithen_led_automation:
+  alias: Переключение статуса автоматизации подсветки на кухне
+  sequence:
+    - service: homeassistant.toggle
+      entity_id:
+        - automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
+        - automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
