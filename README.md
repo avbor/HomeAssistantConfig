@@ -1,3 +1,3 @@
 # Home Assistant
 
-Конфигурация домашнего Home Assistant'а...
+Конфигурация Home Assistant'а и немного домашней автоматизации.
