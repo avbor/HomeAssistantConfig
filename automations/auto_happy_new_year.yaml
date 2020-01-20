@@ -17,10 +17,7 @@
         entity_id: switch.plug_158d00033b702e
     - service: switch.turn_off
       data:
-        entity_id: switch.tplink_smartplug_02
-    - service: switch.turn_off
-      data:
-        entity_id: switch.tplink_smartplug_01
+        entity_id: switch.plug_158d000391fb00
     - service: notify.telegram_stall
       data:
         message: Отключаем новогоднюю подсветку (никого нет дома).
@@ -39,10 +36,7 @@
         entity_id: switch.plug_158d00033b702e
     - service: switch.turn_on
       data:
-        entity_id: switch.tplink_smartplug_02
-    - service: switch.turn_on
-      data:
-        entity_id: switch.tplink_smartplug_01
+        entity_id: switch.plug_158d000391fb00
     - service: notify.telegram_stall
       data:
         message: Включаем новогоднюю подсветку (кто-то пришел домой).
@@ -62,10 +56,7 @@
         entity_id: switch.plug_158d00033b702e
     - service: switch.turn_off
       data:
-        entity_id: switch.tplink_smartplug_02
-    - service: switch.turn_off
-      data:
-        entity_id: switch.tplink_smartplug_01
+        entity_id: switch.plug_158d000391fb00
     - service: notify.telegram_stall
       data:
         message: Отключаем новогоднюю подсветку (пора спать).
@@ -82,10 +73,7 @@
         entity_id: switch.plug_158d00033b702e
     - service: switch.turn_on
       data:
-        entity_id: switch.tplink_smartplug_02
-    - service: switch.turn_on
-      data:
-        entity_id: switch.tplink_smartplug_01
+        entity_id: switch.plug_158d000391fb00
     - service: notify.telegram_stall
       data:
         message: Включаем новогоднюю подсветку (с добрым утром).

@@ -40,9 +40,14 @@
     entity_id: binary_sensor.motion_sensor_158d0003fac0ec
     to: 'on'
   condition:
-    condition: time
-    after: '23:30'
-    before: '6:30'
+    condition: and
+    conditions:
+      - condition: time
+        after: '21:30'
+        before: '7:30'
+      - condition: numeric_state
+        entity_id: sensor.illumination_158d0003fac0ec
+        below: 15
   action:
     service: homeassistant.turn_on
     entity_id: light.kukhnia_lenta
@@ -57,8 +62,8 @@
       minutes: 3
   condition:
     condition: time
-    after: '23:30'
-    before: '6:30'
+    after: '21:30'
+    before: '7:30'
   action:
     service: homeassistant.turn_off
     entity_id: light.kukhnia_lenta
