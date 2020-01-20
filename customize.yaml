@@ -39,7 +39,9 @@ sensor.temperature_158d0003931a55:
 sensor.humidity_158d0003931a55:
   friendly_name: Ванная
 binary_sensor.switch_158d00035ff631:
-  friendly_name: Кнопка на кухне
+  friendly_name: Кнопка на Кухне
+binary_sensor.switch_158d00033efd9e:
+  friendly_name: Кнопка в Детской (Свет)
 binary_sensor.motion_sensor_158d0003045123:
   friendly_name: Датчик движения в Кладовке
 binary_sensor.motion_sensor_158d0003fac0ec:

@@ -94,3 +94,9 @@
         {{ state_attr('binary_sensor.motion_sensor_158d0003fac0ec', 'battery_level') | int }}
       unit_of_measurement: '%'
       device_class: "battery"
+    battery_status_158d00033efd9e:
+      friendly_name: "Заряд батареи кнопки в Детской (Свет)"
+      value_template: >
+        {{ state_attr('binary_sensor.switch_158d00033efd9e', 'battery_level') | int }}
+      unit_of_measurement: '%'
+      device_class: "battery"

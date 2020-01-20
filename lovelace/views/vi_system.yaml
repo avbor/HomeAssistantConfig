@@ -116,6 +116,9 @@ cards:
           - entity: sensor.battery_status_158d00035ff631
             name: Кнопка (Кухня)
             icon: mdi:battery-outline
+          - entity: sensor.battery_status_158d00033efd9e
+            name: Кнопка (свет Детская)
+            icon: mdi:battery-outline
           - entity: sensor.battery_status_158d0003045123
             name: Датчик движения (Кухня)
             icon: mdi:battery-outline
