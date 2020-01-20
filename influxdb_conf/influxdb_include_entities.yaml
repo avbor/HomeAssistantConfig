@@ -25,6 +25,7 @@
 - device_tracker.mi8_miphone
 - device_tracker.oneplus3t
 - device_tracker.redmi5a_redmi5a
+- sensor.xiaomi_gas_density
 # Sensor batteries
 - sensor.battery_status_158d0003230618
 - sensor.battery_status_158d0003931aec

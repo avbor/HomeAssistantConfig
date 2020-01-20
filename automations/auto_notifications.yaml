@@ -136,3 +136,18 @@
     service: notify.telegram_stall
     data:
       message: Входная дверь закрыта.
+
+- alias: Gas Alert
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.natgas_sensor_158d000413b210
+    from: 'off'
+    to: 'on'
+  action:
+    service: notify.telegram_stall
+    data:
+      title: "*Внимание!*"
+      message: |
+        Сработал датчик *газа* на кухне.
+        Откройте окна и перекройте подачу газа (за холодильником).
