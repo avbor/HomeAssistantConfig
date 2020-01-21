@@ -83,3 +83,16 @@
       entity_id:
         - automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
 #        - automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
+
+- alias: 'Свет в детсокй Вкл-Выкл'
+  initial_state: true
+  trigger: 
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.switch_158d00033efd9e
+      click_type: single
+  action:
+    service: light.toggle
+    data:
+      entity_id: light.detskaia

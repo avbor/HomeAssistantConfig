@@ -2,7 +2,7 @@
 # Scripts for lights
 #################################################
 
-toggle_kithen_led_automation:
+toggle_kitchen_led_automation:
   alias: Переключение статуса автоматизации подсветки на кухне
   sequence:
     - service: homeassistant.toggle
