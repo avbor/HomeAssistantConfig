@@ -24,7 +24,7 @@
   counters_sn: 
       - "13193152"
       - 09-104476
-      - 000-111
+#      - 000-111
   controllers_sn: 
       - "1113513"
 - platform: plex

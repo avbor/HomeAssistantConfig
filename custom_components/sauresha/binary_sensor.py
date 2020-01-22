@@ -92,7 +92,12 @@ class SauresBinarySensor(Entity):
     @property
     def is_on(self):
         """Return true if the binary sensor is on."""
-        return bool(self._state)
+        return bool(int(self._state))
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return bool(int(self._state))
 
     @property
     def available(self):
