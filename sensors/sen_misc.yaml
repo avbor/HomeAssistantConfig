@@ -23,7 +23,7 @@
   flat_id: !secret saures_flat_id
   counters_sn: 
       - "13193152"
-      - 09-104476+
+      - 09-104476
       - 000-111
   controllers_sn: 
       - "1113513"
