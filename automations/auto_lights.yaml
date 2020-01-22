@@ -67,8 +67,10 @@
 - alias: Sunrise Lighting (Nursery)
   initial_state: true
   trigger:
-  - platform: time
-    at: '07:15:00'
+#  - platform: time
+#    at: '07:15:00'
+  - platform: template
+    value_template: "{{ states('sensor.time') == (states('input_datetime.sunrise_in_nursery')[:5]) }}"
   condition:
   - condition: state
     entity_id: binary_sensor.workday_sensor

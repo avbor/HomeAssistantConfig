@@ -269,3 +269,4 @@ automation: !include_dir_merge_list automations
 script: !include_dir_merge_named scripts
 input_select: !include_dir_merge_named inputs/input_select
 input_number: !include_dir_merge_named inputs/input_number
+input_datetime: !include_dir_merge_named inputs/input_datetime

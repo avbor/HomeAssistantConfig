@@ -1,0 +1,9 @@
+#################################################
+# Input Datetime
+#################################################
+
+sunrise_in_nursery:
+  name: Время включения света в Детской
+  icon: mdi:alarm
+  has_date: false
+  has_time: true

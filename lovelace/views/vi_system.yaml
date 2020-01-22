@@ -182,3 +182,7 @@ cards:
           - switch.plug_158d000391fb00
         state_filter:
           - unavailable
+  - type: entities
+    entities:
+      - entity: input_datetime.sunrise_in_nursery
+        name: "Включать свет в Детской (рабочие дни):"
