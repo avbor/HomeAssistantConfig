@@ -95,7 +95,7 @@
     data:
       entity_id: light.kukhnia_lenta
 
-- alias: 'Подсветка на кухне (кнопка Xiaomi)'
+- alias: 'Люстра на кухне (кнопка Xiaomi)'
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
