@@ -9,14 +9,24 @@
       query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1048576, 2) "value" FROM information_schema.tables WHERE table_schema="homeassistant" GROUP BY table_schema;'
       column: 'value'
       unit_of_measurement: MB
-- platform: saures
+#- platform: saures
+#  email: !secret saures_user
+#  password: !secret saures_pass
+#  flat_id: !secret saures_flat_id
+#  serial_numbers: 
+#    - "13193152"
+#    - 09-104476
+#    - 000-111
+- platform: sauresha
   email: !secret saures_user
   password: !secret saures_pass
   flat_id: !secret saures_flat_id
-  serial_numbers: 
-    - "13193152"
-    - 09-104476
-    - 000-111
+  counters_sn: 
+      - "13193152"
+      - 09-104476+
+      - 000-111
+  controllers_sn: 
+      - "1113513"
 - platform: plex
 - platform: time_date
   display_options:
