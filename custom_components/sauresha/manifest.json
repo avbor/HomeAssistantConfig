@@ -1,0 +1,10 @@
+{
+  "domain": "sauresha",
+  "name": "SauresHA",
+  "documentation": "https://github.com/volshebniks/sauresha",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+  	"@volshebniks"
+  ]
+}

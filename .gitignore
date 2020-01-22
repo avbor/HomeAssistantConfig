@@ -12,6 +12,8 @@
 !automations/
 !binary_sensors/
 !custom_components/
+!custom_components/*
+!custom_components/**
 !influxdb_conf/
 !inputs/
 !inputs/*
