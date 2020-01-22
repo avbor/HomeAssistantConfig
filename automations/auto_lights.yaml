@@ -126,3 +126,31 @@
     service: light.toggle
     data:
       entity_id: light.detskaia
+
+- alias: 'Яркость света в детской'
+  initial_state: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.switch_158d00033efd9e
+      click_type: double
+  action:
+    service: light.turn_on
+    data_template:
+      entity_id: light.detskaia
+      transition: '1'
+      brightness: >
+        {%- if state_attr('light.detskaia', 'brightness') <= 3 %}
+          51
+        {% elif state_attr('light.detskaia', 'brightness') <= 51 %}
+          102
+        {% elif state_attr('light.detskaia', 'brightness') <= 102 %}
+          153
+        {% elif state_attr('light.detskaia', 'brightness') <= 153 %}
+          204
+        {% elif state_attr('light.detskaia', 'brightness') <= 204 %}
+          255
+        {% elif state_attr('light.detskaia', 'brightness') <= 255 %}
+          3
+        {% endif %}
