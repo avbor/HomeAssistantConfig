@@ -43,8 +43,8 @@
     condition: and
     conditions:
       - condition: time
-        after: '21:30'
-        before: '7:30'
+        after: '21:00'
+        before: '8:00'
       - condition: numeric_state
         entity_id: sensor.illumination_158d0003fac0ec
         below: 15
@@ -62,8 +62,8 @@
       minutes: 3
   condition:
     condition: time
-    after: '21:30'
-    before: '7:30'
+    after: '21:00'
+    before: '8:00'
   action:
     service: homeassistant.turn_off
     entity_id: light.kukhnia_lenta

@@ -56,7 +56,7 @@ cards:
           - entity: automation.kids_must_sleep_at_night
             name: Выключать свет в детской между 0:00 и 06:30
           - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
-            name: Автоподсветка кухни [сенсор] (23:30 - 06:30)
+            name: Автоподсветка кухни [сенсор] (21:00 - 08:00)
 #          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
 #            name: Выкл подсветку кухни [сенсор] (23:30 - 06:30)
           - type: section
