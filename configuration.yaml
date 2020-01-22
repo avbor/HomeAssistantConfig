@@ -117,6 +117,18 @@ yeelight:
       name: Кухня - Лента
     172.16.16.203:
       name: Кухня - Люстра
+  custom_effects:
+  - name: 'Sunrise'
+    flow_params:
+      count: 1
+      action: stay
+      transitions:
+        - RGBTransition: [255, 77, 0, 50, 1] # [red, green, blue, duration, brightness]
+        - TemperatureTransition: [1700, 180000, 10] # [temp, duration, brightness]
+        - TemperatureTransition: [2700, 180000, 11]
+        - TemperatureTransition: [3700, 180000, 12]
+        - TemperatureTransition: [4700, 180000, 13]
+        - TemperatureTransition: [6500, 180000, 100]
 
 vacuum:
   - platform: xiaomi_miio
