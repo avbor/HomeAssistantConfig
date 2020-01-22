@@ -130,10 +130,12 @@
         Люстра в детской: *{{ states('light.detskaia') }}*
         Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
         Люстра на кухне: *{{ states('light.kukhnia_liustra') }}*
+        Свет в кладовой: *{{ states('light.sonoff_1000b6831b') }}*
         `-= Розетки =-`
         Розетка TP-Link SmartPlug 01: *{{ states('switch.tplink_smartplug_01') }}*
         Розетка TP-Link SmartPlug 02: *{{ states('switch.tplink_smartplug_02') }}*
         Розетка Xiaomi ZigBee Plug 01: *{{ states('switch.plug_158d00033b702e') }}*
+        Розетка Xiaomi ZigBee Plug 02: *{{ states('switch.plug_158d000391fb00') }}*
         `-= ТВ =-`
         Спальня: *{{ states('media_player.samsungtv_ue43ru7470') }}*
         Гостинная: *{{ states('media_player.samsungtv_ue46es5507') }}*

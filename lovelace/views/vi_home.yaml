@@ -119,6 +119,9 @@ cards:
           - entity: binary_sensor.lamp_status_kukhnia_liustra
             name: Люстра на  кухне
             icon: mdi:ceiling-light
+          - entity: binary_sensor.lamp_status_kladovaya
+            name: Свет в Кладовой
+            icon: mdi:vanity-light
           - entity: binary_sensor.ac_nursery_status
             name: A/C Детская
             icon: mdi:air-conditioner

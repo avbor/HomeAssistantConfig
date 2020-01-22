@@ -16,3 +16,6 @@
     lamp_status_kukhnia_liustra:
       device_class: power
       value_template: "{{ is_state('light.kukhnia_liustra', 'on') }}"
+    lamp_status_kladovaya:
+      device_class: power
+      value_template: "{{ is_state('light.sonoff_1000b6831b', 'on') }}"

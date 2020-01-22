@@ -58,6 +58,7 @@ recorder:
 logger:
   default: warn
 #  logs:
+#    custom_components.sonoff: debug
 #    homeassistant.components.tuya: debug
 #    homeassistant.components.http.ban: warning
 #    homeassistant.components.device_tracker: debug
@@ -133,6 +134,14 @@ tuya:
   username: !secret tuya_user
   password: !secret tuya_pass
   country_code: "7"
+
+sonoff:
+#  username: !secret sonoff_username
+#  password: !secret sonoff_pass
+  devices:
+    1000b6831b:
+      devicekey: 87c5267d-054f-4a71-8c51-49d027b80d71
+      device_class: light
 
 camera:
 #  - platform: generic

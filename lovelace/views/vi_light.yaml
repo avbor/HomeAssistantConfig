@@ -36,6 +36,14 @@ cards:
         card:
           type: light
           entity: light.kukhnia_liustra
+      - type: conditional
+        conditions:
+          - entity: light.sonoff_1000b6831b
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.sonoff_1000b6831b
+          name: Кладовая
       - type: markdown
         content: >
           ### Недоступные лампы:
@@ -53,5 +61,8 @@ cards:
           - entity: sensor.lamp_status_spalnia_stol
             name: Лампа в Спальне
             icon: mdi:desk-lamp
+          - entity: light.sonoff_1000b6831b
+            name: Свет в Кладовой
+            icon: mdi:vanity-light
         state_filter:
           - unavailable
