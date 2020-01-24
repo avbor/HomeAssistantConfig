@@ -72,9 +72,14 @@
   - platform: template
     value_template: "{{ states('sensor.time') == (states('input_datetime.sunrise_in_nursery')[:5]) }}"
   condition:
-  - condition: state
-    entity_id: binary_sensor.workday_sensor
-    state: 'on'
+    condition: and
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.workday_sensor
+      state: 'on'
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
   action:
   - service: light.turn_on
     entity_id: light.detskaia
