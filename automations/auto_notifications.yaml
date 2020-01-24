@@ -32,6 +32,17 @@
     data_template:
       message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
 
+- alias: 'HACS: New Component Version Available [notify to stall]'
+  hide_entity: true
+  initial_state: true
+  trigger:
+    platform: template
+    value_template: "{{ states('sensor.hacs') > 0 }}"
+  action:
+    service: notify.telegram_stall
+    data_template:
+      message: "_INFO:_ Доступны новые версии установленных компонент (кол-во: {{ states('sensor.hacs') }})"
+
 - alias: Torrent Completed [notify to stall]
   hide_entity: true
   initial_state: true
