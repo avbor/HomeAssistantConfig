@@ -36,8 +36,11 @@
   hide_entity: true
   initial_state: true
   trigger:
-    platform: template
-    value_template: "{{ states('sensor.hacs') > 0 }}"
+    platform: state
+    entity_id: sensor.hacs
+  condition:
+    - condition: template
+      value_template: "{{ (states('sensor.hacs') | int) > 0 }}"
   action:
     service: notify.telegram_stall
     data_template:
