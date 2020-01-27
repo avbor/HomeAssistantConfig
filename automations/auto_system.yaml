@@ -50,7 +50,7 @@
       data_template:
         name: >
           hassio_weekly_backup_{{ now().strftime('%Y%m%d') }}
-        keep_days: 14
+        keep_days: 13
     - service: notify.telegram_stall
       data:
-        message: Создан еженедельный бэкап HASSIO
+        message: _INFO:_ Создан еженедельный бэкап HASSIO
