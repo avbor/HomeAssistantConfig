@@ -2,14 +2,26 @@
 # CCTV
 #################################################
 
-- alias: Движение в детской (камера)
+- alias: Движение в детской
   initial_state: false
   trigger:
     platform: state
-    entity_id: binary_sensor.dvizhenie_v_detskoi
+    entity_id: binary_sensor.motion_sensor_158d00044cea8e
     from: 'off'
     to: 'on'
   action:
+#    - service: camera.snapshot
+#      data:
+#        entity_id: camera.cloudcam01
+#        filename: '/config/www/cam_snapshots/tmp_nursery_cam_snap_01.jpg'
+#    - delay:
+#        seconds: 1
+#    - service: camera.snapshot
+#      data:
+#        entity_id: camera.cloudcam01
+#        filename: '/config/www/cam_snapshots/tmp_nursery_cam_snap_02.jpg'
+#    - delay:
+#        seconds: 1
     - service: notify.telegram_stall
       data:
         message: "В *Детской* обнаружено движение:"
@@ -19,6 +31,14 @@
         data:
           photo:
             - url: !secret cloudcam01_url
+#            - file: '/config/www/cam_snapshots/tmp_nursery_cam_snap_01.jpg'
+#            - file: '/config/www/cam_snapshots/tmp_nursery_cam_snap_02.jpg'
+#    - service: shell_command.delete_file_by_path
+#      data:
+#        file_path: '/config/www/cam_snapshots/tmp_nursery_cam_snap_01.jpg'
+#    - service: shell_command.delete_file_by_path
+#      data:
+#        file_path: '/config/www/cam_snapshots/tmp_nursery_cam_snap_02.jpg'
     - delay:
         seconds: 1
     - service: notify.telegram_stall

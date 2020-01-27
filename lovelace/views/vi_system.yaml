@@ -67,7 +67,7 @@ cards:
           - entity: automation.reguliarnaia_uborka_prikhozhei
             name: Регулярная уборка прихожей [Датчик двери]
           - type: section
-          - entity: automation.dvizhenie_v_detskoi_kamera
+          - entity: automation.dvizhenie_v_detskoi
             name: Контроль движения в Детской
       - type: markdown
         content: >
