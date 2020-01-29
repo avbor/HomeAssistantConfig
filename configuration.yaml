@@ -132,6 +132,16 @@ yeelight:
         - TemperatureTransition: [3000, 180000, 12]
         - TemperatureTransition: [3500, 180000, 13]
         - TemperatureTransition: [3900, 180000, 100]
+  - name: 'SunriseBW'
+    flow_params:
+      count: 1
+      action: stay
+      transitions:
+        - TemperatureTransition: [1700, 180000, 10] # [temp, duration, brightness] 180000ms
+        - TemperatureTransition: [2500, 180000, 11]
+        - TemperatureTransition: [3000, 180000, 12]
+        - TemperatureTransition: [3500, 180000, 13]
+        - TemperatureTransition: [3900, 180000, 100]
 
 vacuum:
   - platform: xiaomi_miio
@@ -175,10 +185,10 @@ camera:
 #    name: Baurer Camera
 #    input: !secret baurercamera_stream_url
 #    extra_arguments: -an
-#  - platform: generic
-#    name: CloudCam01
-#    stream_source: !secret cloudcam01_stream_url
-#    still_image_url: !secret cloudcam01_image_url
+  - platform: generic
+    name: CloudCam01-RTSP
+    stream_source: !secret cloudcam01_stream_url
+    still_image_url: !secret cloudcam01_image_url
 
 tplink:
   discovery: false

@@ -194,3 +194,25 @@
   action:
     service: light.turn_off
     entity_id: light.sonoff_1000b6831b
+
+# Спальня
+
+- alias: Sunrise Lighting (Bedroom)
+  initial_state: true
+  trigger:
+  - platform: template
+    value_template: "{{ states('sensor.time') == (states('input_datetime.sunrise_in_bedroom')[:5]) }}"
+  condition:
+    condition: and
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.workday_sensor
+      state: 'on'
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+  action:
+  - service: light.turn_on
+    entity_id: light.spalnia_stol
+    data:
+      effect: SunriseBW

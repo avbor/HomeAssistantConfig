@@ -20,7 +20,7 @@
           photo:
             - url: !secret cloudcam01_url
     - delay:
-        seconds: 2
+        seconds: 1
     - service: notify.telegram_stall
       data:
         message: "Camera Snapshot 2"

@@ -5,5 +5,5 @@ cards:
   - type: picture-entity
     name: Детская
     entity: camera.cloudcam01
-    #camera_view: live
+    camera_view: live
     show_state: false

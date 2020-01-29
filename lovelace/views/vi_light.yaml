@@ -12,16 +12,28 @@ cards:
           - entity: light.spalnia_stol
             state_not: "unavailable"
         card:
-          type: light
-          entity: light.spalnia_stol
-          name: Спальня - Стол
+          type: vertical-stack
+          cards:
+            - type: light
+              entity: light.spalnia_stol
+              name: Спальня - Стол
+            - type: entities
+              entities:
+                - entity: input_datetime.sunrise_in_bedroom
+                  name: "Включать свет в Спальне (рабочие дни):"
       - type: conditional
         conditions:
           - entity: light.detskaia
             state_not: "unavailable"
         card:
-          type: light
-          entity: light.detskaia
+          type: vertical-stack
+          cards:
+            - type: light
+              entity: light.detskaia
+            - type: entities
+              entities:
+                - entity: input_datetime.sunrise_in_nursery
+                  name: "Включать свет в Детской (рабочие дни):"
       - type: conditional
         conditions:
           - entity: light.kukhnia_lenta
