@@ -6,21 +6,7 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### Управление светом:
-      - type: conditional
-        conditions:
-          - entity: light.spalnia_stol
-            state_not: "unavailable"
-        card:
-          type: vertical-stack
-          cards:
-            - type: light
-              entity: light.spalnia_stol
-              name: Спальня - Стол
-            - type: entities
-              entities:
-                - entity: input_datetime.sunrise_in_bedroom
-                  name: "Включать свет в Спальне (рабочие дни):"
+          ### Детская:
       - type: conditional
         conditions:
           - entity: light.detskaia
@@ -32,8 +18,16 @@ cards:
               entity: light.detskaia
             - type: entities
               entities:
-                - entity: input_datetime.sunrise_in_nursery
+                - entity: automation.sunrise_lighting_nursery
                   name: "Включать свет в Детской (рабочие дни):"
+                  icon: mdi:weather-sunset-up
+                - entity: input_datetime.sunrise_in_nursery
+                  name: "Время включения:"
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Кухня:
       - type: conditional
         conditions:
           - entity: light.kukhnia_lenta
@@ -48,6 +42,33 @@ cards:
         card:
           type: light
           entity: light.kukhnia_liustra
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Спальня:
+      - type: conditional
+        conditions:
+          - entity: light.spalnia_stol
+            state_not: "unavailable"
+        card:
+          type: vertical-stack
+          cards:
+            - type: light
+              entity: light.spalnia_stol
+              name: Спальня - Стол
+            - type: entities
+              entities:
+                - entity: automation.sunrise_lighting_bedroom
+                  name: "Включать свет в Спальне (рабочие дни)"
+                  icon: mdi:weather-sunset-up
+                - entity: input_datetime.sunrise_in_bedroom
+                  name: "Время включения:"
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Кладовая:
       - type: conditional
         conditions:
           - entity: light.sonoff_1000b6831b
@@ -56,6 +77,8 @@ cards:
           type: light
           entity: light.sonoff_1000b6831b
           name: Кладовая
+  - type: vertical-stack
+    cards:
       - type: markdown
         content: >
           ### Недоступные лампы:
