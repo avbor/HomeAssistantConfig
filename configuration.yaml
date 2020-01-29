@@ -8,8 +8,11 @@ homeassistant:
     - type: trusted_networks
       trusted_networks:
         - 172.16.16.0/24
+        - 127.0.0.1
+        - ::1
       trusted_users:
         172.16.16.0/24: 5eb99a825ace48779fad323aac28014d
+      allow_bypass_login: true
   name: Home, Sweeet Home...
   time_zone: !secret home_timezone
   unit_system: metric
@@ -156,6 +159,12 @@ sonoff:
       device_class: light
 
 camera:
+  - platform: mjpeg
+    name: CloudCam01
+    mjpeg_url: 'http://a0d7b954-motioneye:8081'
+    username: !secret motioneye_user
+    password: !secret motioneye_pass
+    authentication: digest
 #  - platform: generic
 #    name: Baurer Camera
 #    still_image_url: 'http://172.16.16.217/cgi/jpg/image.cgi'
@@ -166,10 +175,10 @@ camera:
 #    name: Baurer Camera
 #    input: !secret baurercamera_stream_url
 #    extra_arguments: -an
-  - platform: generic
-    name: CloudCam01
-    still_image_url: http://172.16.16.223:554/snapshot
-    stream_source: !secret cloudcam01_stream_url
+#  - platform: generic
+#    name: CloudCam01
+#    stream_source: !secret cloudcam01_stream_url
+#    still_image_url: !secret cloudcam01_image_url
 
 tplink:
   discovery: false

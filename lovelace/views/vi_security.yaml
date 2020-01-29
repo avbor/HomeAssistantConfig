@@ -3,8 +3,7 @@ id: security
 icon: mdi:cctv
 cards:
   - type: picture-entity
+    name: Детская
     entity: camera.cloudcam01
     #camera_view: live
     show_state: false
-    #show_name: false
-    name: Детская
