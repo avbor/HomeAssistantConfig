@@ -8,11 +8,8 @@ homeassistant:
     - type: trusted_networks
       trusted_networks:
         - 172.16.16.0/24
-        - 127.0.0.1
-        - ::1
       trusted_users:
         172.16.16.0/24: 5eb99a825ace48779fad323aac28014d
-      allow_bypass_login: true
   name: Home, Sweeet Home...
   time_zone: !secret home_timezone
   unit_system: metric
