@@ -116,6 +116,7 @@ class SauresBinarySensor(Entity):
         """Fetch new state data for the sensor.
         This is the only method that should fetch new data for Home Assistant.
         """
+        self.controller.re_auth()
         meter = self.current_meter
         self._attributes.update({
             'friendly_name': meter.name,

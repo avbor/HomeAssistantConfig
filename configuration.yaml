@@ -186,9 +186,9 @@ camera:
 #    input: !secret baurercamera_stream_url
 #    extra_arguments: -an
   - platform: generic
-    name: CloudCam01-RTSP
-    stream_source: !secret cloudcam01_stream_url
-    still_image_url: !secret cloudcam01_image_url
+    name: DafangCam-01-RTSP
+    stream_source: rtsp://172.16.16.229:8554/unicast
+    still_image_url: https://172.16.16.229/cgi-bin/currentpic.cgi
 
 tplink:
   discovery: false

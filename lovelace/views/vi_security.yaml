@@ -7,3 +7,8 @@ cards:
     entity: camera.cloudcam01
     camera_view: live
     show_state: false
+  - type: picture-entity
+    name: Гостиная
+    entity: camera.dafangcam_01_rtsp
+    camera_view: live
+    show_state: false
