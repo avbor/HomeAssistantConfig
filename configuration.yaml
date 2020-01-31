@@ -78,6 +78,8 @@ recorder:
       - sensor.uptime
       - sensor.moon
       - sun.sun
+    event_types:
+      - call_service
 
 influxdb:
   host: a0d7b954-influxdb
