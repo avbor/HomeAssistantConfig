@@ -2,29 +2,19 @@
 # System
 #################################################
 
-- alias: "HASS Shutdown"
-  initial_state: true
-  trigger:
-    platform: homeassistant
-    event: shutdown
-  action:
-    - service: homeassistant.turn_off
-      data:
-        entity_id: automation.restart_ffmpeg_process
-
-- alias: "Restart FFmpeg process"
-  initial_state: false
-  trigger:
-    platform: state
-    entity_id: binary_sensor.dvizhenie_v_detskoi
-    to: 'unavailable'
-  action:
-    - service: ffmpeg.restart
-    - service: notify.telegram_stall
-      data:
-        message: "_INFO:_ Перезапущен процесс ffmpeg"
-    - delay:
-        seconds: 10
+#- alias: "Restart FFmpeg process"
+#  initial_state: false
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.dvizhenie_v_detskoi
+#    to: 'unavailable'
+#  action:
+#    - service: ffmpeg.restart
+#    - service: notify.telegram_stall
+#      data:
+#        message: "_INFO:_ Перезапущен процесс ffmpeg"
+#    - delay:
+#        seconds: 10
 
 #- alias: "Temporary - Dismiss Discovery Notifications"
 #  initial_state: true

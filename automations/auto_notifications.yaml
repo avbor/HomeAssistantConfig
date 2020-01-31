@@ -21,6 +21,37 @@
           {% else %}скорее всего вне дома.
           {% endif %}
 
+- alias: 'HASS: Home Assistant Start'
+  initial_state: true
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    service: notify.telegram_stall
+    data:
+      message: "_INFO:_ Home Assistant *запущен*."
+
+- alias: 'HASS: Home Assistant Shutdown'
+  initial_state: true
+  trigger:
+    platform: homeassistant
+    event: shutdown
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: "_INFO:_ Home Assistant *остановлен*."
+
+- alias: 'HASS: Errors in System Log'
+  trigger:
+    platform: event
+    event_type: system_log_event
+    event_data:
+      level: ERROR
+  action:
+    service: notify.telegram_stall
+    data_template:
+      message: "_ERROR:_ {{ trigger.event.data.message }}"
+
 - alias: 'HASSIO: New Version Available [notify to stall]'
   hide_entity: true
   initial_state: true
