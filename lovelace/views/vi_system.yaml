@@ -99,6 +99,33 @@ cards:
     cards:
       - type: markdown
         content: >
+          ### Разное:
+      - type: entities
+        entities:
+          - entity: switch.plug_158d00033b702e
+            name: Розетка Xiaomi ZigBee Plug 01
+          - entity: switch.plug_158d000391fb00
+            name: Розетка Xiaomi ZigBee Plug 02
+          - entity: switch.tplink_smartplug_01
+            name: Розетка TP-Link SmartPlug 01
+          - entity: switch.tplink_smartplug_02
+            name: Розетка TP-Link SmartPlug 02
+      - type: markdown
+        content: >
+          ### Недоступные розетки:
+      - type: entity-filter
+        entities:
+          - switch.tplink_smartplug_01
+          - switch.tplink_smartplug_02
+          - switch.plug_158d00033b702e
+          - switch.plug_158d000391fb00
+        state_filter:
+          - unavailable
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
           ### Заряд батарей:
       - type: entities
         entities:
@@ -150,45 +177,3 @@ cards:
           - entity: sensor.battery_status_158d0003d54725
             name: Датчик кондиционера (Гостиная)
             icon: mdi:battery-outline
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### Разное:
-      - type: entities
-        entities:
-          - entity: switch.plug_158d00033b702e
-            name: Розетка Xiaomi ZigBee Plug 01
-          - entity: switch.plug_158d000391fb00
-            name: Розетка Xiaomi ZigBee Plug 02
-          - entity: switch.tplink_smartplug_01
-            name: Розетка TP-Link SmartPlug 01
-          - entity: switch.tplink_smartplug_02
-            name: Розетка TP-Link SmartPlug 02
-#      - type: entity-button
-#        name: Reboot Beurer CareCam 01
-#        icon: mdi:reload
-#        icon_height: 32px
-#        tap_action:
-#          action: call-service
-#          service: script.turn_on
-#          service_data:
-#            entity_id: script.reboot_beurer_carecam_01
-#        entity: script.reboot_beurer_carecam_01
-      - type: markdown
-        content: >
-          ### Недоступные розетки:
-      - type: entity-filter
-        entities:
-          - switch.tplink_smartplug_01
-          - switch.tplink_smartplug_02
-          - switch.plug_158d00033b702e
-          - switch.plug_158d000391fb00
-        state_filter:
-          - unavailable
-#  - type: entities
-#    entities:
-#      - entity: input_datetime.sunrise_in_nursery
-#        name: "Включать свет в Детской (рабочие дни):"
-#      - entity: input_datetime.sunrise_in_bedroom
-#        name: "Включать свет в Спальне (рабочие дни):"
