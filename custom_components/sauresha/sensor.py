@@ -9,18 +9,14 @@ from homeassistant.const import (
 )
 
 import voluptuous as vol
-from datetime import timedelta
 
 from . import (
     CONF_FLAT_ID, 
     CONF_COUNTERS_SN,
-    CONF_CONTROLLERS_SN,
-    CONF_SCAN_INTERVAL
+    CONF_CONTROLLERS_SN
 )
 
 import logging
-
-SCAN_INTERVAL = timedelta (minutes = 10)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,8 +25,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_PASSWORD): cv.string,
     vol.Required(CONF_FLAT_ID): cv.positive_int,
     vol.Optional(CONF_COUNTERS_SN): cv.ensure_list,
-    vol.Optional(CONF_CONTROLLERS_SN): cv.ensure_list,
-    vol.Optional(CONF_SCAN_INTERVAL): cv.positive_int,
+    vol.Optional(CONF_CONTROLLERS_SN): cv.ensure_list                    
 })
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -41,11 +36,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     flat_id = config.get(CONF_FLAT_ID)
     serial_numbers = config.get(CONF_COUNTERS_SN, [])
     sns = config.get(CONF_CONTROLLERS_SN, [])
-    scan_interval = config.get(CONF_SCAN_INTERVAL)
-
-    if str(scan_interval).isdigit():
-        if int(scan_interval) > 0:
-            SCAN_INTERVAL = int(scan_interval)
 
     controller = SauresHA(
         config.get('email'),
@@ -99,7 +89,7 @@ class SauresSensor(Entity):
                 't4': meter.t4
             })
         else:
-            self._attributes.update({
+               self._attributes.update({
                 'friendly_name': meter.name,
                 'condition': meter.state,
                 'sn': meter.sn,
@@ -111,10 +101,10 @@ class SauresSensor(Entity):
             self._attributes.update({
                 'unit_of_measurement': 'м³'}) 
         elif meter.type_number == 5:
-            self._attributes.update({
+             self._attributes.update({
                 'unit_of_measurement': '°C'})
         elif meter.type_number == 8:
-            self._attributes.update({
+             self._attributes.update({
                 'unit_of_measurement': 'кВт·ч'})
 
     @property
@@ -144,7 +134,6 @@ class SauresSensor(Entity):
         """Fetch new state data for the sensor.
         This is the only method that should fetch new data for Home Assistant.
         """
-        self.controller.re_auth()
         meter = self.current_meter
         if meter.type_number==8:
             self._attributes.update({
@@ -154,21 +143,19 @@ class SauresSensor(Entity):
                 'type': meter.type,
                 'meter_id': meter.id,
                 'input': meter.input,
-                'approve_dt': meter.approve_dt,
                 't1': meter.t1,
                 't2': meter.t2,
                 't3': meter.t3,
                 't4': meter.t4
             })
         else:
-            self._attributes.update({
+               self._attributes.update({
                 'friendly_name': meter.name,
                 'condition': meter.state,
                 'sn': meter.sn,
                 'type': meter.type,
                 'meter_id': meter.id,
                 'input': meter.input,
-                'approve_dt': meter.approve_dt,
             })
         self._state = meter.value
 
@@ -196,15 +183,7 @@ class SauresControllerSensor(Entity):
             'request_dt':  myController.request_dt,
             'rssi':  myController.rssi,
             'hardware':  myController.hardware,
-            'new_firmware':  myController.new_firmware,
-            'last_connection':  myController.last_connection,
-            'last_connection_warning':  myController.last_connection_warning,
-            'check_hours':  myController.check_hours,
-            'check_period_display':  myController.check_period_display,
-            'requests':  myController.requests,
-            'log':  myController.log,
-            'cap_state':  myController.cap_state,
-            'power_supply':  myController.power_supply
+            'new_firmware':  myController.new_firmware
         })
 
     @property
@@ -234,7 +213,6 @@ class SauresControllerSensor(Entity):
         """Fetch new state data for the sensor.
         This is the only method that should fetch new data for Home Assistant.
         """
-        self.controller.re_auth()
         myController = self.current_controllerInfo
         self._attributes.update({
             'battery_level': myController.batery,
@@ -248,14 +226,6 @@ class SauresControllerSensor(Entity):
             'request_dt':  myController.request_dt,
             'rssi':  myController.rssi,
             'hardware':  myController.hardware,
-            'new_firmware':  myController.new_firmware,
-            'last_connection':  myController.last_connection,
-            'last_connection_warning':  myController.last_connection_warning,
-            'check_hours':  myController.check_hours,
-            'check_period_display':  myController.check_period_display,
-            'requests':  myController.requests,
-            'log':  myController.log,
-            'cap_state':  myController.cap_state,
-            'power_supply':  myController.power_supply
+            'new_firmware':  myController.new_firmware
         })
         self._state = myController.state
