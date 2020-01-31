@@ -218,6 +218,22 @@ cards:
             entity: sensor.humidity_158d0003931a55
             name: Влажность
             graph: line
+  # Туалет
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Туалет:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              **Бойлер:**
+          - type: entities
+            entities:
+              - entity: switch.tplink_smartplug_01
+                name: Electrolux Centurio IQ
+                icon: mdi:water-boiler
   # Кладовая
   - type: vertical-stack
     cards:
@@ -234,14 +250,3 @@ cards:
             entity: sensor.humidity_158d00039e2ecb
             name: Влажность
             graph: line
-  # Бойлер
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### Бойлер:
-      - type: entities
-        entities:
-          - entity: switch.tplink_smartplug_01
-            name: Electrolux Centurio IQ
-            icon: mdi:water-boiler
