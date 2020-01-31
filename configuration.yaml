@@ -48,14 +48,6 @@ http:
   ip_ban_enabled: true
   login_attempts_threshold: 3
 
-frontend:
-  javascript_version: latest
-  themes: !include_dir_merge_named themes
-
-recorder:
-  db_url: !secret mysql_url
-  purge_keep_days: 7
-
 logger:
   default: warn
 #  logs:
@@ -63,6 +55,44 @@ logger:
 #    homeassistant.components.tuya: debug
 #    homeassistant.components.http.ban: warning
 #    homeassistant.components.device_tracker: debug
+
+frontend:
+  javascript_version: latest
+  themes: !include_dir_merge_named themes
+
+recorder:
+  db_url: !secret mysql_url
+  purge_keep_days: 7
+  exclude:
+    domains:
+      - updater
+      - automation
+      - script
+      - camera
+      - input_datetime
+      - input_number
+      - input_select
+    entities:
+      - sensor.time
+      - sensor.date
+      - sensor.uptime
+      - sensor.moon
+      - sun.sun
+
+influxdb:
+  host: a0d7b954-influxdb
+  port: 8086
+  database: homeassistant
+  username: !secret influxdb_user
+  password: !secret influxdb_pass
+  max_retries: 5
+  default_measurement: state
+#  exclude:
+#    domains:
+#      - automation
+#      - sun
+  include:
+    entities: !include influxdb_conf/influxdb_include_entities.yaml
 
 lovelace:
   mode: yaml
@@ -85,21 +115,6 @@ discovery:
 
 auto_backup:
   auto_purge: true
-
-influxdb:
-  host: a0d7b954-influxdb
-  port: 8086
-  database: homeassistant
-  username: !secret influxdb_user
-  password: !secret influxdb_pass
-  max_retries: 5
-  default_measurement: state
-#  exclude:
-#    domains:
-#      - automation
-#      - sun
-  include:
-    entities: !include influxdb_conf/influxdb_include_entities.yaml
 
 xiaomi_aqara:
   discovery_retry: 30

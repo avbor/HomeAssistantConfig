@@ -17,7 +17,11 @@ cards:
         - entity: sensor.hacs
           name: "Обновления HACS:"
         - entity: sensor.hass_db_size
-          name: "Размер БД:"
+          name: "Размер БД MariaDB:"
+          icon: mdi:database
+        - entity: sensor.influxdb_database_size
+          name: "Размер БД InfluxDB:"
+          icon: mdi:database
     - type: markdown
       content: >
         ### Control:
