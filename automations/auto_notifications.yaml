@@ -41,16 +41,31 @@
       data:
         message: "_INFO:_ Home Assistant *остановлен*."
 
-- alias: 'HASS: Errors in System Log'
+- alias: 'HASS: ERRORs in System Log'
   trigger:
     platform: event
     event_type: system_log_event
     event_data:
       level: ERROR
   action:
-    service: notify.telegram_stall
-    data_template:
-      message: "_ERROR:_ {{ trigger.event.data.message }}"
+    - service: counter.increment
+      entity_id: counter.syslog_errors
+    - service: notify.telegram_stall
+      data_template:
+        message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
+
+- alias: 'HASS: WARNINGs in System Log'
+  trigger:
+    platform: event
+    event_type: system_log_event
+    event_data:
+      level: WARNING
+  action:
+    - service: counter.increment
+      entity_id: counter.syslog_warnings
+#    - service: notify.telegram_stall
+#      data_template:
+#        message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: 'HASSIO: New Version Available [notify to stall]'
   hide_entity: true

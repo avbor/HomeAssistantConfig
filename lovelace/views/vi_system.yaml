@@ -16,12 +16,22 @@ cards:
           name: "HASS.IO последняя версия:"
         - entity: sensor.hacs
           name: "Обновления HACS:"
+        - type: section
         - entity: sensor.hass_db_size
           name: "Размер БД MariaDB:"
           icon: mdi:database
         - entity: sensor.influxdb_database_size
           name: "Размер БД InfluxDB:"
           icon: mdi:database
+    - type: markdown
+      content: >
+        #### SysLog:
+    - type: entities
+      entities:
+        - entity: counter.syslog_warnings
+          name: "Warnings:"
+        - entity: counter.syslog_errors
+          name: "Errors:"
     - type: markdown
       content: >
         ### Control:

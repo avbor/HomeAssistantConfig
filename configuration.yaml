@@ -56,6 +56,10 @@ logger:
 #    homeassistant.components.http.ban: warning
 #    homeassistant.components.device_tracker: debug
 
+system_log:
+  max_entries: 50
+  fire_event: true
+
 frontend:
   javascript_version: latest
   themes: !include_dir_merge_named themes
@@ -269,7 +273,13 @@ device_tracker:
 
 telegram_bot:
   - platform: polling
+#  - platform: webhooks
     api_key: !secret telegram_bot_token
+#    trusted_networks:
+#      - 149.154.160.0/20
+#      - 91.108.4.0/22
+#      - 127.0.0.1/32
+#      - 172.16.16.253/32
     allowed_chat_ids:
       - !secret tlg_stall_id
       - !secret tlg_iborisochka_id
@@ -304,3 +314,4 @@ script: !include_dir_merge_named scripts
 input_select: !include_dir_merge_named inputs/input_select
 input_number: !include_dir_merge_named inputs/input_number
 input_datetime: !include_dir_merge_named inputs/input_datetime
+counter: !include_dir_merge_named counters
