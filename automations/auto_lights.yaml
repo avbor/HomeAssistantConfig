@@ -36,6 +36,19 @@
     data:
       entity_id: light.detskaia
 
+- alias: 'Подсветка окна в детской Вкл-Выкл'
+  initial_state: true
+  trigger: 
+    platform: event
+    event_type: xiaomi_aqara.long_click_press
+    event_data:
+      entity_id: binary_sensor.switch_158d00033efd9e
+      click_type: single
+  action:
+    service: switch.toggle
+    data:
+      entity_id: switch.plug_158d00033b702e
+
 - alias: 'Яркость света в детской'
   initial_state: true
   trigger:
@@ -67,8 +80,6 @@
 - alias: Sunrise Lighting (Nursery)
   initial_state: true
   trigger:
-#  - platform: time
-#    at: '07:15:00'
   - platform: template
     value_template: "{{ states('sensor.time') == (states('input_datetime.sunrise_in_nursery')[:5]) }}"
   condition:

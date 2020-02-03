@@ -4,7 +4,7 @@
 
 - alias: 'New Year Light - Off [Home Presence]'
   hide_entity: false
-  initial_state: true
+  initial_state: false
   trigger:
     platform: state
     entity_id: group.family_persons
@@ -24,7 +24,7 @@
 
 - alias: 'New Year Light - On [Home Presence]'
   hide_entity: false
-  initial_state: true
+  initial_state: false
   trigger:
     platform: state
     entity_id: group.family_persons
@@ -43,7 +43,7 @@
 
 - alias: 'New Year Light - Off [Scheduled]'
   hide_entity: false
-  initial_state: true
+  initial_state: false
   trigger:
     - platform: time
       at: '23:30:00'
