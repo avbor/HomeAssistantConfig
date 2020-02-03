@@ -128,6 +128,7 @@
         `-= Свет =-`
         Лампа в спальне: *{{ states('light.spalnia_stol') }}*
         Люстра в детской: *{{ states('light.detskaia') }}*
+        Подсветка окна в детской: *{{ states('light.detskaia_podsvetka_na_okne') }}*
         Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
         Люстра на кухне: *{{ states('light.kukhnia_liustra') }}*
         Свет в кладовой: *{{ states('light.sonoff_1000b6831b') }}*

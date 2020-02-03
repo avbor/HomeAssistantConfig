@@ -94,22 +94,22 @@ cards:
           ### Статус:
       - type: entities
         entities:
-          - entity: sensor.transmission_status
-            icon: mdi:download
-          - entity: sensor.plex_plexonubuntu
-            name: PlexSpy
-            icon: mdi:plex
           - entity: sensor.entrance_door_status
             name: 'Входная дверь'
             icon: mdi:door
           - entity: vacuum.xiaomi_vacuum_cleaner
             name: "Пылесос Mi Robot"
-#          - entity: sensor.boiler_status
-#            name: "Бойлер"
+          - entity: sensor.boiler_status
+            name: "Бойлер"
             icon: mdi:water-boiler
+          # Свет
+          - type: section
           - entity: binary_sensor.lamp_status_detskaia
-            name: Свет в детской
+            name: Люстра в детской
             icon: mdi:ceiling-light
+          - entity: binary_sensor.lamp_status_detskaia_okno
+            name: Подсветка окна в детской
+            icon: mdi:string-lights
           - entity: binary_sensor.lamp_status_spalnia_stol
             name: Лампа в спальне
             icon: mdi:desk-lamp
@@ -122,6 +122,8 @@ cards:
           - entity: binary_sensor.lamp_status_kladovaya
             name: Свет в Кладовой
             icon: mdi:vanity-light
+          # Кондиционеры
+          - type: section
           - entity: binary_sensor.ac_nursery_status
             name: A/C Детская
             icon: mdi:air-conditioner
@@ -131,7 +133,7 @@ cards:
           - entity: binary_sensor.ac_bedroom_status
             name: A/C Спальня
             icon: mdi:air-conditioner
-          #- type: divider
+          # Температура
           - type: section
           - entity: sensor.temperature_158d0003230618
             name: Гостинная
@@ -143,6 +145,13 @@ cards:
             name: Ванная
           - entity: sensor.temperature_158d00039e2ecb
             name: Кладовая
+          # Разное
+          - type: section
+          - entity: sensor.transmission_status
+            icon: mdi:download
+          - entity: sensor.plex_plexonubuntu
+            name: PlexSpy
+            icon: mdi:plex
 
 # --- Weather
   - type: vertical-stack

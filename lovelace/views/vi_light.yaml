@@ -16,6 +16,9 @@ cards:
           cards:
             - type: light
               entity: light.detskaia
+            - type: light
+              entity: light.detskaia_podsvetka_na_okne
+              name: Подсветка на окне
             - type: entities
               entities:
                 - entity: automation.sunrise_lighting_nursery
