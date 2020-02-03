@@ -107,9 +107,6 @@ tts:
   - platform: google_translate
     language: 'ru'
 
-updater:
-  include_used_components: true
-
 weather:
   - platform: gismeteo
     mode: daily
@@ -194,6 +191,10 @@ camera:
     username: !secret motioneye_user
     password: !secret motioneye_pass
     authentication: digest
+  - platform: generic
+    name: DafangCam-01-RTSP
+    stream_source: rtsp://172.16.16.229:8554/unicast
+    still_image_url: https://172.16.16.229/cgi-bin/currentpic.cgi
 #  - platform: generic
 #    name: Baurer Camera
 #    still_image_url: 'http://172.16.16.217/cgi/jpg/image.cgi'
@@ -204,10 +205,6 @@ camera:
 #    name: Baurer Camera
 #    input: !secret baurercamera_stream_url
 #    extra_arguments: -an
-  - platform: generic
-    name: DafangCam-01-RTSP
-    stream_source: rtsp://172.16.16.229:8554/unicast
-    still_image_url: https://172.16.16.229/cgi-bin/currentpic.cgi
 
 tplink:
   discovery: false
