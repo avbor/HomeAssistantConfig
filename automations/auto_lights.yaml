@@ -40,10 +40,10 @@
   initial_state: true
   trigger: 
     platform: event
-    event_type: xiaomi_aqara.long_click_press
+    event_type: xiaomi_aqara.click
     event_data:
       entity_id: binary_sensor.switch_158d00033efd9e
-      click_type: single
+      click_type: long_click_press
   action:
     service: switch.toggle
     data:
