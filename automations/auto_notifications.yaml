@@ -120,7 +120,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.sauresha_5555_000_111
+    entity_id: binary_sensor.sauresha_5555_000111
     to: "True"
   action:
     service: notify.telegram_stall

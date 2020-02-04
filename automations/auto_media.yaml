@@ -36,3 +36,38 @@
         {% elif is_state("input_select.output_device", "Детская (Home Mini)") %} media_player.googlehome3792
         {% endif %}
       volume_level: '{{  states.input_number.volume_radio.state  }}'
+
+- alias: 'Wakeup Radio - Childrens'
+  initial_state: true
+  trigger:
+    platform: template
+    value_template: "{{ states('sensor.time') == (states('input_datetime.wakeup_radio_in_nursery')[:5]) }}"
+  condition:
+    condition: state
+    entity_id: binary_sensor.workday_sensor
+    state: 'on'
+  action:
+    - service: media_player.volume_set
+      entity_id: media_player.googlehome3792
+      data:
+        volume_level: "0.1"
+    - service: media_player.play_media
+      data:
+        entity_id: media_player.googlehome3792
+        media_content_id: "http://ic7.101.ru:8000/a199"
+        media_content_type: music
+    - service: automation.turn_on
+      entity_id: automation.increase_volume_loop_childrens_room
+    - delay:
+        minutes: 15
+    - service: automation.turn_off
+      entity_id: automation.increase_volume_loop_childrens_room
+
+- alias: Increase volume loop - Childrens Room
+  initial_state: false
+  trigger:
+    platform: time_pattern
+    minutes: "/3"
+  action:
+    - service: script.turn_on
+      entity_id: script.googlehome3792_increase_volume

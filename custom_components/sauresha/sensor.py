@@ -1,111 +1,125 @@
-#Provides a sensor for Saures.
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.entity import Entity
-
-from homeassistant.const import (
-    CONF_EMAIL,  
-    CONF_PASSWORD
-)
+# Provides a sensor for Saures.
+import logging
+import re
+from datetime import timedelta
+from typing import List, Any, Callable
 
 import voluptuous as vol
+from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_PASSWORD
+)
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.event import track_time_interval
+from .sauresha import SauresHA
 
 from . import (
-    CONF_FLAT_ID, 
+    CONF_FLAT_ID,
     CONF_COUNTERS_SN,
-    CONF_CONTROLLERS_SN
+    CONF_CONTROLLERS_SN,
+    CONF_SCAN_INTERVAL,
+    CONF_DEBUG
 )
 
-import logging
-
 _LOGGER = logging.getLogger(__name__)
+
+SCAN_INTERVAL = timedelta(minutes=10)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_EMAIL): cv.string,
     vol.Required(CONF_PASSWORD): cv.string,
     vol.Required(CONF_FLAT_ID): cv.positive_int,
     vol.Optional(CONF_COUNTERS_SN): cv.ensure_list,
-    vol.Optional(CONF_CONTROLLERS_SN): cv.ensure_list                    
+    vol.Optional(CONF_CONTROLLERS_SN): cv.ensure_list,
+    vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL):
+        vol.All(cv.time_period, cv.positive_timedelta),
+    vol.Optional(CONF_DEBUG, default=False): cv.boolean,
 })
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+
+def setup_platform(hass, config, add_entities, discovery_info=None, scan_interval=SCAN_INTERVAL):
     """Setup the sensor platform."""
 
     from .sauresha import SauresHA
-    
+
     flat_id = config.get(CONF_FLAT_ID)
     serial_numbers = config.get(CONF_COUNTERS_SN, [])
     sns = config.get(CONF_CONTROLLERS_SN, [])
+    scan_interval = config.get(CONF_SCAN_INTERVAL)
+    is_debug: bool = config.get(CONF_DEBUG)
 
-    controller = SauresHA(
+    if is_debug:
+        _LOGGER.warning("scan_interval=" + str(scan_interval))
+
+    controller: SauresHA = SauresHA(
         config.get('email'),
-        config.get('password')
+        config.get('password'),
+        is_debug
     )
 
-    if int(flat_id)==0: 
-        flats=controller.get_flats()
-        if len(flats)==1: 
-            flat_id=str(flats[0].get('id'))
-            strHouse = str(flats[0].get('house'))
-            _LOGGER.warning("ID flat:" + strHouse + " : " + flat_id)
-        else: 
+    if int(flat_id) == 0:
+        flats = controller.get_flats()
+        if len(flats) == 1:
+            flat_id = str(flats[0].get('id'))
+            str_house = str(flats[0].get('house'))
+            _LOGGER.warning("ID flat:" + str_house + " : " + flat_id)
+        else:
             for val in flats:
                 _LOGGER.warning("ID flat:" + str(val.get('house')) + " : " + str(val.get('id')))
 
-    if int(flat_id)>0:        
-        create_sensor = lambda serial_number: SauresSensor(controller, flat_id, serial_number)
-        sensors = list(map(create_sensor, serial_numbers))
+    if int(flat_id) > 0:
+        create_sensor: Callable[[Any], SauresSensor] = lambda serial_number: SauresSensor(hass, controller, flat_id,
+                                                                                          serial_number,
+                                                                                          is_debug,
+                                                                                          scan_interval)
+        sensors: List[SauresSensor] = list(map(create_sensor, serial_numbers))
 
-        if sensors: add_entities(sensors, True)
+        if sensors:
+            add_entities(sensors, True)
 
-        create_myController = lambda sn: SauresControllerSensor(controller, flat_id, sn)
-        myControllers = list(map(create_myController, sns))
+        create_my_controller: Callable[[Any], SauresControllerSensor] = lambda sn: SauresControllerSensor(hass,
+                                                                                                          controller,
+                                                                                                          flat_id, sn,
+                                                                                                          is_debug,
+                                                                                                          scan_interval)
+        my_controllers: List[SauresControllerSensor] = list(map(create_my_controller, sns))
 
-        if myControllers: add_entities(myControllers, True)
-        
+        if my_controllers:
+            add_entities(my_controllers, True)
+
+
 class SauresSensor(Entity):
     """Representation of a Sensor."""
+    _state: str
 
-    def __init__(self, controller, flat_id, serial_number):
+    def __init__(self, hass, controller, flat_id, serial_number, is_debug, scan_interval):
         """Initialize the sensor."""
 
         self.controller = controller
         self.flat_id = flat_id
         self.serial_number = str(serial_number)
-        meter = self.current_meter
-        self._state = meter.value
+        self.isStart = True
+        self.isDebug = is_debug
         self._attributes = dict()
-        if meter.type_number==8:
-            self._attributes.update({
-                'friendly_name': meter.name,
-                'condition': meter.state,
-                'sn': meter.sn,
-                'type': meter.type,
-                'meter_id': meter.id,
-                'input': meter.input,
-                't1': meter.t1,
-                't2': meter.t2,
-                't3': meter.t3,
-                't4': meter.t4
-            })
-        else:
-               self._attributes.update({
-                'friendly_name': meter.name,
-                'condition': meter.state,
-                'sn': meter.sn,
-                'type': meter.type,
-                'meter_id': meter.id,
-                'input': meter.input,
-            })
-        if meter.type_number == 1 or meter.type_number == 2 or meter.type_number == 3:
-            self._attributes.update({
-                'unit_of_measurement': 'м³'}) 
-        elif meter.type_number == 5:
-             self._attributes.update({
-                'unit_of_measurement': '°C'})
-        elif meter.type_number == 8:
-             self._attributes.update({
-                'unit_of_measurement': 'кВт·ч'})
+        self._state = ""
+
+        self.set_scan_interval(hass, scan_interval)
+
+    def set_scan_interval(self, hass: object, scan_interval: timedelta):
+        """Update scan interval."""
+
+        def refresh(event_time):
+            """Get the latest data from Transmission."""
+            self.update()
+
+        if self.isDebug:
+            _LOGGER.warning("scan_interval=" + str(scan_interval))
+
+        track_time_interval(
+            hass, refresh, scan_interval
+        )
 
     @property
     def current_meter(self):
@@ -114,7 +128,9 @@ class SauresSensor(Entity):
     @property
     def entity_id(self):
         """Return the entity_id of the sensor."""
-        sn = self.serial_number.replace('-', '_').lower()
+        sn = self.serial_number.replace('-', '_')
+        reg = re.compile('[^a-zA-Z0-9]')
+        sn = reg.sub('', sn).lower()
         return f'sensor.sauresha_{self.flat_id}_{sn}'
 
     @property
@@ -130,70 +146,84 @@ class SauresSensor(Entity):
     def device_state_attributes(self):
         return self._attributes
 
+    def fetch_state(self):
+        """Retrieve latest state."""
+        str_return_value = "Unknown"
+
+        if self.isDebug:
+            _LOGGER.warning("Update Start")
+
+        if self.controller.re_auth:
+            meter = self.current_meter
+            str_return_value = meter.value
+            if meter.type_number == 8:
+                self._attributes.update({
+                    'friendly_name': meter.name,
+                    'condition': meter.state,
+                    'sn': meter.sn,
+                    'type': meter.type,
+                    'meter_id': meter.id,
+                    'input': meter.input,
+                    'approve_dt': meter.approve_dt,
+                    't1': meter.t1,
+                    't2': meter.t2,
+                    't3': meter.t3,
+                    't4': meter.t4
+                })
+            else:
+                self._attributes.update({
+                    'friendly_name': meter.name,
+                    'condition': meter.state,
+                    'sn': meter.sn,
+                    'type': meter.type,
+                    'meter_id': meter.id,
+                    'input': meter.input,
+                    'approve_dt': meter.approve_dt,
+                })
+            if self.isStart:
+                if meter.type_number == 1 or meter.type_number == 2 or meter.type_number == 3:
+                    self._attributes.update({
+                        'unit_of_measurement': 'м³'})
+                elif meter.type_number == 5:
+                    self._attributes.update({
+                        'unit_of_measurement': '°C'})
+                elif meter.type_number == 8:
+                    self._attributes.update({
+                        'unit_of_measurement': 'кВт·ч'})
+
+                self.isStart = False
+
+        return str_return_value
+
     def update(self):
-        """Fetch new state data for the sensor.
-        This is the only method that should fetch new data for Home Assistant.
-        """
-        meter = self.current_meter
-        if meter.type_number==8:
-            self._attributes.update({
-                'friendly_name': meter.name,
-                'condition': meter.state,
-                'sn': meter.sn,
-                'type': meter.type,
-                'meter_id': meter.id,
-                'input': meter.input,
-                't1': meter.t1,
-                't2': meter.t2,
-                't3': meter.t3,
-                't4': meter.t4
-            })
-        else:
-               self._attributes.update({
-                'friendly_name': meter.name,
-                'condition': meter.state,
-                'sn': meter.sn,
-                'type': meter.type,
-                'meter_id': meter.id,
-                'input': meter.input,
-            })
-        self._state = meter.value
+        self._state = self.fetch_state()
+
 
 class SauresControllerSensor(Entity):
     """Representation of a Sensor."""
+    _state: str
 
-    def __init__(self, controller, flat_id, serial_number):
+    def __init__(self, hass, controller, flat_id, serial_number, is_debug, scan_interval=SCAN_INTERVAL):
         """Initialize the sensor."""
-
         self.controller = controller
         self.flat_id = flat_id
         self.serial_number = str(serial_number)
-        myController = self.current_controllerInfo
-        self._state = myController.state
+        self._state = ""
+        self.isDebug = is_debug
         self._attributes = dict()
-        self._attributes.update({
-            'battery_level': myController.batery,
-            'condition': myController.state,
-            'sn': myController.sn,
-            'local_ip': myController.local_ip,
-            'last_connection': myController.last_connection,
-            'firmware':  myController.firmware,
-            'ssid':  myController.ssid,
-            'readout_dt':  myController.readout_dt,
-            'request_dt':  myController.request_dt,
-            'rssi':  myController.rssi,
-            'hardware':  myController.hardware,
-            'new_firmware':  myController.new_firmware
-        })
+
+        self.set_scan_interval(hass, scan_interval)
 
     @property
-    def current_controllerInfo(self):
+    def current_controller_info(self):
         return self.controller.get_controller(self.flat_id, self.serial_number)
 
     @property
     def entity_id(self):
         """Return the entity_id of the sensor."""
-        sn = self.serial_number.replace('-', '_').lower()
+        sn = self.serial_number.replace('-', '_')
+        reg = re.compile('[^a-zA-Z0-9]')
+        sn = reg.sub('', sn).lower()
         return f'sensor.sauresha_contr_{sn}'
 
     @property
@@ -209,23 +239,49 @@ class SauresControllerSensor(Entity):
     def device_state_attributes(self):
         return self._attributes
 
+    def set_scan_interval(self, hass: object, scan_interval: timedelta):
+        """Update scan interval."""
+
+        def refresh(event_time):
+            """Get the latest data from Transmission."""
+            self.update()
+
+        if self.isDebug:
+            _LOGGER.warning("scan_interval=" + str(scan_interval))
+
+        track_time_interval(
+            hass, refresh, scan_interval
+        )
+
+    def fetch_state(self):
+        """Retrieve latest state."""
+        str_return_value = "Unknown"
+
+        if self.controller.re_auth:
+            my_controller = self.current_controller_info
+            str_return_value = my_controller.state
+            self._attributes.update({
+                'battery_level': my_controller.battery,
+                'condition': my_controller.state,
+                'sn': my_controller.sn,
+                'local_ip': my_controller.local_ip,
+                'firmware': my_controller.firmware,
+                'ssid': my_controller.ssid,
+                'readout_dt': my_controller.readout_dt,
+                'request_dt': my_controller.request_dt,
+                'rssi': my_controller.rssi,
+                'hardware': my_controller.hardware,
+                'new_firmware': my_controller.new_firmware,
+                'last_connection': my_controller.last_connection,
+                'last_connection_warning': my_controller.last_connection_warning,
+                'check_hours': my_controller.check_hours,
+                'check_period_display': my_controller.check_period_display,
+                'requests': my_controller.requests,
+                'log': my_controller.log,
+                'cap_state': my_controller.cap_state,
+                'power_supply': my_controller.power_supply})
+
+        return str_return_value
+
     def update(self):
-        """Fetch new state data for the sensor.
-        This is the only method that should fetch new data for Home Assistant.
-        """
-        myController = self.current_controllerInfo
-        self._attributes.update({
-            'battery_level': myController.batery,
-            'condition': myController.state,
-            'sn': myController.sn,
-            'local_ip': myController.local_ip,
-            'last_connection': myController.last_connection,
-            'firmware':  myController.firmware,
-            'ssid':  myController.ssid,
-            'readout_dt':  myController.readout_dt,
-            'request_dt':  myController.request_dt,
-            'rssi':  myController.rssi,
-            'hardware':  myController.hardware,
-            'new_firmware':  myController.new_firmware
-        })
-        self._state = myController.state
+        self._state = self.fetch_state()

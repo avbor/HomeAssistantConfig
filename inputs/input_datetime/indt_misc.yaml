@@ -13,3 +13,9 @@ sunrise_in_bedroom:
   icon: mdi:alarm
   has_date: false
   has_time: true
+
+wakeup_radio_in_nursery:
+  name: Время включения радио в Детской
+  icon: mdi:alarm
+  has_date: false
+  has_time: true
