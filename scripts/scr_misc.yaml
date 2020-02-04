@@ -12,15 +12,16 @@ radio_play:
     - service: shell_command.chromecast_tv_on
       data_template:
         ip_addr: >
-          {% if is_state("input_select.output_device", "Гостинная") %} "172.16.16.211"
-          {% elif is_state("input_select.output_device", "Детская") %} "172.16.16.212"
+          {% if is_state("input_select.output_device", "Гостинная (TV)") %} "172.16.16.211"
+          {% elif is_state("input_select.output_device", "Детская (TV)") %} "172.16.16.212"
           {% endif %}
     - service: media_player.play_media
       data_template:
         entity_id: >
-          {% if is_state("input_select.output_device", "Гостинная") %} media_player.gostinaia
+          {% if is_state("input_select.output_device", "Гостинная (TV)") %} media_player.gostinaia
           {% elif is_state("input_select.output_device", "Гостинная (Home Mini)") %} media_player.googlehome9967
-          {% elif is_state("input_select.output_device", "Детская") %} media_player.detskaia
+          {% elif is_state("input_select.output_device", "Детская (TV)") %} media_player.detskaia
+          {% elif is_state("input_select.output_device", "Детская (Home Mini)") %} media_player.googlehome3792
           {% endif %}
         media_content_id: >
           {% if is_state("input_select.radio_station", "Радио Jazz") %} http://nashe1.hostingradio.ru/jazz-128.mp3
@@ -42,9 +43,10 @@ radio_stop:
     - service: media_player.turn_off
       data_template:
         entity_id: >
-          {% if is_state("input_select.output_device", "Гостинная") %} media_player.gostinaia
+          {% if is_state("input_select.output_device", "Гостинная (TV)") %} media_player.gostinaia
           {% elif is_state("input_select.output_device", "Гостинная (Home Mini)") %} media_player.googlehome9967
-          {% elif is_state("input_select.output_device", "Детская") %} media_player.detskaia
+          {% elif is_state("input_select.output_device", "Детская (TV)") %} media_player.detskaia
+          {% elif is_state("input_select.output_device", "Детская (Home Mini)") %} media_player.googlehome3792
           {% endif %}
 
 reboot_beurer_carecam_01:

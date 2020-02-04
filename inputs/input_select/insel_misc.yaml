@@ -19,8 +19,9 @@ output_device:
     name: 'Где включить:'
     options:
       - Гостинная (Home Mini)
-      - Гостинная
-      - Детская
+      - Гостинная (TV)
+      - Детская (Home Mini)
+      - Детская (TV)
     initial: Гостинная (Home Mini)
     icon: mdi:speaker-wireless
 
