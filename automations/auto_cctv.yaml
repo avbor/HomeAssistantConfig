@@ -27,3 +27,48 @@
         data:
           photo:
             - url: !secret cloudcam01_url
+
+- alias: Вход в квартиру
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.door_window_sensor_158d00031c790f
+    from: 'off'
+    to: 'on'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.motion_sensor_158d000309920a
+      state: 'off'
+  action:
+    - delay:
+        seconds: 2
+    - service: notify.telegram_stall
+      data_template:
+        message: "Camera Snapshot 1"
+        data:
+          photo:
+            - url: !secret dafangcam_02_snapshot_url
+    - delay:
+        seconds: 1
+    - service: notify.telegram_stall
+      data_template:
+        message: "Camera Snapshot 2"
+        data:
+          photo:
+            - url: !secret dafangcam_02_snapshot_url
+    - delay:
+        seconds: 2
+    - service: notify.telegram_stall
+      data_template:
+        message: "Camera Snapshot 3"
+        data:
+          photo:
+            - url: !secret dafangcam_02_snapshot_url
+    - delay:
+        seconds: 3
+    - service: notify.telegram_stall
+      data_template:
+        message: "Camera Snapshot 4"
+        data:
+          photo:
+            - url: !secret dafangcam_02_snapshot_url

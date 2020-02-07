@@ -18,9 +18,3 @@
   flat_id: !secret saures_flat_id
   counters_sn:
     - 000-111
-#  - platform: ffmpeg_motion
-#    name: Движение в детской
-#    input: rtsp://admin:@172.16.16.223:554/0/av0
-#    extra_arguments: -an
-#    changes: 10
-#    reset: 10

@@ -12,3 +12,8 @@ cards:
     entity: camera.dafangcam_01_rtsp
     camera_view: live
     show_state: false
+  - type: picture-entity
+    name: Прихожая
+    entity: camera.dafangcam_02_rtsp
+    camera_view: live
+    show_state: false

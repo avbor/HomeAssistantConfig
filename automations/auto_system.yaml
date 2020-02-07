@@ -44,3 +44,23 @@
     - service: notify.telegram_stall
       data:
         message: _INFO:_ Создан еженедельный бэкап HASSIO
+
+- alias: 'HASS: ERRORs in System Log - Counter'
+  trigger:
+    platform: event
+    event_type: system_log_event
+    event_data:
+      level: ERROR
+  action:
+    - service: counter.increment
+      entity_id: counter.syslog_errors
+
+- alias: 'HASS: WARNINGs in System Log - Counter'
+  trigger:
+    platform: event
+    event_type: system_log_event
+    event_data:
+      level: WARNING
+  action:
+    - service: counter.increment
+      entity_id: counter.syslog_warnings

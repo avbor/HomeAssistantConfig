@@ -198,8 +198,26 @@ camera:
     authentication: digest
   - platform: generic
     name: DafangCam-01-RTSP
-    stream_source: rtsp://172.16.16.229:8554/unicast
-    still_image_url: https://172.16.16.229/cgi-bin/currentpic.cgi
+    stream_source: !secret dafangcam_01_rtsp_stream_url
+    still_image_url: !secret dafangcam_01_snapshot_url
+    verify_ssl: false
+  - platform: mjpeg
+    name: DafangCam-01-MJPEG
+    mjpeg_url: !secret dafangcam_01_mjpeg_image_url
+    username: !secret dafangcam_01_username
+    password: !secret dafangcam_01_password
+    verify_ssl: false
+  - platform: generic
+    name: DafangCam-02-RTSP
+    stream_source: !secret dafangcam_02_rtsp_stream_url
+    still_image_url: !secret dafangcam_02_snapshot_url
+    verify_ssl: false
+  - platform: mjpeg
+    name: DafangCam-02-MJPEG
+    mjpeg_url: !secret dafangcam_02_mjpeg_image_url
+    username: !secret dafangcam_02_username
+    password: !secret dafangcam_02_password
+    verify_ssl: false
 #  - platform: generic
 #    name: Baurer Camera
 #    still_image_url: 'http://172.16.16.217/cgi/jpg/image.cgi'
@@ -227,20 +245,22 @@ transmission:
 
 media_player:
   - platform: plex
-  - platform: samsungtv
+  - platform: samsungtv_custom
     name: SamsungTV-UE43RU7470
     host: 172.16.16.205
-    port: 8001
+    port: 8002
     mac: 8c:79:f5:51:2f:d1
-  - platform: samsungtv
+    protocol: ctl_qled
+  - platform: samsungtv_custom
     name: SamsungTV-UE40C5100
     host: 172.16.16.206
+    port: 5601
     mac: e4:7c:f9:89:49:99
-  - platform: samsungtv
+  - platform: samsungtv_custom
     name: SamsungTV-UE32ES5500
     host: 172.16.16.207
     mac: 48:44:f7:f7:b5:fa
-  - platform: samsungtv
+  - platform: samsungtv_custom
     name: SamsungTV-UE46ES5507
     host: 172.16.16.208
     mac: 1c:5a:3e:a6:d4:a6
@@ -253,12 +273,10 @@ device_tracker:
     interval_seconds: 30
     new_device_defaults:
       track_new_devices: true
-      hide_if_away: false
 #  - platform: nmap_tracker
 #    interval_seconds: 15
 #    new_device_defaults:
 #      track_new_devices: true
-#      hide_if_away: false
 #    hosts: 172.16.16.101-200
 #    home_interval: 5
 #    scan_options: " -sP --host-timeout 1s "

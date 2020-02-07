@@ -3,7 +3,6 @@
 #################################################
 
 - alias: 'Home Presence Alert'
-  hide_entity: true
   initial_state: true
   trigger:
     platform: state
@@ -41,34 +40,31 @@
       data:
         message: "_INFO:_ Home Assistant *остановлен*."
 
-- alias: 'HASS: ERRORs in System Log'
+- alias: 'HASS: ERRORs in System Log [notify to stall]'
+  initial_state: false
   trigger:
     platform: event
     event_type: system_log_event
     event_data:
       level: ERROR
   action:
-    - service: counter.increment
-      entity_id: counter.syslog_errors
     - service: notify.telegram_stall
       data_template:
         message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
-- alias: 'HASS: WARNINGs in System Log'
+- alias: 'HASS: WARNINGs in System Log [notify to stall]'
+  initial_state: false
   trigger:
     platform: event
     event_type: system_log_event
     event_data:
       level: WARNING
   action:
-    - service: counter.increment
-      entity_id: counter.syslog_warnings
-#    - service: notify.telegram_stall
-#      data_template:
-#        message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
+    - service: notify.telegram_stall
+      data_template:
+        message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: 'HASSIO: New Version Available [notify to stall]'
-  hide_entity: true
   initial_state: true
   trigger:
     platform: template
@@ -79,7 +75,6 @@
       message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
 
 - alias: 'HACS: New Component Version Available [notify to stall]'
-  hide_entity: true
   initial_state: true
   trigger:
     platform: state
@@ -93,7 +88,6 @@
       message: "_INFO:_ Доступны новые версии установленных компонент (кол-во: {{ states('sensor.hacs') }})"
 
 - alias: Torrent Completed [notify to stall]
-  hide_entity: true
   initial_state: true
   trigger:
     platform: event
@@ -104,7 +98,6 @@
       message: "Загрузка torrent-файла завершена"
 
 - alias: Полнолуние [notify to stall]
-  hide_entity: true
   initial_state: true
   trigger:
     platform: state
@@ -116,7 +109,6 @@
       message: "Сегодня полнолуние!"
 
 - alias: Оповещение о протечке [notify to stall]
-  hide_entity: true
   initial_state: true
   trigger:
     platform: state
@@ -131,7 +123,6 @@
         Водопроводные краны перекрыты!
 
 - alias: Оповещение о протечке Aqara в Кладовой [notify to stall]
-  hide_entity: true
   initial_state: true
   trigger:
     platform: state
@@ -147,7 +138,6 @@
         Необходимо проверить наличие воды за стиральной машиной. 
 
 - alias: 'Low Battery Alert'
-  hide_entity: true
   initial_state: true
   trigger:
     platform: numeric_state

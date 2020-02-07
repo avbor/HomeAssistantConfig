@@ -230,6 +230,7 @@ cards:
             content: >
               **Бойлер:**
           - type: entities
+            state_color: true
             entities:
               - entity: switch.tplink_smartplug_01
                 name: Electrolux Centurio IQ

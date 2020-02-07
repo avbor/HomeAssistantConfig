@@ -22,7 +22,6 @@
         entity_id: group.all_chromecasts
 
 - alias: 'Громкость радио'
-  hide_entity: true
   trigger:
     platform: state
     entity_id: input_number.volume_radio

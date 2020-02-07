@@ -118,12 +118,14 @@
     entity_id: input_select.vacuum_power
   action:
     - service_template: >
-        {% if trigger.to_state.state == 'Quiet' %}
-          script.set_vacuum_power_quiet
-        {% elif trigger.to_state.state == 'Balanced' %}
-          script.set_vacuum_power_balanced
+        {% if trigger.to_state.state == 'Silent' %}
+          script.set_vacuum_power_silent
+        {% elif trigger.to_state.state == 'Standard' %}
+          script.set_vacuum_power_standard
+        {% elif trigger.to_state.state == 'Medium' %}
+          script.set_vacuum_power_medium
         {% elif trigger.to_state.state == 'Turbo' %}
           script.set_vacuum_power_turbo
-        {% elif trigger.to_state.state == 'Max' %}
-          script.set_vacuum_power_max
+        {% elif trigger.to_state.state == 'Gentle' %}
+          script.set_vacuum_power_gentle
         {% endif %}

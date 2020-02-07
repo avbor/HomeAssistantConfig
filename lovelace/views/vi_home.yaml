@@ -93,6 +93,7 @@ cards:
         content: >
           ### Статус:
       - type: entities
+        state_color: true
         entities:
           - entity: sensor.entrance_door_status
             name: 'Входная дверь'

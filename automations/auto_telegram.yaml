@@ -4,7 +4,6 @@
 
 # ---- Mirror all text messages
 - alias: 'Telegram Bot - Mirror text'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_text
@@ -16,7 +15,6 @@
         {{ trigger.event.data.text }}
 # ---- /start
 - alias: 'Telegram Bot - Start'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command
@@ -29,7 +27,6 @@
       message: 'Привет! Помощь - /help'
 # ---- /help
 - alias: 'Telegram Bot - Help'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command
@@ -47,7 +44,6 @@
         /ping - Проверить доступность сервиса HASS
 # ---- /ping
 - alias: 'Telegram Bot - Ping'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command
@@ -64,7 +60,6 @@
         Uptime: {{ states('sensor.uptime') }} {{ state_attr('sensor.uptime','unit_of_measurement') }}
 # ---- /whoishome
 - alias: 'Telegram Bot - Who is home?'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command
@@ -81,7 +76,6 @@
         {% if is_state("group.family_persons", "not_home") %}Никого нет{% endif %}
 # ---- /weather
 - alias: 'Telegram Bot - Weather'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command
@@ -102,7 +96,6 @@
           Давление {{ state_attr('weather.gismeteo', 'pressure') }} hPa ({{ states('sensor.gismeteo_pressure_mmhg') }} mmHg)
 # ---- /status
 - alias: 'Telegram Bot - Status'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command

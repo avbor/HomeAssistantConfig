@@ -115,10 +115,10 @@ class SauresBinarySensor(Entity):
 
     def fetch_state(self):
         """Retrieve latest state."""
-        str_return_value = "Unknown"
+        return_value = False
         if self.controller.re_auth:
             meter = self.current_meter
-            str_return_value = meter.value
+            return_value = meter.value
             self._attributes.update({
                 'friendly_name': meter.name,
                 'condition': meter.state,
@@ -127,7 +127,9 @@ class SauresBinarySensor(Entity):
                 'meter_id': meter.id,
                 'input': meter.input
             })
-        return str_return_value
+        else:
+            _LOGGER.error("API ERROR during fetch state process")
+        return return_value
 
     def update(self):
         self._state = self.fetch_state()

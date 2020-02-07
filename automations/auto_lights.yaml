@@ -159,7 +159,6 @@
     entity_id: light.kukhnia_lenta
 
 #- alias: 'Вкл-Выкл включения подсветки от сенсора движения'
-#  hide_entity: true
 #  initial_state: true
 #  trigger:
 #    platform: event

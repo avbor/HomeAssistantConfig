@@ -40,7 +40,7 @@ start_vacuum_hallway_by_door_sensor:
     - service: vacuum.set_fan_speed
       data:
         entity_id: vacuum.xiaomi_vacuum_cleaner
-        fan_speed: Balanced
+        fan_speed: Standard
     - service: script.turn_on
       data:
         entity_id: script.start_vacuum_hallway
@@ -90,19 +90,26 @@ start_vacuum_bedroom:
         command: app_segment_clean
         params: [20]
 
-set_vacuum_power_quiet:
+set_vacuum_power_silent:
   sequence:
     service: vacuum.set_fan_speed
     data:
       entity_id: vacuum.xiaomi_vacuum_cleaner
-      fan_speed: Quiet
+      fan_speed: Silent
 
-set_vacuum_power_balanced:
+set_vacuum_power_standard:
   sequence:
     service: vacuum.set_fan_speed
     data:
       entity_id: vacuum.xiaomi_vacuum_cleaner
-      fan_speed: Balanced
+      fan_speed: Standard
+
+set_vacuum_power_medium:
+  sequence:
+    service: vacuum.set_fan_speed
+    data:
+      entity_id: vacuum.xiaomi_vacuum_cleaner
+      fan_speed: Medium
 
 set_vacuum_power_turbo:
   sequence:
@@ -111,9 +118,9 @@ set_vacuum_power_turbo:
       entity_id: vacuum.xiaomi_vacuum_cleaner
       fan_speed: Turbo
 
-set_vacuum_power_max:
+set_vacuum_power_gentle:
   sequence:
     service: vacuum.set_fan_speed
     data:
       entity_id: vacuum.xiaomi_vacuum_cleaner
-      fan_speed: Max
+      fan_speed: Gentle

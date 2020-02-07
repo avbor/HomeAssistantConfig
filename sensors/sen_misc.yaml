@@ -23,14 +23,6 @@
         database: _internal
         where: 'time > now() - 10s'
         field: diskBytes
-#- platform: saures
-#  email: !secret saures_user
-#  password: !secret saures_pass
-#  flat_id: !secret saures_flat_id
-#  serial_numbers: 
-#    - "13193152"
-#    - 09-104476
-#    - 000-111
 - platform: sauresha
   email: !secret saures_user
   password: !secret saures_pass
@@ -38,7 +30,6 @@
   counters_sn: 
       - "13193152"
       - 09-104476
-#      - 000-111
   controllers_sn: 
       - "1113513"
 - platform: plex

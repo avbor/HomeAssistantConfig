@@ -39,11 +39,12 @@ room_to_vacuum:
 vacuum_power:
   name: 'Выбор режима:'
   options:
-    - Quiet
-    - Balanced
+    - Silent
+    - Standard
+    - Medium
     - Turbo
-    - Max
-  initial: Balanced
+    - Gentle
+  initial: Standard
   icon: mdi:speedometer
 
 smartmi_humidifier_01_speed:

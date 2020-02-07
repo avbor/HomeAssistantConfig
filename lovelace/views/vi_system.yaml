@@ -65,6 +65,11 @@ cards:
           ### Automations on\off:
       - type: entities
         entities:
+          - entity: automation.hass_warnings_in_system_log_notify_to_stall
+            name: Warnings в Telegram
+          - entity: automation.hass_errors_in_system_log_notify_to_stall
+            name: Errors в Telegram 
+          - type: section
           - entity: automation.poweroff_all_media_when_nobody_at_home
             name: Выключать ТВ когда никого нет дома
           - entity: automation.kids_must_sleep_at_night
