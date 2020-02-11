@@ -26,6 +26,9 @@ cards:
                   icon: mdi:weather-sunset-up
                 - entity: input_datetime.sunrise_in_nursery
                   name: "Время включения:"
+                - entity: automation.wakeup_radio_childrens
+                  name: "Включать радио в Детской (рабочие дни):"
+                  icon: mdi:radio
                 - entity: input_datetime.wakeup_radio_in_nursery
                   name: "Время включения радио:"
   - type: vertical-stack
