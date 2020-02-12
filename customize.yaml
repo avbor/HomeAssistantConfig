@@ -58,6 +58,8 @@ sensor.illumination_158d000309920a:
   friendly_name: Датчик света - Прихожая
 sensor.illumination_158d00044cea8e:
   friendly_name: Датчик света - Детская
+sensor.illumination_158d0003fac0ec:
+  friendly_name: Датчик света - Кухня
 binary_sensor.motion_sensor_158d000309920a:
   friendly_name: Датчик движения в Прихожей (Aqara)
 binary_sensor.motion_sensor_158d00044cea8e:
