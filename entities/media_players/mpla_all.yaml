@@ -1,0 +1,24 @@
+#################################################
+# Media Players, TV...
+#################################################
+
+- platform: plex
+- platform: samsungtv_custom
+  name: SamsungTV-UE43RU7470
+  host: 172.16.16.205
+  port: 8002
+  mac: 8c:79:f5:51:2f:d1
+  protocol: ctl_qled
+- platform: samsungtv_custom
+  name: SamsungTV-UE40C5100
+  host: 172.16.16.206
+  port: 5601
+  mac: e4:7c:f9:89:49:99
+- platform: samsungtv_custom
+  name: SamsungTV-UE32ES5500
+  host: 172.16.16.207
+  mac: 48:44:f7:f7:b5:fa
+- platform: samsungtv_custom
+  name: SamsungTV-UE46ES5507
+  host: 172.16.16.208
+  mac: 1c:5a:3e:a6:d4:a6

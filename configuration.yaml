@@ -126,39 +126,6 @@ xiaomi_aqara:
       host: 172.16.16.215
       key: !secret xiaomi_aqara_key
 
-yeelight:
-  devices:
-    172.16.16.202:
-      name: Спальня - Стол
-    172.16.16.222:
-      name: Детская
-    172.16.16.214:
-      name: Кухня - Лента
-    172.16.16.203:
-      name: Кухня - Люстра
-  custom_effects:
-  - name: 'Sunrise'
-    flow_params:
-      count: 1
-      action: stay
-      transitions:
-        - RGBTransition: [255, 77, 0, 50, 1] # [red, green, blue, duration, brightness]
-        - TemperatureTransition: [1700, 180000, 10] # [temp, duration, brightness] 180000ms
-        - TemperatureTransition: [2500, 180000, 11]
-        - TemperatureTransition: [3000, 180000, 12]
-        - TemperatureTransition: [3500, 180000, 13]
-        - TemperatureTransition: [3900, 180000, 100]
-  - name: 'SunriseBW'
-    flow_params:
-      count: 1
-      action: stay
-      transitions:
-        - TemperatureTransition: [1700, 180000, 10] # [temp, duration, brightness] 180000ms
-        - TemperatureTransition: [2500, 180000, 11]
-        - TemperatureTransition: [3000, 180000, 12]
-        - TemperatureTransition: [3500, 180000, 13]
-        - TemperatureTransition: [3900, 180000, 100]
-
 light:
   - platform: switch
     name: Детская - подсветка на окне
@@ -189,46 +156,6 @@ sonoff:
       devicekey: 87c5267d-054f-4a71-8c51-49d027b80d71
       device_class: light
 
-camera:
-  - platform: mjpeg
-    name: CloudCam01
-    mjpeg_url: 'http://a0d7b954-motioneye:8081'
-    username: !secret motioneye_user
-    password: !secret motioneye_pass
-    authentication: digest
-  - platform: generic
-    name: DafangCam-01-RTSP
-    stream_source: !secret dafangcam_01_rtsp_stream_url
-    still_image_url: !secret dafangcam_01_snapshot_url
-    verify_ssl: false
-  - platform: mjpeg
-    name: DafangCam-01-MJPEG
-    mjpeg_url: !secret dafangcam_01_mjpeg_image_url
-    username: !secret dafangcam_01_username
-    password: !secret dafangcam_01_password
-    verify_ssl: false
-  - platform: generic
-    name: DafangCam-02-RTSP
-    stream_source: !secret dafangcam_02_rtsp_stream_url
-    still_image_url: !secret dafangcam_02_snapshot_url
-    verify_ssl: false
-  - platform: mjpeg
-    name: DafangCam-02-MJPEG
-    mjpeg_url: !secret dafangcam_02_mjpeg_image_url
-    username: !secret dafangcam_02_username
-    password: !secret dafangcam_02_password
-    verify_ssl: false
-#  - platform: generic
-#    name: Baurer Camera
-#    still_image_url: 'http://172.16.16.217/cgi/jpg/image.cgi'
-#    stream_source: !secret baurercamera_stream_url
-#    verify_ssl: false
-#    framerate: 30
-#  - platform: ffmpeg
-#    name: Baurer Camera
-#    input: !secret baurercamera_stream_url
-#    extra_arguments: -an
-
 tplink:
   discovery: false
   switch:
@@ -242,54 +169,6 @@ transmission:
 #  host: home.intra
 #  username: !secret zbx_user
 #  password: !secret zbx_pass
-
-media_player:
-  - platform: plex
-  - platform: samsungtv_custom
-    name: SamsungTV-UE43RU7470
-    host: 172.16.16.205
-    port: 8002
-    mac: 8c:79:f5:51:2f:d1
-    protocol: ctl_qled
-  - platform: samsungtv_custom
-    name: SamsungTV-UE40C5100
-    host: 172.16.16.206
-    port: 5601
-    mac: e4:7c:f9:89:49:99
-  - platform: samsungtv_custom
-    name: SamsungTV-UE32ES5500
-    host: 172.16.16.207
-    mac: 48:44:f7:f7:b5:fa
-  - platform: samsungtv_custom
-    name: SamsungTV-UE46ES5507
-    host: 172.16.16.208
-    mac: 1c:5a:3e:a6:d4:a6
-
-device_tracker:
-  - platform: keenetic_ndms2
-    host: 172.16.16.254
-    username: !secret keen_user
-    password: !secret keen_passwd
-    interval_seconds: 30
-    new_device_defaults:
-      track_new_devices: true
-#  - platform: nmap_tracker
-#    interval_seconds: 15
-#    new_device_defaults:
-#      track_new_devices: true
-#    hosts: 172.16.16.101-200
-#    home_interval: 5
-#    scan_options: " -sP --host-timeout 1s "
-#  - platform: google_maps
-#    interval_seconds: 60
-#    username: !secret google_maps_username
-
-#asuswrt:
-#  host: 172.16.16.252
-#  username: !secret asuswrt_user
-#  password: !secret asuswrt_pass
-#  mode: ap
-#  require_ip: false
 
 telegram_bot:
   - platform: webhooks # or "polling"
@@ -310,25 +189,20 @@ notify:
     chat_id: !secret tlg_iborisochka_id
 
 #################################################
-# Shell commands
-#################################################
-
-shell_command:
-  chromecast_tv_on: "curl -X POST -H \"Content-Type: application/json\" -H \"Host: {{ ip_addr }}:8008\" -d '{\"use_channel\":true,\"allow_restart\":true,\"allow_empty_post_data\":true,\"app_id\":\"00000000-0000-0000-0000-000000000000\",\"url\":\"chrome://home?remote_url=https%3A%2F%2Fclients3.google.com%2Fcast%2Fchromecast%2Fhome%3Fchs%3D1\",\"dial_enabled\":true}' http://{{ ip_addr }}:8008/apps/00000000-0000-0000-0000-000000000000"
-  reboot_beurer_carecam: "curl -X GET \"http://{{ ip_addr }}/?action=command&command=restart_system\""
-  delete_file_by_path: "rm -f \"{{ file_path }}\""
-  delete_all_cam_snapshots: "rm -f /config/www/cam_snapshots/*.jpg"
-
-#################################################
 # Inclusions
 #################################################
 
 group: !include groups.yaml
-sensor: !include_dir_merge_list sensors
-binary_sensor: !include_dir_merge_list binary_sensors
 automation: !include_dir_merge_list automations
 script: !include_dir_merge_named scripts
-input_select: !include_dir_merge_named inputs/input_select
-input_number: !include_dir_merge_named inputs/input_number
-input_datetime: !include_dir_merge_named inputs/input_datetime
-counter: !include_dir_merge_named counters
+camera: !include_dir_merge_list entities/cameras
+counter: !include_dir_merge_named entities/counters
+device_tracker: !include_dir_merge_list entities/device_trackers
+sensor: !include_dir_merge_list entities/sensors
+binary_sensor: !include_dir_merge_list entities/binary_sensors
+media_player: !include_dir_merge_list entities/media_players
+input_select: !include_dir_merge_named entities/input_select
+input_number: !include_dir_merge_named entities/input_number
+input_datetime: !include_dir_merge_named entities/input_datetime
+shell_command: !include_dir_merge_named entities/shell_commands/shcom_all.yaml
+yeelight: !include entities/yeelight/yeelight.yaml

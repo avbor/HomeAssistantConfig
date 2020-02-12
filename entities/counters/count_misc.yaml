@@ -1,0 +1,17 @@
+#################################################
+# Miscellaneous counters
+#################################################
+
+syslog_errors:
+  name: "Errors in SysLog since start"
+  initial: 0
+  step: 1
+  restore: false
+  icon: mdi:alert
+
+syslog_warnings:
+  name: "Warnings in SysLog since start"
+  initial: 0
+  step: 1
+  restore: false
+  icon: mdi:alert-outline

@@ -1,0 +1,21 @@
+#################################################
+# Devica Trackers
+#################################################
+
+- platform: keenetic_ndms2
+  host: 172.16.16.254
+  username: !secret keen_user
+  password: !secret keen_passwd
+  interval_seconds: 30
+  new_device_defaults:
+    track_new_devices: true
+#- platform: nmap_tracker
+#  interval_seconds: 15
+#  new_device_defaults:
+#    track_new_devices: true
+#  hosts: 172.16.16.101-200
+#  home_interval: 5
+#  scan_options: " -sP --host-timeout 1s "
+#- platform: google_maps
+#  interval_seconds: 60
+#  username: !secret google_maps_username

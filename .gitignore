@@ -10,17 +10,22 @@
 !*.yaml
 !*.sh
 !automations/
-!binary_sensors/
 !custom_components/
 !custom_components/*
 !custom_components/**
+!entities/
+!entities/*
+!entities/**
 !influxdb_conf/
-!inputs/
-!inputs/*
 !lovelace/
 !lovelace/*
 !scripts/
-!sensors/
+!themes/
+!themes/*
+!themes/**
+!www/
+!www/weather_icons/
+!www/weather_icons/*
 #################################
 # Don't include this
 #################################
