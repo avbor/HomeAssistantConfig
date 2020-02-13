@@ -53,6 +53,7 @@ cards:
           icon_height: 64px
           tap_action:
             action: call-service
+            confirmation: true
             service: script.turn_on
             service_data:
               entity_id: script.hass_restart
