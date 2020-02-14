@@ -29,6 +29,24 @@
           photo:
             - url: !secret dafangcam_03_snapshot_url
 
+- alias: 'Вкл контроль движения в детской'
+  initial_state: true
+  trigger:
+    platform: time
+    at: "23:30:00"
+  action:
+    - service: automation.turn_on
+      entity_id: automation.dvizhenie_v_detskoi
+
+- alias: 'Выкл контроль движения в детской'
+  initial_state: true
+  trigger:
+    platform: time
+    at: "7:30:00"
+  action:
+    - service: automation.turn_off
+      entity_id: automation.dvizhenie_v_detskoi
+
 - alias: Вход в квартиру
   initial_state: true
   trigger:
