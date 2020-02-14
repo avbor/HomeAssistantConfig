@@ -44,9 +44,7 @@ cards:
         ### Chromecasts:
     - type: conditional
       conditions:
-        - entity: media_player.samsungtv_ue46es5507
-          state_not: "on"
-        - entity: media_player.samsungtv_ue40c5100
+        - entity: group.all_chromecasts
           state_not: "on"
       card:
         type: markdown
@@ -54,15 +52,15 @@ cards:
           *Нет включенных устройств...*
     - type: conditional
       conditions:
-        - entity: media_player.samsungtv_ue46es5507
-          state_not: "unknown"
+        - entity: media_player.gostinaia
+          state_not: "off"
       card:
         type: media-control
         entity: media_player.gostinaia
     - type: conditional
       conditions:
-        - entity: media_player.samsungtv_ue40c5100
-          state_not: "unknown"
+        - entity: media_player.detskaia
+          state_not: "off"
       card:
         type: media-control
         entity: media_player.detskaia
