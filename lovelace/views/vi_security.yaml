@@ -4,7 +4,7 @@ icon: mdi:cctv
 cards:
   - type: picture-entity
     name: Детская
-    entity: camera.cloudcam01
+    entity: camera.dafangcam_03_rtsp
     camera_view: live
     show_state: false
   - type: picture-entity

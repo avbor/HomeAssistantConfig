@@ -18,7 +18,8 @@
         message: "Camera Snapshot 1"
         data:
           photo:
-            - url: !secret cloudcam01_url
+#            - url: !secret cloudcam01_url
+            - url: !secret dafangcam_03_snapshot_url
     - delay:
         seconds: 1
     - service: notify.telegram_stall
@@ -26,7 +27,7 @@
         message: "Camera Snapshot 2"
         data:
           photo:
-            - url: !secret cloudcam01_url
+            - url: !secret dafangcam_03_snapshot_url
 
 - alias: Вход в квартиру
   initial_state: true

@@ -7,6 +7,7 @@ homeassistant:
     - type: homeassistant
     - type: trusted_networks
       trusted_networks:
+        - 127.0.0.1
         - 172.16.16.0/24
       trusted_users:
         172.16.16.0/24: 5eb99a825ace48779fad323aac28014d
@@ -44,7 +45,9 @@ history:
 http:
   base_url: !secret external_url
   use_x_forwarded_for: true
-  trusted_proxies: 127.0.0.1
+  trusted_proxies: 
+    - 127.0.0.1
+    - 172.16.16.253
   ip_ban_enabled: true
   login_attempts_threshold: 3
 
