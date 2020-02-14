@@ -28,6 +28,14 @@
         data:
           photo:
             - url: !secret dafangcam_03_snapshot_url
+    - delay:
+        seconds: 1
+    - service: notify.telegram_stall
+      data:
+        message: "Camera Snapshot 3"
+        data:
+          photo:
+            - url: !secret dafangcam_03_snapshot_url
 
 - alias: 'Вкл контроль движения в детской'
   initial_state: true
