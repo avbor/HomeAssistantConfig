@@ -2,18 +2,33 @@ title: Security
 id: security
 icon: mdi:cctv
 cards:
-  - type: picture-entity
-    name: Детская
-    entity: camera.dafangcam_03_rtsp
-    #camera_view: live
-    show_state: false
-  - type: picture-entity
-    name: Гостиная
-    entity: camera.dafangcam_01_rtsp
-    #camera_view: live
-    show_state: false
-  - type: picture-entity
-    name: Прихожая
-    entity: camera.dafangcam_02_rtsp
-    #camera_view: live
-    show_state: false
+  - type: picture-glance
+    title: Детская
+    entities:
+      - light.detskaia
+    camera_image: camera.dafangcam_03_rtsp
+  - type: picture-glance
+    title: Гостиная
+    entities: []
+    camera_image: camera.dafangcam_01_rtsp
+  - type: picture-glance
+    title: Прихожая
+    entities:
+      - binary_sensor.motion_sensor_158d000309920a
+    camera_image: camera.dafangcam_02_rtsp
+#    camera_view: live
+#  - type: picture-entity
+#    name: Детская
+#    entity: camera.dafangcam_03_rtsp
+#    #camera_view: live
+#    show_state: false
+#  - type: picture-entity
+#    name: Гостиная
+#    entity: camera.dafangcam_01_rtsp
+#    #camera_view: live
+#    show_state: false
+#  - type: picture-entity
+#    name: Прихожая
+#    entity: camera.dafangcam_02_rtsp
+#    #camera_view: live
+#    show_state: false
