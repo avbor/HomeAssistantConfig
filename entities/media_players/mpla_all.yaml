@@ -3,12 +3,13 @@
 #################################################
 
 - platform: plex
-- platform: samsungtv_custom
+- platform: samsungtv_tizen
   name: SamsungTV-UE43RU7470
   host: 172.16.16.205
   port: 8002
   mac: 8c:79:f5:51:2f:d1
-  protocol: ctl_qled
+  api_key: !secret smartthings_token
+  device_id: !secret smartthings_ue43ru7470_id
 - platform: samsungtv_custom
   name: SamsungTV-UE40C5100
   host: 172.16.16.206
