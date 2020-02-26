@@ -1,0 +1,10 @@
+#################################################
+# Switches
+#################################################
+
+- platform: wake_on_lan
+  name: SamsungTV-UE43RU7470-WOL
+  mac: 8c:79:f5:51:2f:d1
+  turn_off:
+    service: switch.turn_off
+    entity_id: switch.samsung_7_series_43
