@@ -110,13 +110,15 @@ cards:
             service: switch.turn_off
             service_data:
               entity_id: switch.samsung_7_series_43
-#    - type: conditional
-#      conditions:
-#        - entity: media_player.samsungtv_ue43ru7470
-#          state_not: "off"
-#        - entity: media_player.samsungtv_ue43ru7470
-#          state_not: "unavailable"
-#      card:
+    - type: conditional
+      conditions:
+        - entity: media_player.samsungtv_ue43ru7470
+          state_not: "off"
+        - entity: media_player.samsungtv_ue43ru7470
+          state_not: "unavailable"
+      card:
+        type: media-control
+        entity: media_player.samsungtv_ue43ru7470
 #        type: vertical-stack
 #        cards:
 #          - type: entities
