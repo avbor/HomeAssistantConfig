@@ -3,9 +3,14 @@ import requests
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 import json
 import os
+from homeassistant.const import (
+    STATE_OFF,
+    STATE_ON,
+)
 API_BASEURL = "https://api.smartthings.com/v1"
 API_DEVICES = API_BASEURL + "/devices/"
 COMMAND_POWER_OFF = "{'commands': [{'component': 'main','capability': 'switch','command': 'off'}]}"
+COMMAND_POWER_ON = "{'commands': [{'component': 'main','capability': 'switch','command': 'on'}]}"
 COMMAND_REFRESH = "{'commands':[{'component': 'main','capability': 'refresh','command': 'refresh'}]}"
 COMMAND_PAUSE = "{'commands':[{'component': 'main','capability': 'mediaPlayback','command': 'pause'}]}"
 COMMAND_MUTE = "{'commands':[{'component': 'main','capability': 'audioMute','command': 'mute'}]}"
@@ -18,11 +23,9 @@ COMMAND_FAST_FORWARD = "{'commands':[{'component': 'main','capability': 'mediaPl
 class smartthingstv:
 
   def __init__(self):
-      self._cloud_state = "off"
+      self._cloud_state = "Off"
       self._cloud_muted = False
       self._cloud_volume = 10
-  def __exit__(self, type, value, traceback):
-      self.close()
 
 
   def device_update(self):
@@ -44,6 +47,10 @@ class smartthingstv:
       device_tv_chan_name = data['main']['tvChannelName']['value']
       device_muted = data['main']['mute']['value'] 
       self._cloud_state = device_state
+      if device_state == "off":
+         self._cloud_state = STATE_OFF
+      else:
+         self._cloud_state = STATE_ON
       self._cloud_volume = device_volume
       self._cloud_source_list = device_all_sources
       if device_muted == "mute":
@@ -79,8 +86,10 @@ class smartthingstv:
             cmdurl = requests.post(API_COMMAND,data=COMMAND_MUTE ,headers=REQUEST_HEADERS)
          else:
             cmdurl = requests.post(API_COMMAND,data=COMMAND_UNMUTE ,headers=REQUEST_HEADERS)
-      elif cmdtype == "switch": # turns off
+      elif cmdtype == "turn_off": # turns off
          cmdurl = requests.post(API_COMMAND,data=COMMAND_POWER_OFF ,headers=REQUEST_HEADERS)
+      elif cmdtype == "turn_on": # turns on
+         cmdurl = requests.post(API_COMMAND,data=COMMAND_POWER_ON ,headers=REQUEST_HEADERS)
       elif cmdtype == "selectsource": #changes source
          API_COMMAND_DATA =  "{'commands':[{'component': 'main','capability': 'mediaInputSource','command': 'setInputSource', 'arguments': "
          API_COMMAND_ARG  = "['{}']}}]}}".format(command)
