@@ -565,7 +565,22 @@ class SamsungTVDevice(MediaPlayerDevice):
                 _LOGGER.error('Media ID must be a string (ex: "KEY_HOME"')
                 return
 
-            await self.hass.async_add_job(self.send_command, media_id)
+            source_key = media_id
+
+            if source_key.startswith("ST_"):
+                if source_key.startswith("ST_HDMI"):
+                    smartthings.send_command(self, source_key.replace("ST_", ""), "selectsource")
+                elif source_key == "ST_TV":
+                    smartthings.send_command(self, "digitalTv", "selectsource")
+            elif "+" in source_key:
+                all_source_keys = source_key.split("+")
+                for this_key in all_source_keys:
+                    if this_key.isdigit():
+                        time.sleep(int(this_key)/1000)
+                    else:
+                        await self.hass.async_add_job(self.send_command, this_key)
+            else:
+                await self.hass.async_add_job(self.send_command, source_key)
 
         # Play media
         elif media_type == MEDIA_TYPE_URL:
