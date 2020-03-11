@@ -70,6 +70,7 @@ CONF_APP_LIST = "app_list"
 
 KNOWN_DEVICES_KEY = "samsungtv_known_devices"
 MEDIA_TYPE_KEY = "send_key"
+MEDIA_TYPE_BROWSER = "browser"
 KEY_PRESS_TIMEOUT = 0.5
 UPDATE_PING_TIMEOUT = 1
 MIN_TIME_BETWEEN_FORCED_SCANS = timedelta(seconds=1)
@@ -179,6 +180,7 @@ class SamsungTVDevice(MediaPlayerDevice):
         self._broadcast = broadcast
         self._source = None
         self._source_list = json.loads(source_list)
+        self._running_app = None
         self._app_list = json.loads(app_list) if app_list is not None else None
         self._uuid = uuid
         self._is_ws_connection = True if port in (8001, 8002) else False
@@ -237,12 +239,10 @@ class SamsungTVDevice(MediaPlayerDevice):
 
             if hasattr(self, '_cloud_state'):
 
-                if self._cloud_state == 'off':
-                    self._state = STATE_OFF
-                else:
-                    self._state = STATE_ON
+                self._state = self._cloud_state
 
             else:
+
                 self._state = STATE_OFF
 
         elif self._is_ws_connection and self._update_method == "ping":
@@ -267,6 +267,11 @@ class SamsungTVDevice(MediaPlayerDevice):
     def _get_running_app(self):
 
         if self._app_list is not None:
+
+            if hasattr(self, '_cloud_state') and self._cloud_channel_name != "":
+                for attr, value in self._app_list.items():
+                    if value == self._cloud_channel_name:
+                        return attr
 
             for app in self._app_list:
 
@@ -307,6 +312,38 @@ class SamsungTVDevice(MediaPlayerDevice):
         self._app_list = clean_app_list
         _LOGGER.debug("Gen installed app_list %s", clean_app_list)
 
+    def _get_source(self):
+        if self._state != STATE_OFF:
+            if hasattr(self, '_cloud_state'):
+                if self._cloud_state == STATE_OFF:
+                    self._source = None
+                else:
+                    if self._running_app == "TV/HDMI":
+
+                        cloud_key = ""
+                        if self._cloud_source in ["digitalTv", "TV"]:
+                            cloud_key = "ST_TV"
+                        else:
+                            cloud_key = "ST_" + self._cloud_source
+
+                        found_source = ""
+
+                        for attr, value in self._source_list.items():
+                            if value == cloud_key:
+                                found_source = attr
+                        
+                        if found_source != "":
+                            self._source = found_source
+                        else:
+                            self._source = self._running_app
+                    else:
+                        self._source = self._running_app
+            else:
+                self._source = self._running_app
+        else:
+            self._source = None
+        return self._source
+
     @util.Throttle(MIN_TIME_BETWEEN_SCANS, MIN_TIME_BETWEEN_FORCED_SCANS)
     def update(self):
         """Update state of device."""
@@ -318,6 +355,9 @@ class SamsungTVDevice(MediaPlayerDevice):
             """Still required to get source and media title"""
             if self._api_key and self._device_id:
                 smartthings.device_update(self)
+
+        if self._state == STATE_ON:
+            self._running_app = self._get_running_app()
 
     def send_command(self, payload, command_type = "send_key", retry_count = 1, key_press_delay=None):
         """Send a key to the tv and handles exceptions."""
@@ -375,7 +415,7 @@ class SamsungTVDevice(MediaPlayerDevice):
             if self._cloud_state == STATE_OFF:
                 self._state = STATE_OFF
                 return None
-            elif self._cloud_source in ["digitalTv", "TV"]:
+            elif self._running_app == "TV/HDMI" and self._cloud_source in ["digitalTv", "TV"]:
                 if self._cloud_channel_name != "" and self._cloud_channel != "":
                     if self._show_channel_number:
                         return self._cloud_channel_name + " (" + self._cloud_channel + ")"
@@ -386,7 +426,7 @@ class SamsungTVDevice(MediaPlayerDevice):
                 elif self._cloud_channel != "":
                     return self._cloud_channel
 
-        return self._source
+        return self._get_source()
 
     @property
     def state(self):
@@ -420,37 +460,7 @@ class SamsungTVDevice(MediaPlayerDevice):
     @property
     def source(self):
         """Return the current input source."""
-        if self._state != STATE_OFF:
-            if self._api_key and self._device_id and hasattr(self, '_cloud_state'):
-                if self._cloud_state == STATE_OFF:
-                    self._source = None
-                else:
-                    running_app = self._get_running_app()
-                    if running_app == "TV/HDMI":
-
-                        cloud_key = ""
-                        if self._cloud_source in ["digitalTv", "TV"]:
-                            cloud_key = "ST_TV"
-                        else:
-                            cloud_key = "ST_" + self._cloud_source
-
-                        found_source = ""
-
-                        for attr, value in self._source_list.items():
-                            if value == cloud_key:
-                                found_source = attr
-                        
-                        if found_source != "":
-                            self._source = found_source
-                        else:
-                            self._source = running_app
-                    else:
-                        self._source = running_app
-            else:
-                self._source = self._get_running_app()
-        else:
-            self._source = None
-        return self._source
+        return self._get_source()
     
     @property
     def supported_features(self):
@@ -597,6 +607,9 @@ class SamsungTVDevice(MediaPlayerDevice):
         elif media_type == "application/vnd.apple.mpegurl":
             self._upnp.set_current_media(media_id)
             self._playing = True
+
+        elif media_type == MEDIA_TYPE_BROWSER:
+            self._ws.open_browser(media_id)
 
         else:
             _LOGGER.error("Unsupported media type")

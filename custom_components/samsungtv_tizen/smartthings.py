@@ -23,7 +23,7 @@ COMMAND_FAST_FORWARD = "{'commands':[{'component': 'main','capability': 'mediaPl
 class smartthingstv:
 
   def __init__(self):
-      self._cloud_state = "Off"
+      self._cloud_state = STATE_OFF
       self._cloud_muted = False
       self._cloud_volume = 10
 
