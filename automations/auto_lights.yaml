@@ -88,9 +88,12 @@
     - condition: state
       entity_id: binary_sensor.workday_sensor
       state: 'on'
-    - condition: state
-      entity_id: sun.sun
-      state: 'below_horizon'
+    - condition: sun
+      before: sunrise
+      before_offset: "01:30:00"
+#    - condition: state
+#      entity_id: sun.sun
+#      state: 'below_horizon'
   action:
   - service: light.turn_on
     entity_id: light.detskaia
@@ -218,9 +221,12 @@
     - condition: state
       entity_id: binary_sensor.workday_sensor
       state: 'on'
-    - condition: state
-      entity_id: sun.sun
-      state: 'below_horizon'
+    - condition: sun
+      before: sunrise
+      before_offset: "01:30:00"
+#    - condition: state
+#      entity_id: sun.sun
+#      state: 'below_horizon'
   action:
   - service: light.turn_on
     entity_id: light.spalnia_stol
