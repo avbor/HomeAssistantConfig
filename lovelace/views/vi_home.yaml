@@ -4,13 +4,44 @@ icon: 'hass:home-assistant'
 #    badges:
 # Настройка карточек:
 cards:
-# --- Сейчас дома
   - type: vertical-stack
     cards:
       - type: entities
         entities:
           - sensor.date
           - sensor.time
+    # --- COVID-19
+      - type: markdown
+        content: >
+          ### COVID-19:
+      - type: horizontal-stack
+        cards:
+        - type: sensor
+          entity: sensor.worldwide_coronavirus_confirmed
+          name: Всего в мире
+          icon: mdi:earth
+          unit: чел.
+          graph: line
+        - type: sensor
+          entity: sensor.russia_coronavirus_confirmed
+          name: Всего в России
+          icon: mdi:flag
+          unit: чел.
+          graph: line
+      - type: horizontal-stack
+        cards:
+        - type: sensor
+          entity: sensor.worldwide_coronavirus_current
+          name: Сейчас в мире
+          icon: mdi:earth
+          unit: чел.
+          graph: line
+        - type: sensor
+          entity: sensor.russia_coronavirus_current
+          name: Сейчас в России
+          icon: mdi:flag
+          unit: чел.
+          graph: line
     # --- Сейчас дома:
       - type: markdown
         content: >

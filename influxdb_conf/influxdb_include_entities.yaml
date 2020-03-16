@@ -51,3 +51,12 @@
 - sensor.tplinksmartplug02_amps
 - sensor.tplinksmartplug02_watts
 - sensor.mipowerplug01_watts
+# COVID-19
+- sensor.russia_coronavirus_confirmed
+- sensor.russia_coronavirus_current
+- sensor.russia_coronavirus_deaths
+- sensor.russia_coronavirus_recovered
+- sensor.worldwide_coronavirus_confirmed
+- sensor.worldwide_coronavirus_current
+- sensor.worldwide_coronavirus_deaths
+- sensor.worldwide_coronavirus_recovered
