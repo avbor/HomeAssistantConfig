@@ -95,3 +95,15 @@ class smartthingstv:
          API_COMMAND_ARG  = "['{}']}}]}}".format(command)
          API_FULL = API_COMMAND_DATA + API_COMMAND_ARG
          cmdurl = requests.post(API_COMMAND,data=API_FULL ,headers=REQUEST_HEADERS)
+      elif cmdtype == "selectchannel": #changes channel
+         API_COMMAND_DATA =  "{'commands':[{'component': 'main','capability': 'tvChannel','command': 'setTvChannel', 'arguments': "
+         API_COMMAND_ARG  = "['{}']}}]}}".format(command)
+         API_FULL = API_COMMAND_DATA + API_COMMAND_ARG
+         cmdurl = requests.post(API_COMMAND,data=API_FULL ,headers=REQUEST_HEADERS)
+      elif cmdtype == "stepchannel": # steps channel up or down
+         if command == "up":
+            API_COMMAND_DATA = "{'commands':[{'component': 'main','capability': 'tvChannel','command': 'channelUp'}]}"
+            cmdurl = requests.post(API_COMMAND,data=API_COMMAND_DATA ,headers=REQUEST_HEADERS)
+         else:
+            API_COMMAND_DATA = "{'commands':[{'component': 'main','capability': 'tvChannel','command': 'channelDown'}]}"
+            cmdurl = requests.post(API_COMMAND,data=API_COMMAND_DATA ,headers=REQUEST_HEADERS)
