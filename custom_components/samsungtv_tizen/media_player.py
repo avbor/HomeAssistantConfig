@@ -399,12 +399,12 @@ class SamsungTVDevice(MediaPlayerDevice):
             smartthings.send_command(self, source_key.replace("ST_", ""), "selectsource")
         elif source_key == "ST_TV":
             smartthings.send_command(self, "digitalTv", "selectsource")
-        elif source_key.startswith("ST_CH"):
-            smartthings.send_command(self, source_key.replace("ST_CH", ""), "selectchannel")
         elif source_key == "ST_CHUP":
             smartthings.send_command(self, "up", "stepchannel")
         elif source_key == "ST_CHDOWN":
             smartthings.send_command(self, "down", "stepchannel")
+        elif source_key.startswith("ST_CH"):
+            smartthings.send_command(self, source_key.replace("ST_CH", ""), "selectchannel")
     
     @util.Throttle(MIN_TIME_BETWEEN_SCANS, MIN_TIME_BETWEEN_FORCED_SCANS)
     def update(self):

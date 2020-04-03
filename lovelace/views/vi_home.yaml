@@ -22,12 +22,14 @@ cards:
           icon: mdi:earth
           unit: чел.
           graph: line
+          hours_to_show: 72
         - type: sensor
           entity: sensor.russia_coronavirus_confirmed
           name: Всего в России
           icon: mdi:flag
           unit: чел.
           graph: line
+          hours_to_show: 72
       - type: horizontal-stack
         cards:
         - type: sensor
@@ -36,12 +38,14 @@ cards:
           icon: mdi:earth
           unit: чел.
           graph: line
+          hours_to_show: 72
         - type: sensor
           entity: sensor.russia_coronavirus_current
           name: Сейчас в России
           icon: mdi:flag
           unit: чел.
           graph: line
+          hours_to_show: 72
     # --- Сейчас дома:
       - type: markdown
         content: >
