@@ -9,8 +9,12 @@
     entity_id: person.alexander, person.irina, person.galina, person.tatiana, person.olga
 #    entity_id: person.alexander, person.irina, person.olga
   condition:
-    - condition: template
-      value_template: "{{ states('sensor.uptime') != '0.0' }}"
+    condition: and
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.uptime') != '0.0' }}"
+      - condition: template
+        value_template: "{{ trigger.to_state.state != trigger.from_state.state }}"
   action:
     - service: notify.telegram_stall
       data_template:
