@@ -74,6 +74,15 @@ cards:
             - home
           card:
             type: glance
+    # --- Карта:
+      - type: markdown
+        content: >
+          ### Карта:
+      - type: map
+        aspect_ratio: "16:9"
+        entities:
+          - device_tracker.oneplus_a3003
+          - device_tracker.mi_8
       # --- Время в пути (Утро)
       - type: conditional
         conditions:

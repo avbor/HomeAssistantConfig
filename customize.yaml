@@ -1,3 +1,5 @@
+zone.home:
+  radius: 20
 person.alexander:
   entity_picture: /local/stall.png
 device_tracker.oneplus_a3003:
