@@ -65,6 +65,7 @@ cards:
         content: >
           ### Automations on\off:
       - type: entities
+        show_header_toggle: false
         entities:
           - entity: automation.hass_warnings_in_system_log_notify_to_stall
             name: Warnings в Telegram
@@ -117,6 +118,7 @@ cards:
         content: >
           ### Разное:
       - type: entities
+        show_header_toggle: false
         entities:
           - entity: switch.plug_158d00033b702e
             name: Розетка Xiaomi ZigBee Plug 01
