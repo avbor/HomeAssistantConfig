@@ -7,6 +7,12 @@ family_persons:
     - person.tatiana
     - person.olga
 
+devices_to_map:
+  all: true
+  entities:
+    - device_tracker.oneplus_a3003
+    - device_tracker.mi_8
+
 all_tv:
   name: Все телевизоры
   entities:
