@@ -4,6 +4,8 @@ device_tracker.oneplus_a3003:
   entity_picture: /local/stall.png
 person.irina:
   entity_picture: /local/Irina.jpg
+device_tracker.mi_8:
+  entity_picture: /local/Irina.jpg
 person.galina:
   entity_picture: /local/galina.jpg
 person.tatiana:
