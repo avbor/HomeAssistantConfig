@@ -113,7 +113,7 @@ cards:
               entities:
                 - sensor.do_raboty_sasha
                 - sensor.do_raboty_ira_luxoft
-      # --- Время в пути (Утро)
+      # --- Время в пути (Вечер)
       - type: conditional
         conditions:
           - entity: binary_sensor.time_between_17_21
