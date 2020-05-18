@@ -32,7 +32,7 @@
       - 09-104476
   controllers_sn: 
       - "1113513"
-- platform: plex
+#- platform: plex
 - platform: time_date
   display_options:
     - 'time'

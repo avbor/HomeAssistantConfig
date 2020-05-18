@@ -42,21 +42,21 @@ class SauresHA:
     def get_flats(self):
         flats = ""
         if self.re_auth:
-            flats = self.__session.get(f'https://api.saures.ru/user/objects', params={
+            flats = self.__session.get(f'https://api.saures.ru/1.0/user/objects', params={
                 'sid': self._sid
             }).json()['data']['objects']
 
         return flats
 
     def get_meters(self, flat_id):
-        sensors = self.__session.get(f'https://api.saures.ru/object/meters', params={
+        sensors = self.__session.get(f'https://api.saures.ru/1.0/object/meters', params={
             'id': flat_id,
             'sid': self._sid
         }).json()['data']['sensors']
         return functools.reduce(list.__add__, map(lambda sensor: sensor['meters'], sensors))
 
     def get_controllers(self, flat_id):
-        controllers = self.__session.get(f'https://api.saures.ru/object/meters', params={
+        controllers = self.__session.get(f'https://api.saures.ru/1.0/object/meters', params={
             'id': flat_id,
             'sid': self._sid
         }).json()['data']['sensors']
@@ -87,22 +87,26 @@ class Meter:
 
         self.values = data.get('vals', [])
         if len(self.values) == 2:
-            self.t1 = self.values[0]['value']
-            self.t2 = self.values[1]['value']
+            self.value = '{0}/{1}'.format(self.values[0], self.values[1])
+            self.t1 = self.values[0]
+            self.t2 = self.values[1]
             self.t3 = '-'
             self.t4 = '-'
         elif len(self.values) == 3:
-            self.t1 = self.values[0]['value']
-            self.t2 = self.values[1]['value']
-            self.t3 = self.values[2]['value']
+            self.value = '{0}/{1}/{2}'.format(self.values[0], self.values[1],self.values[2])
+            self.t1 = self.values[0]
+            self.t2 = self.values[1]
+            self.t3 = self.values[2]
             self.t4 = '-'
         elif len(self.values) == 4:
-            self.t1 = self.values[0]['value']
-            self.t2 = self.values[1]['value']
-            self.t3 = self.values[2]['value']
-            self.t4 = self.values[3]['value']
-        elif len(self.values) == 0:
-            self.t1 = data.get('value')
+            self.value = '{0}/{1}/{2}/{3}'.format(self.values[0], self.values[1], self.values[2],self.values[3])
+            self.t1 = self.values[0]
+            self.t2 = self.values[1]
+            self.t3 = self.values[2]
+            self.t4 = self.values[3]
+        elif len(self.values) == 1:
+            self.value = self.values[0]
+            self.t1 = self.values[0]
             self.t2 = '-'
             self.t3 = '-'
             self.t4 = '-'
@@ -120,7 +124,7 @@ class Controller:
         self.readout_dt = data.get('readout_dt')
         self.request_dt = data.get('request_dt')
         self.last_connection = data.get('last_connection')
-        self.state = data.get('state', {}).get('name')
+        self.state = "OK"
         self.rssi = data.get('rssi')
         self.hardware = data.get('hardware')
         self.new_firmware = data.get('new_firmware')

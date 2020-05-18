@@ -2,7 +2,7 @@
 # Media Players, TV...
 #################################################
 
-- platform: plex
+#- platform: plex
 - platform: samsungtv_tizen
   name: SamsungTV-UE43RU7470
   host: 172.16.16.205

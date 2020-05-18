@@ -128,7 +128,7 @@ class SauresBinarySensor(Entity):
                 'input': meter.input
             })
         else:
-            _LOGGER.error("API ERROR during fetch state process")
+            _LOGGER.error("API ERROR during Auth process")
         return return_value
 
     def update(self):
