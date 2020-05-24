@@ -36,14 +36,14 @@ ssdp:
 sun:
 map:
 mobile_app:
-wwlln:
+#wwlln:
 wake_on_lan:
 person:
 logbook:
 history:
 
 http:
-  base_url: !secret external_url
+  #base_url: !secret external_url
   use_x_forwarded_for: true
   trusted_proxies: 
     - 127.0.0.1
@@ -116,8 +116,8 @@ weather:
 
 discovery:
   ignore:
-    - yeelight
-    - igd
+#    - yeelight
+#    - igd
 
 auto_backup:
   auto_purge: true
@@ -145,11 +145,11 @@ fan:
     name: Smartmi Humidifier 01
     token: !secret xiaomi_air_humidifier_01_token
 
-tuya:
-  platform: smart_life
-  username: !secret tuya_user
-  password: !secret tuya_pass
-  country_code: "7"
+#tuya:
+#  platform: smart_life
+#  username: !secret tuya_user
+#  password: !secret tuya_pass
+#  country_code: "7"
 
 sonoff:
 #  username: !secret sonoff_username
