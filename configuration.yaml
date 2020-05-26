@@ -152,8 +152,8 @@ fan:
 #  country_code: "7"
 
 sonoff:
-#  username: !secret sonoff_username
-#  password: !secret sonoff_pass
+  username: !secret sonoff_username
+  password: !secret sonoff_pass
   devices:
     1000b6831b:
       devicekey: 87c5267d-054f-4a71-8c51-49d027b80d71

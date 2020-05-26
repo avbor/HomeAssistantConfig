@@ -1,22 +1,18 @@
-import base64
-import hashlib
-import hmac
-import json
 import logging
-import os
-import time
+import re
 import uuid
-from base64 import b64decode
-from base64 import b64encode
-from typing import Optional
+from datetime import datetime
+from typing import List
 
-from aiohttp import ClientSession
+from aiohttp import web
+from homeassistant.components.http import HomeAssistantView
+from homeassistant.helpers.typing import HomeAssistantType
 
-from Crypto.Cipher import AES
-from Crypto.Hash import MD5
-from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad
-from Crypto.Util.Padding import unpad
+try:  # support old Home Assistant version
+    from homeassistant.components.binary_sensor import BinarySensorEntity
+except:
+    from homeassistant.components.binary_sensor import \
+        BinarySensorDevice as BinarySensorEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,125 +34,7 @@ def init_zeroconf_singleton(hass):
         zeroconf.Zeroconf = zeroconf_singleton
 
 
-def _params(**kwargs):
-    """Generate params for sonoff API. Pretend mobile application."""
-    return {
-        **kwargs,
-        'version': 6,
-        'ts': int(time.time()),
-        'nonce': int(time.time() * 100000),
-        'appid': 'oeVkj2lYFGnJu5XUtWisfW4utiN4u9Mq',
-        'imei': str(uuid.uuid4()),
-        'os': 'android',
-        'model': '',
-        'romVersion': '',
-        'appVersion': '3.12.0'
-    }
-
-
-def load_cache(filename: str) -> Optional[dict]:
-    """Load device list from file."""
-    if os.path.isfile(filename):
-        with open(filename, 'rt', encoding='utf-8') as f:
-            return json.load(f)
-    return None
-
-
-def save_cache(filename: str, data: dict):
-    """Save device list to file."""
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
-
-
-async def load_devices(username: str, password: str, session: ClientSession):
-    """Load device list from ewelink servers."""
-
-    # add a plus to the beginning of the phone number
-    if '@' not in username and not username.startswith('+'):
-        username = f"+{username}"
-
-    params = _params(email=username, password=password) \
-        if '@' in username else \
-        _params(phoneNumber=username, password=password)
-
-    hex_dig = hmac.new(b'6Nz4n0xA8s8qdxQf2GqurZj2Fs55FUvM',
-                       json.dumps(params).encode(),
-                       digestmod=hashlib.sha256).digest()
-    headers = {'Authorization': "Sign " + base64.b64encode(hex_dig).decode()}
-
-    r = await session.post('https://eu-api.coolkit.cc:8080/api/user/login',
-                           headers=headers, json=params)
-    resp = await r.json()
-
-    if 'region' not in resp:
-        info = 'email' if '@' in username else 'phone'
-        _LOGGER.error(f"Login with {info} error: {resp}")
-        return None
-
-    region = resp['region']
-    if region != 'eu':
-        _LOGGER.debug(f"Redirect to region: {region}")
-        r = await session.post(
-            f"https://{region}-api.coolkit.cc:8080/api/user/login",
-            headers=headers, json=params)
-        resp = await r.json()
-
-    headers = {'Authorization': "Bearer " + resp['at']}
-    params = _params(apiKey=resp['user']['apikey'], lang='en', getTags=1)
-    r = await session.get(
-        f"https://{region}-api.coolkit.cc:8080/api/user/device",
-        headers=headers, params=params)
-    resp = await r.json()
-
-    if resp['error'] == 0:
-        return resp['devicelist']
-
-    return None
-
-
-def encrypt(payload: dict, devicekey: str):
-    devicekey = devicekey.encode('utf-8')
-
-    hash_ = MD5.new()
-    hash_.update(devicekey)
-    key = hash_.digest()
-
-    iv = get_random_bytes(16)
-    plaintext = json.dumps(payload['data']).encode('utf-8')
-
-    cipher = AES.new(key, AES.MODE_CBC, iv=iv)
-    padded = pad(plaintext, AES.block_size)
-    ciphertext = cipher.encrypt(padded)
-
-    payload['encrypt'] = True
-    payload['iv'] = b64encode(iv).decode('utf-8')
-    payload['data'] = b64encode(ciphertext).decode('utf-8')
-
-    return payload
-
-
-def decrypt(payload: dict, devicekey: str):
-    try:
-        devicekey = devicekey.encode('utf-8')
-
-        hash_ = MD5.new()
-        hash_.update(devicekey)
-        key = hash_.digest()
-
-        encoded = ''.join([payload[f'data{i}'] for i in range(1, 4, 1)
-                           if f'data{i}' in payload])
-
-        cipher = AES.new(key, AES.MODE_CBC, iv=b64decode(payload['iv']))
-        ciphertext = b64decode(encoded)
-        padded = cipher.decrypt(ciphertext)
-        return unpad(padded, AES.block_size)
-
-    except:
-        return None
-
-
 UIIDS = {}
-TYPES = {}
 
 
 def init_device_class(default_class: str = 'switch'):
@@ -167,6 +45,7 @@ def init_device_class(default_class: str = 'switch'):
     switchx = [default_class]
 
     UIIDS.update({
+        # list cloud uiids
         1: switch1,
         2: switch2,
         3: switch3,
@@ -176,22 +55,26 @@ def init_device_class(default_class: str = 'switch'):
         7: switch2,
         8: switch3,
         9: switch4,
+        11: 'cover',  # King Art - King Q4 Cover (only cloud)
+        18: 'sensor',  # Sonoff SC
+        22: 'light',  # Sonoff B1 (only cloud)
         28: 'remote',  # Sonoff RF Brigde 433
         29: switch2,
         30: switch3,
         31: switch4,
         34: ['light', {'fan': [2, 3, 4]}],  # Sonoff iFan02 and iFan03
+        36: 'light',  # KING-M4 (dimmer, only cloud)
         44: 'light',  # Sonoff D1
+        59: 'light',  # Sonoff LED (only cloud)
         77: switchx,  # Sonoff Micro
         78: switchx,
         81: switch1,
         82: switch2,
         83: switch3,
         84: switch4,
-        107: switchx
-    })
-
-    TYPES.update({
+        102: 'binary_sensor',  # Door/Window sensor
+        107: switchx,
+        # list local types
         'plug': switch1,  # Basic, Mini
         'diy_plug': switch1,  # Mini in DIY mode
         'enhanced_plug': switch1,  # Sonoff Pow R2?
@@ -211,5 +94,121 @@ def guess_device_class(config: dict):
     be displayed as 4 switches.
     """
     uiid = config.get('uiid')
-    type_ = config.get('type')
-    return UIIDS.get(uiid) or TYPES.get(type_)
+    return UIIDS.get(uiid)
+
+
+def get_device_info(config: dict):
+    try:
+        # https://developers.home-assistant.io/docs/device_registry_index/
+        return {
+            'manufacturer': config['brandName'],
+            'model': config['productModel'],
+            'sw_version': f"{config['extra']['extra']['model']} "
+                          f"v{config['params'].get('fwVersion', '???')}"
+        }
+    except:
+        return None
+
+
+def parse_multichannel_class(device_class: list) -> List[dict]:
+    """Supported device_class formats:
+
+        device_class: [light, fan]  # version 1
+        device_class:  # version 2
+        - light  # zone 1 (channel 1)
+        - light  # zone 2 (channel 2)
+        - light: [3, 4]  # zone 3 (channels 3 and 4)
+        device_class:  # version 3 (legacy)
+        - light # zone 1 (channel 1)
+        - light # zone 2 (channel 2)
+        - device_class: light # zone 3 (channels 3 и 4)
+          channels: [3, 4]
+    """
+    entities = []
+
+    # read multichannel device_class
+    for i, component in enumerate(device_class, 1):
+        # read device with several channels
+        if isinstance(component, dict):
+            if 'device_class' in component:
+                # backward compatibility
+                channels = component['channels']
+                component = component['device_class']
+            else:
+                component, channels = list(component.items())[0]
+
+            if isinstance(channels, int):
+                channels = [channels]
+        else:
+            channels = [i]
+
+        entities.append({'component': component, 'channels': channels})
+
+    return entities
+
+
+def handle_cloud_error(hass: HomeAssistantType):
+    """Show persistent notification if cloud error occurs."""
+    from .sonoff_cloud import _LOGGER, CLOUD_ERROR
+
+    class CloudError(logging.Handler):
+        def handle(self, rec: logging.LogRecord) -> None:
+            if rec.msg == CLOUD_ERROR:
+                hass.components.persistent_notification.async_create(
+                    rec.msg, title="Sonoff Warning")
+
+    _LOGGER.addHandler(CloudError())
+
+
+RE_DEVICEID = re.compile(r"^[a-z0-9]{10}\b")
+# remove uiid, MAC, IP
+RE_PRIVATE = re.compile(
+    r"'([a-zA-Z0-9_-]{36,}|[A-F0-9:]{17}|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
+    r"EWLK-\d{6}-[A-Z]{5})'")
+NOTIFY_TEXT = (
+    '<a href="{}" target="_blank">Open Log<a> | '
+    '[New Issue on GitHub](https://github.com/AlexxIT/SonoffLAN/issues/new) | '
+    '[sonofflan@gmail.com](mailto:sonofflan@gmail.com)')
+
+HTML = ('<!DOCTYPE html><html><head><title>Sonoff Debug</title>'
+        '<meta http-equiv="refresh" content="%s"></head>'
+        '<body><pre>%s</pre></body></html>')
+
+
+class SonoffDebug(logging.Handler, HomeAssistantView):
+    name = "sonoff_debug"
+    requires_auth = False
+
+    text = ''
+
+    def __init__(self, hass: HomeAssistantType, devices):
+        super().__init__()
+
+        self.devices = devices if isinstance(devices, list) else None
+
+        # random url because without authorization!!!
+        self.url = f"/{uuid.uuid4()}"
+
+        hass.http.register_view(self)
+        hass.components.persistent_notification.async_create(
+            NOTIFY_TEXT.format(self.url), title="Sonoff Debug")
+
+    def handle(self, rec: logging.LogRecord) -> None:
+        # filter devices from list
+        if self.devices:
+            m = RE_DEVICEID.match(rec.msg)
+            if m and m[0] not in self.devices:
+                return
+
+        dt = datetime.fromtimestamp(rec.created).strftime("%Y-%m-%d %H:%M:%S")
+        module = 'main' if rec.module == '__init__' else rec.module
+        # remove private data
+        # TODO: fix single IP address
+        msg = RE_PRIVATE.sub("'...'", str(rec.msg))
+        self.text += f"{dt}  {rec.levelname:7}  {module:12}  {msg}\n"
+
+    async def get(self, request):
+        refresh = request.query_string
+        refresh = int(refresh) if refresh.isdecimal() else ''
+        return web.Response(text=HTML % (refresh, self.text),
+                            content_type="text/html")

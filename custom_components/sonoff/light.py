@@ -1,10 +1,20 @@
+"""
+Firmware   | LAN type  | uiid | Product Model
+-----------|-----------|------|--------------
+PSF-BLD-GL | light     | 44   | D1 (Sonoff D1)
+PSF-BFB-GL | fan_light | 34   | iFan (Sonoff iFan03)
+"""
 import logging
 
 from homeassistant.components.light import SUPPORT_BRIGHTNESS, \
-    ATTR_BRIGHTNESS
+    ATTR_BRIGHTNESS, SUPPORT_COLOR, ATTR_HS_COLOR, \
+    SUPPORT_EFFECT, ATTR_EFFECT, ATTR_EFFECT_LIST, SUPPORT_COLOR_TEMP, \
+    ATTR_COLOR_TEMP, ATTR_MIN_MIREDS, ATTR_MAX_MIREDS
+from homeassistant.util import color
 
-from . import DOMAIN, EWeLinkDevice
-from .toggle import ATTRS, EWeLinkToggle
+# noinspection PyUnresolvedReferences
+from . import DOMAIN, SCAN_INTERVAL
+from .switch import EWeLinkToggle
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,51 +26,55 @@ async def async_setup_platform(hass, config, add_entities,
 
     deviceid = discovery_info['deviceid']
     channels = discovery_info['channels']
-    device = hass.data[DOMAIN][deviceid]
-    if device.config['type'] == 'fan_light':
-        add_entities([SonoffFan03Light(device)])
-    elif device.config['type'] == 'light':
-        add_entities([SonoffD1(device)])
+    registry = hass.data[DOMAIN]
+    device = registry.devices[deviceid]
+
+    uiid = device.get('uiid')
+    if uiid == 'fan_light' or device.get('productModel') == 'iFan':
+        add_entities([SonoffFan03Light(registry, deviceid)])
+    elif uiid == 'light' or uiid == 44:
+        add_entities([SonoffD1(registry, deviceid)])
+    elif uiid == 59:
+        add_entities([SonoffLED(registry, deviceid)])
+    elif uiid == 22:
+        add_entities([SonoffB1(registry, deviceid)])
+    elif uiid == 36:
+        add_entities([SonoffDimmer(registry, deviceid)])
     elif channels and len(channels) >= 2:
-        add_entities([EWeLinkLightGroup(device, channels)])
+        add_entities([EWeLinkLightGroup(registry, deviceid, channels)])
     else:
-        add_entities([EWeLinkToggle(device, channels)])
+        add_entities([EWeLinkToggle(registry, deviceid, channels)])
 
 
 class SonoffFan03Light(EWeLinkToggle):
-    def _update(self, device: EWeLinkDevice):
-        if 'light' not in device.state:
-            return
+    def _update_handler(self, state: dict, attrs: dict):
+        self._attrs.update(attrs)
 
-        self._is_on = device.state['light'] == 'on'
+        if 'light' in state:
+            self._is_on = state['light'] == 'on'
 
-        if self.hass:
-            self.schedule_update_ha_state()
+        self.schedule_update_ha_state()
 
     async def async_turn_on(self, **kwargs) -> None:
-        await self.device.send('light', {'light': 'on'})
+        await self.registry.send(self.deviceid, {'light': 'on'})
 
     async def async_turn_off(self, **kwargs) -> None:
-        await self.device.send('light', {'light': 'off'})
+        await self.registry.send(self.deviceid, {'light': 'off'})
 
 
 class SonoffD1(EWeLinkToggle):
-    """Sonoff D1"""
+    _brightness = 0
 
-    def __init__(self, device: EWeLinkDevice, channels: list = None):
-        self._brightness = 0
+    def _update_handler(self, state: dict, attrs: dict):
+        self._attrs.update(attrs)
 
-        super().__init__(device, channels)
+        if 'brightness' in state:
+            self._brightness = max(round(state['brightness'] * 2.55), 1)
 
-    def _update(self, device: EWeLinkDevice):
-        # яркость прилетает не всегда
-        if 'brightness' in device.state:
-            self._brightness = round(device.state['brightness'] * 2.55)
+        if 'switch' in state:
+            self._is_on = state['switch'] == 'on'
 
-        self._is_on = device.is_on(None)
-
-        if self.hass:
-            self.schedule_update_ha_state()
+        self.schedule_update_ha_state()
 
     @property
     def brightness(self):
@@ -81,52 +95,294 @@ class SonoffD1(EWeLinkToggle):
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = kwargs[ATTR_BRIGHTNESS]
 
-        br = round(self._brightness / 2.55)
-        await self.device.send('dimmable', {'switch': 'on', 'brightness': br,
-                                            'mode': 0})
+        br = max(round(self._brightness / 2.55), 1)
+        # cmd param only for local mode, no need for cloud
+        await self.registry.send(self.deviceid, {
+            'cmd': 'dimmable', 'switch': 'on', 'brightness': br, 'mode': 0})
 
 
-class EWeLinkLightGroup(SonoffD1):
-    """Отличается от обычного переключателя настройкой яркости. Логично
-    использовать только для двух и более каналов. Умеет запоминать яркость на
-    момент выключения.
+class SonoffDimmer(SonoffD1):
+    def _update_handler(self, state: dict, attrs: dict):
+        self._attrs.update(attrs)
 
-    Последовательность каналов важна. Первые каналы будут включены при низкой
-    яркости.
-    """
+        # if 'online' in state:
+        #     self._available = state['online']
 
-    def _update(self, device: EWeLinkDevice):
-        for k in ATTRS:
-            if k in device.state:
-                self._attrs[k] = device.state[k]
+        if 'bright' in state:
+            # from 10 to 100 => 1 .. 255
+            br = round((state['bright'] - 10) / (100 - 10) * 255)
+            self._brightness = max(br, 1)
 
-        # количество включенных каналов
-        cnt = sum(device.is_on(self.channels))
-        if cnt:
-            # если хоть что-то включено - запоминаем новую яркость
-            self._brightness = round(cnt / len(self.channels) * 255)
-            self._is_on = True
-        else:
-            self._is_on = False
+        if 'switch' in state:
+            self._is_on = state['switch'] == 'on'
 
-        if self.hass:
-            self.schedule_update_ha_state()
+        self.schedule_update_ha_state()
 
     async def async_turn_on(self, **kwargs) -> None:
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = kwargs[ATTR_BRIGHTNESS]
 
-        # сколько света должно гореть при такой яркости
+        br = 10 + round(self._brightness / 255 * (100 - 10))
+        await self.registry.send(self.deviceid, {'switch': 'on', 'bright': br})
+
+
+LED_EFFECTS = [
+    "Colorful", "Colorful Gradient", "Colorful Breath", "DIY Gradient",
+    "DIY Pulse", "DIY Breath", "DIY Strobe", "RGB Gradient", "DIY Gradient",
+    "RGB Breath", "RGB Strobe", "Music"
+]
+
+
+class SonoffLED(EWeLinkToggle):
+    _brightness = 0
+    _hs_color = None
+    _mode = 0
+
+    def _update_handler(self, state: dict, attrs: dict):
+        self._attrs.update(attrs)
+
+        # if 'online' in state:
+        #     self._available = state['online']
+
+        if 'bright' in state:
+            # sonoff brightness from 1 to 100
+            self._brightness = max(round(state['bright'] * 2.55), 1)
+
+        if 'colorR' in state and 'colorG' in state and 'colorB':
+            self._hs_color = color.color_RGB_to_hs(
+                state['colorR'], state['colorG'], state['colorB'])
+
+        if 'mode' in state:
+            self._mode = state['mode'] - 1
+
+        if 'switch' in state:
+            self._is_on = state['switch'] == 'on'
+
+        self.schedule_update_ha_state()
+
+    @property
+    def brightness(self):
+        """Return the brightness of this light between 0..255."""
+        return self._brightness
+
+    @property
+    def hs_color(self):
+        """Return the hue and saturation color value [float, float]."""
+        return self._hs_color
+
+    @property
+    def effect_list(self):
+        """Return the list of supported effects."""
+        return LED_EFFECTS
+
+    @property
+    def effect(self):
+        """Return the current effect."""
+        return LED_EFFECTS[self._mode]
+
+    @property
+    def supported_features(self):
+        return SUPPORT_BRIGHTNESS | SUPPORT_COLOR | SUPPORT_EFFECT
+
+    @property
+    def state_attributes(self):
+        return {
+            **self._attrs,
+            ATTR_BRIGHTNESS: self.brightness,
+            ATTR_HS_COLOR: self._hs_color,
+            ATTR_EFFECT: self.effect
+        }
+
+    @property
+    def capability_attributes(self):
+        """Return capability attributes."""
+        return {ATTR_EFFECT_LIST: self.effect_list}
+
+    async def async_turn_on(self, **kwargs) -> None:
+        if ATTR_EFFECT in kwargs:
+            mode = LED_EFFECTS.index(kwargs[ATTR_EFFECT]) + 1
+            payload = {'switch': 'on', 'mode': mode}
+
+        elif ATTR_BRIGHTNESS in kwargs or ATTR_HS_COLOR in kwargs:
+            payload = {'mode': 1}
+
+            if ATTR_BRIGHTNESS in kwargs:
+                br = max(round(kwargs[ATTR_BRIGHTNESS] / 2.55), 1)
+                payload['bright'] = br
+
+            if ATTR_HS_COLOR in kwargs:
+                rgb = color.color_hs_to_RGB(*kwargs[ATTR_HS_COLOR])
+                payload.update({'colorR': rgb[0], 'colorG': rgb[1],
+                                'colorB': rgb[2], 'light_type': 1})
+
+        else:
+            payload = {'switch': 'on'}
+
+        await self.registry.send(self.deviceid, payload)
+
+
+class SonoffB1(EWeLinkToggle):
+    _brightness = None
+    _hs_color = None
+    _temp = None
+
+    def _update_handler(self, state: dict, attrs: dict):
+        self._attrs.update(attrs)
+
+        if 'zyx_mode' in state:
+            mode = state['zyx_mode']
+        elif 'channel0' in state:
+            mode = 1
+        elif 'channel2' in state:
+            mode = 2
+        else:
+            mode = None
+
+        if mode == 1:
+            # from 25 to 255
+            cold = int(state['channel0'])
+            warm = int(state['channel1'])
+            if warm == 0:
+                self._temp = 1
+            elif cold == warm:
+                self._temp = 2
+            elif cold == 0:
+                self._temp = 3
+            br = round((max(cold, warm) - 25) / (255 - 25) * 255)
+            # from 1 to 100
+            self._brightness = max(br, 1)
+            self._hs_color = None
+
+        elif mode == 2:
+            self._hs_color = color.color_RGB_to_hs(
+                int(state['channel2']),
+                int(state['channel3']),
+                int(state['channel4'])
+            )
+
+        if 'state' in state:
+            self._is_on = state['state'] == 'on'
+
+        self.schedule_update_ha_state()
+
+    @property
+    def brightness(self):
+        """Return the brightness of this light between 0..255."""
+        return self._brightness
+
+    @property
+    def hs_color(self):
+        """Return the hue and saturation color value [float, float]."""
+        return self._hs_color
+
+    @property
+    def color_temp(self):
+        """Return the CT color value in mireds."""
+        return self._temp
+
+    @property
+    def supported_features(self):
+        return SUPPORT_BRIGHTNESS | SUPPORT_COLOR | SUPPORT_COLOR_TEMP
+
+    @property
+    def capability_attributes(self):
+        return {
+            ATTR_MIN_MIREDS: 1,
+            ATTR_MAX_MIREDS: 3
+        }
+
+    @property
+    def state_attributes(self):
+        return {
+            **self._attrs,
+            ATTR_BRIGHTNESS: self.brightness,
+            ATTR_HS_COLOR: self._hs_color,
+            ATTR_COLOR_TEMP: self._temp
+        }
+
+    async def async_turn_on(self, **kwargs) -> None:
+        if ATTR_COLOR_TEMP in kwargs or ATTR_BRIGHTNESS in kwargs:
+            if ATTR_BRIGHTNESS in kwargs:
+                self._brightness = kwargs[ATTR_BRIGHTNESS]
+
+            if ATTR_COLOR_TEMP in kwargs:
+                self._temp = kwargs[ATTR_COLOR_TEMP]
+
+            ch = str(25 + round(self._brightness / 255 * (255 - 25)))
+            # type send no matter
+            payload = {
+                'zyx_mode': 1,
+                'channel2': '0',
+                'channel3': '0',
+                'channel4': '0'
+            }
+            if self._temp == 1:
+                payload.update({'channel0': ch, 'channel1': '0'})
+            elif self._temp == 2:
+                payload.update({'channel0': ch, 'channel1': ch})
+            elif self._temp == 3:
+                payload.update({'channel0': '0', 'channel1': ch})
+
+        elif ATTR_HS_COLOR in kwargs:
+            rgb = color.color_hs_to_RGB(*kwargs[ATTR_HS_COLOR])
+            # type send no matter
+            payload = {
+                'zyx_mode': 2,
+                'channel0': '0',
+                'channel1': '0',
+                'channel2': str(rgb[0]),
+                'channel3': str(rgb[1]),
+                'channel4': str(rgb[2]),
+            }
+
+        else:
+            payload = {'state': 'on'}
+
+        await self.registry.send(self.deviceid, payload)
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.registry.send(self.deviceid, {'state': 'off'})
+
+
+class EWeLinkLightGroup(SonoffD1):
+    """Differs from the usual switch by brightness adjustment. Is logical
+    use only for two or more channels. Able to remember brightness on moment
+    off.
+
+    The sequence of channels is important. The first channels will be turned on
+    at low brightness.
+    """
+
+    def _update_handler(self, state: dict, attrs: dict):
+        self._attrs.update(attrs)
+
+        if 'switches' in state:
+            # number of active channels
+            cnt = sum(self._is_on_list(state))
+            if cnt:
+                # if at least something is on - remember the new brightness
+                self._brightness = round(cnt / len(self.channels) * 255)
+                self._is_on = True
+            else:
+                self._is_on = False
+
+        self.schedule_update_ha_state()
+
+    async def async_turn_on(self, **kwargs) -> None:
+        if ATTR_BRIGHTNESS in kwargs:
+            self._brightness = kwargs[ATTR_BRIGHTNESS]
+
+        # how much light should burn at such brightness
         cnt = round(self._brightness / 255 * len(self.channels))
 
-        # если попытались включить при нулевой яркости - включаем весь свет
+        # if tried to turn it on at zero brightness - turn on all the light
         if cnt == 0 and ATTR_BRIGHTNESS not in kwargs:
-            await self.device.turn_on(self.channels)
+            await self._turn_on()
             return
 
-        # первую часть света включаем, вторую - выключаем
+        # the first part of the lights - turn on, the second - turn off
         channels = {
             channel: i < cnt
             for i, channel in enumerate(self.channels)
         }
-        await self.device.turn_bulk(channels)
+        await self._turn_bulk(channels)

@@ -1,8 +1,11 @@
-from typing import Optional
 import json
-from homeassistant.components.binary_sensor import BinarySensorDevice
+from typing import Optional
 
-from . import DOMAIN, EWeLinkDevice
+from homeassistant.components.binary_sensor import DEVICE_CLASS_DOOR
+
+from . import DOMAIN
+from .sonoff_main import EWeLinkDevice
+from .utils import BinarySensorEntity
 
 
 async def async_setup_platform(hass, config, add_entities,
@@ -11,29 +14,22 @@ async def async_setup_platform(hass, config, add_entities,
         return
 
     deviceid = discovery_info['deviceid']
-    device = hass.data[DOMAIN][deviceid]
-    add_entities([EWeLinkBinarySensor(device)])
+    registry = hass.data[DOMAIN]
+    device = registry.devices[deviceid]
+    if device.get('uiid') == 102:
+        add_entities([DoorWindowSensor(registry, deviceid)])
+    else:
+        add_entities([EWeLinkBinarySensor(registry, deviceid)])
 
 
-class EWeLinkBinarySensor(BinarySensorDevice):
-    def __init__(self, device: EWeLinkDevice):
-        self.device = device
-        self._attrs = {}
-        self._name = None
-
-        self._update(device)
-
-        device.listen(self._update)
-
+class EWeLinkBinarySensor(BinarySensorEntity, EWeLinkDevice):
     async def async_added_to_hass(self) -> None:
-        self._name = self.device.name()
+        self._init()
 
-    def _update(self, device: EWeLinkDevice):
-        state = {k: json.dumps(v) for k, v in device.state.items()}
+    def _update_handler(self, state: dict, attrs: dict):
+        state = {k: json.dumps(v) for k, v in state.items()}
         self._attrs.update(state)
-
-        if self.hass:
-            self.schedule_update_ha_state()
+        self.schedule_update_ha_state()
 
     @property
     def should_poll(self) -> bool:
@@ -41,20 +37,47 @@ class EWeLinkBinarySensor(BinarySensorDevice):
 
     @property
     def unique_id(self) -> Optional[str]:
-        return self.device.deviceid
+        return self.deviceid
 
     @property
     def name(self) -> Optional[str]:
         return self._name
 
     @property
-    def supported_features(self):
-        return 0
-
-    @property
     def state_attributes(self):
         return self._attrs
 
     @property
+    def supported_features(self):
+        return 0
+
+    @property
     def is_on(self):
-        return False
+        return self._is_on
+
+
+class DoorWindowSensor(EWeLinkBinarySensor):
+    _device_class = None
+
+    async def async_added_to_hass(self) -> None:
+        device: dict = self.registry.devices[self.deviceid]
+        self._device_class = device.get('device_class', DEVICE_CLASS_DOOR)
+
+        self._init()
+
+    def _update_handler(self, state: dict, attrs: dict):
+        self._attrs.update(attrs)
+
+        if 'switch' in state:
+            self._is_on = state['switch'] == 'on'
+
+        self.schedule_update_ha_state()
+
+    @property
+    def available(self) -> bool:
+        device: dict = self.registry.devices[self.deviceid]
+        return device['available']
+
+    @property
+    def device_class(self):
+        return self._device_class

@@ -6,13 +6,17 @@ https://github.com/custom-components/sensor.yandex_maps
 """
 import logging
 
+import re
+
 import aiohttp
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.helpers.entity import Entity
 
-__version__ = '0.0.5'
+coords_re = re.compile(r'-?\d{1,2}\.\d{1,6},\s?-?\d{1,3}\.\d{1,6}')
+
+__version__ = '0.0.6'
 
 CONF_NAME = 'name'
 CONF_START = 'start'
@@ -76,6 +80,10 @@ class YandexMapsSensor(Entity):
         except Exception as error:  # pylint: disable=broad-except
             _LOGGER.debug('%s - Could not update - %s', self._name, error)
 
+    @classmethod
+    def is_coord(cls, data: str) -> bool:
+        return bool(coords_re.fullmatch(data))
+
     @property
     def start(self):
         return self.point_to_coords(self._start)
@@ -84,17 +92,18 @@ class YandexMapsSensor(Entity):
     def destination(self):
         return self.point_to_coords(self._destination)
 
-    def point_to_coords(self, point):
-        if 'device_tracker' in point or 'zone' in point:
-            state = self.hass.states.get(point)
-            if state:
-                latitude = state.attributes.get('latitude')
-                longitude = state.attributes.get('longitude')
-                if latitude and longitude:
-                    return "{},{}".format(longitude, latitude)
-                else:
-                    raise AttributeError
-        return point
+    def point_to_coords(self, point: str) -> str:
+        if YandexMapsSensor.is_coord(point):
+            return point
+
+        state = self.hass.states.get(point)
+        if state:
+            latitude = state.attributes.get('latitude')
+            longitude = state.attributes.get('longitude')
+            if latitude and longitude:
+                return "{},{}".format(longitude, latitude)
+            else:
+                raise AttributeError
 
     @property
     def name(self):
