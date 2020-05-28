@@ -59,14 +59,14 @@
       friendly_name: "Electrolux Centurio IQ Status"
       value_template: >
         {% if (states('sensor.tplinksmartplug01_amps') | float) > 4 %}On{% else %}Off{% endif %}
+#    mirobot_current_fan_speed:
+#      value_template: >
+#        {% if state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 101 %}Quiet
+#        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 102 %}Balanced
+#        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 103 %}Turbo
+#        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 104 %}Max
+#        {% endif %}
     mirobot_current_fan_speed:
-      value_template: >
-        {% if state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 101 %}Quiet
-        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 102 %}Balanced
-        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 103 %}Turbo
-        {% elif state_attr('vacuum.xiaomi_vacuum_cleaner', "fan_speed") == 104 %}Max
-        {% endif %}
-    mirobot_current_fan_speed_new:
       value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'fan_speed') }}"
     xiaomi_gas_density:
       value_template: "{{ state_attr('binary_sensor.natgas_sensor_158d000413b210', 'Density') }}"
