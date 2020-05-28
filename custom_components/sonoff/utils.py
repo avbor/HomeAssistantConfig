@@ -50,12 +50,14 @@ def init_device_class(default_class: str = 'switch'):
         2: switch2,
         3: switch3,
         4: switch4,
-        5: switch1,
+        5: switch1,  # Sonoff Pow
         6: switch1,
-        7: switch2,
-        8: switch3,
+        7: switch2,  # Sonoff T1 2C
+        8: switch3,  # Sonoff T1 3C
         9: switch4,
         11: 'cover',  # King Art - King Q4 Cover (only cloud)
+        # 14 Sonoff Basic
+        # 15 Sonoff TH16
         18: 'sensor',  # Sonoff SC
         22: 'light',  # Sonoff B1 (only cloud)
         28: 'remote',  # Sonoff RF Brigde 433
@@ -72,7 +74,7 @@ def init_device_class(default_class: str = 'switch'):
         82: switch2,
         83: switch3,
         84: switch4,
-        102: 'binary_sensor',  # Door/Window sensor
+        102: 'binary_sensor',  # Sonoff DW2 Door/Window sensor
         107: switchx,
         # list local types
         'plug': switch1,  # Basic, Mini
@@ -166,7 +168,7 @@ RE_PRIVATE = re.compile(
     r"'([a-zA-Z0-9_-]{36,}|[A-F0-9:]{17}|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
     r"EWLK-\d{6}-[A-Z]{5})'")
 NOTIFY_TEXT = (
-    '<a href="{}" target="_blank">Open Log<a> | '
+    '<a href="%s" target="_blank">Open Log<a> | '
     '[New Issue on GitHub](https://github.com/AlexxIT/SonoffLAN/issues/new) | '
     '[sonofflan@gmail.com](mailto:sonofflan@gmail.com)')
 
@@ -181,25 +183,17 @@ class SonoffDebug(logging.Handler, HomeAssistantView):
 
     text = ''
 
-    def __init__(self, hass: HomeAssistantType, devices):
+    def __init__(self, hass: HomeAssistantType):
         super().__init__()
-
-        self.devices = devices if isinstance(devices, list) else None
 
         # random url because without authorization!!!
         self.url = f"/{uuid.uuid4()}"
 
         hass.http.register_view(self)
         hass.components.persistent_notification.async_create(
-            NOTIFY_TEXT.format(self.url), title="Sonoff Debug")
+            NOTIFY_TEXT % self.url, title="Sonoff Debug")
 
     def handle(self, rec: logging.LogRecord) -> None:
-        # filter devices from list
-        if self.devices:
-            m = RE_DEVICEID.match(rec.msg)
-            if m and m[0] not in self.devices:
-                return
-
         dt = datetime.fromtimestamp(rec.created).strftime("%Y-%m-%d %H:%M:%S")
         module = 'main' if rec.module == '__init__' else rec.module
         # remove private data
@@ -207,8 +201,18 @@ class SonoffDebug(logging.Handler, HomeAssistantView):
         msg = RE_PRIVATE.sub("'...'", str(rec.msg))
         self.text += f"{dt}  {rec.levelname:7}  {module:12}  {msg}\n"
 
-    async def get(self, request):
-        refresh = request.query_string
-        refresh = int(refresh) if refresh.isdecimal() else ''
-        return web.Response(text=HTML % (refresh, self.text),
+    async def get(self, request: web.Request):
+        reload = request.query.get('r', '')
+
+        if 'q' in request.query:
+            try:
+                reg = re.compile(fr"({request.query['q']})", re.IGNORECASE)
+                body = '\n'.join([p for p in self.text.split('\n')
+                                  if reg.search(p)])
+            except:
+                return web.Response(status=500)
+        else:
+            body = None
+
+        return web.Response(text=HTML % (reload, body or self.text),
                             content_type="text/html")

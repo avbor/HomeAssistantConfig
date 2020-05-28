@@ -12,7 +12,7 @@ cards:
           - entity: vacuum.xiaomi_vacuum_cleaner
             name: 'Статус:'
             secondary_info: last-changed
-          - entity: sensor.mirobot_current_fan_speed
+          - entity: sensor.mirobot_current_fan_speed_new
             name: 'Текущий режим:'
             icon: mdi:speedometer
           - type: section

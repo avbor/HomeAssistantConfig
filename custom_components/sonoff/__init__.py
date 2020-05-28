@@ -13,6 +13,7 @@ from homeassistant.helpers.typing import HomeAssistantType
 
 from . import utils
 from .sonoff_camera import EWeLinkCameras
+from .sonoff_cloud import ConsumptionHelper
 from .sonoff_main import EWeLinkRegistry
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_RELOAD, default='once'): cv.string,
         vol.Optional(CONF_DEFAULT_CLASS, default='switch'): cv.string,
         vol.Optional(CONF_SCAN_INTERVAL): cv.time_period,
-        vol.Optional(CONF_DEBUG): vol.Any(bool, list),
+        vol.Optional(CONF_DEBUG, default=False): cv.boolean,
         vol.Optional(CONF_DEVICES): {
             cv.string: vol.Schema({
                 vol.Optional(CONF_NAME): cv.string,
@@ -58,10 +59,14 @@ async def async_setup(hass: HomeAssistantType, hass_config: dict):
     config = hass_config[DOMAIN]
 
     # init debug if needed
-    if CONF_DEBUG in config:
-        debug = utils.SonoffDebug(hass, config[CONF_DEBUG])
+    if config[CONF_DEBUG]:
+        debug = utils.SonoffDebug(hass)
         _LOGGER.setLevel(logging.DEBUG)
         _LOGGER.addHandler(debug)
+
+        info = await hass.helpers.system_info.async_get_system_info()
+        del info['installation_type'], info['timezone']
+        _LOGGER.debug(f"SysInfo: {info}")
 
     # main init phase
     mode = config[CONF_MODE]
@@ -166,6 +171,15 @@ async def async_setup(hass: HomeAssistantType, hass_config: dict):
             _LOGGER.error(f"Wrong deviceid {deviceid}")
 
     hass.services.async_register(DOMAIN, 'send_command', send_command)
+
+    async def update_consumption(call: ServiceCall):
+        if not hasattr(registry, 'consumption'):
+            _LOGGER.debug("Create ConsumptionHelper")
+            registry.consumption = ConsumptionHelper(registry.cloud)
+        await registry.consumption.update()
+
+    hass.services.async_register(DOMAIN, 'update_consumption',
+                                 update_consumption)
 
     if CONF_SCAN_INTERVAL in config:
         global SCAN_INTERVAL
