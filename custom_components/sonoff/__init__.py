@@ -5,7 +5,7 @@ import voluptuous as vol
 from homeassistant.components.binary_sensor import DEVICE_CLASSES
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_DEVICES, \
     CONF_NAME, CONF_DEVICE_CLASS, EVENT_HOMEASSISTANT_STOP, CONF_MODE, \
-    CONF_SCAN_INTERVAL, CONF_FORCE_UPDATE, CONF_EXCLUDE
+    CONF_SCAN_INTERVAL, CONF_FORCE_UPDATE, CONF_EXCLUDE, CONF_SENSORS
 from homeassistant.core import ServiceCall
 from homeassistant.helpers import config_validation as cv, discovery
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -39,6 +39,8 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_RELOAD, default='once'): cv.string,
         vol.Optional(CONF_DEFAULT_CLASS, default='switch'): cv.string,
         vol.Optional(CONF_SCAN_INTERVAL): cv.time_period,
+        vol.Optional(CONF_FORCE_UPDATE): cv.ensure_list,
+        vol.Optional(CONF_SENSORS): cv.ensure_list,
         vol.Optional(CONF_DEBUG, default=False): cv.boolean,
         vol.Optional(CONF_DEVICES): {
             cv.string: vol.Schema({
@@ -65,7 +67,8 @@ async def async_setup(hass: HomeAssistantType, hass_config: dict):
         _LOGGER.addHandler(debug)
 
         info = await hass.helpers.system_info.async_get_system_info()
-        del info['installation_type'], info['timezone']
+        info.pop('installation_type', None)  # fix HA v0.109.6
+        info.pop('timezone')
         _LOGGER.debug(f"SysInfo: {info}")
 
     # main init phase
@@ -101,6 +104,19 @@ async def async_setup(hass: HomeAssistantType, hass_config: dict):
     default_class = config[CONF_DEFAULT_CLASS]
     utils.init_device_class(default_class)
 
+    # List of attributes that invoke force_update
+    if CONF_FORCE_UPDATE in config:
+        force_update = set(config[CONF_FORCE_UPDATE])
+        _LOGGER.debug(f"Init force_update for attributes: {force_update}")
+    else:
+        force_update = None
+
+    if CONF_SENSORS in config:
+        sensors = config[CONF_SENSORS]
+        _LOGGER.debug(f"Init auto sensors for: {sensors}")
+    else:
+        sensors = []
+
     def add_device(deviceid: str, state: dict, *args):
         device = registry.devices[deviceid]
 
@@ -123,6 +139,10 @@ async def async_setup(hass: HomeAssistantType, hass_config: dict):
 
         # TODO: fix remove camera info from logs
         state.pop('partnerDevice', None)
+
+        # set device force_update if needed
+        if force_update and force_update & state.keys():
+            device[CONF_FORCE_UPDATE] = True
 
         info = {'uiid': device['uiid'], 'extra': device['extra'],
                 'params': state}
@@ -152,6 +172,12 @@ async def async_setup(hass: HomeAssistantType, hass_config: dict):
                 info['deviceid'] = deviceid
                 hass.async_create_task(discovery.async_load_platform(
                     hass, info.pop('component'), DOMAIN, info, hass_config))
+
+        for attribute in sensors:
+            if attribute in state:
+                info = {'deviceid': deviceid, 'attribute': attribute}
+                hass.async_create_task(discovery.async_load_platform(
+                    hass, 'sensor', DOMAIN, info, hass_config))
 
     async def send_command(call: ServiceCall):
         """Service for send raw command to device.
