@@ -14,6 +14,11 @@ except:
     from homeassistant.components.binary_sensor import \
         BinarySensorDevice as BinarySensorEntity
 
+try:  # support old Home Assistant version
+    from homeassistant.components.cover import CoverEntity
+except:
+    from homeassistant.components.cover import CoverDevice as CoverEntity
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -84,7 +89,7 @@ def init_device_class(default_class: str = 'switch'):
         'strip': switch4,  # 4CH Pro R2, Micro!, iFan02!
         'light': 'light',  # D1
         'rf': 'remote',  # RF Bridge 433
-        'fan_light': ['light', 'fan'],  # iFan03
+        'fan_light': ['light', {'fan': [2, 3, 4]}],  # iFan03
     })
 
 

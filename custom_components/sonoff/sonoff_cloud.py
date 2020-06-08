@@ -47,8 +47,9 @@ class ResponseWaiter:
             # limit future wait time
             await asyncio.wait_for(self._waiters[sequence], timeout)
         except asyncio.TimeoutError:
-            # remove future from waiters
-            self._waiters.pop(sequence)
+            # remove future from waiters, in very rare cases, we can send two
+            # commands with the same sequence
+            self._waiters.pop(sequence, None)
             return 'timeout'
 
         # remove future from waiters and return result
@@ -206,6 +207,15 @@ class EWeLinkCloud(ResponseWaiter):
             except ClientConnectorError as e:
                 _LOGGER.error(f"Cloud WS Connection error: {e}")
 
+            except (asyncio.CancelledError, RuntimeError) as e:
+                if isinstance(e, RuntimeError):
+                    assert e.args[0] == 'Session is closed', e.args
+
+                _LOGGER.debug(f"Cancel WS Connection: {e}")
+                if not self._ws.closed:
+                    await self._ws.close()
+                return
+
             except Exception:
                 _LOGGER.exception(f"Cloud WS exception")
 
@@ -227,7 +237,7 @@ class EWeLinkCloud(ResponseWaiter):
         payload = {pname: username, 'password': password}
         resp = await self._api('login', 'api/user/login', payload)
 
-        if 'region' not in resp:
+        if resp is None or 'region' not in resp:
             _LOGGER.error(f"Login error: {resp}")
             return False
 
@@ -282,7 +292,7 @@ class EWeLinkCloud(ResponseWaiter):
             'ts': 0,
             'params': data
         }
-        _LOGGER.debug(f"{deviceid} => Cloud4 | {data}")
+        _LOGGER.debug(f"{deviceid} => Cloud4 | {data} | {sequence}")
         await self._ws.send_json(payload)
 
         # wait for response with same sequence
@@ -298,8 +308,9 @@ class ConsumptionHelper:
     async def _process_ws_msg(self, data: dict):
         if 'config' in data and 'hundredDaysKwhData' in data['config']:
             # 000002 000207 000003 000002 000201 000008 000003 000006...
-            kwh = data['config']['hundredDaysKwhData']
-            kwh = [round(int(kwh[i + 1] + kwh[i + 3] + kwh[i + 5]) * 0.01, 2)
+            kwh = data['config'].pop('hundredDaysKwhData')
+            kwh = [round(int(kwh[i:i + 2], 16) +
+                         int(kwh[i + 3] + kwh[i + 5]) * 0.01, 2)
                    for i in range(0, len(kwh), 6)]
             data['params'] = {'consumption': kwh}
 

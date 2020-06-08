@@ -72,6 +72,43 @@ def decrypt(payload: dict, devicekey: str):
         return None
 
 
+# iFan02 local and cloud API uses switches
+# iFan03 local API uses light/fan/speed and cloud API uses switches :(
+# https://github.com/AlexxIT/SonoffLAN/issues/30
+# https://github.com/AlexxIT/SonoffLAN/issues/153
+
+
+def ifan03to02(state) -> dict:
+    """Convert incoming from iFan03."""
+    return {'switches': [
+        {'outlet': 0, 'switch': state['light']},
+        {'outlet': 1, 'switch': state['fan']},
+        {'outlet': 2, 'switch': 'on' if state['speed'] == 2 else 'off'},
+        {'outlet': 3, 'switch': 'on' if state['speed'] == 3 else 'off'},
+    ]}
+
+
+def ifan02to03(payload: dict) -> dict:
+    """Convert outcoming to iFan03."""
+    payload = {d['outlet']: d['switch'] for d in payload['switches']}
+
+    if 0 in payload:
+        return {'light': payload[0]}
+
+    if 2 in payload and 3 in payload:
+        if payload[2] == 'on':
+            return {'fan': payload[1], 'speed': 2}
+        elif payload[3] == 'on':
+            return {'fan': payload[1], 'speed': 3}
+        else:
+            return {'fan': payload[1], 'speed': 1}
+
+    if 1 in payload:
+        return {'fan': payload[1]}
+
+    raise NotImplemented
+
+
 class EWeLinkLocal:
     _devices: dict = None
     _handlers = None
@@ -119,13 +156,14 @@ class EWeLinkLocal:
         deviceid = properties['id']
         device = self._devices.setdefault(deviceid, {})
 
+        log = f"{deviceid} <= Local{state_change.value}"
+
         if properties.get('encrypt'):
             devicekey = device.get('devicekey')
             if devicekey == 'skip':
                 return
             if not devicekey:
-                _LOGGER.info(f"{deviceid} <= Local{state_change.value} | "
-                             f"No devicekey for device")
+                _LOGGER.info(f"{log} | No devicekey for device")
                 # skip device next time
                 device['devicekey'] = 'skip'
                 return
@@ -139,8 +177,17 @@ class EWeLinkLocal:
                             if f'data{i}' in properties])
 
         state = json.loads(data)
+        seq = properties.get('seq')
 
-        _LOGGER.debug(f"{deviceid} <= Local{state_change.value} | {state}")
+        _LOGGER.debug(f"{log} | {state} | {seq}")
+
+        # TH bug in local mode https://github.com/AlexxIT/SonoffLAN/issues/110
+        if state.get('temperature') == 0 and state.get('humidity') == 0:
+            del state['temperature'], state['humidity']
+
+        if properties['type'] == 'fan_light':
+            state = ifan03to02(state)
+            device['uiid'] = 'fan_light'
 
         host = str(ipaddress.ip_address(info.addresses[0]))
         # update every time device host change (alsow first time)
@@ -158,7 +205,7 @@ class EWeLinkLocal:
                 device['uiid'] = properties['type']
 
         for handler in self._handlers:
-            handler(deviceid, state, properties.get('seq'))
+            handler(deviceid, state, seq)
 
     async def check_offline(self, deviceid: str):
         """Try to get response from device after received Zeroconf Removed."""
@@ -196,6 +243,9 @@ class EWeLinkLocal:
 
     async def send(self, deviceid: str, data: dict, sequence: str, timeout=5):
         device: dict = self._devices[deviceid]
+
+        if device['uiid'] == 'fan_light':
+            data = ifan02to03(data)
 
         # cmd for D1 and RF Bridge 433
         command = data.get('cmd') or next(iter(data))
