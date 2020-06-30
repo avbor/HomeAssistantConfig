@@ -13,7 +13,7 @@ from .sonoff_local import EWeLinkLocal
 _LOGGER = logging.getLogger(__name__)
 
 ATTRS = ('local', 'cloud', 'rssi', 'humidity', 'temperature', 'power',
-         'current', 'voltage', 'battery', 'consumption')
+         'current', 'voltage', 'battery', 'consumption', 'water')
 
 # map cloud attrs to local attrs
 ATTRS_MAP = {
@@ -238,7 +238,9 @@ class EWeLinkDevice:
         state = device['params']
 
         self._attrs = device['extra'] or {}
-        self._is_th_3_4_0 = 'mainSwitch' in state
+        # don't know if deviceType only in Sonoff TH
+        # https://github.com/AlexxIT/SonoffLAN/issues/158
+        self._is_th_3_4_0 = 'deviceType' in state
 
         if force_refresh:
             attrs = get_attrs(state)

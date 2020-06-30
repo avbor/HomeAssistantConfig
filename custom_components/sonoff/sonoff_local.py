@@ -15,6 +15,8 @@ from zeroconf import ServiceBrowser, Zeroconf, ServiceStateChange
 
 _LOGGER = logging.getLogger(__name__)
 
+LOCAL_HEADERS = {'Connection': 'close'}
+
 
 # some venv users don't have Crypto.Util.Padding
 # I don't know why pycryptodome is not installed on their systems
@@ -244,7 +246,7 @@ class EWeLinkLocal:
     async def send(self, deviceid: str, data: dict, sequence: str, timeout=5):
         device: dict = self._devices[deviceid]
 
-        if device['uiid'] == 'fan_light':
+        if device['uiid'] == 'fan_light' and 'switches' in data:
             data = ifan02to03(data)
 
         # cmd for D1 and RF Bridge 433
@@ -265,7 +267,7 @@ class EWeLinkLocal:
         try:
             r = await self.session.post(
                 f"http://{device['host']}:8081/zeroconf/{command}",
-                json=payload, timeout=timeout)
+                json=payload, headers=LOCAL_HEADERS, timeout=timeout)
             resp = await r.json()
             err = resp['error']
             # no problem with any response from device for info command
@@ -280,7 +282,7 @@ class EWeLinkLocal:
             _LOGGER.debug(f"{log} !! Timeout {timeout}")
             return 'timeout'
         except ClientOSError as e:
-            _LOGGER.warning(f"{log} !! {e}")
+            _LOGGER.debug(f"{log} !! {e.args}")
             return 'E#COS'
         except:
             _LOGGER.exception(log)

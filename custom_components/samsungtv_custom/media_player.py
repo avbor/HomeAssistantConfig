@@ -12,7 +12,11 @@ import time
 import requests
 
 from homeassistant import util
-from homeassistant.components.media_player import MediaPlayerDevice, PLATFORM_SCHEMA
+from homeassistant.components.media_player import (
+    MediaPlayerEntity,
+    PLATFORM_SCHEMA,
+    DEVICE_CLASS_TV,
+)
 from homeassistant.components.media_player.const import (
     MEDIA_TYPE_CHANNEL,
     SUPPORT_NEXT_TRACK,
@@ -38,8 +42,10 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_PORT,
     CONF_TIMEOUT,
+    CONF_ID,
+    CONF_TOKEN,
     STATE_OFF,
-    STATE_ON,
+    STATE_ON
 )
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import dt as dt_util
@@ -49,14 +55,16 @@ _LOGGER = logging.getLogger(__name__)
 MEDIA_TYPE_KEY = "send_key"
 DEFAULT_NAME = "Samsung TV Remote"
 DEFAULT_PORT = 55000
-DEFAULT_TIMEOUT = 2
-KEY_PRESS_TIMEOUT = 1.2
+DEFAULT_TIMEOUT = 1.5
+KEY_PRESS_TIMEOUT = 0.3
 KNOWN_DEVICES_KEY = "samsungtv_known_devices"
 SOURCES = {"TV": "KEY_TV", "HDMI": "KEY_HDMI"}
 CONF_SOURCELIST = "sourcelist"
 CONF_APPLIST = "applist"
 CONF_PROTOCOL = "protocol"
-MIN_TIME_BETWEEN_FORCED_SCANS = timedelta(seconds=2)
+CONF_ID = ""
+CONF_TOKEN = ""
+MIN_TIME_BETWEEN_FORCED_SCANS = timedelta(seconds=1)
 MIN_TIME_BETWEEN_SCANS = timedelta(seconds=10)
 
 SUPPORT_SAMSUNGTV = (
@@ -81,6 +89,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_SOURCELIST): cv.string,
         vol.Optional(CONF_APPLIST): cv.string,
         vol.Optional(CONF_PROTOCOL): cv.string,
+        vol.Optional(CONF_ID): cv.string,
+        vol.Optional(CONF_TOKEN): cv.string,
     }
 )
 
@@ -116,6 +126,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         name = config.get(CONF_NAME)
         mac = config.get(CONF_MAC)
         timeout = config.get(CONF_TIMEOUT)
+        uuid = config.get(CONF_ID)
+        token = config.get(CONF_TOKEN)
     elif discovery_info is not None:
         tv_name = discovery_info.get("name")
         model = discovery_info.get("model_name")
@@ -142,17 +154,17 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         elif protocol == "ws":
             add_entities([SamsungTVDeviceWS(host, port, name, timeout, mac, uuid, sourcelist)])
         else:
-            add_entities([SamsungTVDevice(host, port, name, timeout, mac, uuid, sourcelist, protocol)])
+            add_entities([SamsungTVDevice(host, port, name, timeout, mac, uuid, sourcelist, protocol, token)])
 
         _LOGGER.info("Samsung TV %s:%d added as '%s'", host, port, name)
     else:
         _LOGGER.info("Ignoring duplicate Samsung TV %s:%d", host, port)
 
 
-class SamsungTVDevice(MediaPlayerDevice):
+class SamsungTVDevice(MediaPlayerEntity):
     """Representation of a Samsung TV."""
 
-    def __init__(self, host, port, name, timeout, mac, uuid, sourcelist, protocol):
+    def __init__(self, host, port, name, timeout, mac, uuid, sourcelist, protocol, token):
         """Initialize the Samsung device."""
         if protocol == "ctl_beta":
             from .samsungctl_080b import exceptions
@@ -167,6 +179,7 @@ class SamsungTVDevice(MediaPlayerDevice):
         self._name = name
         self._mac = mac
         self._uuid = uuid
+        self._token = token
         self._wol = wakeonlan
         # Assume that the TV is not muted
         self._muted = False
@@ -185,17 +198,33 @@ class SamsungTVDevice(MediaPlayerDevice):
             "port": port,
             "host": host,
             "timeout": timeout,
+            "token": token,
         }
         self._sourcelist = sourcelist
         
-        if self._config["port"] in (8001, 8002):
+        if self._token != "":
+            self._config["method"] = "encrypted"
+        elif self._config["port"] in (8001, 8002):
             self._config["method"] = "websocket"
         else:
             self._config["method"] = "legacy"
 
     def update(self):
         """Update state of device."""
-        self.send_key("KEY")
+        if self._config["method"] == "encrypted" and self._config["port"] == 8001:
+            try:
+                r = requests.get(
+                    "http://{}:8001/api/v2/".format(self._config["host"]), timeout=2
+                )
+                self._state = STATE_ON
+                _LOGGER.debug("State is on %s", repr(r))
+                # break
+            except:
+                _LOGGER.debug("State is off")
+                self._state = STATE_OFF
+
+        else:
+            self.send_key("KEY")
 
     def get_remote(self):
         """Create or return a remote control instance."""
@@ -207,6 +236,7 @@ class SamsungTVDevice(MediaPlayerDevice):
 
     def send_key(self, key):
         """Send a key to the tv and handles exceptions."""
+        _LOGGER.debug("Send key %s", key)
         if self._power_off_in_progress() and key not in ("KEY_POWER", "KEY_POWEROFF"):
             _LOGGER.info("TV is powering off, not sending command: %s", key)
             return
@@ -215,7 +245,12 @@ class SamsungTVDevice(MediaPlayerDevice):
             retry_count = 1
             for _ in range(retry_count + 1):
                 try:
-                    self.get_remote().control(key)
+                    control_result = self.get_remote().control(key)
+                    if not control_result:
+                        _LOGGER.debug("Failed sending command %s. Retry!", key)
+                        self._remote.close()
+                        self._remote = None
+                        self.get_remote().control(key)
                     break
                 except (self._exceptions_class.ConnectionClosed, BrokenPipeError):
                     # BrokenPipe can occur when the commands is sent to fast
@@ -274,6 +309,11 @@ class SamsungTVDevice(MediaPlayerDevice):
             return SUPPORT_SAMSUNGTV | SUPPORT_TURN_ON
         return SUPPORT_SAMSUNGTV
 
+    @property
+    def device_class(self):
+        """Set the device class to TV."""
+        return DEVICE_CLASS_TV
+
     def turn_off(self):
         """Turn off media player."""
         self._end_of_power_off = dt_util.utcnow() + timedelta(seconds=15)
@@ -284,7 +324,6 @@ class SamsungTVDevice(MediaPlayerDevice):
             self.send_key("KEY_POWEROFF")
         # Force closing of remote session to provide instant UI feedback
         try:
-            self.get_remote().close()
             self._remote = None
         except OSError:
             _LOGGER.debug("Could not establish connection.")
@@ -359,7 +398,7 @@ class SamsungTVDevice(MediaPlayerDevice):
         await self.hass.async_add_job(self.send_key, self._sourcelist[source])
 
 
-class SamsungTVDeviceQLED(MediaPlayerDevice):
+class SamsungTVDeviceQLED(MediaPlayerEntity):
     """Representation of a Samsung TV."""
 
     def __init__(self, host, port, name, timeout, mac, uuid, sourcelist, applist):
@@ -549,6 +588,11 @@ class SamsungTVDeviceQLED(MediaPlayerDevice):
         if self._mac:
             return SUPPORT_SAMSUNGTV | SUPPORT_TURN_ON
         return SUPPORT_SAMSUNGTV
+    
+    @property
+    def device_class(self):
+        """Set the device class to TV."""
+        return DEVICE_CLASS_TV
 
     def turn_off(self):
         """Turn off media player."""
@@ -692,7 +736,7 @@ class SamsungTVDeviceQLED(MediaPlayerDevice):
         return self.hass.async_add_job(self.select_source, source) 
         
 
-class SamsungTVDeviceWS(MediaPlayerDevice):
+class SamsungTVDeviceWS(MediaPlayerEntity):
     """Representation of a Samsung TV."""
 
     def __init__(self, host, port, name, timeout, mac, uuid, sourcelist):
@@ -801,6 +845,11 @@ class SamsungTVDeviceWS(MediaPlayerDevice):
             return SUPPORT_SAMSUNGTV | SUPPORT_TURN_ON
 
         return SUPPORT_SAMSUNGTV
+
+    @property
+    def device_class(self):
+        """Set the device class to TV."""
+        return DEVICE_CLASS_TV
 
     def turn_off(self):
         """Turn off media player."""
