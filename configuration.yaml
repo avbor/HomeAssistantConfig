@@ -85,6 +85,8 @@ recorder:
       - sensor.uptime
       - sensor.moon
       - sun.sun
+      - counter.syslog_errors
+      - counter.syslog_warnings
     event_types:
       - call_service
 
