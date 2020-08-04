@@ -167,8 +167,8 @@ tplink:
     - host: 172.16.16.213
     - host: 172.16.16.216
 
-transmission:
-  host: 172.16.16.253
+#transmission:
+#  host: 172.16.16.253
 
 #zabbix:
 #  host: home.intra

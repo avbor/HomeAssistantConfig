@@ -51,6 +51,7 @@
     event_type: system_log_event
     event_data:
       level: ERROR
+  mode: parallel
   action:
     - service: counter.increment
       entity_id: counter.syslog_errors
@@ -61,6 +62,7 @@
     event_type: system_log_event
     event_data:
       level: WARNING
+  mode: parallel
   action:
     - service: counter.increment
       entity_id: counter.syslog_warnings
