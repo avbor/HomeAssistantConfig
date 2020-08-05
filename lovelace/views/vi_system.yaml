@@ -1,6 +1,6 @@
 title: System
 id: system
-icon: mdi:settings-outline
+icon: mdi:cog-outline
 cards:
   - type: vertical-stack
     cards:
