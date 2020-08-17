@@ -105,6 +105,7 @@ cards:
           icon_height: 32px
           icon: mdi:television-off
           entity: switch.samsung_7_series_43
+          state_color: false
           tap_action:
             action: call-service
             service: switch.turn_off
@@ -134,9 +135,9 @@ cards:
 #            entity: media_player.samsungtv_ue43ru7470
     - type: conditional
       conditions:
-        - entity: media_player.samsungtv_ue46es5507
+        - entity: media_player.samsung_ue46es5507
           state_not: "off"
-        - entity: media_player.samsungtv_ue46es5507
+        - entity: media_player.samsung_ue46es5507
           state_not: "unknown"
       card:
         type: vertical-stack
@@ -145,12 +146,12 @@ cards:
             content: >
               *Гостинная:*
           - type: media-control
-            entity: media_player.samsungtv_ue46es5507
+            entity: media_player.samsung_ue46es5507
     - type: conditional
       conditions:
-        - entity: media_player.samsungtv_ue32es5500
+        - entity: media_player.samsung_ue32es5500
           state_not: "off"
-        - entity: media_player.samsungtv_ue32es5500
+        - entity: media_player.samsung_ue32es5500
           state_not: "unknown"
       card:
         type: vertical-stack
@@ -159,21 +160,21 @@ cards:
             content: >
               *Кухня:*
           - type: media-control
-            entity: media_player.samsungtv_ue32es5500
-    - type: conditional
-      conditions:
-        - entity: media_player.samsungtv_ue40c5100
-          state_not: "off"
-        - entity: media_player.samsungtv_ue40c5100
-          state_not: "unknown"
-      card:
-        type: vertical-stack
-        cards:
-          - type: markdown
-            content: >
-              *Детская:*
-          - type: media-control
-            entity: media_player.samsungtv_ue40c5100
+            entity: media_player.samsung_ue32es5500
+#    - type: conditional
+#      conditions:
+#        - entity: media_player.samsungtv_ue40c5100
+#          state_not: "off"
+#        - entity: media_player.samsungtv_ue40c5100
+#          state_not: "unknown"
+#      card:
+#        type: vertical-stack
+#        cards:
+#          - type: markdown
+#            content: >
+#              *Детская:*
+#          - type: media-control
+#            entity: media_player.samsungtv_ue40c5100
 
 # --- Plex
   - type: vertical-stack
