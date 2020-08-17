@@ -36,6 +36,7 @@ cards:
             show_name: false
             icon: mdi:broom
             icon_height: 48px
+            state_color: false
             tap_action:
               action: call-service
               service: vacuum.start
@@ -56,6 +57,7 @@ cards:
             show_name: false
             icon: mdi:home-import-outline
             icon_height: 48px
+            state_color: false
             tap_action:
               action: call-service
               service: vacuum.return_to_base
