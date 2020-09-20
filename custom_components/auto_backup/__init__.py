@@ -4,10 +4,12 @@ import logging
 import os
 from datetime import datetime, timedelta, timezone
 from os.path import join, isfile
+from typing import List
 
 import aiohttp
 import async_timeout
 import voluptuous as vol
+from aiohttp import ClientSession
 from slugify import slugify
 
 import homeassistant.helpers.config_validation as cv
@@ -26,10 +28,16 @@ from homeassistant.const import ATTR_NAME
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType, ServiceCallType
+from .const import (
+    DOMAIN,
+    EVENT_SNAPSHOT_FAILED,
+    EVENT_SNAPSHOTS_PURGED,
+    EVENT_SNAPSHOT_SUCCESSFUL,
+    EVENT_SNAPSHOT_START,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "auto_backup"
 STORAGE_KEY = "snapshots_expiry"
 STORAGE_VERSION = 1
 
@@ -128,7 +136,7 @@ async def async_setup(hass: HomeAssistantType, config: ConfigType):
             )
         )
 
-    async def purge_service_handler(call: ServiceCallType):
+    async def purge_service_handler(_):
         """Handle Snapshot Purge Service Calls."""
         await auto_backup.purge_snapshots()
 
@@ -155,24 +163,22 @@ class AutoBackup:
     def __init__(
         self,
         hass: HomeAssistantType,
-        web_session,
+        web_session: ClientSession,
         auto_purge: bool,
         backup_timeout: int,
     ):
         self._hass = hass
-        self.web_session = web_session
+        self._web_session = web_session
         self._ip = os.environ["HASSIO"]
         self._auto_purge = auto_purge
         self._backup_timeout = backup_timeout
+
+        self._state = 0
 
         self._snapshots_store = Store(
             hass, STORAGE_VERSION, f"{DOMAIN}.{STORAGE_KEY}", encoder=JSONEncoder
         )
         self._snapshots_expiry = {}
-
-        self._pending_snapshots = 0
-        self.last_failure = None
-        self.update_sensor_callback = None
 
     async def load_snapshots_expiry(self):
         """Load snapshots expiry dates from home assistants storage."""
@@ -201,12 +207,16 @@ class AutoBackup:
         return None
 
     @property
-    def snapshots_expiry(self):
-        return self._snapshots_expiry
+    def monitored(self):
+        return len(self._snapshots_expiry)
 
     @property
-    def pending_snapshots(self):
-        return self._pending_snapshots
+    def purgeable(self):
+        return len(self.get_purgeable_snapshots())
+
+    @property
+    def state(self):
+        return self._state
 
     async def _replace_addon_names(self, snapshot_addons, addons=None):
         """Replace addon names with their appropriate slugs."""
@@ -300,10 +310,8 @@ class AutoBackup:
             data[ATTR_PASSWORD] = password
             del password  # remove from memory
 
-        # add to pending snapshots and update sensor.
-        self._pending_snapshots += 1
-        if self.update_sensor_callback:
-            self.update_sensor_callback()
+        self._state += 1
+        self._hass.bus.async_fire(EVENT_SNAPSHOT_START, {"name": data[ATTR_NAME]})
 
         # make request to create new snapshot.
         try:
@@ -313,19 +321,22 @@ class AutoBackup:
 
             _LOGGER.debug("Snapshot create result: %s" % result)
 
-            slug = result.get("data", {}).get("slug")
-            if slug is None:
-                error = "There may be a backup already in progress."
-                if data.get("message"):
-                    error = f"{error} {data.get('message')}"
-                raise HassioAPIError(error)
+            if result.get("result") == "error":
+                raise HassioAPIError(
+                    result.get("message")
+                    or "There may be a backup already in progress."
+                )
+
+            # the result must be ok and contain the slug
+            slug = result["data"]["slug"]
 
             # snapshot creation was successful
             _LOGGER.info(
                 "Snapshot created successfully; '%s' (%s)", data[ATTR_NAME], slug
             )
+            self._state -= 1
             self._hass.bus.async_fire(
-                f"{DOMAIN}.snapshot_successful", {"name": data[ATTR_NAME], "slug": slug}
+                EVENT_SNAPSHOT_SUCCESSFUL, {"name": data[ATTR_NAME], "slug": slug}
             )
 
             if keep_days is not None:
@@ -342,30 +353,28 @@ class AutoBackup:
 
         except HassioAPIError as err:
             _LOGGER.error("Error during backup. %s", err)
+            self._state -= 1
             self._hass.bus.async_fire(
-                f"{DOMAIN}.snapshot_failed",
-                {"name": data[ATTR_NAME], "error": str(err)},
+                EVENT_SNAPSHOT_FAILED, {"name": data[ATTR_NAME], "error": str(err)},
             )
-            self.last_failure = data[ATTR_NAME]
-
-        # remove from pending snapshots and update sensor.
-        self._pending_snapshots -= 1
-        if self.update_sensor_callback:
-            self.update_sensor_callback()
 
         # purging old snapshots
         if self._auto_purge:
             await self.purge_snapshots()
 
+    def get_purgeable_snapshots(self) -> List[str]:
+        """Returns the slugs of purgeable snapshots."""
+        now = datetime.now(timezone.utc)
+        return [
+            slug for slug, expires in self._snapshots_expiry.items() if expires < now
+        ]
+
     async def purge_snapshots(self):
         """Purge expired snapshots from Hass.io."""
-        now = datetime.now(timezone.utc)
-
         snapshots_purged = []
-        for slug, expires in self._snapshots_expiry.copy().items():
-            if expires < now:
-                if await self._purge_snapshot(slug):
-                    snapshots_purged.append(slug)
+        for slug in self.get_purgeable_snapshots():
+            if await self._purge_snapshot(slug):
+                snapshots_purged.append(slug)
 
         if len(snapshots_purged) == 1:
             _LOGGER.info("Purged 1 snapshot; %s", snapshots_purged[0])
@@ -378,12 +387,8 @@ class AutoBackup:
 
         if len(snapshots_purged) > 0:
             self._hass.bus.async_fire(
-                f"{DOMAIN}.purged_snapshots", {"snapshots": snapshots_purged}
+                EVENT_SNAPSHOTS_PURGED, {"snapshots": snapshots_purged}
             )
-
-            # update sensor after purge.
-            if self.update_sensor_callback:
-                self.update_sensor_callback()
         else:
             _LOGGER.debug("No snapshots required purging.")
 
@@ -439,7 +444,7 @@ class AutoBackup:
 
         try:
             with async_timeout.timeout(self._backup_timeout):
-                request = await self.web_session.request(
+                request = await self._web_session.request(
                     "get",
                     f"http://{self._ip}{command}",
                     headers={X_HASSIO: os.environ.get("HASSIO_TOKEN", "")},
@@ -480,7 +485,7 @@ class AutoBackup:
         """
         try:
             with async_timeout.timeout(timeout):
-                request = await self.web_session.request(
+                request = await self._web_session.request(
                     method,
                     f"http://{self._ip}{command}",
                     json=payload,

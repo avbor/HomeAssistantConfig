@@ -1,4 +1,4 @@
-from custom_components.hacs.share import get_hacs, SHARE
+from custom_components.hacs.share import SHARE, get_hacs
 
 
 class ValidationException(Exception):
@@ -26,7 +26,7 @@ class ValidationBase:
 
     async def _async_run_check(self):
         """DO NOT OVERRIDE THIS IN SUBCLASSES!"""
-        if self.hacs.action:
+        if self.hacs.system.action:
             self.logger.info(f"Running check '{self.__class__.__name__}'")
         try:
             await self.hacs.hass.async_add_executor_job(self.check)
