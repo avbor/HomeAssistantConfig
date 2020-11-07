@@ -1,5 +1,7 @@
+import datetime
 import logging
 import functools
+import time
 from logging import Logger
 
 import requests
@@ -10,12 +12,18 @@ _LOGGER: Logger = logging.getLogger(__name__)
 class SauresHA:
     _sid: str
     _debug: bool
+    _last_login_time: time
+    _last_getMeters_time: time
+    _sensors: list
 
     def __init__(self, email, password, is_debug):
         self.__session = requests.Session()
         self._email = email
         self._password = password
         self._debug = is_debug
+        self._last_login_time = datetime.datetime(2000, 1, 1, 1, 1, 1)
+        self._last_getMeters_time = datetime.datetime(2000, 1, 1, 1, 1, 1)
+        self._sensors = list()
 
     @property
     def sid(self):
@@ -25,14 +33,25 @@ class SauresHA:
     def re_auth(self):
         bln_return = False
         try:
-            auth_data = self.__session.post('https://api.saures.ru/login', data={
-                'email': self._email,
-                'password': self._password
-            }).json()
-            if not auth_data:
-                raise Exception('Invalid credentials')
-            self._sid = auth_data['data']['sid']
-            bln_return = auth_data['status'] != 'bad'
+            now = datetime.datetime.now()
+            period = now - self._last_login_time
+            if (period.total_seconds() / 60) > 5:
+                self._last_login_time = datetime.datetime.now()
+                auth_data = self.__session.post('https://api.saures.ru/login', data={
+                    'email': self._email,
+                    'password': self._password
+                }).json()
+                if not auth_data:
+                    raise Exception('Invalid credentials')
+                self._sid = auth_data['data']['sid']
+                bln_return = auth_data['status'] != 'bad'
+
+            else:
+                if self._sid == "":
+                    bln_return = False
+                else:
+                    bln_return = True
+
         except Exception:
             if self._debug:
                 _LOGGER.warning(Exception)
@@ -49,18 +68,38 @@ class SauresHA:
         return flats
 
     def get_meters(self, flat_id):
-        sensors = self.__session.get(f'https://api.saures.ru/1.0/object/meters', params={
-            'id': flat_id,
-            'sid': self._sid
-        }).json()['data']['sensors']
-        return functools.reduce(list.__add__, map(lambda sensor: sensor['meters'], sensors))
+        now = datetime.datetime.now()
+        period = now - self._last_getMeters_time
+        if (period.total_seconds() / 60) > 5:
+            self._last_getMeters_time = datetime.datetime.now()
+            try:
+                sensors = self.__session.get(f'https://api.saures.ru/1.0/object/meters', params={
+                    'id': flat_id,
+                    'sid': self._sid
+                }).json()['data']['sensors']
+                self._sensors = sensors
+            except Exception:
+                if self._debug:
+                    _LOGGER.warning(Exception)
+
+        return functools.reduce(list.__add__, map(lambda sensor: sensor['meters'], self._sensors))
 
     def get_controllers(self, flat_id):
-        controllers = self.__session.get(f'https://api.saures.ru/1.0/object/meters', params={
-            'id': flat_id,
-            'sid': self._sid
-        }).json()['data']['sensors']
-        return functools.reduce(list.__add__, map(lambda sensor: controllers, controllers))
+        now = datetime.datetime.now()
+        period = now - self._last_getMeters_time
+        if (period.total_seconds() / 60) > 5:
+            self._last_getMeters_time = datetime.datetime.now()
+            try:
+                controllers = self.__session.get(f'https://api.saures.ru/1.0/object/meters', params={
+                    'id': flat_id,
+                    'sid': self._sid
+                }).json()['data']['sensors']
+            except Exception:
+                if self._debug:
+                    _LOGGER.warning(Exception)
+
+            self._sensors = controllers
+        return functools.reduce(list.__add__, map(lambda sensor: self._sensors, self._sensors))
 
     def get_meter(self, flat_id, serial_number):
         meters = self.get_meters(flat_id)
@@ -86,6 +125,7 @@ class Meter:
         self.approve_dt = data.get('approve_dt')
 
         self.values = data.get('vals', [])
+
         if len(self.values) == 2:
             self.value = '{0}/{1}'.format(self.values[0], self.values[1])
             self.t1 = self.values[0]
@@ -93,13 +133,13 @@ class Meter:
             self.t3 = '-'
             self.t4 = '-'
         elif len(self.values) == 3:
-            self.value = '{0}/{1}/{2}'.format(self.values[0], self.values[1],self.values[2])
+            self.value = '{0}/{1}/{2}'.format(self.values[0], self.values[1], self.values[2])
             self.t1 = self.values[0]
             self.t2 = self.values[1]
             self.t3 = self.values[2]
             self.t4 = '-'
         elif len(self.values) == 4:
-            self.value = '{0}/{1}/{2}/{3}'.format(self.values[0], self.values[1], self.values[2],self.values[3])
+            self.value = '{0}/{1}/{2}/{3}'.format(self.values[0], self.values[1], self.values[2], self.values[3])
             self.t1 = self.values[0]
             self.t2 = self.values[1]
             self.t3 = self.values[2]

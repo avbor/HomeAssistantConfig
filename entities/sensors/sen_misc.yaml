@@ -27,6 +27,8 @@
   email: !secret saures_user
   password: !secret saures_pass
   flat_id: !secret saures_flat_id
+  scan_interval:
+    minutes: 60
   counters_sn: 
       - "13193152"
       - 09-104476

@@ -1,10 +1,14 @@
 import logging
 from typing import List, Any, Callable
 import homeassistant.components.binary_sensor
+from homeassistant.helpers.event import track_time_interval
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity import Entity
 import voluptuous as vol
+import datetime
 import re
+import time
+from datetime import timedelta
 
 from homeassistant.const import (
     CONF_PASSWORD,
@@ -14,21 +18,26 @@ from homeassistant.const import (
 from . import (
     CONF_FLAT_ID,
     CONF_COUNTERS_SN,
-    CONF_DEBUG
+    CONF_DEBUG,
+    CONF_SCAN_INTERVAL,
 )
 
 _LOGGER = logging.getLogger(__name__)
+SCAN_INTERVAL = timedelta(minutes=1)
+
 
 PLATFORM_SCHEMA = homeassistant.components.binary_sensor.PLATFORM_SCHEMA.extend({
     vol.Required(CONF_EMAIL): cv.string,
     vol.Required(CONF_PASSWORD): cv.string,
     vol.Required(CONF_FLAT_ID): cv.positive_int,
     vol.Optional(CONF_COUNTERS_SN): cv.ensure_list,
+    vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL):
+        vol.All(cv.time_period, cv.positive_timedelta),
     vol.Optional(CONF_DEBUG, default=False): cv.boolean,
 })
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
+def setup_platform(hass, config, add_entities, discovery_info=None, scan_interval=SCAN_INTERVAL):
     """Setup the sensor platform."""
 
     from .sauresha import SauresHA
@@ -37,7 +46,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     serial_numbers = config.get(CONF_COUNTERS_SN, [])
     _hass = hass
     _discovery_info = discovery_info
+    scan_interval = config.get(CONF_SCAN_INTERVAL)
     is_debug = config.get(CONF_DEBUG)
+
+    if is_debug:
+        _LOGGER.warning("scan_interval=" + str(scan_interval))
 
     controller = SauresHA(
         config.get('email'),
@@ -56,10 +69,12 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
                 _LOGGER.warning("ID flat:" + str(val.get('house')) + " : " + str(val.get('id')))
 
     if int(flat_id) > 0:
-        create_sensor: Callable[[Any], SauresBinarySensor] = lambda serial_number: SauresBinarySensor(controller,
+        create_sensor: Callable[[Any], SauresBinarySensor] = lambda serial_number: SauresBinarySensor(hass,
+                                                                                                      controller,
                                                                                                       flat_id,
                                                                                                       serial_number,
-                                                                                                      is_debug)
+                                                                                                      is_debug,
+                                                                                                      scan_interval)
         sensors: List[SauresBinarySensor] = list(map(create_sensor, serial_numbers))
 
         if sensors:
@@ -69,7 +84,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 class SauresBinarySensor(Entity):
     """Representation of a BinarySensor."""
 
-    def __init__(self, controller, flat_id, serial_number, is_debug):
+    def __init__(self, hass, controller, flat_id, serial_number, is_debug, scan_interval):
         """Initialize the sensor."""
 
         self.controller = controller
@@ -77,6 +92,23 @@ class SauresBinarySensor(Entity):
         self.serial_number = str(serial_number)
         self._attributes = dict()
         self.isDebug = is_debug
+        self.scan_interval = scan_interval
+
+        self.set_scan_interval(hass, scan_interval)
+
+    def set_scan_interval(self, hass: object, scan_interval: timedelta):
+        """Update scan interval."""
+
+        def refresh(event_time):
+            """Get the latest data from Transmission."""
+            self.update()
+
+        if self.isDebug:
+            _LOGGER.warning("scan_interval=" + str(scan_interval))
+
+        track_time_interval(
+            hass, refresh, scan_interval
+        )
 
     @property
     def current_meter(self):
@@ -129,6 +161,13 @@ class SauresBinarySensor(Entity):
             })
         else:
             _LOGGER.error("API ERROR during Auth process")
+
+        self._attributes.update({
+            'last_update_time': datetime.datetime.now()})
+
+        self._attributes.update({
+            'next_update_time': datetime.datetime.now() + self.scan_interval})
+
         return return_value
 
     def update(self):

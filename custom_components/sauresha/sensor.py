@@ -1,6 +1,8 @@
 # Provides a sensor for Saures.
+import datetime
 import logging
 import re
+import time
 from datetime import timedelta
 from typing import List, Any, Callable
 
@@ -84,6 +86,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None, scan_interva
                                                                                                           flat_id, sn,
                                                                                                           is_debug,
                                                                                                           scan_interval)
+
         my_controllers: List[SauresControllerSensor] = list(map(create_my_controller, sns))
 
         if my_controllers:
@@ -104,6 +107,7 @@ class SauresSensor(Entity):
         self.isDebug = is_debug
         self._attributes = dict()
         self._state = ""
+        self.scan_interval = scan_interval
 
         self.set_scan_interval(hass, scan_interval)
 
@@ -193,6 +197,12 @@ class SauresSensor(Entity):
 
                 self.isStart = False
 
+        self._attributes.update({
+            'last_update_time': datetime.datetime.now()})
+
+        self._attributes.update({
+            'next_update_time': datetime.datetime.now() + self.scan_interval})
+
         return str_return_value
 
     def update(self):
@@ -211,6 +221,7 @@ class SauresControllerSensor(Entity):
         self._state = ""
         self.isDebug = is_debug
         self._attributes = dict()
+        self.scan_interval = scan_interval
 
         self.set_scan_interval(hass, scan_interval)
 
@@ -279,7 +290,13 @@ class SauresControllerSensor(Entity):
                 'requests': my_controller.requests,
                 'log': my_controller.log,
                 'cap_state': my_controller.cap_state,
-                'power_supply': my_controller.power_supply})
+                'power_supply': my_controller.power_supply,
+            })
+        self._attributes.update({
+            'last_update_time': datetime.datetime.now()})
+
+        self._attributes.update({
+            'next_update_time': datetime.datetime.now() + self.scan_interval})
 
         return str_return_value
 
