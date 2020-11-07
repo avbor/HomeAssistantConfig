@@ -112,19 +112,19 @@
     data_template:
       message: "Сегодня полнолуние!"
 
-- alias: Оповещение о протечке [notify to stall]
-  initial_state: true
-  trigger:
-    platform: state
-    entity_id: binary_sensor.sauresha_5555_000111
-    to: "True"
-  action:
-    service: notify.telegram_stall
-    data:
-      title: "*Внимание!*"
-      message: |
-        Сработал датчик протечки.
-        Водопроводные краны перекрыты!
+#- alias: Оповещение о протечке [notify to stall]
+#  initial_state: true
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.sauresha_5555_000111
+#    to: "True"
+#  action:
+#    service: notify.telegram_stall
+#    data:
+#      title: "*Внимание!*"
+#      message: |
+#        Сработал датчик протечки.
+#        Водопроводные краны перекрыты!
 
 - alias: Оповещение о протечке Aqara в Кладовой [notify to stall]
   initial_state: true
