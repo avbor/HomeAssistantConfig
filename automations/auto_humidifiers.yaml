@@ -30,7 +30,7 @@
 - alias: 'Увлажнение детской - Старт [время]'
   trigger:
     platform: time
-    at: "22:00:00"
+    at: "20:00:00"
   condition:
     - condition: state
       entity_id: fan.xiaomi_miio_device
