@@ -51,3 +51,26 @@
 #  name: Baurer Camera
 #  input: !secret baurercamera_stream_url
 #  extra_arguments: -an
+- platform: xiaomi_cloud_map_extractor
+  name: Mi Vacuum Cleaner 1S Cam
+  host: 172.16.16.219
+  token: !secret mi_vacuum_1s_token
+  username: !secret xiaomi_cloud_username
+  password: !secret xiaomi_cloud_password
+  draw: ['all']
+  colors:
+    color_charger: [0, 255, 0, 180]
+    color_robo: [0 , 0, 255]
+  map_transformation:
+    scale: 2
+#    rotate: 180
+    trim:
+      top: 10
+      bottom: 20
+      left: 20
+      right: 17
+  attributes:
+    - calibration_points
+  scan_interval:
+    seconds: 60
+  auto_update: true

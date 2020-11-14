@@ -64,3 +64,16 @@ cards:
               service_data:
                 entity_id: vacuum.xiaomi_vacuum_cleaner
             entity: vacuum.xiaomi_vacuum_cleaner
+  - type: picture-glance
+#    title: Карта
+    show_state: false
+    camera_image: camera.mi_vacuum_cleaner_1s_cam
+    entities:
+      - entity: camera.mi_vacuum_cleaner_1s_cam
+        icon: mdi:reload
+        show_state: false
+        tap_action:
+          action: call-service
+          service: homeassistant.update_entity
+          service_data:
+            entity_id: camera.mi_vacuum_cleaner_1s_cam
