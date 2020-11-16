@@ -176,10 +176,10 @@ tplink:
 
 telegram_bot:
   - platform: webhooks # or "polling"
-    url: !secret tlg_webhook_proxy_url
+#    url: !secret tlg_webhook_proxy_url
     api_key: !secret telegram_bot_token
-    trusted_networks:
-      - !secret tlg_webhook_proxy_ip
+#    trusted_networks:
+#      - !secret tlg_webhook_proxy_ip
     allowed_chat_ids:
       - !secret tlg_stall_id
       - !secret tlg_iborisochka_id
