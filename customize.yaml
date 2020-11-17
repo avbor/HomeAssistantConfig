@@ -44,6 +44,10 @@ sensor.temperature_158d0003931a55:
   friendly_name: Ванная
 sensor.humidity_158d0003931a55:
   friendly_name: Ванная
+sensor.a4c138414e9a_temperature:
+  friendly_name: Туалет
+sensor.a4c138414e9a_humidity:
+  friendly_name: Туалет
 binary_sensor.switch_158d00035ff631:
   friendly_name: Кнопка на Кухне
 binary_sensor.switch_158d00033efd9e:
