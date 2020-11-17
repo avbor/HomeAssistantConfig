@@ -125,6 +125,7 @@
         Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
         Люстра на кухне: *{{ states('light.kukhnia_liustra') }}*
         Свет в кладовой: *{{ states('light.sonoff_1000b6831b') }}*
+        Лампа на столе в гостиной: *{{ states('light.0x86bd7fffe616b72_light') }}*
         `-= Розетки =-`
         Розетка TP-Link SmartPlug 01: *{{ states('switch.tplink_smartplug_01') }}*
         Розетка TP-Link SmartPlug 02: *{{ states('switch.tplink_smartplug_02') }}*

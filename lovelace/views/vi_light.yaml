@@ -89,6 +89,19 @@ cards:
     cards:
       - type: markdown
         content: >
+          ### Гостиная:
+      - type: conditional
+        conditions:
+          - entity: light.0x86bd7fffe616b72_light
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.0x86bd7fffe616b72_light
+          name: Рабочий стол
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
           ### Недоступные лампы:
       - type: entity-filter
         entities:
@@ -107,5 +120,8 @@ cards:
           - entity: light.sonoff_1000b6831b
             name: Свет в Кладовой
             icon: mdi:vanity-light
+          - entity: light.0x86bd7fffe616b72_light
+            name: Лампа на столе в Гостиной
+            icon: mdi:desk-lamp
         state_filter:
           - unavailable

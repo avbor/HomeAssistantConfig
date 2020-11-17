@@ -22,3 +22,6 @@
     lamp_status_kladovaya:
       device_class: power
       value_template: "{{ is_state('light.sonoff_1000b6831b', 'on') }}"
+    lamp_status_workdesk_gostinaya:
+      device_class: power
+      value_template: "{{ is_state('light.0x86bd7fffe616b72_light', 'on') }}"

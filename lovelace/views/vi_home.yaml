@@ -176,6 +176,9 @@ cards:
           - entity: binary_sensor.lamp_status_kladovaya
             name: Свет в Кладовой
             icon: mdi:vanity-light
+          - entity: binary_sensor.lamp_status_workdesk_gostinaya
+            name: Лампа на столе в гостиной
+            icon: mdi:desk-lamp
           # Кондиционеры
           - type: section
           - entity: binary_sensor.ac_nursery_status
