@@ -232,3 +232,22 @@
     entity_id: light.spalnia_stol
     data:
       effect: SunriseBW
+
+- alias: 'Лампа на столе в гостинной (Кнопка Xiaomi)'
+  trigger:
+#    platform: state
+#    entity_id: sensor.0x158d00035a9bc5_action
+#    to: single
+#  action:
+#    service: light.toggle
+#    data:
+#      entity_id: light.0x86bd7fffe616b72_light
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: sensor.0x158d00035a9bc5_action
+      click_type: single
+  action:
+    service: light.toggle
+    data:
+      entity_id: light.0x86bd7fffe616b72_light

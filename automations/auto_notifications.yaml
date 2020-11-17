@@ -218,5 +218,5 @@
     data_template:
       title: "*Найдено новое устройство в сети:*"
       message: |
-        {{trigger.event.data.host_name}}
+        {{trigger.event.data.ip}}
         ({{trigger.event.data.entity_id}})
