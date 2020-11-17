@@ -200,6 +200,8 @@ cards:
             name: Спальня
           - entity: sensor.temperature_158d0003931a55
             name: Ванная
+          - entity: sensor.a4c138414e9a_temperature
+            name: Туалет
           - entity: sensor.temperature_158d00039e2ecb
             name: Кладовая
           # Разное
