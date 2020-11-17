@@ -195,3 +195,7 @@ cards:
           - entity: sensor.battery_status_158d0003d54725
             name: Датчик кондиционера (Гостиная)
             icon: mdi:battery-outline
+          - entity: sensor.0x158d00035a9bc5_battery
+            name: Кнопка (Лампа на столе - Гостинная)
+          - entity: sensor.a4c138414e9a_battery
+            name: Датчик температуры (Туалет)
