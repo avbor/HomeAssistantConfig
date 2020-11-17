@@ -18,7 +18,7 @@ homeassistant:
   longitude: !secret home_longitude
   elevation: !secret home_elevation
   customize: !include customize.yaml
-  whitelist_external_dirs:
+  allowlist_external_dirs:
     - /config/
     - /config/www/weather_icons/
     - /config/www/cam_snapshots/
