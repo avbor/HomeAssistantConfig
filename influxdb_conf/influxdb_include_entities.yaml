@@ -14,11 +14,13 @@
 - sensor.temperature_158d0003230618
 - sensor.temperature_158d0003931b0e
 - sensor.temperature_158d00039e2ecb
+- sensor.a4c138414e9a_temperature
 - sensor.humidity_158d0003931a55
 - sensor.humidity_158d0003931aec
 - sensor.humidity_158d0003230618
 - sensor.humidity_158d0003931b0e
 - sensor.humidity_158d00039e2ecb
+- sensor.a4c138414e9a_humidity
 - sensor.pressure_158d0003230618
 - sensor.local_pressure_mmhg
 - binary_sensor.door_window_sensor_158d00031c790f
@@ -43,6 +45,8 @@
 - sensor.battery_status_158d0004073b67
 - sensor.battery_status_158d0003d54725
 - sensor.battery_status_158d00033efd9e
+- sensor.a4c138414e9a_battery
+- sensor.0x158d00035a9bc5_battery
 # Power sensors
 - sensor.tplinksmartplug01_volts
 - sensor.tplinksmartplug01_amps

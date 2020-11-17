@@ -202,39 +202,6 @@ cards:
                   service: scene.turn_on
                   service_data:
                     entity_id: scene.pra49izcxfgbwmmo
-  # Ванная
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### Ванная:
-      - type: horizontal-stack
-        cards:
-          - type: sensor
-            entity: sensor.temperature_158d0003931a55
-            name: Температура
-            graph: line
-          - type: sensor
-            entity: sensor.humidity_158d0003931a55
-            name: Влажность
-            graph: line
-  # Туалет
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### Туалет:
-      - type: vertical-stack
-        cards:
-          - type: markdown
-            content: >
-              **Бойлер:**
-          - type: entities
-            state_color: true
-            entities:
-              - entity: switch.tplink_smartplug_01
-                name: Electrolux Centurio IQ
-                icon: mdi:water-boiler
   # Кладовая
   - type: vertical-stack
     cards:
@@ -251,3 +218,49 @@ cards:
             entity: sensor.humidity_158d00039e2ecb
             name: Влажность
             graph: line
+  # Ванна и Туалет
+  - type: vertical-stack
+    cards:
+    # Ванная
+    - type: vertical-stack
+      cards:
+        - type: markdown
+          content: >
+            ### Ванная:
+        - type: horizontal-stack
+          cards:
+            - type: sensor
+              entity: sensor.temperature_158d0003931a55
+              name: Температура
+              graph: line
+            - type: sensor
+              entity: sensor.humidity_158d0003931a55
+              name: Влажность
+              graph: line
+    # Туалет
+    - type: vertical-stack
+      cards:
+        - type: markdown
+          content: >
+            ### Туалет:
+        - type: horizontal-stack
+          cards:
+            - type: sensor
+              entity: sensor.a4c138414e9a_temperature
+              name: Температура
+              graph: line
+            - type: sensor
+              entity: sensor.a4c138414e9a_humidity
+              name: Влажность
+              graph: line
+        - type: vertical-stack
+          cards:
+            - type: markdown
+              content: >
+                **Бойлер:**
+            - type: entities
+              state_color: true
+              entities:
+                - entity: switch.tplink_smartplug_01
+                  name: Electrolux Centurio IQ
+                  icon: mdi:water-boiler
