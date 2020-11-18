@@ -27,6 +27,7 @@ homeassistant:
 # Features
 #################################################
 
+api:
 config:
 hassio:
 system_health:
