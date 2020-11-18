@@ -55,6 +55,7 @@ cards:
           - sensor.temperature_158d0003931aec
           - sensor.temperature_158d0003931b0e
           - sensor.temperature_158d0003931a55
+          - sensor.a4c138414e9a_temperature
           - sensor.temperature_158d00039e2ecb
       - type: markdown
         content: >
@@ -67,6 +68,7 @@ cards:
           - sensor.humidity_158d0003931aec
           - sensor.humidity_158d0003931b0e
           - sensor.humidity_158d0003931a55
+          - sensor.a4c138414e9a_humidity
           - sensor.humidity_158d00039e2ecb
   - type: vertical-stack
     cards:
