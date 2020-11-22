@@ -72,3 +72,21 @@
       value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'fan_speed') }}"
     xiaomi_gas_density:
       value_template: "{{ state_attr('binary_sensor.natgas_sensor_158d000413b210', 'Density') }}"
+- platform: min_max
+  name: Average Temperature In Flat
+  type: median
+  entity_ids:
+    - sensor.temperature_158d0003931aec
+    - sensor.temperature_158d0003230618
+    - sensor.temperature_158d0003931b0e
+    - sensor.temperature_158d00039e2ecb
+    - sensor.a4c138414e9a_temperature
+- platform: min_max
+  name: Average Humidity In Flat
+  type: median
+  entity_ids:
+    - sensor.humidity_158d0003931aec
+    - sensor.humidity_158d0003230618
+    - sensor.humidity_158d0003931b0e
+    - sensor.humidity_158d00039e2ecb
+    - sensor.a4c138414e9a_humidity

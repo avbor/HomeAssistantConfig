@@ -15,12 +15,14 @@
 - sensor.temperature_158d0003931b0e
 - sensor.temperature_158d00039e2ecb
 - sensor.a4c138414e9a_temperature
+- sensor.average_temperature_in_flat
 - sensor.humidity_158d0003931a55
 - sensor.humidity_158d0003931aec
 - sensor.humidity_158d0003230618
 - sensor.humidity_158d0003931b0e
 - sensor.humidity_158d00039e2ecb
 - sensor.a4c138414e9a_humidity
+- sensor.average_humidity_in_flat
 - sensor.pressure_158d0003230618
 - sensor.local_pressure_mmhg
 - binary_sensor.door_window_sensor_158d00031c790f
