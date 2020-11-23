@@ -130,8 +130,10 @@
   initial_state: true
   trigger: 
     platform: state
-    entity_id: switch.sonoff_1000ab3c28
-    to: "on"
+#    entity_id: switch.sonoff_1000ab3c28
+#    to: "on"
+    entity_id: binary_sensor.0x158d00044ee524_contact
+    to: "off"
   action:
     service: notify.telegram_stall
     data:
