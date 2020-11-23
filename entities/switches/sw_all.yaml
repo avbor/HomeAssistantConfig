@@ -8,3 +8,13 @@
   turn_off:
     service: switch.turn_off
     entity_id: switch.samsung_7_series_43
+- platform: xiaomi_miio
+  host: 172.16.16.235
+  token: !secret xiaomi_smartplug_wifi_01_token
+  model: chuangmi.plug.hmi206
+  name: Mi-SmartPlugWiFi-01
+- platform: xiaomi_miio
+  host: 172.16.16.236
+  token: !secret xiaomi_smartplug_wifi_02_token
+  model: chuangmi.plug.hmi206
+  name: Mi-SmartPlugWiFi-02

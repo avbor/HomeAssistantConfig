@@ -125,6 +125,10 @@ cards:
             name: Розетка Xiaomi ZigBee Plug 01
           - entity: switch.plug_158d000391fb00
             name: Розетка Xiaomi ZigBee Plug 02
+          - entity: switch.mi_smartplugwifi_01
+            name: Розетка Xiaomi WiFi Plig 01
+          - entity: switch.mi_smartplugwifi_02
+            name: Розетка Xiaomi WiFi Plig 02
           - entity: switch.tplink_smartplug_01
             name: Розетка TP-Link SmartPlug 01
           - entity: switch.tplink_smartplug_02
@@ -133,9 +137,13 @@ cards:
         content: >
           ### Недоступные розетки:
       - type: entity-filter
+        card:
+          show_header_toggle: false
         entities:
           - switch.tplink_smartplug_01
           - switch.tplink_smartplug_02
+          - switch.mi_smartplugwifi_01
+          - switch.mi_smartplugwifi_02
           - switch.plug_158d00033b702e
           - switch.plug_158d000391fb00
         state_filter:
