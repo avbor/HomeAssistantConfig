@@ -30,6 +30,8 @@
 - device_tracker.oneplus3t
 - device_tracker.redmi5a_redmi5a
 - sensor.xiaomi_gas_density
+- binary_sensor.0x158d00044ee524_contact
+- binary_sensor.neptun_water_leakage
 # Sensor batteries
 - sensor.battery_status_158d0003230618
 - sensor.battery_status_158d0003931aec
@@ -49,6 +51,8 @@
 - sensor.battery_status_158d00033efd9e
 - sensor.a4c138414e9a_battery
 - sensor.0x158d00035a9bc5_battery
+- sensor.0x158d00044ee524_battery
+- sensor.0x158d0004ab468e_battery
 # Power sensors
 - sensor.tplinksmartplug01_volts
 - sensor.tplinksmartplug01_amps
