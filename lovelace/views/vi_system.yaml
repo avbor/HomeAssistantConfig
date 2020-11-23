@@ -200,3 +200,7 @@ cards:
             name: Кнопка (Лампа на столе - Гостиная)
           - entity: sensor.a4c138414e9a_battery
             name: Датчик температуры (Туалет)
+          - entity: sensor.0x158d00044ee524_battery
+            name: Нептун (датчик закрытия кранов)
+          - entity: sensor.0x158d0004ab468e_battery
+            name: Кнопка Aqara 1
