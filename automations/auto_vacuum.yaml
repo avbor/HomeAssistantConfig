@@ -117,7 +117,7 @@
     platform: state
     entity_id: input_select.vacuum_power
   action:
-    - service_template: >
+    - service: >
         {% if trigger.to_state.state == 'Silent' %}
           script.set_vacuum_power_silent
         {% elif trigger.to_state.state == 'Standard' %}
