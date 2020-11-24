@@ -70,12 +70,14 @@ class SauresHA:
     def get_meters(self, flat_id):
         now = datetime.datetime.now()
         period = now - self._last_getMeters_time
+        date_time = now.strftime("%Y-%m-%dT%H:%M:%S")
         if (period.total_seconds() / 60) > 5:
             self._last_getMeters_time = datetime.datetime.now()
             try:
                 sensors = self.__session.get(f'https://api.saures.ru/1.0/object/meters', params={
                     'id': flat_id,
-                    'sid': self._sid
+                    'sid': self._sid,
+                    'date': date_time
                 }).json()['data']['sensors']
                 self._sensors = sensors
             except Exception:
@@ -178,10 +180,10 @@ class Controller:
         self.power_supply = bool(data.get('power_supply'))
 
 
-if __name__ == "__main__":
-    s = SauresHA('demo@saures.ru', 'demo')
-    meter = s.get_flats()
-    meter = s.get_meter(358, '136661693')
-    print(meter.data)
+#if __name__ == "__main__":
+    #s = SauresHA('demo@saures.ru', 'demo')
+    #meter = s.get_flats()
+   # meter = s.get_meter(358, '136661693')
+    # print(meter.data)
     # controller = s.get_controller(4731, '155100360017')
     # print(controller.data)

@@ -25,7 +25,6 @@ from . import (
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(minutes=1)
 
-
 PLATFORM_SCHEMA = homeassistant.components.binary_sensor.PLATFORM_SCHEMA.extend({
     vol.Required(CONF_EMAIL): cv.string,
     vol.Required(CONF_PASSWORD): cv.string,
@@ -159,6 +158,9 @@ class SauresBinarySensor(Entity):
                 'meter_id': meter.id,
                 'input': meter.input
             })
+            if meter.state is not None:
+                if meter.state.upper() == "ОБРЫВ":
+                    return_value = True
         else:
             _LOGGER.error("API ERROR during Auth process")
 
