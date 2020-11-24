@@ -26,4 +26,4 @@
       friendly_name: Датчики протечки Нептун
       device_class: 'moisture'
       value_template: >
-        {{ is_state('binary_sensor.0x158d00044ee524_contact', "off") }}
+        {{ is_state('input_boolean.neptun_activated', "on") }}

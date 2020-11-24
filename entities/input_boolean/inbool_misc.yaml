@@ -1,0 +1,7 @@
+#################################################
+# Input Boolean
+#################################################
+
+neptun_activated:
+  name: Neptune Activated
+  icon: mdi:help-network
