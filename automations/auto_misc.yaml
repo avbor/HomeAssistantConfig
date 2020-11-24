@@ -9,6 +9,7 @@
     entity_id: binary_sensor.0x158d00044ee524_contact
     from: 'on'
     to: 'off'
+    for: "00:00:05"
   condition:
     condition: state
     entity_id: input_boolean.neptun_activated
@@ -25,6 +26,7 @@
     entity_id: binary_sensor.0x158d00044ee524_contact
     from: 'on'
     to: 'off'
+    for: "00:00:05"
   condition:
     condition: state
     entity_id: input_boolean.neptun_activated

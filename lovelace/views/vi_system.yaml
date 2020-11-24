@@ -93,17 +93,31 @@ cards:
             icon: mdi:motion-sensor
       - type: markdown
         content: >
-          ### Stop Sequence:
-      - type: glance
-        entities:
-        - entity: script.start_vacuum_hallway_by_door_sensor
-          name: Уборка прихожей (Датчик)
-          icon: mdi:script-text-outline
+          ### Scripts:
+      - type: horizontal-stack
+        cards:
+        - type: button
+          entity: script.start_vacuum_hallway_by_door_sensor
+          name: Отмена уборки прихожей
+          icon: mdi:stop-circle-outline
+          icon_height: 64px
+          show_state: true
           tap_action: 
             action: call-service
             service: script.turn_off
             service_data:
               entity_id: script.start_vacuum_hallway_by_door_sensor
+        - type: button
+          entity: binary_sensor.neptun_water_leakage
+          name: Сброс состояния Нептуна
+          icon: mdi:water-off
+          icon_height: 64px
+          show_state: true
+          tap_action:
+            action: call-service
+            service: script.turn_on
+            service_data:
+              entity_id: script.neptun_state_reset
 #      - type: entity-button
 #        name: Уборка прихожей
 #        tap_action:
