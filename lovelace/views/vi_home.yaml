@@ -167,6 +167,9 @@ cards:
           - entity: binary_sensor.lamp_status_spalnia_stol
             name: Лампа в спальне
             icon: mdi:desk-lamp
+          - entity: binary_sensor.lamp_status_kukhnia_spots
+            name: Споты на кухне
+            icon: mdi:spotlight-beam
           - entity: binary_sensor.lamp_status_kukhnia_lenta
             name: Подсветка кухни
             icon: mdi:led-strip-variant
@@ -174,8 +177,11 @@ cards:
             name: Люстра на  кухне
             icon: mdi:ceiling-light
           - entity: binary_sensor.lamp_status_kladovaya
-            name: Свет в Кладовой
+            name: Свет в кладовой
             icon: mdi:vanity-light
+          - entity: binary_sensor.lamp_status_gostinaya_bra
+            name: Бра в гостиной
+            icon: mdi:wall-sconce-flat
           - entity: binary_sensor.lamp_status_workdesk_gostinaya
             name: Лампа на столе в гостиной
             icon: mdi:desk-lamp

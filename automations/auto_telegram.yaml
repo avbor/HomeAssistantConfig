@@ -123,10 +123,12 @@
         Лампа в спальне: *{{ states('light.spalnia_stol') }}*
         Люстра в детской: *{{ states('light.detskaia') }}*
         Подсветка окна в детской: *{{ states('light.detskaia_podsvetka_na_okne') }}*
+        Споты на кухне: *{{ states('light.sonoff_1000b72483') }}*
         Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
         Люстра на кухне: *{{ states('light.kukhnia_liustra') }}*
         Свет в кладовой: *{{ states('light.sonoff_1000b6831b') }}*
         Лампа на столе в гостиной: *{{ states('light.0x86bd7fffe616b72_light') }}*
+        Бра в гостиной: *{{ states('light.sonoff_1000ab3c28') }}*
         `-= Розетки =-`
         Розетка TP-Link SmartPlug 01: *{{ states('switch.tplink_smartplug_01') }}*
         Розетка TP-Link SmartPlug 02: *{{ states('switch.tplink_smartplug_02') }}*

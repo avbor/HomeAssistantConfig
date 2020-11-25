@@ -22,6 +22,10 @@ script.radio_stop:
   icon: mdi:stop
 light.sonoff_1000b6831b:
   friendly_name: Кладовая
+light.sonoff_1000b72483:
+  friendly_name: Кухня - Споты
+light.sonoff_1000ab3c28:
+  friendly_name: Гостиная - Бра
 sensor.temperature_158d0003230618:
   friendly_name: Гостинная
 sensor.humidity_158d0003230618:

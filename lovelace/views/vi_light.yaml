@@ -2,6 +2,8 @@ title: Light
 id: light
 icon: mdi:lightbulb-on-outline
 cards:
+
+  # Детская
   - type: vertical-stack
     cards:
       - type: markdown
@@ -31,6 +33,32 @@ cards:
                   icon: mdi:radio
                 - entity: input_datetime.wakeup_radio_in_nursery
                   name: "Время включения радио:"
+
+  # Гостиная
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Гостиная:
+      - type: conditional
+        conditions:
+          - entity: light.0x86bd7fffe616b72_light
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.0x86bd7fffe616b72_light
+          name: Рабочий стол
+
+      - type: conditional
+        conditions:
+          - entity: light.sonoff_1000ab3c28
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.sonoff_1000ab3c28
+          name: Бра
+
+  # Кухня
   - type: vertical-stack
     cards:
       - type: markdown
@@ -38,11 +66,12 @@ cards:
           ### Кухня:
       - type: conditional
         conditions:
-          - entity: light.kukhnia_lenta
+          - entity: light.sonoff_1000b72483
             state_not: "unavailable"
         card:
           type: light
-          entity: light.kukhnia_lenta
+          entity: light.sonoff_1000b72483
+          name: Споты
       - type: conditional
         conditions:
           - entity: light.kukhnia_liustra
@@ -50,6 +79,17 @@ cards:
         card:
           type: light
           entity: light.kukhnia_liustra
+          name: Люстра
+      - type: conditional
+        conditions:
+          - entity: light.kukhnia_lenta
+            state_not: "unavailable"
+        card:
+          type: light
+          entity: light.kukhnia_lenta
+          name: Подсветка
+
+  # Спальня
   - type: vertical-stack
     cards:
       - type: markdown
@@ -72,6 +112,8 @@ cards:
                   icon: mdi:weather-sunset-up
                 - entity: input_datetime.sunrise_in_bedroom
                   name: "Время включения:"
+
+  # Кладовая
   - type: vertical-stack
     cards:
       - type: markdown
@@ -85,19 +127,8 @@ cards:
           type: light
           entity: light.sonoff_1000b6831b
           name: Кладовая
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### Гостиная:
-      - type: conditional
-        conditions:
-          - entity: light.0x86bd7fffe616b72_light
-            state_not: "unavailable"
-        card:
-          type: light
-          entity: light.0x86bd7fffe616b72_light
-          name: Рабочий стол
+
+  # Недоступные лампы
   - type: vertical-stack
     cards:
       - type: markdown
@@ -123,5 +154,11 @@ cards:
           - entity: light.0x86bd7fffe616b72_light
             name: Лампа на столе в Гостиной
             icon: mdi:desk-lamp
+          - entity: light.sonoff_1000b72483
+            name: Споты на Кухне
+            icon: mdi:spotlight-beam
+          - entity: light.sonoff_1000ab3c28
+            name: Бра в гостиной
+            icon: mdi:wall-sconce-flat
         state_filter:
           - unavailable
