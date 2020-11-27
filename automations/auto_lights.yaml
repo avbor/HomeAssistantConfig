@@ -276,3 +276,13 @@
     - service: light.toggle
       data:
           entity_id: light.kukhnia_liustra
+
+- alias: 'Кнопка Aqara 1 shake'
+  trigger:
+    platform: state
+    entity_id: sensor.0x158d0004ab468e_action
+    to: 'shake'
+  action:
+    - service: switch.toggle
+      data:
+          entity_id: switch.plug_158d000391fb00
