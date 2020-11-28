@@ -16,11 +16,13 @@ cards:
         card:
           type: vertical-stack
           cards:
-            - type: light
-              entity: light.detskaia
-            - type: light
-              entity: light.detskaia_podsvetka_na_okne
-              name: Подсветка на окне
+            - type: horizontal-stack
+              cards:
+              - type: light
+                entity: light.detskaia
+              - type: light
+                entity: light.detskaia_podsvetka_na_okne
+                name: Подсветка на окне
             - type: entities
               entities:
                 - entity: automation.sunrise_lighting_nursery
@@ -40,23 +42,25 @@ cards:
       - type: markdown
         content: >
           ### Гостиная:
-      - type: conditional
-        conditions:
-          - entity: light.0x86bd7fffe616b72_light
-            state_not: "unavailable"
-        card:
-          type: light
-          entity: light.0x86bd7fffe616b72_light
-          name: Рабочий стол
-
-      - type: conditional
-        conditions:
-          - entity: light.sonoff_1000ab3c28
-            state_not: "unavailable"
-        card:
-          type: light
-          entity: light.sonoff_1000ab3c28
-          name: Бра
+      - type: horizontal-stack
+        cards:
+          - type: conditional
+            conditions:
+              - entity: light.0x86bd7fffe616b72_light
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.0x86bd7fffe616b72_light
+              name: Рабочий стол
+            
+          - type: conditional
+            conditions:
+              - entity: light.sonoff_1000ab3c28
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.sonoff_1000ab3c28
+              name: Бра
 
   # Кухня
   - type: vertical-stack
@@ -72,22 +76,30 @@ cards:
           type: light
           entity: light.sonoff_1000b72483
           name: Споты
-      - type: conditional
-        conditions:
-          - entity: light.kukhnia_liustra
-            state_not: "unavailable"
-        card:
-          type: light
-          entity: light.kukhnia_liustra
-          name: Люстра
-      - type: conditional
-        conditions:
-          - entity: light.kukhnia_lenta
-            state_not: "unavailable"
-        card:
-          type: light
-          entity: light.kukhnia_lenta
-          name: Подсветка
+      - type: horizontal-stack
+        cards:
+          - type: conditional
+            conditions:
+              - entity: light.kukhnia_liustra
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.kukhnia_liustra
+              name: Люстра
+          - type: conditional
+            conditions:
+              - entity: light.kukhnia_lenta
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.kukhnia_lenta
+              name: Подсветка
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
+            name: Автовключение подсветки (21:00 - 08:00)
+            icon: mdi:led-strip-variant
 
   # Спальня
   - type: vertical-stack
@@ -127,38 +139,3 @@ cards:
           type: light
           entity: light.sonoff_1000b6831b
           name: Кладовая
-
-  # Недоступные лампы
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### Недоступные лампы:
-      - type: entity-filter
-        entities:
-          - entity: sensor.lamp_status_detskaia
-            name: Свет в Детской
-            icon: mdi:ceiling-light
-          - entity: sensor.lamp_status_kukhnia_lenta
-            name: Подсветка Кухни
-            icon: mdi:led-strip-variant
-          - entity: sensor.lamp_status_kukhnia_liustra
-            name: Люстра на  Кухне
-            icon: mdi:ceiling-light
-          - entity: sensor.lamp_status_spalnia_stol
-            name: Лампа в Спальне
-            icon: mdi:desk-lamp
-          - entity: light.sonoff_1000b6831b
-            name: Свет в Кладовой
-            icon: mdi:vanity-light
-          - entity: light.0x86bd7fffe616b72_light
-            name: Лампа на столе в Гостиной
-            icon: mdi:desk-lamp
-          - entity: light.sonoff_1000b72483
-            name: Споты на Кухне
-            icon: mdi:spotlight-beam
-          - entity: light.sonoff_1000ab3c28
-            name: Бра в гостиной
-            icon: mdi:wall-sconce-flat
-        state_filter:
-          - unavailable

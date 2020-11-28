@@ -162,6 +162,40 @@ cards:
           - switch.plug_158d000391fb00
         state_filter:
           - unavailable
+      # Недоступные лампы
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ### Недоступные лампы:
+          - type: entity-filter
+            entities:
+              - entity: sensor.lamp_status_detskaia
+                name: Свет в Детской
+                icon: mdi:ceiling-light
+              - entity: sensor.lamp_status_kukhnia_lenta
+                name: Подсветка Кухни
+                icon: mdi:led-strip-variant
+              - entity: sensor.lamp_status_kukhnia_liustra
+                name: Люстра на  Кухне
+                icon: mdi:ceiling-light
+              - entity: sensor.lamp_status_spalnia_stol
+                name: Лампа в Спальне
+                icon: mdi:desk-lamp
+              - entity: light.sonoff_1000b6831b
+                name: Свет в Кладовой
+                icon: mdi:vanity-light
+              - entity: light.0x86bd7fffe616b72_light
+                name: Лампа на столе в Гостиной
+                icon: mdi:desk-lamp
+              - entity: light.sonoff_1000b72483
+                name: Споты на Кухне
+                icon: mdi:spotlight-beam
+              - entity: light.sonoff_1000ab3c28
+                name: Бра в гостиной
+                icon: mdi:wall-sconce-flat
+            state_filter:
+              - unavailable
 
   - type: vertical-stack
     cards:

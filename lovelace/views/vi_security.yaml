@@ -2,11 +2,19 @@ title: Security
 id: security
 icon: mdi:cctv
 cards:
-  - type: picture-glance
-    title: Детская
-    entities:
-      - light.detskaia
-    camera_image: camera.dafangcam_03_rtsp
+  - type: vertical-stack
+    cards:
+      - type: picture-glance
+        title: Детская
+        entities:
+          - light.detskaia
+        camera_image: camera.dafangcam_03_rtsp
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: automation.dvizhenie_v_detskoi
+            name: Контроль движения в Детской
+            icon: mdi:motion-sensor
   - type: picture-glance
     title: Гостиная
     entities: []
