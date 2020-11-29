@@ -38,7 +38,7 @@ cards:
     - type: horizontal-stack
       cards:
         - type: entity-button
-          name: HASS Check Config
+          name: "HA: Check Config"
           icon: mdi:reload
           icon_height: 64px
           tap_action:
@@ -48,7 +48,7 @@ cards:
               entity_id: script.hass_check_config
           entity: script.hass_check_config
         - type: entity-button
-          name: HASS Restart
+          name: "HA: Restart"
           icon: mdi:restart
           icon_height: 64px
           tap_action:
@@ -58,6 +58,10 @@ cards:
             service_data:
               entity_id: script.hass_restart
           entity: script.hass_restart
+    - type: entities
+      entities:
+        - entity: remote.0x588e81fffedca899_pair
+          name: Xiaomi Gw 3 Pair Mode
 
   - type: vertical-stack
     cards:
