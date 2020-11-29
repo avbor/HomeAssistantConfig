@@ -71,6 +71,4 @@
       right: 17
   attributes:
     - calibration_points
-  scan_interval:
-    seconds: 60
-  auto_update: true
+  auto_update: false
