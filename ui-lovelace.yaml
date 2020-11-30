@@ -6,5 +6,6 @@ views:
   - !include lovelace/views/vi_vacuum.yaml
   - !include lovelace/views/vi_media.yaml
   - !include lovelace/views/vi_security.yaml
+  - !include lovelace/views/vi_water.yaml
   - !include lovelace/views/vi_stats.yaml
   - !include lovelace/views/vi_system.yaml

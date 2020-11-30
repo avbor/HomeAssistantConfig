@@ -18,6 +18,7 @@ homeassistant:
   longitude: !secret home_longitude
   elevation: !secret home_elevation
   customize: !include customize.yaml
+  packages: !include_dir_merge_named packages
   allowlist_external_dirs:
     - /config/
     - /config/www/weather_icons/
@@ -204,7 +205,6 @@ notify:
 # Inclusions
 #################################################
 
-packages: !include_dir_merge_named packages
 group: !include groups.yaml
 automation: !include_dir_merge_list automations
 script: !include_dir_merge_named scripts

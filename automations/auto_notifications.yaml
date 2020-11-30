@@ -112,61 +112,6 @@
     data_template:
       message: "Сегодня полнолуние!"
 
-#- alias: Оповещение о протечке [notify to stall]
-#  initial_state: true
-#  trigger:
-#    platform: state
-#    entity_id: binary_sensor.sauresha_5555_000111
-#    to: "True"
-#  action:
-#    service: notify.telegram_stall
-#    data:
-#      title: "*Внимание!*"
-#      message: |
-#        Сработал датчик протечки.
-#        Водопроводные краны перекрыты!
-
-- alias: Оповещение об активации Нептуна [notify to stall]
-  initial_state: true
-  trigger: 
-    platform: state
-    entity_id: binary_sensor.neptun_water_leakage
-    to: "on"
-  action:
-    service: notify.telegram_stall
-    data:
-      title: "*Внимание!*"
-      message: |
-        Сработал датчик протечки Нептун.
-        Водопроводные краны перекрыты!
-        Необходимо проверить Кухню, Ванную, Туалет, Кладовую.
-
-- alias: Оповещение о деактивации Нептуна [notify to stall]
-  initial_state: true
-  trigger: 
-    platform: state
-    entity_id: binary_sensor.neptun_water_leakage
-    to: "off"
-  action:
-    service: notify.telegram_stall
-    data:
-      message: Нептун деактивирован.
-
-- alias: Оповещение о протечке Aqara в Кладовой [notify to stall]
-  initial_state: true
-  trigger:
-    platform: state
-    entity_id: binary_sensor.water_leak_sensor_158d000400e77d
-    from: "off"
-    to: "on"
-  action:
-    service: notify.telegram_stall
-    data:
-      title: "*Внимание!*"
-      message: |
-        Сработал датчик протечки Aqara в *Кладовой*.
-        Необходимо проверить наличие воды за стиральной машиной. 
-
 - alias: 'Low Battery Alert'
   initial_state: true
   trigger:
@@ -191,6 +136,7 @@
       - sensor.a4c138414e9a_battery
       - sensor.0x158d00044ee524_battery
       - sensor.0x158d0004ab468e_battery
+      - sensor.0x158d0004030d84_battery
     below: 15
   action:
     - service: notify.telegram_stall

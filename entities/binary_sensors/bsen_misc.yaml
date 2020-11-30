@@ -20,10 +20,3 @@
 #    minutes: 90
 #  counters_sn:
 #    - 000-111
-- platform: template
-  sensors:
-    neptun_water_leakage:
-      friendly_name: Датчики протечки Нептун
-      device_class: 'moisture'
-      value_template: >
-        {{ is_state('input_boolean.neptun_activated', "on") }}

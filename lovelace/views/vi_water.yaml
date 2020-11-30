@@ -1,0 +1,71 @@
+title: Water
+id: water
+icon: mdi:water-alert
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Управление кранами:
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: switch.0x158d000578c1d0_channel_2
+            name: Закрыть
+            icon: mdi:water-off-outline
+            icon_height: 64px
+            show_state: true
+            tap_action: 
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.water_valves_close
+
+          - type: button
+            entity: switch.0x158d000578c1d0_channel_1
+            name: Открыть
+            icon: mdi:water-outline
+            icon_height: 64px
+            show_state: true
+            tap_action: 
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.water_valves_open
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### Датчики протечки:
+      - type: markdown
+        content: >
+          #### Нептун
+      - type: horizontal-stack
+        cards:
+        - type: entity
+          entity: binary_sensor.neptun_water_leakage
+          name: Состояние
+        - type: entity
+          entity: switch.sonoff_1000b68886
+          name: Питание
+        - type: button
+          entity: script.neptun_state_reset
+          name: Сброс состояния
+          icon: mdi:reload
+          icon_height: 64px
+          tap_action:
+            action: call-service
+            service: script.turn_on
+            service_data:
+              entity_id: script.neptun_state_reset
+      - type: markdown
+        content: >
+          #### Aqara
+      - type: horizontal-stack
+        cards:
+        - type: entity
+          entity: binary_sensor.water_leak_sensor_158d000400e77d
+          name: Кладовая
+        - type: entity
+          entity: binary_sensor.0x158d0004030d84_moisture
+          name: Под Ванной (слева)

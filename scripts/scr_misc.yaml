@@ -18,10 +18,3 @@ hass_check_config:
   alias: Check Config
   sequence:
     - service: homeassistant.check_config
-
-neptun_state_reset:
-    alias: Reset Neptun State in HA (TurnOff)
-    sequence:
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.neptun_activated

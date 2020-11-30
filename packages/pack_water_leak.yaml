@@ -1,0 +1,203 @@
+#################################################
+# Package Water Leak Protection
+#################################################
+water_leak_protection:
+
+# Input Boolean
+  input_boolean:
+    neptun_activated:
+      name: Neptune Activated
+      icon: mdi:help-network
+
+# Binary Sensors
+  binary_sensor:
+    - platform: template
+      sensors:
+        neptun_water_leakage:
+          friendly_name: Датчики протечки Нептун
+          device_class: 'moisture'
+          value_template: >
+            {{ is_state('input_boolean.neptun_activated', "on") }}
+
+# Scripts
+  script:
+    neptun_state_reset:
+      alias: Reset Neptun State in HA (TurnOff)
+      sequence:
+        - service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.neptun_activated
+
+    water_valves_close:
+      alias: "Закрытие водопроводных кранов"
+      sequence:
+        - service: switch.turn_on
+          entity_id: switch.0x158d000578c1d0_channel_2
+        - delay: '00:00:30'
+        - service: switch.turn_off
+          entity_id: switch.0x158d000578c1d0_channel_2
+
+    water_valves_open:
+      alias: "Открытие водопроводных кранов"
+      sequence:
+        - choose:
+          - conditions:
+            - condition: state
+              entity_id: binary_sensor.neptun_water_leakage
+              state: 'on'
+            sequence:
+              - service: switch.turn_off
+                entity_id: switch.sonoff_1000b68886
+              - service: switch.turn_on
+                entity_id: switch.0x158d000578c1d0_channel_1
+              - delay: '00:00:30'
+              - service: switch.turn_off
+                entity_id: switch.0x158d000578c1d0_channel_1
+              - service: switch.turn_on
+                entity_id: switch.sonoff_1000b68886
+              - service: script.turn_on
+                entity_id: script.neptun_state_reset
+          default:
+            - service: switch.turn_on
+              entity_id: switch.0x158d000578c1d0_channel_1
+            - delay: '00:00:30'
+            - service: switch.turn_off
+              entity_id: switch.0x158d000578c1d0_channel_1
+
+# Automations
+  automation:
+    # Защита от протечек - отключение подачи воды по датчикам
+    - alias: Water Leak Detected
+      trigger:
+        platform: state
+        entity_id:
+          - binary_sensor.neptun_water_leakage
+          - binary_sensor.water_leak_sensor_158d000400e77d
+          - binary_sensor.0x158d0004030d84_moisture
+        from: 'off'
+        to: 'on'
+      action:
+        - service: script.turn_on
+          data:
+            entity_id: script.water_valves_close
+
+    # Получение активации Нептуна
+    - alias: Catch Neptun Activated
+      mode: queued
+      trigger:
+        platform: state
+        entity_id: binary_sensor.0x158d00044ee524_contact
+        from: 'on'
+        to: 'off'
+        for: "00:00:05"
+      condition:
+        condition: state
+        entity_id: input_boolean.neptun_activated
+        state: 'off'
+      action:
+        - service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.neptun_activated
+
+    # Получение деактивации Нептуна
+    - alias: Catch Neptun DeActivated
+      mode: queued
+      trigger:
+        platform: state
+        entity_id: switch.sonoff_1000b68886
+        from: 'off'
+        to: 'on'
+      condition:
+        condition: state
+        entity_id: input_boolean.neptun_activated
+        state: 'on'
+      action:
+        - service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.neptun_activated
+
+    # Автоматическое отключение напряжения на кранах (работа >60 сек)
+    - alias: PowerOff Valves After 60 Seconds
+      trigger:
+        - platform: state
+          entity_id:
+            - switch.0x158d000578c1d0_channel_1
+            - switch.0x158d000578c1d0_channel_2
+          to: 'on'
+          for: "00:01:00"
+      action:
+        service: switch.turn_off
+        data:
+          entity_id: "{{ trigger.entity_id }}"
+
+    # Оповещения
+    - alias: Оповещение об активации Нептуна [notify to stall]
+      initial_state: true
+      trigger: 
+        platform: state
+        entity_id: binary_sensor.neptun_water_leakage
+        to: "on"
+      action:
+        service: notify.telegram_stall
+        data:
+          title: "*Внимание!*"
+          message: |
+            Сработал датчик протечки *Нептун*.
+            Водопроводные краны перекрыты!
+            Необходимо проверить Кухню, Ванную, Туалет, Кладовую.
+        
+    - alias: Оповещение о деактивации Нептуна [notify to stall]
+      initial_state: true
+      trigger: 
+        platform: state
+        entity_id: binary_sensor.neptun_water_leakage
+        to: "off"
+      action:
+        service: notify.telegram_stall
+        data:
+          message: Нептун деактивирован.
+        
+    - alias: Оповещение о протечке Aqara в Кладовой [notify to stall]
+      initial_state: true
+      trigger:
+        platform: state
+        entity_id: binary_sensor.water_leak_sensor_158d000400e77d
+        from: "off"
+        to: "on"
+      action:
+        service: notify.telegram_stall
+        data:
+          title: "*Внимание!*"
+          message: |
+            Сработал датчик протечки Aqara в *Кладовой*.
+            Водопроводные краны перекрыты!
+            Необходимо проверить наличие воды за стиральной машиной.
+
+    - alias: Оповещение о протечке Aqara под Ванной [notify to stall]
+      initial_state: true
+      trigger:
+        platform: state
+        entity_id: binary_sensor.0x158d0004030d84_moisture
+        from: "off"
+        to: "on"
+      action:
+        service: notify.telegram_stall
+        data:
+          title: "*Внимание!*"
+          message: |
+            Сработал датчик протечки Aqara в *Ванной*.
+            Водопроводные краны перекрыты!
+            Необходимо проверить наличие воды *слева под ванной*.
+
+    - alias: Оповещение об отключенном Нептуне (>2 мин)
+      trigger:
+        platform: state
+        entity_id: switch.sonoff_1000b68886
+        to: 'off'
+        for: "00:02:00"
+      action:
+        service: notify.telegram_stall
+        data:
+          title: "*Внимание!*"
+          message: |
+            Питание контроллера Нептун отключено более 2х минут!

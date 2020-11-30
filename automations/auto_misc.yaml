@@ -1,37 +1,3 @@
 #################################################
 # Miscellaneous automatization
 #################################################
-
-- alias: Catch Neptun Activated
-  mode: queued
-  trigger:
-    platform: state
-    entity_id: binary_sensor.0x158d00044ee524_contact
-    from: 'on'
-    to: 'off'
-    for: "00:00:05"
-  condition:
-    condition: state
-    entity_id: input_boolean.neptun_activated
-    state: 'off'
-  action:
-    - service: input_boolean.turn_on
-      data:
-        entity_id: input_boolean.neptun_activated
-
-- alias: Catch Neptun DeActivated
-  mode: queued
-  trigger:
-    platform: state
-    entity_id: binary_sensor.0x158d00044ee524_contact
-    from: 'on'
-    to: 'off'
-    for: "00:00:05"
-  condition:
-    condition: state
-    entity_id: input_boolean.neptun_activated
-    state: 'on'
-  action:
-    - service: input_boolean.turn_off
-      data:
-        entity_id: input_boolean.neptun_activated

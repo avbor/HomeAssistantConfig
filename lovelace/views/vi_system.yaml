@@ -111,17 +111,17 @@ cards:
             service: script.turn_off
             service_data:
               entity_id: script.start_vacuum_hallway_by_door_sensor
-        - type: button
-          entity: binary_sensor.neptun_water_leakage
-          name: Сброс состояния Нептуна
-          icon: mdi:water-off
-          icon_height: 64px
-          show_state: true
-          tap_action:
-            action: call-service
-            service: script.turn_on
-            service_data:
-              entity_id: script.neptun_state_reset
+#        - type: button
+#          entity: binary_sensor.neptun_water_leakage
+#          name: Сброс состояния Нептуна
+#          icon: mdi:water-off
+#          icon_height: 64px
+#          show_state: true
+#          tap_action:
+#            action: call-service
+#            service: script.turn_on
+#            service_data:
+#              entity_id: script.neptun_state_reset
 #      - type: entity-button
 #        name: Уборка прихожей
 #        tap_action:
@@ -232,6 +232,8 @@ cards:
           - entity: sensor.battery_status_158d000400e77d
             name: Датчик протечки (Кладовая)
             icon: mdi:battery-outline
+          - entity: sensor.0x158d0004030d84_battery
+            name: Датчик протечки (под Ванной)
           - entity: sensor.battery_status_158d0003045123
             name: Датчик движения (Кладовая)
             icon: mdi:battery-outline
