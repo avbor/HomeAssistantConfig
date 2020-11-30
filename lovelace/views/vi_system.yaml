@@ -257,7 +257,7 @@ cards:
             name: Датчик кондиционера (Гостиная)
             icon: mdi:battery-outline
           - entity: sensor.0x158d00035a9bc5_battery
-           name: Кнопка Xiaomi 1
+            name: Кнопка Xiaomi 1
           - entity: sensor.a4c138414e9a_battery
             name: Датчик температуры (Туалет)
           - entity: sensor.0x158d00044ee524_battery
