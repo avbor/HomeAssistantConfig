@@ -19,6 +19,8 @@
 !influxdb_conf/
 !lovelace/
 !lovelace/*
+!packages/
+!packages/*
 !scripts/
 !themes/
 !themes/*

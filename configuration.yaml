@@ -204,6 +204,7 @@ notify:
 # Inclusions
 #################################################
 
+packages: !include_dir_merge_named packages
 group: !include groups.yaml
 automation: !include_dir_merge_list automations
 script: !include_dir_merge_named scripts
