@@ -192,8 +192,6 @@
   action:
     service: notify.telegram_stall
     data_template:
-      title: "*Найдено новое устройство в сети:*"
+      title: "*Найдено новое устройство в сети!*"
       message: |
-        {{ trigger.event.data.entity_id }}
-        {{ trigger.to_state.attributes.ip }}
-        {{ trigger.to_state.attributes.friendly_name }}
+        MAC: {{ trigger.event.data.mac }}
