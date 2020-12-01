@@ -138,3 +138,15 @@ cards:
           type: light
           entity: light.sonoff_1000b6831b
           name: Кладовая
+
+  - type: button
+    entity: group.all_lamps
+    name: Выключить весь свет
+    icon: mdi:lightbulb-group-off-outline
+    icon_height: 64px
+    show_state: false
+    tap_action: 
+      action: call-service
+      service: homeassistant.turn_off
+      service_data:
+        entity_id: group.all_lamps

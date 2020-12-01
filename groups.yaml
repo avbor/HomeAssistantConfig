@@ -33,7 +33,12 @@ all_lamps:
   name: Все лампы
   entities:
     - light.detskaia
+    - light.detskaia_podsvetka_na_okne
+    - light.0x86bd7fffe616b72_light
+    - light.sonoff_1000ab3c28
+    - switch.plug_158d000391fb00
     - light.kukhnia_lenta
     - light.kukhnia_liustra
+    - light.sonoff_1000b72483
     - light.sonoff_1000b6831b
     - light.spalnia_stol
