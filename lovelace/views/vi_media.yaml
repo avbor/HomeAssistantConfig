@@ -1,5 +1,4 @@
 title: Media
-id: media
 icon: mdi:television-play
 cards:
 # --- Radio
@@ -17,7 +16,7 @@ cards:
           - input_number.volume_radio
       - type: horizontal-stack
         cards:
-          - type: entity-button
+          - type: button
             show_name: false
             icon_height: 32px
             tap_action:
@@ -26,7 +25,7 @@ cards:
               service_data:
                 entity_id: script.radio_play
             entity: script.radio_play
-          - type: entity-button
+          - type: button
             show_name: false
             icon_height: 32px
             tap_action:
@@ -90,7 +89,7 @@ cards:
         *Спальня:*
     - type: horizontal-stack
       cards:
-        - type: entity-button
+        - type: button
           show_name: false
           icon_height: 32px
           icon: mdi:television
@@ -100,7 +99,7 @@ cards:
             service: switch.turn_on
             service_data:
               entity_id: switch.samsungtv_ue43ru7470_wol
-        - type: entity-button
+        - type: button
           show_name: false
           icon_height: 32px
           icon: mdi:television-off

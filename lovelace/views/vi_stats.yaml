@@ -1,5 +1,4 @@
 title: Stats
-id: stats
 icon: mdi:chart-line
 cards:
   - type: vertical-stack

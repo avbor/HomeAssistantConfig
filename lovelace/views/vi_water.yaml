@@ -1,5 +1,4 @@
 title: Water
-id: water
 icon: mdi:water-alert
 cards:
   - type: vertical-stack
@@ -17,6 +16,10 @@ cards:
             show_state: true
             tap_action: 
               action: call-service
+              confirmation:
+                text: |
+                  Убедитесь что вода не используется потребителями.
+                  Перекрыть подачу воды в квартиру?
               service: script.turn_on
               service_data:
                 entity_id: script.water_valves_close
@@ -29,6 +32,10 @@ cards:
             show_state: true
             tap_action: 
               action: call-service
+              confirmation:
+                text: |
+                  Убедитесь что протечка устранена.
+                  Открыть подачу воды в квартиру?
               service: script.turn_on
               service_data:
                 entity_id: script.water_valves_open
@@ -39,7 +46,7 @@ cards:
           ### Датчики протечки:
       - type: markdown
         content: >
-          #### Нептун
+          #### Neptun
       - type: horizontal-stack
         cards:
         - type: entity

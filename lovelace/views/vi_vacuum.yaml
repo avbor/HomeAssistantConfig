@@ -1,5 +1,4 @@
 title: Vacuum
-id: vacuum
 icon: mdi:broom
 cards:
   - type: vertical-stack
@@ -20,7 +19,7 @@ cards:
           - input_select.vacuum_power
       - type: horizontal-stack
         cards:
-          - type: entity-button
+          - type: button
             show_name: false
             icon: mdi:run-fast
             icon_height: 32px
@@ -32,7 +31,7 @@ cards:
             entity: script.start_vacuum_room
       - type: horizontal-stack
         cards:
-          - type: entity-button
+          - type: button
             show_name: false
             icon: mdi:broom
             icon_height: 48px
@@ -43,7 +42,7 @@ cards:
               service_data:
                 entity_id: vacuum.xiaomi_vacuum_cleaner
             entity: vacuum.xiaomi_vacuum_cleaner
-          - type: entity-button
+          - type: button
             show_name: false
             icon: mdi:pause-circle-outline
             icon_height: 48px
@@ -53,7 +52,7 @@ cards:
               service_data:
                 entity_id: vacuum.xiaomi_vacuum_cleaner
             entity: vacuum.xiaomi_vacuum_cleaner
-          - type: entity-button
+          - type: button
             show_name: false
             icon: mdi:home-import-outline
             icon_height: 48px

@@ -1,5 +1,4 @@
 title: System
-id: system
 icon: mdi:cog-outline
 cards:
   - type: vertical-stack
@@ -37,9 +36,9 @@ cards:
         ### Control:
     - type: horizontal-stack
       cards:
-        - type: entity-button
+        - type: button
           name: "HA: Check Config"
-          icon: mdi:reload
+          icon: mdi:text-box-check-outline
           icon_height: 64px
           tap_action:
             action: call-service
@@ -47,13 +46,14 @@ cards:
             service_data:
               entity_id: script.hass_check_config
           entity: script.hass_check_config
-        - type: entity-button
+        - type: button
           name: "HA: Restart"
           icon: mdi:restart
           icon_height: 64px
           tap_action:
             action: call-service
-            confirmation: true
+            confirmation:
+              text: Перезагрузить Home Assistant?
             service: script.turn_on
             service_data:
               entity_id: script.hass_restart
