@@ -45,7 +45,6 @@
 - platform: version
   source: hassio
 - platform: uptime
-  unit_of_measurement: hours
 - platform: template
   sensors:
     entrance_door_status:

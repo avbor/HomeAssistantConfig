@@ -11,8 +11,8 @@
   condition:
     condition: and
     conditions:
-      - condition: template
-        value_template: "{{ states('sensor.uptime') != '0.0' }}"
+#      - condition: template
+#        value_template: "{{ states('sensor.uptime') != '0.0' }}"
       - condition: template
         value_template: "{{ trigger.to_state.state != trigger.from_state.state }}"
   action:
