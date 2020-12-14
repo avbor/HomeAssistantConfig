@@ -55,7 +55,13 @@
         {% else %}Unavailable
         {% endif %}
     local_pressure_mmhg:
-      value_template: '{{ (((states.sensor.pressure_158d0003230618.state) | float) / 1.333) | round(2) }}'
+      value_template: >
+        {% set pressure = states('sensor.pressure_158d0003230618') | float(default=-1) %}
+        {% if pressure != -1 and (((states('sensor.pressure_158d0003230618') | float) / 1.333) | round(2)) > 500 %}
+        {{ ((states('sensor.pressure_158d0003230618') | float) / 1.333) | round(2) }}
+        {% else %}
+        {{ states('sensor.local_pressure_mmhg') }}
+        {% endif %}
       unit_of_measurement: mmHg
     boiler_status:
       friendly_name: "Electrolux Centurio IQ Status"

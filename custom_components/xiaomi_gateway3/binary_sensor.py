@@ -1,12 +1,14 @@
 import logging
 import time
 
+from homeassistant.components.automation import ATTR_LAST_TRIGGERED
 from homeassistant.components.binary_sensor import BinarySensorEntity, \
     DEVICE_CLASS_DOOR, DEVICE_CLASS_MOISTURE
 from homeassistant.config import DATA_CUSTOMIZE
 from homeassistant.const import STATE_ON, STATE_OFF
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_call_later
+from homeassistant.util.dt import now
 
 from . import DOMAIN, Gateway3Device
 from .core.gateway3 import Gateway3
@@ -20,6 +22,8 @@ DEVICE_CLASS = {
 
 CONF_INVERT_STATE = 'invert_state'
 CONF_OCCUPANCY_TIMEOUT = 'occupancy_timeout'
+
+DT_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -61,6 +65,7 @@ class Gateway3BinarySensor(Gateway3Device, BinarySensorEntity):
 
 
 class Gateway3MotionSensor(Gateway3BinarySensor):
+    _last_on = 0
     _last_off = 0
     _state = STATE_OFF
     _timeout_pos = 0
@@ -86,15 +91,29 @@ class Gateway3MotionSensor(Gateway3BinarySensor):
         self.async_write_ha_state()
 
     def update(self, data: dict = None):
-        if self._attr in data:
-            self._state = STATE_ON if data[self._attr] else STATE_OFF
+        # https://github.com/AlexxIT/XiaomiGateway3/issues/135
+        if 'illumination' in data and len(data) == 1:
+            data[self._attr] = 1
+
+        if self._attr not in data:
+            # handle available change
+            self.async_write_ha_state()
+            return
+
+        # check only motion=1
+        assert data[self._attr] == 1, data
+
+        # don't trigger motion right after illumination
+        t = time.time()
+        if t - self._last_on < 1:
+            return
+
+        self._state = STATE_ON
+        self._attrs[ATTR_LAST_TRIGGERED] = now().strftime(DT_FORMAT)
+        self._last_on = t
 
         # handle available change
         self.async_write_ha_state()
-
-        # continue only if motion=1 arrived
-        if not data.get(self._attr):
-            return
 
         if self._unsub_set_no_motion:
             self._unsub_set_no_motion()
@@ -109,7 +128,7 @@ class Gateway3MotionSensor(Gateway3BinarySensor):
             else:
                 delay = timeout
 
-            if delay < 0 and time.time() + delay < self._last_off:
+            if delay < 0 and t + delay < self._last_off:
                 delay *= 2
 
             self.debug(f"Extend delay: {delay} seconds")

@@ -3,12 +3,13 @@ import logging
 import re
 import socket
 import time
+from telnetlib import Telnet
 from threading import Thread
 from typing import Optional, Union
 
 from paho.mqtt.client import Client, MQTTMessage
 from . import bluetooth, utils
-from .miio_fix import Device
+from .mini_miio import SyncmiIO
 from .shell import TelnetShell
 from .unqlite import Unqlite, SQLite
 from .utils import GLOBAL_PROP
@@ -41,7 +42,96 @@ class GatewayV:
         return self.ver >= '1.4.7_0063'
 
 
-class Gateway3(Thread, GatewayV):
+class GatewayMesh:
+    devices: dict = None
+    updates: dict = None
+
+    miio: SyncmiIO = None
+    mesh_params: list = None
+    mesh_ts: float = 0
+
+    def debug(self, message: str):
+        raise NotImplemented
+
+    def mesh_start(self):
+        self.mesh_params = [
+            {'did': device['did'], 'siid': 2, 'piid': 1}
+            for device in self.devices.values()
+            # cannot get state of mesh group
+            if device['type'] == 'mesh' and 'childs' not in device
+        ]
+
+        if self.mesh_params:
+            self.mesh_ts = time.time() + 30
+            Thread(target=self.mesh_run).start()
+
+    def mesh_run(self):
+        self.debug("Start Mesh Thread")
+
+        while True:
+            if time.time() < self.mesh_ts:
+                time.sleep(1)
+                continue
+
+            try:
+                resp = self.miio.send_bulk('get_properties', self.mesh_params)
+                if resp:
+                    # get turn on bulbs
+                    params = [
+                        {'did': item['did'], 'siid': 2, 'piid': 2}
+                        for item in resp if item.get('value')
+                    ]
+
+                    if params:
+                        params += [
+                            {'did': item['did'], 'siid': 2, 'piid': 3}
+                            for item in params
+                        ]
+                        resp2 = self.miio.send_bulk('get_properties', params)
+                        if resp2:
+                            resp += resp2
+
+                    self.process_mesh_data(resp)
+
+                else:
+                    self.debug("Can't get mesh bulb state")
+
+            except Exception as e:
+                self.debug(f"ERROR in mesh thread {e}")
+
+            self.mesh_ts = time.time() + 30
+
+    def process_mesh_data(self, raw: Union[bytes, list]):
+        if isinstance(raw, bytes):
+            data = json.loads(raw)['params']
+        else:
+            data = raw
+
+        # not always Mesh devices
+        self.debug(f"Process Mesh* {data}")
+
+        data = bluetooth.parse_xiaomi_mesh(data)
+        for did, payload in data.items():
+            if did in self.updates:
+                for handler in self.updates[did]:
+                    handler(payload)
+
+    def send_mesh(self, device: dict, data: dict):
+        did = device['did']
+        payload = bluetooth.pack_xiaomi_mesh(did, data)
+        try:
+            # 2 seconds are selected experimentally
+            if self.miio.send('set_properties', payload):
+                self.mesh_force_update()
+        except:
+            self.debug(f"Can't send mesh {did} => {data}")
+
+    def mesh_force_update(self):
+        self.mesh_ts = time.time() + 2
+
+
+class Gateway3(Thread, GatewayV, GatewayMesh):
+    mesh_thread = None
     pair_model = None
     pair_payload = None
 
@@ -53,7 +143,8 @@ class Gateway3(Thread, GatewayV):
         self.ble = ble
         self.zha = zha
 
-        self.miio = Device(host, token)
+        # TODO: in the end there can be only one
+        self.miio = SyncmiIO(host, token)
 
         self.mqtt = Client()
         self.mqtt.on_connect = self.on_connect
@@ -63,6 +154,7 @@ class Gateway3(Thread, GatewayV):
 
         self._debug = config['debug'] if 'debug' in config else ''
         self._disable_buzzer = config.get('buzzer') is False
+        self._config = config
         self.default_devices = config['devices']
 
         self.devices = {}
@@ -100,6 +192,8 @@ class Gateway3(Thread, GatewayV):
                 self.setup_devices(devices)
                 break
 
+        self.mesh_start()
+
         while True:
             # if not telnet - enable it
             if not self._check_port(23) and not self._enable_telnet():
@@ -124,12 +218,12 @@ class Gateway3(Thread, GatewayV):
     def _enable_telnet(self):
         """Enable telnet with miio protocol."""
         self.debug("Try enable telnet")
-        try:
-            resp = self.miio.send("enable_telnet_service")
-            return resp[0] == 'ok'
-        except Exception as e:
-            self.debug(f"Can't enable telnet: {e}")
+
+        if self.miio.send("enable_telnet_service") != 'ok':
+            self.debug(f"Can't enable telnet")
             return False
+
+        return True
 
     def _prepeare_gateway(self, with_devices: bool = False):
         """Launching the required utilities on the hub, if they are not already
@@ -176,12 +270,15 @@ class Gateway3(Thread, GatewayV):
                     self.debug("Stop socat")
                     shell.stop_socat()
 
-                if "Lumi_Z3GatewayHost_MQTT" not in ps:
-                    self.debug("Run Lumi Zigbee")
-                    shell.run_lumi_zigbee()
-            # elif "Lumi_Z3GatewayHost_MQTT -n 1 -b 115200 -v" not in ps:
-            #     self.debug("Run public Zigbee console")
-            #     shell.run_public_zb_console()
+                if 'zigbee_console' in self._config:
+                    if "Lumi_Z3GatewayHost_MQTT -n 1 -b 115200 -v" not in ps:
+                        self.debug("Run public Zigbee console")
+                        shell.run_public_zb_console()
+
+                else:
+                    if "Lumi_Z3GatewayHost_MQTT" not in ps:
+                        self.debug("Run Lumi Zigbee")
+                        shell.run_lumi_zigbee()
 
             if with_devices:
                 self.debug("Get devices")
@@ -204,12 +301,11 @@ class Gateway3(Thread, GatewayV):
             return False
 
     def _miio_connect(self) -> bool:
-        try:
-            self.miio.send_handshake()
-            return True
-        except:
+        if not self.miio.ping():
             self.debug("Can't send handshake")
             return False
+
+        return True
 
     def _get_devices(self, shell: TelnetShell):
         """Load devices info for Coordinator, Zigbee and Mesh."""
@@ -255,7 +351,7 @@ class Gateway3(Thread, GatewayV):
 
                 params = {
                     p[2]: retain.get(p[1])
-                    for p in desc['params']
+                    for p in (desc['params'] or desc['mi_spec'])
                     if p[1] is not None
                 }
 
@@ -326,6 +422,11 @@ class Gateway3(Thread, GatewayV):
 
             except:
                 _LOGGER.exception("Can't read mesh devices")
+
+        # for testing purposes
+        for k, v in self.default_devices.items():
+            if k[0] == '_':
+                devices.append(v)
 
         return devices
 
@@ -419,7 +520,7 @@ class Gateway3(Thread, GatewayV):
 
                 self.devices[device['did']] = device
 
-                for param in device['params']:
+                for param in (device['params'] or device['mi_spec']):
                     domain = param[3]
                     if not domain:
                         continue
@@ -477,6 +578,8 @@ class Gateway3(Thread, GatewayV):
             pkey = 'params' if 'params' in data else 'mi_spec'
         elif data['cmd'] in ('write_rsp', 'read_rsp'):
             pkey = 'results'
+        elif data['cmd'] == 'write_ack':
+            return
         else:
             _LOGGER.warning(f"Unsupported cmd: {data}")
             return
@@ -501,8 +604,10 @@ class Gateway3(Thread, GatewayV):
             if prop in GLOBAL_PROP:
                 prop = GLOBAL_PROP[prop]
             else:
-                prop = next((p[2] for p in device['params']
-                             if p[0] == prop), prop)
+                prop = next((
+                    p[2] for p in (device['params'] or device['mi_spec'])
+                    if p[0] == prop
+                ), prop)
 
             if prop in ('temperature', 'humidity', 'pressure'):
                 payload[prop] = param['value'] / 100.0
@@ -544,6 +649,11 @@ class Gateway3(Thread, GatewayV):
             return
 
         if 'networkUp' in payload:
+            # {"networkUp":false}
+            if not payload['networkUp']:
+                _LOGGER.warning("Network down")
+                return
+
             payload = {
                 'network_pan_id': payload['networkPanId'],
                 'radio_tx_power': payload['radioTxPower'],
@@ -662,21 +772,6 @@ class Gateway3(Thread, GatewayV):
             for handler in self.updates[did]:
                 handler(payload)
 
-    def process_mesh_data(self, raw: Union[bytes, list]):
-        if isinstance(raw, bytes):
-            data = json.loads(raw)['params']
-        else:
-            data = raw
-
-        # not always Mesh devices
-        self.debug(f"Process Mesh* {data}")
-
-        data = bluetooth.parse_xiaomi_mesh(data)
-        for did, payload in data.items():
-            if did in self.updates:
-                for handler in self.updates[did]:
-                    handler(payload)
-
     def process_pair(self, raw: bytes):
         # get shortID and eui64 of paired device
         if b'lumi send-nwk-key' in raw:
@@ -701,17 +796,29 @@ class Gateway3(Thread, GatewayV):
             self.mqtt.publish(f"gw/{mac}/MessageReceived", self.pair_payload)
 
     def send(self, device: dict, data: dict):
-        # convert hass prop to lumi prop
-        params = [{
-            'res_name': next(p[0] for p in device['params'] if p[2] == k),
-            'value': v
-        } for k, v in data.items()]
+        payload = {'cmd': 'write', 'did': device['did']}
 
-        payload = {
-            'cmd': 'write',
-            'did': device['did'],
-            'params': params,
-        }
+        # convert hass prop to lumi prop
+        if device['mi_spec']:
+            params = []
+            for k, v in data.items():
+                if k == 'switch':
+                    v = bool(v)
+                k = next(p[0] for p in device['mi_spec'] if p[2] == k)
+                params.append({'siid': k[0], 'piid': k[1], 'value': v})
+
+            payload['mi_spec'] = params
+        else:
+            params = [{
+                'res_name': next(p[0] for p in device['params'] if p[2] == k),
+                'value': v
+            } for k, v in data.items()]
+
+            payload = {
+                'cmd': 'write',
+                'did': device['did'],
+                'params': params,
+            }
 
         self.debug(f"{device['did']} {device['model']} => {payload}")
         payload = json.dumps(payload, separators=(',', ':')).encode()
@@ -736,25 +843,81 @@ class Gateway3(Thread, GatewayV):
             mac = self.device['mac'][2:].upper()
             self.mqtt.publish(f"gw/{mac}/publishstate")
 
-    def send_mesh(self, device: dict, data: dict):
-        did = device['did']
-        payload = bluetooth.pack_xiaomi_mesh(did, data)
-        return self.miio.send('set_properties', payload)
-
     def get_device(self, mac: str) -> Optional[dict]:
         for device in self.devices.values():
             if device.get('mac') == mac:
                 return device
         return None
 
+    def get_gateway_info(self):
+        telnet = Telnet(self.host, 4901)
+        telnet.read_until(b'Lumi_Z3GatewayHost')
+
+        telnet.write(b"option print-rx-msgs disable\r\n")
+        telnet.read_until(b'Lumi_Z3GatewayHost')
+
+        telnet.write(b"plugin device-table print\r\n")
+        raw = telnet.read_until(b'Lumi_Z3GatewayHost').decode()
+        m1 = re.findall(r'\d+ ([A-F0-9]{4}):  ([A-F0-9]{16}) 0  JOINED (\d+)',
+                        raw)
+
+        telnet.write(b"plugin stack-diagnostics child-table\r\n")
+        raw = telnet.read_until(b'Lumi_Z3GatewayHost').decode()
+        m2 = re.findall(r'\(>\)([A-F0-9]{16})', raw)
+
+        telnet.write(b"plugin stack-diagnostics neighbor-table\r\n")
+        raw = telnet.read_until(b'Lumi_Z3GatewayHost').decode()
+        m3 = re.findall(r'\(>\)([A-F0-9]{16})', raw)
+
+        telnet.write(b"plugin concentrator print-table\r\n")
+        raw = telnet.read_until(b'Lumi_Z3GatewayHost').decode()
+        m4 = re.findall(r': (.{16,}) -> 0x0000', raw)
+        m4 = [i.replace('0x', '').split(' -> ') for i in m4]
+        m4 = {i[0]: i[1:] for i in m4}
+
+        md = ('nwk|eid64|ago|type|parent|name\n'
+              '---|-----|---|----|------|----')
+
+        for i in m1:
+            nid = i[0]
+            eid64 = i[1]
+            last_seen = i[2]
+            if eid64 in m2:
+                type_ = 'device'
+            elif eid64 in m3:
+                type_ = 'router'
+            else:
+                type_ = '-'
+
+            parent = m4[nid][0] if nid in m4 else '-'
+
+            did = 'lumi.' + re.sub(r'^0*', '', eid64).lower()
+            device = self.devices.get(did)
+            name = device['device_name'] if device else '-'
+
+            try:
+                md += '\n' + '|'.join([
+                    nid,
+                    eid64,
+                    last_seen,
+                    type_,
+                    parent,
+                    name
+                ])
+            except:
+                print()
+
+        return md
+
 
 def is_gw3(host: str, token: str) -> Optional[str]:
-    try:
-        device = Device(host, token)
-        info = device.info()
-        if info.model != 'lumi.gateway.mgl03':
-            raise Exception(f"Wrong device model: {info.model}")
-    except Exception as e:
-        return str(e)
+    device = SyncmiIO(host, token)
+    info = device.info()
+
+    if not info:
+        raise Exception("Can't connect to device")
+
+    if info['model'] != 'lumi.gateway.mgl03':
+        raise Exception(f"Wrong device model: {info['model']}")
 
     return None

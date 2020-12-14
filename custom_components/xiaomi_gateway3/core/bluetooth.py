@@ -12,7 +12,7 @@ DEVICES = {
     1371: ["Xiaomi", "TH Sensor 2", "LYWSD03MMC"],
     1398: ["Xiaomi", "Alarm Clock", "CGD1"],
     1694: ["Aqara", "Door Lock N100", "ZNMS16LM"],
-    1747: ["Xaiomi", "ZenMeasure Clock", "MHO-C303"],
+    1747: ["Xiaomi", "ZenMeasure Clock", "MHO-C303"],
     1983: ["Yeelight", "Button S1", "YLAI003"],
     2038: ["Xiaomi", "Night Light 2", "MJYD02YL-A"],
     2443: ["Xiaomi", "Door Sensor 2", "MCCGQ02HL"],
@@ -21,12 +21,13 @@ DEVICES = {
     948: ["Yeelight", "Mesh Downlight", "YLSD01YL"],
     995: ["Yeelight", "Mesh Bulb E14", "YLDP09YL"],
     996: ["Yeelight", "Mesh Bulb E27", "YLDP10YL"],
+    997: ["Yeelight", "Mesh Spotlight", "YLSD04YL"],
     1771: ["Xiaomi", "Mesh Bulb", "MJDP09YL"],
     1772: ["Xiaomi", "Mesh Downlight", "MJTS01YL"],
     2076: ["Yeelight", "Mesh Downlight M2", "YLTS02YL/YLTS04YL"],
     2342: ["Yeelight", "Mesh Bulb M2", "YLDP25YL/YLDP26YL"],
     # Mesh Group
-    0: ["Mesh", "Mesh Group"]
+    0: ["Xiaomi", "Mesh Group", "Mesh Group"]
 }
 
 BLE_FINGERPRINT_ACTION = [
@@ -131,7 +132,7 @@ def parse_xiaomi_ble(event: dict, pdid: int) -> Optional[dict]:
         return {'rssi': data[0]}
 
     elif eid == 0x1004 and length == 2:  # 4100
-        return {'temperature': int.from_bytes(data, 'little') / 10.0}
+        return {'temperature': int.from_bytes(data, 'little', signed=True) / 10.0}
 
     elif eid == 0x1006 and length == 2:  # 4102
         # Humidity percentage, ranging from 0-1000
@@ -155,7 +156,7 @@ def parse_xiaomi_ble(event: dict, pdid: int) -> Optional[dict]:
 
     elif eid == 0x100D and length == 4:  # 4109
         return {
-            'temperature': int.from_bytes(data[:2], 'little') / 10.0,
+            'temperature': int.from_bytes(data[:2], 'little', signed=True) / 10.0,
             'humidity': int.from_bytes(data[2:], 'little') / 10.0
         }
 

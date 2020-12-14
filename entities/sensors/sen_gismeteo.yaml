@@ -12,11 +12,11 @@
 - platform: template
   sensors:
     gismeteo_temperature:
-      value_template: '{{ states.weather.gismeteo.attributes.temperature }}'
       unit_of_measurement: °C
+      value_template: '{{ states.weather.gismeteo.attributes.temperature }}'
     gismeteo_pressure:
-      value_template: '{{ states.weather.gismeteo.attributes.pressure }}'
       unit_of_measurement: hPa
+      value_template: '{{ states.weather.gismeteo.attributes.pressure }}'
     gismeteo_pressure_mmhg:
-      value_template: '{{ (states.weather.gismeteo.attributes.pressure / 1.333) | round(2) }}'
       unit_of_measurement: mmHg
+      value_template: '{{ (state_attr("weather.gismeteo", "pressure") / 1.333) | round(2) }}'
