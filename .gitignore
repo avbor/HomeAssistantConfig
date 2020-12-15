@@ -25,6 +25,9 @@
 !themes/
 !themes/*
 !themes/**
+!blueprints/
+!blueprints/*
+!blueprints/**
 !www/
 !www/weather_icons/
 !www/weather_icons/*
