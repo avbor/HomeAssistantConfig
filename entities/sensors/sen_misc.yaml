@@ -77,6 +77,11 @@
       value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'fan_speed') }}"
     xiaomi_gas_density:
       value_template: "{{ state_attr('binary_sensor.natgas_sensor_158d000413b210', 'Density') }}"
+    ha_uptime:
+      friendly_name: HA Uptime
+      icon_template: mdi:clock
+      value_template: "{{ ((as_timestamp(now()) | int - as_timestamp(states('sensor.uptime')) | int) / 60) | int }}"
+      unit_of_measurement: minutes
 - platform: min_max
   name: Average Temperature In Flat
   type: median

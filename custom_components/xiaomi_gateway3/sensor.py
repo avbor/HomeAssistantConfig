@@ -1,5 +1,6 @@
 import logging
 import time
+from datetime import timedelta
 
 from homeassistant.const import *
 from homeassistant.util.dt import now
@@ -72,8 +73,30 @@ class Gateway3Sensor(Gateway3Device):
         self.async_write_ha_state()
 
 
+CLUSTERS = {
+    0x0000: 'Basic',
+    0x0001: 'PowerCfg',
+    0x0003: 'Identify',
+    0x0006: 'OnOff',
+    0x0008: 'LevelCtrl',
+    0x000A: 'Time',
+    0x000C: 'AnalogInput',  # cube, gas
+    0x0012: 'Multistate',
+    0x0019: 'OTA',  # illuminance sensor
+    0x0101: 'DoorLock',
+    0x0400: 'Illuminance',
+    0x0402: 'Temperature',
+    0x0403: 'Pressure',
+    0x0405: 'Humidity',
+    0x0406: 'Occupancy',
+    0x0500: 'IasZone',
+    0x0B04: 'ElectrMeasur',
+    0xFCC0: 'Xiaomi'
+}
+
+
 class Gateway3Info(Gateway3Device):
-    counter = None
+    last_seq = None
 
     def __init__(self, gateway: Gateway3, device: dict, attr: str):
         self.gw = gateway
@@ -105,19 +128,35 @@ class Gateway3Info(Gateway3Device):
         self.gw.remove_info(self._attrs['ieee'], self.update)
 
     def update(self, data: dict = None):
-        self._attrs['nwk'] = data['sourceAddress']
-        self._attrs['link_quality'] = data['linkQuality']
-        self._attrs['rssi'] = data['rssi']
-        self._attrs['last_seen'] = now().strftime(DT_FORMAT)
+        if 'sourceAddress' in data:
+            self._attrs['nwk'] = data['sourceAddress']
+            self._attrs['link_quality'] = data['linkQuality']
+            self._attrs['rssi'] = data['rssi']
+            self._attrs['last_seen'] = now().strftime(DT_FORMAT)
 
-        self._attrs['msg_received'] += 1
+            cid = int(data['clusterId'], 0)
+            self._attrs['last_msg'] = CLUSTERS.get(cid, cid)
 
-        cnt = int(data['APSCounter'], 0)
-        if self.counter is not None and cnt - self.counter not in (1, 255):
-            self._attrs['msg_missed'] += 1
-        self.counter = cnt
+            self._attrs['msg_received'] += 1
 
-        self._state = self._attrs[self._attr]
+            new_seq = int(data['APSCounter'], 0)
+            if self.last_seq is not None:
+                miss = new_seq - self.last_seq - 1
+                if miss < 0:  # 0xFF => 0x00
+                    miss += 256
+                if miss:
+                    self._attrs['msg_missed'] += miss
+            self.last_seq = new_seq
+
+            self._state = self._attrs[self._attr]
+
+        elif 'parent' in data:
+            ago = timedelta(seconds=data.pop('ago'))
+            data['last_seen'] = (now() - ago).strftime(DT_FORMAT)
+            self._attrs.update(data)
+
+        elif data.get('deviceState') == 17:
+            self._attrs['unresponsive'] += 1
 
         self.async_write_ha_state()
 
@@ -163,16 +202,16 @@ class Gateway3Action(Gateway3Device):
     def update(self, data: dict = None):
         for k, v in data.items():
             if k == 'button':
-                data[self._attr] = BUTTON[v]
+                data[self._attr] = BUTTON.get(v, 'unknown')
                 break
             elif k.startswith('button_both'):
-                data[self._attr] = k + '_' + BUTTON_BOTH[v]
+                data[self._attr] = k + '_' + BUTTON_BOTH.get(v, 'unknown')
                 break
             elif k.startswith('button'):
-                data[self._attr] = k + '_' + BUTTON[v]
+                data[self._attr] = k + '_' + BUTTON.get(v, 'unknown')
                 break
             elif k == 'vibration' and v != 2:  # skip tilt and wait tilt_angle
-                data[self._attr] = VIBRATION[v]
+                data[self._attr] = VIBRATION.get(v, 'unknown')
                 break
             elif k == 'tilt_angle':
                 data = {'vibration': 2, 'angle': v, self._attr: 'tilt'}
