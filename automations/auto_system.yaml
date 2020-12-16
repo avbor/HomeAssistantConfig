@@ -52,6 +52,7 @@
     event_data:
       level: ERROR
   mode: parallel
+  max: 25
   action:
     - service: counter.increment
       entity_id: counter.syslog_errors
@@ -63,6 +64,7 @@
     event_data:
       level: WARNING
   mode: parallel
+  max: 25
   action:
     - service: counter.increment
       entity_id: counter.syslog_warnings

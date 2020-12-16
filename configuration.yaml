@@ -201,6 +201,11 @@ notify:
     platform: telegram
     chat_id: !secret tlg_iborisochka_id
 
+xiaomi_gateway3:
+  config:
+    - zigbee_console
+    - zigbee_info
+
 #################################################
 # Inclusions
 #################################################
