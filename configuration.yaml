@@ -108,6 +108,9 @@ influxdb:
 
 lovelace:
   mode: yaml
+  resources:
+  - url: /hacsfiles/flex-table-card/flex-table-card.js
+    type: module
 
 tts:
   - platform: google_translate
@@ -202,9 +205,8 @@ notify:
     chat_id: !secret tlg_iborisochka_id
 
 xiaomi_gateway3:
-  config:
-    - zigbee_console
-    - zigbee_info
+  zigbee_info: msg_received
+#  debug: mqtt
 
 #################################################
 # Inclusions

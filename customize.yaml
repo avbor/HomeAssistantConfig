@@ -92,3 +92,5 @@ binary_sensor.door_window_sensor_158d0003d54725:
   friendly_name: Кондиционер в Гостиной
 binary_sensor.0x158d00044ee524_contact:
   friendly_name: Датчик протечки - Нептун
+#light.0x86bd7fffe616b72_light:
+#  ignore_offline: 1
