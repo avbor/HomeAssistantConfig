@@ -62,7 +62,30 @@ cards:
       entities:
         - entity: remote.0x588e81fffedca899_pair
           name: Xiaomi Gw 3 Pair Mode
-
+    - type: horizontal-stack
+      cards:
+        - type: button
+          name: "GW 3: Reboot"
+          icon: mdi:restart
+          icon_height: 64px
+          tap_action:
+            action: call-service
+            confirmation:
+              text: Перезагрузить Xiaomi Gateway?
+            service: script.turn_on
+            service_data:
+              entity_id: script.mi_gw3_reboot
+          entity: script.mi_gw3_reboot
+        - type: button
+          name: "GW 3: Enable FTP"
+          icon: mdi:file-tree
+          icon_height: 64px
+          tap_action:
+            action: call-service
+            service: script.turn_on
+            service_data:
+              entity_id: script.mi_gw3_enable_ftp
+          entity: script.mi_gw3_enable_ftp
   - type: vertical-stack
     cards:
       - type: markdown
