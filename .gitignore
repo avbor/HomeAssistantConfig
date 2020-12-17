@@ -29,6 +29,9 @@
 !blueprints/*
 !blueprints/**
 !www/
+!www/community/
+!www/community/*
+!www/community/**
 !www/weather_icons/
 !www/weather_icons/*
 #################################

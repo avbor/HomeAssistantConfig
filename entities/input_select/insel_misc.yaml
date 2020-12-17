@@ -25,28 +25,6 @@ output_device:
     initial: Гостинная (Home Mini)
     icon: mdi:speaker-wireless
 
-room_to_vacuum:
-  name: 'Где убрать:'
-  options:
-    - Прихожая
-    - Детская
-    - Гостинная
-    - Кухня
-    - Спальня
-  initial: Прихожая
-  icon: mdi:crosshairs-gps
-
-vacuum_power:
-  name: 'Выбор режима:'
-  options:
-    - Silent
-    - Standard
-    - Medium
-    - Turbo
-    - Gentle
-  initial: Standard
-  icon: mdi:speedometer
-
 smartmi_humidifier_01_speed:
   name: 'Выбор скорости:'
   options:
