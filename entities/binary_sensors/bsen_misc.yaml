@@ -20,3 +20,14 @@
 #    minutes: 90
 #  counters_sn:
 #    - 000-111
+- platform: template
+  sensors:
+    updater_supervisor:
+      friendly_name: 'Updater - Supervisor'
+      device_class: problem
+      value_template: "{{ state_attr('sensor.supervisor_updates', 'current_version') != state_attr('sensor.supervisor_updates', 'newest_version') }}"
+      availability_template: "{{ (states('sensor.supervisor_updates') | int(-1)) > -1 }}"
+    updater_addons:
+      friendly_name: 'Updater - Addons'
+      device_class: problem
+      value_template: "{{ states('sensor.supervisor_updates') | int > 0 }}"

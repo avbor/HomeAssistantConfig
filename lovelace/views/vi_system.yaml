@@ -10,9 +10,18 @@ cards:
       show_header_toggle: false
       entities:
         - entity: sensor.current_version
-          name: "HASS.IO текущая версия:"
+          name: "HA текущая версия:"
         - entity: sensor.latest_version
-          name: "HASS.IO последняя версия:"
+          name: "HA последняя версия:"
+        - entity: sensor.ha_supervisor_current_version
+          name: "Supervisor текущая версия:"
+          icon: mdi:home-assistant
+        - entity: sensor.ha_supervisor_latest_version
+          name: "Supervisor последняя версия:"
+          icon: mdi:home-assistant
+        - entity: sensor.supervisor_updates
+          name: "Обновления Add-ons:"
+          icon: mdi:view-module
         - entity: sensor.hacs
           name: "Обновления HACS:"
         - type: section

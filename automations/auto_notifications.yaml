@@ -78,6 +78,33 @@
     data_template:
       message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
 
+- alias: 'HASSIO: New Addons Update Available [notify to stall]'
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.updater_addons
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.supervisor_updates') | int > 0 }}"
+  action:
+    - service: notify.telegram_stall
+      data_template:
+        message: "_INFO:_ Доступны новые версии Add-ons (Supervisor) (кол-во: {{ states('sensor.supervisor_updates') }})"
+
+- alias: 'HASSIO: New Supervisor Version Available [notify to stall]'
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.updater_supervisor
+      from: 'off'
+      to: 'on'
+  action:
+    - service: notify.telegram_stall
+      data_template:
+        message: "_INFO:_ Доступна новая версия Supervisor ({{ state_attr('sensor.supervisor_updates', 'newest_version') }})"
+
 - alias: 'HACS: New Component Version Available [notify to stall]'
   initial_state: true
   trigger:
@@ -89,7 +116,7 @@
   action:
     service: notify.telegram_stall
     data_template:
-      message: "_INFO:_ Доступны новые версии установленных компонент (кол-во: {{ states('sensor.hacs') }})"
+      message: "_INFO:_ Доступны новые версии Custom Components (HACS) (кол-во: {{ states('sensor.hacs') }})"
 
 - alias: Torrent Completed [notify to stall]
   initial_state: true
