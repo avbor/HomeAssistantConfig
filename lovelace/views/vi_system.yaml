@@ -86,6 +86,7 @@ cards:
             service_data:
               entity_id: script.mi_gw3_enable_ftp
           entity: script.mi_gw3_enable_ftp
+
   - type: vertical-stack
     cards:
       - type: markdown
