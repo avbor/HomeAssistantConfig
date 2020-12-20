@@ -4,7 +4,7 @@ panel: true
 cards:  
   - type: 'custom:flex-table-card'
     clickable: false
-    sort_by: ieee
+    sort_by: ieee, mac
     #max_rows: 20
 #    columns:
 #      - data: friendly_name
