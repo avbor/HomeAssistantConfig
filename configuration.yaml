@@ -122,6 +122,7 @@ weather:
 
 discovery:
   ignore:
+    - homekit
 #    - yeelight
 #    - igd
 
@@ -204,8 +205,7 @@ notify:
     platform: telegram
     chat_id: !secret tlg_iborisochka_id
 
-xiaomi_gateway3:
-  zigbee_info: msg_received
+#xiaomi_gateway3:
 #  debug: mqtt
 
 #################################################

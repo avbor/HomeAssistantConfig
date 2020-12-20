@@ -1,14 +1,51 @@
-title: ZigBee
-icon: mdi:zigbee
+title: Radio Quality [GW 3]
+icon: mdi:radio-tower
 panel: true
 cards:  
   - type: 'custom:flex-table-card'
     clickable: false
-    sort_by: nwk
+    sort_by: ieee
     #max_rows: 20
+#    columns:
+#      - data: friendly_name
+#        name: Friendly Name
+#      - data: nwk
+#        name: NWK
+#        modify: x+''
+#      - data: parent
+#        name: Parent
+#        modify: x+''
+#      - data: msg_received
+#        name: Received
+#        modify: x+''
+#      - data: msg_missed
+#        name: Missed
+#        modify: x+''
+#      - data: unresponsive
+#        name: Unresponsive
+#        modify: x+''
+#      - data: link_quality
+#        name: LQI
+#        modify: x+''
+#      - data: rssi
+#        name: RSSI
+#        modify: x+''
+#      - data: type
+#        name: Type
+#        modify: x+''
+#      - data: last_seen
+#        name: Last seen, min ago
+#        modify: Math.round((Date.now()-Date.parse(x))/60000.)
     columns:
       - data: friendly_name
         name: Friendly Name
+        modify: 'x.replace("Ble","[BLE]").replace("Zigbee","[ZigBee]")'
+      - data: ieee
+        name: IEEE
+        modify: x+''
+      - data: mac
+        name: MAC
+        modify: ((x+'').replace(/(.{2})/g,"$1:")).slice(0, -1)
       - data: nwk
         name: NWK
         modify: x+''
@@ -33,16 +70,19 @@ cards:
       - data: type
         name: Type
         modify: x+''
-      - data: last_seen
-        name: Last seen, min ago
+      - data: last_msg
+        name: Last Message
+        modify: x+''
+      - data: state
+        name: Last Seen (min ago)
+        #modify: 'x.replace("unknown","").replace("unavailable","")'
         modify: Math.round((Date.now()-Date.parse(x))/60000.)
+
     entities:
-      include: xiaomi_gateway3.*
+      include: 
+        - sensor.*_zigbee
+        - sensor.*_ble
       # exclude: 
-      #   - xiaomi_gateway3.0x588e81fffe72678e
-      #   - xiaomi_gateway3.0x588e81fffedcb38d
-      #   - xiaomi_gateway3.0x588e81fffedd3c41
-      #   - xiaomi_gateway3.0x842e14fffe1508a6
     css:
       table+: 'padding-top: 15px;'
       'tbody tr:nth-child(even)': 'background-color: #a2542f6;'

@@ -70,7 +70,7 @@ cards:
     - type: entities
       entities:
         - entity: remote.0x588e81fffedca899_pair
-          name: Xiaomi Gw 3 Pair Mode
+          name: "GW 3: Pair Mode"
     - type: horizontal-stack
       cards:
         - type: button

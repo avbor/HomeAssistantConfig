@@ -10,3 +10,4 @@ views:
   - !include lovelace/views/vi_stats.yaml
   - !include lovelace/views/vi_system.yaml
   - !include lovelace/views/vi_zigbee.yaml
+#  - !include lovelace/views/vi_ble.yaml
