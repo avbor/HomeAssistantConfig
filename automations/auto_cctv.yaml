@@ -50,7 +50,7 @@
   initial_state: true
   trigger:
     platform: time
-    at: "07:30:00"
+    at: "07:00:00"
   action:
     - service: automation.turn_off
       entity_id: automation.dvizhenie_v_detskoi

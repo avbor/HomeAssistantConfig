@@ -3,6 +3,12 @@
 #################################################
 vacuum_cleaner:
 
+# Devices
+  vacuum:
+    - platform: xiaomi_miio
+      host: 172.16.16.219
+      token: !secret mi_vacuum_1s_token
+
 # Input Select
   input_select:
     room_to_vacuum:

@@ -137,7 +137,7 @@
     conditions:
       - condition: time
         after: '21:00'
-        before: '8:00'
+        before: '9:00'
       - condition: numeric_state
         entity_id: sensor.illumination_158d0003fac0ec
         below: 15
@@ -156,7 +156,7 @@
   condition:
     condition: time
     after: '21:00'
-    before: '8:00'
+    before: '9:00'
   action:
     service: homeassistant.turn_off
     entity_id: light.kukhnia_lenta
@@ -284,6 +284,16 @@
     entity_id: sensor.0x158d0004ab468e_action
     to: 'shake'
   action:
-    - service: switch.toggle
+    - service: light.toggle
       data:
-          entity_id: switch.plug_158d000391fb00
+          entity_id: light.gostinaia_podsvetka_na_okne
+
+- alias: 'Кнопка Xiaomi 1 single'
+  trigger:
+    platform: state
+    entity_id: sensor.0x158d00035a9bc5_action
+    to: 'single'
+  action:
+    - service: light.toggle
+      data:
+          entity_id: light.sonoff_1000ab3c28

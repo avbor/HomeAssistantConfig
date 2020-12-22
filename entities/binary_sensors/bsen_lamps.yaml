@@ -13,6 +13,9 @@
     lamp_status_detskaia_okno:
       device_class: power
       value_template: "{{ is_state('light.detskaia_podsvetka_na_okne', 'on') }}"
+    lamp_status_gostinaia_okno:
+      device_class: power
+      value_template: "{{ is_state('light.gostinaia_podsvetka_na_okne', 'on') }}"
     lamp_status_gostinaya_bra:
       device_class: power
       value_template: "{{ is_state('light.sonoff_1000ab3c28', 'on') }}"

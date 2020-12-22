@@ -129,6 +129,7 @@
         Свет в кладовой: *{{ states('light.sonoff_1000b6831b') }}*
         Лампа на столе в гостиной: *{{ states('light.0x86bd7fffe616b72_light') }}*
         Бра в гостиной: *{{ states('light.sonoff_1000ab3c28') }}*
+        Подсветка онка в гостиной: *{{ states('light.gostinaia_podsvetka_na_okne') }}*
         `-= Розетки =-`
         Розетка TP-Link SmartPlug 01: *{{ states('switch.tplink_smartplug_01') }}*
         Розетка TP-Link SmartPlug 02: *{{ states('switch.tplink_smartplug_02') }}*

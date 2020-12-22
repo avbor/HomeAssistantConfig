@@ -43,6 +43,8 @@ wake_on_lan:
 person:
 logbook:
 history:
+tag:
+media_source:
 
 http:
   #base_url: !secret external_url
@@ -140,11 +142,9 @@ light:
   - platform: switch
     name: Детская - подсветка на окне
     entity_id: switch.plug_158d00033b702e
-
-vacuum:
-  - platform: xiaomi_miio
-    host: 172.16.16.219
-    token: !secret mi_vacuum_1s_token
+  - platform: switch
+    name: Гостиная - подсветка на окне
+    entity_id: switch.plug_158d000391fb00
 
 fan:
   - platform: xiaomi_miio

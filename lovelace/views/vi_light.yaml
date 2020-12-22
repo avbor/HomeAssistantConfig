@@ -45,6 +45,16 @@ cards:
         cards:
           - type: conditional
             conditions:
+              - entity: light.sonoff_1000ab3c28
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.sonoff_1000ab3c28
+              name: Бра
+      - type: horizontal-stack
+        cards:
+          - type: conditional
+            conditions:
               - entity: light.0x86bd7fffe616b72_light
                 state_not: "unavailable"
             card:
@@ -54,12 +64,12 @@ cards:
             
           - type: conditional
             conditions:
-              - entity: light.sonoff_1000ab3c28
+              - entity: light.gostinaia_podsvetka_na_okne
                 state_not: "unavailable"
             card:
               type: light
-              entity: light.sonoff_1000ab3c28
-              name: Бра
+              entity: light.gostinaia_podsvetka_na_okne
+              name: Подсветка на окне
 
   # Кухня
   - type: vertical-stack
@@ -97,7 +107,7 @@ cards:
         show_header_toggle: false
         entities:
           - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
-            name: Автовключение подсветки (21:00 - 08:00)
+            name: Автовключение подсветки (21:00 - 09:00)
             icon: mdi:led-strip-variant
 
   # Спальня

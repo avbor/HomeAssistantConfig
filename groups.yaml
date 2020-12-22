@@ -36,7 +36,7 @@ all_lamps:
     - light.detskaia_podsvetka_na_okne
     - light.0x86bd7fffe616b72_light
     - light.sonoff_1000ab3c28
-    - switch.plug_158d000391fb00
+    - light.gostinaia_podsvetka_na_okne
     - light.kukhnia_lenta
     - light.kukhnia_liustra
     - light.sonoff_1000b72483

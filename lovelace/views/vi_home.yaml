@@ -181,6 +181,9 @@ cards:
           - entity: binary_sensor.lamp_status_gostinaya_bra
             name: Бра в гостиной
             icon: mdi:wall-sconce-flat
+          - entity: binary_sensor.lamp_status_gostinaia_okno
+            name: Подсветка окна в гостиной
+            icon: mdi:string-lights
           - entity: binary_sensor.lamp_status_workdesk_gostinaya
             name: Лампа на столе в гостиной
             icon: mdi:desk-lamp
