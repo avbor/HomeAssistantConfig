@@ -4,6 +4,10 @@ panel: true
 cards:  
   - type: 'custom:flex-table-card'
     clickable: false
+    entities:
+      include: 
+        - sensor.*_zigbee
+        - sensor.*_ble
     sort_by: ieee, mac
     #max_rows: 20
 #    columns:
@@ -49,9 +53,10 @@ cards:
       - data: nwk
         name: NWK
         modify: x+''
-      - data: parent
-        name: Parent
-        modify: x+''
+# Don't work on 1.4.7+ Firmware
+#      - data: parent
+#        name: Parent
+#        modify: x+''
       - data: msg_received
         name: Received
         modify: x+''
@@ -67,9 +72,10 @@ cards:
       - data: rssi
         name: RSSI
         modify: x+''
-      - data: type
-        name: Type
-        modify: x+''
+# Don't work on 1.4.7+ Firmware
+#      - data: type
+#        name: Type
+#        modify: x+''
       - data: last_msg
         name: Last Message
         modify: x+''
@@ -77,13 +83,8 @@ cards:
         name: Last Seen (min ago)
         #modify: 'x.replace("unknown","").replace("unavailable","")'
         modify: Math.round((Date.now()-Date.parse(x))/60000.)
-
-    entities:
-      include: 
-        - sensor.*_zigbee
-        - sensor.*_ble
-      # exclude: 
     css:
+#      thead th: 'align-content: center;'
       table+: 'padding-top: 15px;'
       'tbody tr:nth-child(even)': 'background-color: #a2542f6;'
       td.left: 'padding: 10px 10px 10px 10px'

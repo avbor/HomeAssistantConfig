@@ -5,7 +5,7 @@ import socket
 import time
 from telnetlib import Telnet
 from threading import Thread
-from typing import Optional
+from typing import Optional, Union
 
 from paho.mqtt.client import Client, MQTTMessage
 from . import bluetooth, utils
@@ -145,7 +145,7 @@ class GatewayStats:
     def add_stats(self, ieee: str, handler):
         self.stats[ieee] = handler
 
-        if self.parent_scan_interval > 0:
+        if self.parent_scan_interval:
             self.info_ts = time.time() + 5
 
     def remove_stats(self, ieee: str, handler):
@@ -167,14 +167,11 @@ class GatewayStats:
                     'radio_channel': payload.get('radioChannel'),
                 }
             elif 'free_mem' in payload:
-                s = payload['run_time']
+                payload.pop('ip')
+                payload.pop('ssid')
+                s = payload.pop('run_time')
                 h, m, s = s // 3600, s % 3600 // 60, s % 60
-                payload = {
-                    'free_mem': payload['free_mem'],
-                    'load_avg': payload['load_avg'],
-                    'rssi': -payload['rssi'],
-                    'uptime': f"{h:02}:{m:02}:{s:02}",
-                }
+                payload['uptime'] = f"{h:02}:{m:02}:{s:02}"
 
         self.stats['lumi.0'](payload)
 
@@ -244,7 +241,7 @@ class GatewayStats:
 
         self.info_loading = False
         # one hour later
-        if self.parent_scan_interval > 0:
+        if self.parent_scan_interval:
             self.info_ts = time.time() + self.parent_scan_interval * 60
 
 
@@ -269,7 +266,7 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
 
         self._ble = options.get('ble')  # for fast access
         self._debug = options.get('debug', '')  # for fast access
-        self.parent_scan_interval = options.get('parent', -1)
+        self.parent_scan_interval = options.get('parent')  # for fast access
         self.default_devices = config['devices']
 
         self.devices = {}
@@ -297,12 +294,10 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
 
     def stop(self):
         self.enabled = False
-        self.mqtt._thread_terminate = True
+        self.mqtt.loop_stop()
 
     def run(self):
         """Main thread loop."""
-        self.debug("Start main thread")
-
         self.enabled = True
         while self.enabled:
             # if not telnet - enable it
@@ -324,13 +319,11 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
                 continue
 
             # if not mqtt - enable it (handle Mi Home and ZHA mode)
-            if not self._mqtt_connect() or not self._prepeare_gateway():
+            if not self._mqtt_connect() and not self._prepeare_gateway():
                 time.sleep(60)
                 continue
 
             self.mqtt.loop_forever()
-
-        self.debug("Stop main thread")
 
     def _check_port(self, port: int):
         """Check if gateway port open."""
@@ -355,9 +348,8 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
         try:
             shell = TelnetShell(self.host)
 
-            if self.ver is None:
-                self.ver = shell.get_version()
-                self.debug(f"Version: {self.ver}")
+            self.ver = shell.get_version()
+            self.debug(f"Version: {self.ver}")
 
             ps = shell.get_running_ps()
 
@@ -398,7 +390,7 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
                     self.debug("Stop socat")
                     shell.stop_socat()
 
-                if (self.parent_scan_interval >= 1 and
+                if (self.parent_scan_interval is not None and
                         "Lumi_Z3GatewayHost_MQTT -n 1 -b 115200 -v" not in ps):
                     self.debug("Run public Zigbee console")
                     shell.run_public_zb_console()
