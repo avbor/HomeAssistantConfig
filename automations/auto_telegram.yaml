@@ -115,6 +115,10 @@
         Кладовая: *{{ states('sensor.temperature_158d00039e2ecb') }}°C*, {{ states('sensor.humidity_158d00039e2ecb') }}%
 
         *Статус устройств*
+        `-= Датчики протечки =-`
+        Нептун (кладовая, туалет, ванна, кухня): *{{ states('binary_sensor.neptun_water_leakage') }}*
+        Aqara кладовая: *{{ states('binary_sensor.water_leak_sensor_158d000400e77d') }}*
+        Aqara под ванной (слева): *{{ states('binary_sensor.0x158d0004030d84_moisture') }}*
         `-= Кондиционеры =-`
         Детская: *{{ states('binary_sensor.door_window_sensor_158d00039cf974') }}*
         Гостинная: *{{ states('binary_sensor.door_window_sensor_158d0003d54725') }}*
@@ -135,6 +139,8 @@
         Розетка TP-Link SmartPlug 02: *{{ states('switch.tplink_smartplug_02') }}*
         Розетка Xiaomi ZigBee Plug 01: *{{ states('switch.plug_158d00033b702e') }}*
         Розетка Xiaomi ZigBee Plug 02: *{{ states('switch.plug_158d000391fb00') }}*
+        Розетка Xiaomi WiFi Plug 01: *{{ states('switch.mi_smartplugwifi_01') }}*
+        Розетка Xiaomi WiFi Plug 02: *{{ states('switch.mi_smartplugwifi_02') }}*
         `-= ТВ =-`
         Спальня: *{{ states('media_player.samsungtv_ue43ru7470') }}*
         Гостинная: *{{ states('media_player.samsungtv_ue46es5507') }}*
@@ -144,6 +150,7 @@
         Гостинная: *{{ states('media_player.gostinaia') }}*
         Гостинная (Home Mini): *{{ states('media_player.googlehome9967') }}*
         Детская: *{{ states('media_player.detskaia') }}*
+        Детская: (Home Mini): *{{ states('media_player.googlehome3792') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
         Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*

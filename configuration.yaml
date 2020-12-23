@@ -58,7 +58,6 @@ http:
 logger:
   default: warn
 #  logs:
-#    custom_components.sonoff: debug
 #    homeassistant.components.tuya: debug
 #    homeassistant.components.http.ban: warning
 #    homeassistant.components.device_tracker: debug

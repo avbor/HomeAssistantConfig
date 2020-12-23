@@ -62,8 +62,8 @@ SOURCES = {"TV": "KEY_TV", "HDMI": "KEY_HDMI"}
 CONF_SOURCELIST = "sourcelist"
 CONF_APPLIST = "applist"
 CONF_PROTOCOL = "protocol"
-CONF_ID = ""
-CONF_TOKEN = ""
+CONF_ID = "id"
+CONF_TOKEN = "token"
 MIN_TIME_BETWEEN_FORCED_SCANS = timedelta(seconds=1)
 MIN_TIME_BETWEEN_SCANS = timedelta(seconds=10)
 
@@ -202,7 +202,7 @@ class SamsungTVDevice(MediaPlayerEntity):
         }
         self._sourcelist = sourcelist
         
-        if self._token != "":
+        if self._token != None:
             self._config["method"] = "encrypted"
         elif self._config["port"] in (8001, 8002):
             self._config["method"] = "websocket"
