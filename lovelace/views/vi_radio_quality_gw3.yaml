@@ -45,7 +45,7 @@ cards:
         modify: x+''
       - data: mac
         name: MAC [BLE]
-        modify: ((x+'').replace(/(.{2})/g,"$1:")).slice(0, -1)
+        modify: ((x+'').toUpperCase().replace(/(.{2})/g,"$1:")).slice(0, -1)
       - data: nwk
         name: NWK
         modify: x+''
