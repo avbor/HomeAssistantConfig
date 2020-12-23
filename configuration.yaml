@@ -73,6 +73,7 @@ frontend:
 recorder:
   db_url: !secret mysql_url
   purge_keep_days: 7
+  commit_interval: 60
   exclude:
     domains:
       - updater
@@ -171,7 +172,6 @@ sonoff:
     1000ab3c28:
       devicekey: 4158540f-d7c0-4453-aeac-958355a85756
       device_class: light
-
 
 tplink:
   discovery: false

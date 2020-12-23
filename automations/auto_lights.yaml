@@ -297,3 +297,13 @@
     - service: light.toggle
       data:
           entity_id: light.sonoff_1000ab3c28
+
+- alias: 'Кнопка Xiaomi 1 hold'
+  trigger:
+    platform: state
+    entity_id: sensor.0x158d00035a9bc5_action
+    to: 'hold'
+  action:
+    - service: light.toggle
+      data:
+          entity_id: light.gostinaia_podsvetka_na_okne

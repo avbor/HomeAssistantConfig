@@ -61,10 +61,11 @@ class TelnetShell(Telnet):
     def check_firmware_lock(self) -> bool:
         """Check if firmware update locked. And create empty file if needed."""
         self.exec("mkdir -p /data/firmware")
-        return all(
+        locked = [
             "Permission denied" in self.exec("touch " + path)
             for path in FIRMWARE_PATHS
-        )
+        ]
+        return all(locked)
 
     def lock_firmware(self, enable: bool):
         command = LOCK_FIRMWARE if enable else UNLOCK_FIRMWARE
