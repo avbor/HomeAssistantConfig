@@ -11,7 +11,7 @@ cards:
           - type: button
             entity: switch.0x158d000578c1d0_channel_2
             name: Закрыть
-            icon: mdi:water-off-outline
+            icon: mdi:water-remove-outline
             icon_height: 64px
             show_state: true
             tap_action: 
@@ -27,7 +27,7 @@ cards:
           - type: button
             entity: switch.0x158d000578c1d0_channel_1
             name: Открыть
-            icon: mdi:water-outline
+            icon: mdi:water-check-outline
             icon_height: 64px
             show_state: true
             tap_action: 
