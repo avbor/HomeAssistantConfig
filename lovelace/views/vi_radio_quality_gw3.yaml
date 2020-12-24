@@ -10,36 +10,6 @@ cards:
         - sensor.*_ble
     sort_by: ieee, mac
     #max_rows: 20
-#    columns:
-#      - data: friendly_name
-#        name: Friendly Name
-#      - data: nwk
-#        name: NWK
-#        modify: x+''
-#      - data: parent
-#        name: Parent
-#        modify: x+''
-#      - data: msg_received
-#        name: Received
-#        modify: x+''
-#      - data: msg_missed
-#        name: Missed
-#        modify: x+''
-#      - data: unresponsive
-#        name: Unresponsive
-#        modify: x+''
-#      - data: link_quality
-#        name: LQI
-#        modify: x+''
-#      - data: rssi
-#        name: RSSI
-#        modify: x+''
-#      - data: type
-#        name: Type
-#        modify: x+''
-#      - data: last_seen
-#        name: Last seen, min ago
-#        modify: Math.round((Date.now()-Date.parse(x))/60000.)
     columns:
       - data: friendly_name
         name: Friendly Name
@@ -81,8 +51,7 @@ cards:
         modify: x+''
       - data: state
         name: Last Seen (min ago)
-        #modify: 'x.replace("unknown","").replace("unavailable","")'
-        modify: Math.round((Date.now()-Date.parse(x))/60000.)
+        modify: 'isFinite(Date.parse(x)) ? Math.round((Date.now()-Date.parse(x))/60000) : ""'
     css:
 #      thead th: 'align-content: center;'
       table+: 'padding-top: 15px;'

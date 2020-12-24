@@ -82,6 +82,10 @@ recorder:
       - input_datetime
       - input_number
       - input_select
+    entity_globs:
+      - sensor.*_zigbee
+      - sensor.*_ble
+      - sensor.keenetic_gateway_*
     entities:
       - sensor.time
       - sensor.date
