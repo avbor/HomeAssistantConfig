@@ -19,7 +19,7 @@ cards:
               confirmation:
                 text: |
                   Убедитесь что вода не используется потребителями.
-                  Перекрыть подачу воды в квартиру?
+                  Перекрыть подачу воды?
               service: script.turn_on
               service_data:
                 entity_id: script.water_valves_close
@@ -35,7 +35,7 @@ cards:
               confirmation:
                 text: |
                   Убедитесь что протечка устранена.
-                  Открыть подачу воды в квартиру?
+                  Открыть подачу воды?
               service: script.turn_on
               service_data:
                 entity_id: script.water_valves_open
