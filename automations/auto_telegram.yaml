@@ -82,11 +82,11 @@
     event_data: 
       command: '/weather'
   action:
-    - service: telegram_bot.send_sticker
+    - service: telegram_bot.send_photo
       data_template:
         target: '{{ trigger.event.data.user_id }}'
-        file: '/config/www/weather_icons/{{ states.weather.gismeteo.state }}.png'
-        caption: '{{ states.weather.gismeteo.state }}'
+        file: '/config/www/weather_icons/{{ states("weather.gismeteo") }}.webp'
+        caption: '{{ states("weather.gismeteo") }}'
     - service: telegram_bot.send_message
       data_template:
         target: '{{ trigger.event.data.user_id }}'
