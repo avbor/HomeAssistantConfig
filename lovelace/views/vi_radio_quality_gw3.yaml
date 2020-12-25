@@ -23,10 +23,9 @@ cards:
       - data: nwk
         name: NWK
         modify: x+''
-# Don't work on 1.4.7+ Firmware
-#      - data: parent
-#        name: Parent
-#        modify: x+''
+      - data: parent
+        name: Parent
+        modify: x+''
       - data: msg_received
         name: Received
         modify: x+''
@@ -42,10 +41,9 @@ cards:
       - data: rssi
         name: RSSI
         modify: x+''
-# Don't work on 1.4.7+ Firmware
-#      - data: type
-#        name: Type
-#        modify: x+''
+      - data: type
+        name: Type
+        modify: (x+'').replace("-", "child device")
       - data: last_msg
         name: Last Message
         modify: x+''
