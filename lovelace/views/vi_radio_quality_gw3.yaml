@@ -51,8 +51,7 @@ cards:
         modify: x+''
       - data: state
         name: Last Seen
-        #modify: 'isFinite(Date.parse(x)) ? Math.round((Date.now()-Date.parse(x))/60000) : ""'
-        modify: var sec=((Date.now()-Date.parse(x))/1000); var dt=new Date(0,0,0,0,0,sec); dt.toTimeString().split(" ")[0]
+        modify: 'var dt=new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x))); isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""'
     css:
 #      thead th: 'align-content: center;'
       table+: 'padding-top: 15px;'
