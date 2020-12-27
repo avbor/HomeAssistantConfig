@@ -16,16 +16,19 @@ cards:
         modify: 'x.replace("Ble","[BLE]").replace("Zigbee","[ZigBee]")'
       - data: ieee
         name: IEEE [ZigBee]
-        modify: x+''
+        modify: (x+'').toLowerCase()
       - data: mac
         name: MAC [BLE]
-        modify: ((x+'').toUpperCase().replace(/(.{2})/g,"$1:")).slice(0, -1)
+        modify: ((x+'').replace(/(.{2})/g,"$1:")).slice(0, -1)
       - data: nwk
         name: NWK
-        modify: x+''
-      - data: parent
-        name: Parent
-        modify: x+''
+        modify: (x+'').toLowerCase()
+#
+# Does't work on 1.4.7+
+#      - data: parent
+#        name: Parent
+#        modify: x+''
+#
       - data: msg_received
         name: Received
         modify: x+''
@@ -41,9 +44,12 @@ cards:
       - data: rssi
         name: RSSI
         modify: x+''
-      - data: type
-        name: Type
-        modify: (x+'').replace("-", "child device")
+#
+# Does't work on 1.4.7+
+#      - data: type
+#        name: Type
+#        modify: (x+'').replace("-", "child device")
+#
       - data: last_msg
         name: Last Message
         modify: x+''
