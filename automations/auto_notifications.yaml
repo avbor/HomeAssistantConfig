@@ -164,6 +164,7 @@
       - sensor.0x158d00044ee524_battery
       - sensor.0x158d0004ab468e_battery
       - sensor.0x158d0004030d84_battery
+      - sensor.0x158d00054859d5_battery
     below: 15
   action:
     - service: notify.telegram_stall
