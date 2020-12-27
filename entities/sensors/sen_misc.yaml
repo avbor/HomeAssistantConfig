@@ -89,6 +89,12 @@
       icon_template: mdi:clock
       value_template: "{{ ((as_timestamp(now()) | int - as_timestamp(states('sensor.uptime')) | int) / 60) | int }}"
       unit_of_measurement: minutes
+    # Temperature sensors for use in ESPHome firmwares
+    esphome_for_ir_ac_daikin_livingroom:
+      friendly_name: Температура в гостиной
+      unit_of_measurement: °C
+      device_class: temperature
+      value_template: "states('sensor.temperature_158d0003230618')"
 - platform: min_max
   name: Average Temperature In Flat
   type: median
