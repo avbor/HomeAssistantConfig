@@ -94,7 +94,7 @@
       friendly_name: Температура в гостиной
       unit_of_measurement: °C
       device_class: temperature
-      value_template: "states('sensor.temperature_158d0003230618')"
+      value_template: "{{ states('sensor.temperature_158d0003230618') }}"
 - platform: min_max
   name: Average Temperature In Flat
   type: median

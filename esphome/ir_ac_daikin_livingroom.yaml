@@ -15,6 +15,9 @@ wifi:
 captive_portal:
 logger:
 
+web_server:
+  port: 80
+
 # Enable Home Assistant API
 api:
   password: !secret esphome_api_password
@@ -26,7 +29,8 @@ ota:
 #   Blink slowly = Temporary issue (WiFi/MQTT disconnected, sensor unavailable, ...)
 #   Blink quickly = Error encountered
 status_led:
-  pin: GPIO4
+  pin: 
+    number: GPIO4
 
 # Configure the IR receiver. Handy to pickup confirmation messages
 # from your AC (or capture commands from the actual remote)
@@ -39,7 +43,9 @@ remote_receiver:
 
 # Configure the IR LED: this one sends commands to other devices
 remote_transmitter:
-  pin: GPIO14
+  pin:
+    number: GPIO14
+    inverted: false
   carrier_duty_percent: 50%
 
 sensor:
@@ -48,6 +54,7 @@ sensor:
     entity_id: sensor.esphome_for_ir_ac_daikin_livingroom
     id: temp
     internal: true
+    unit_of_measurement: °C
 
 # Configure the AC unit you have. Mine is a Daikin. Other supported brands are listed here:
 # https://esphome.io/components/climate/ir_climate.html?highlight=climate
