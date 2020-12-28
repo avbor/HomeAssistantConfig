@@ -23,12 +23,9 @@ cards:
       - data: nwk
         name: NWK
         modify: (x+'').toLowerCase()
-#
-# Does't work on 1.4.7+
       - data: parent
         name: Parent
         modify: (x+'').toLowerCase()
-#
       - data: msg_received
         name: Received
         modify: x+''
@@ -44,12 +41,9 @@ cards:
       - data: rssi
         name: RSSI
         modify: x+''
-#
-# Does't work on 1.4.7+
       - data: type
         name: Type
         modify: (x+'').replace("-", "child device")
-#
       - data: last_msg
         name: Last Message
         modify: x+''
