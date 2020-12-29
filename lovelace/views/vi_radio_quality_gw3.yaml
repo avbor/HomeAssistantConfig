@@ -13,13 +13,13 @@ cards:
     columns:
       - data: friendly_name
         name: Friendly Name
-        modify: 'x.replace("Ble","[BLE]").replace("Zigbee","[ZigBee]")'
+        modify: 'x.replace(/ Ble$/," [BLE]").replace(/ Zigbee$/," [ZigBee]")'
       - data: ieee
         name: IEEE [ZigBee]
         modify: (x+'').toLowerCase()
       - data: mac
         name: MAC [BLE]
-        modify: ((x+'').replace(/(.{2})/g,"$1:")).slice(0, -1)
+        modify: (x+'').replace(/(.{2}(?!$))/g,"$1:")
       - data: nwk
         name: NWK
         modify: (x+'').replace(/^0x/,"").toLowerCase()
@@ -43,7 +43,7 @@ cards:
         modify: x+''
       - data: type
         name: Type
-        modify: (x+'').replace("-", "child device")
+        modify: (x+'').replace(/^-$/, "child device")
       - data: last_msg
         name: Last Message
         modify: x+''
