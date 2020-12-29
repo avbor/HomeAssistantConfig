@@ -32,8 +32,10 @@ cards:
           - data: uptime
             name: Gateway Uptime
           - data: state
-            name: Connection Uptime
-            modify: 'var dt=new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x))); isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""'
+            name: Connected Since
+            modify: 
+              var dt = new Date(x);
+              dt.toLocaleString(['ru-RU', 'en-US'])
         css:
           table+: 'padding-top: 15px;'
           'tbody tr:nth-child(even)': 'background-color: #a2542f6;'
@@ -53,7 +55,6 @@ cards:
         columns:
           - data: friendly_name
             name: Friendly Name
-            #modify: 'x.replace(/ Ble$/," [BLE]").replace(/ Zigbee$/," [ZigBee]")'
             modify: 'x.replace(/ Ble$/,"").replace(/ Zigbee$/,"")'
           - data: ieee
             name: IEEE [ZigBee]
@@ -90,7 +91,9 @@ cards:
             modify: x+''
           - data: state
             name: Last Seen
-            modify: 'var dt=new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x))); isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""'
+            modify: >
+              var dt = new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x)));
+              isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""
         css:
     #      thead th: 'align-content: center;'
           table+: 'padding-top: 15px;'
