@@ -12,7 +12,6 @@ cards:
         entities:
           include: 
             - sensor.*_gateway
-        sort_by: ieee, mac
         columns:
           - data: friendly_name
             name: Friendly Name
