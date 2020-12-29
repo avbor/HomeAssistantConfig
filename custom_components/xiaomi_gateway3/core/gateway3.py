@@ -243,7 +243,7 @@ class GatewayStats:
             m3 = re.findall(r'\(>\)([A-F0-9]{16})', raw)
 
             raw = self.z3buffer["plugin concentrator print-table"]
-            m4 = re.findall(r': (.{16,}) -> 0x0000', raw)
+            m4 = re.findall(r': ([A-F0-9x> -]{16,}) -> 0x0000', raw)
             m4 = [i.replace('0x', '').split(' -> ') for i in m4]
             m4 = {i[0]: i[1:] for i in m4}
 
@@ -296,12 +296,11 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
         self.mqtt.on_connect = self.on_connect
         self.mqtt.on_disconnect = self.on_disconnect
         self.mqtt.on_message = self.on_message
-        self.mqtt.connect_async(host)
 
         self._ble = options.get('ble')  # for fast access
         self._debug = options.get('debug', '')  # for fast access
         self.parent_scan_interval = options.get('parent', -1)
-        self.default_devices = config['devices']
+        self.default_devices = config['devices'] if config else None
 
         self.devices = {}
         self.updates = {}
@@ -333,6 +332,8 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
     def run(self):
         """Main thread loop."""
         self.debug("Start main thread")
+
+        self.mqtt.connect_async(self.host)
 
         self.enabled = True
         while self.enabled:
@@ -777,8 +778,15 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
             if param.get('error_code', 0) != 0:
                 continue
 
-            prop = param['res_name'] if 'res_name' in param else \
-                f"{param['siid']}.{param['piid']}"
+            if 'res_name' in param:
+                prop = param['res_name']
+            elif 'piid' in param:
+                prop = f"{param['siid']}.{param['piid']}"
+            elif 'eiid' in param:
+                prop = f"{param['siid']}.{param['eiid']}"
+            else:
+                _LOGGER.warning(f"Unsupported param: {data}")
+                return
 
             if prop in GLOBAL_PROP:
                 prop = GLOBAL_PROP[prop]
@@ -810,8 +818,13 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
                 payload[prop] = param['value'] / 1000.0
             elif prop in ('consumption', 'power'):
                 payload[prop] = round(param['value'], 2)
-            else:
+            elif 'value' in param:
                 payload[prop] = param['value']
+            elif 'arguments' in param:
+                if prop == 'motion':
+                    payload[prop] = 1
+                else:
+                    payload[prop] = param['arguments']
 
         self.debug(f"{device['did']} {device['model']} <= {payload}")
 

@@ -22,10 +22,10 @@ cards:
         modify: ((x+'').replace(/(.{2})/g,"$1:")).slice(0, -1)
       - data: nwk
         name: NWK
-        modify: (x+'').toLowerCase()
+        modify: (x+'').replace(/^0x/,"").toLowerCase()
       - data: parent
         name: Parent
-        modify: (x+'').toLowerCase()
+        modify: (x+'').replace(/^0x/,"").toLowerCase()
       - data: msg_received
         name: Received
         modify: x+''
