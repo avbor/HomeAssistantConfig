@@ -217,6 +217,7 @@ class GatewayStats:
             self.z3buffer['buffer'] += payload
 
     def get_gateway_info(self):
+        self.debug("Update zigbee network info")
         payload = {'commands': [
             {'commandcli': "debugprint all_on"},
             {'commandcli': "plugin device-table print"},
@@ -357,7 +358,7 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
                 continue
 
             # if not mqtt - enable it (handle Mi Home and ZHA mode)
-            if not self._mqtt_connect() or not self._prepeare_gateway():
+            if not self._prepeare_gateway() or not self._mqtt_connect():
                 time.sleep(60)
                 continue
 
@@ -798,10 +799,12 @@ class Gateway3(Thread, GatewayV, GatewayMesh, GatewayStats):
 
             # https://github.com/Koenkk/zigbee2mqtt/issues/798
             # https://www.maero.dk/aqara-temperature-humidity-pressure-sensor-teardown/
-            if prop == 'temperature' and -4000 < param['value'] < 12500:
-                payload[prop] = param['value'] / 100.0
-            elif prop == 'humidity' and 0 <= param['value'] <= 10000:
-                payload[prop] = param['value'] / 100.0
+            if prop == 'temperature':
+                if -4000 < param['value'] < 12500:
+                    payload[prop] = param['value'] / 100.0
+            elif prop == 'humidity':
+                if 0 <= param['value'] <= 10000:
+                    payload[prop] = param['value'] / 100.0
             elif prop == 'pressure':
                 payload[prop] = param['value'] / 100.0
             elif prop == 'battery' and param['value'] > 1000:

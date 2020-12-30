@@ -15,13 +15,15 @@ cards:
         columns:
           - data: friendly_name
             name: Friendly Name
-            modify: 'x.replace(/ Gateway$/,"")'
+            modify: '(x+"").replace(/ Gateway$/,"")'
           - data: network_pan_id
             name: Network PAN ID
+            modify: x+''
           - data: radio_tx_power
             name: Radio TX Power
           - data: radio_channel
             name: Radio Channel
+            modify: x+''
           - data: free_mem
             name: Memory Free
           - data: load_avg
@@ -29,8 +31,10 @@ cards:
             modify: 'x.replace(/\|/g,", ")'
           - data: rssi
             name: RSSI
+            modify: x+''
           - data: uptime
             name: Gateway Uptime
+            modify: x+''
           - data: state
             name: Connected Since
             modify: 
