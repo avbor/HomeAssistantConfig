@@ -26,9 +26,10 @@ cards:
             modify: x+''
           - data: free_mem
             name: Memory Free
+            modify: x+''
           - data: load_avg
             name: Load Avg
-            modify: 'x.replace(/\|/g,", ")'
+            modify: '(x+"").replace(/\|/g,", ")'
           - data: rssi
             name: RSSI
             modify: x+''
