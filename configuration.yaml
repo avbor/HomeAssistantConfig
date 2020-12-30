@@ -115,8 +115,8 @@ influxdb:
 lovelace:
   mode: yaml
   resources:
-  - url: /hacsfiles/flex-table-card/flex-table-card.js
-    type: module
+    - url: /hacsfiles/flex-table-card/flex-table-card.js
+      type: module
 
 tts:
   - platform: google_translate

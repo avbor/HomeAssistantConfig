@@ -41,27 +41,23 @@ cards:
           'tbody tr:nth-child(even)': 'background-color: #a2542f6;'
           td.left: 'padding: 10px 10px 10px 10px'
           th.left: 'padding: 0px 0px 10px 10px'
-      # Devices
+      # ZigBee
       - type: markdown
-        content: "### Devices:"
+        content: "### ZigBee:"
       - type: 'custom:flex-table-card'
         clickable: false
         entities:
           include: 
             - sensor.*_zigbee
-            - sensor.*_ble
-        sort_by: ieee, mac
+        sort_by: ieee
         #max_rows: 20
         columns:
           - data: friendly_name
             name: Friendly Name
-            modify: 'x.replace(/ Ble$/,"").replace(/ Zigbee$/,"")'
+            modify: 'x.replace(/ Zigbee$/,"")'
           - data: ieee
-            name: IEEE [ZigBee]
+            name: IEEE
             modify: (x+'').toLowerCase()
-          - data: mac
-            name: MAC [Bluetooth]
-            modify: (x+'').replace(/(.{2}(?!$))/g,"$1:")
           - data: nwk
             name: NWK
             modify: (x+'').replace(/^0x/,"").toLowerCase()
@@ -88,6 +84,37 @@ cards:
             modify: x+''
           - data: last_msg
             name: Last Message
+            modify: x+''
+          - data: state
+            name: Last Seen
+            modify: >
+              var dt = new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x)));
+              isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""
+        css:
+    #      thead th: 'align-content: center;'
+          table+: 'padding-top: 15px;'
+          'tbody tr:nth-child(even)': 'background-color: #a2542f6;'
+          td.left: 'padding: 10px 10px 10px 10px'
+          th.left: 'padding: 0px 0px 10px 10px'
+      # Bluetooth
+      - type: markdown
+        content: "### Bluetooth:"
+      - type: 'custom:flex-table-card'
+        clickable: false
+        entities:
+          include: 
+            - sensor.*_ble
+        sort_by: mac
+        #max_rows: 20
+        columns:
+          - data: friendly_name
+            name: Friendly Name
+            modify: 'x.replace(/ Ble$/,"")'
+          - data: mac
+            name: MAC
+            modify: (x+'').replace(/(.{2}(?!$))/g,"$1:")
+          - data: msg_received
+            name: Received
             modify: x+''
           - data: state
             name: Last Seen
