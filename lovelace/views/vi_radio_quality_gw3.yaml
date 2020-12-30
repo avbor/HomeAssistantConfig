@@ -25,11 +25,11 @@ cards:
             name: Radio Channel
             modify: x+''
           - data: free_mem
-            name: Memory Free
+            name: Memory Free (KB)
             modify: x+''
           - data: load_avg
-            name: Load Avg
-            modify: '(x+"").replace(/\|/g,", ")'
+            name: Load Avg (1m, 5m, 15m)
+            modify: '(x+"").split("|").slice(0, 3).join(", ")'
           - data: rssi
             name: RSSI
             modify: x+''
