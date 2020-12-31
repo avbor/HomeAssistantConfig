@@ -6,8 +6,10 @@ cards:
     cards:
       # Gateways
       - type: markdown
-        content: "### Gateways:"
+        #content: '<center> <ha-icon icon="mdi:router-wireless"></ha-icon> </center>'
+        content: '### <center> Gateways </center>'
       - type: 'custom:flex-table-card'
+        #title: Gateways
         clickable: false
         entities:
           include: 
@@ -21,9 +23,10 @@ cards:
             modify: x+''
           - data: radio_tx_power
             name: Radio TX Power
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: radio_channel
             name: Radio Channel
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: free_mem
             name: Memory Free (KB)
             modify: x+''
@@ -48,8 +51,10 @@ cards:
           th.left: 'padding: 0px 0px 10px 10px'
       # ZigBee
       - type: markdown
-        content: "### ZigBee:"
+        #content: '<center> <ha-icon icon="mdi:zigbee"></ha-icon> </center>'
+        content: '### <center> ZigBee </center>'
       - type: 'custom:flex-table-card'
+        #title: ZigBee
         clickable: false
         entities:
           include: 
@@ -74,19 +79,19 @@ cards:
             modify: (x+'').replace(/^-$/, "child device")
           - data: msg_received
             name: Received
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: msg_missed
             name: Missed
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: unresponsive
             name: Unresponsive
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: link_quality
             name: LQI
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: rssi
             name: RSSI
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: last_msg
             name: Last Message
             modify: x+''
@@ -103,8 +108,10 @@ cards:
           th.left: 'padding: 0px 0px 10px 10px'
       # Bluetooth
       - type: markdown
-        content: "### Bluetooth:"
+        #content: '<center> <ha-icon icon="mdi:bluetooth"></ha-icon> </center>'
+        content: '### <center> Bluetooth </center>'
       - type: 'custom:flex-table-card'
+        #title: Bluetooth
         clickable: false
         entities:
           include: 
@@ -120,7 +127,7 @@ cards:
             modify: (x+'').replace(/(.{2}(?!$))/g,"$1:")
           - data: msg_received
             name: Received
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: state
             name: Last Seen
             modify: >
