@@ -29,13 +29,13 @@ cards:
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: free_mem
             name: Memory Free (KB)
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: load_avg
             name: Load Avg (1m, 5m, 15m)
             modify: '(x+"").split("|").slice(0, 3).join(", ")'
           - data: rssi
             name: RSSI
-            modify: x+''
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: uptime
             name: Gateway Uptime
             modify: x+''
