@@ -14,7 +14,7 @@
 - Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)
 - Switch TP-Link [TL-SG116E[](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
 
-#### ZigBee/BT Gateways:
+**ZigBee/BT Gateways:**
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)   
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)
 
@@ -62,30 +62,30 @@
 - Sensors:
   - Xiaomi TH Sensor 2 (LYWSD03MMC)
 
-#### Media Players:
+**Media Players:**
   - Google Chromecast 1 Gen
   - Google Chromecast 3 Gen
   - Google Home Mini
 
-#### Other:
+**Other:**
 - [Neptun Bugatti Base](https://neptun-mcs.ru/catalog/complects/neptun_base/sistema_kontrolya_protechki_vody_neptun_bugatti_base/)
 - [SAURES R2 m3](https://www.saures.ru/blog/obzory-tovarov/obzor-modifikatsiy-kontrollera-saures-r2/)
 
 ### Software
 
-#### Server:
+**Server:**
 - Ubuntu 20.04 LTS
 - Home Assistant Core Supervised
 - Nginx
 
-#### WiFi Access Point:
+**WiFi Access Point:**
 - OpenWRT 19.07
 
-#### Used DB:
+**Used DB:**
 - MariaDB
 - InfluxDB
 
-#### Used HA Add-ons:
+**Used HA Add-ons:**
 - ESPHome
 - Grafana
 - InfluxDB
