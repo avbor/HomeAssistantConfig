@@ -4,12 +4,12 @@
 
 ### Hardware
 
-#### Server:
+**Server:**
 - Intel NUC [NUC7PJYH](https://ark.intel.com/content/www/ru/ru/ark/products/126137/intel-nuc-kit-nuc7pjyh.html):
 - CPU: Intel Pentium Silver J5005
 - RAM: 8 Gb
 
-#### Network:
+**Network:**
 - Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))
 - Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)
 - Switch TP-Link [TL-SG116E[](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
