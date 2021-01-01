@@ -12,7 +12,7 @@
 **Network:**
 - Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))
 - Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)
-- Switch TP-Link [TL-SG116E[](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
+- Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
 
 **ZigBee/BT Gateways:**
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)   
