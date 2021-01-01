@@ -62,8 +62,8 @@
   - Xiaomi TH Sensor 2 (LYWSD03MMC)
 
 **Media Players:**
-  - Google Chromecast 1 Gen
-  - Google Chromecast 3 Gen
+  - Google Chromecast (Gen 1)
+  - Google Chromecast (Gen 3)
   - Google Home Mini
   - Samsung TV Series 5
   - Samsung TV Series 7
