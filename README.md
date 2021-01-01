@@ -21,7 +21,6 @@
 #### WiFi Devices:
 - Relays:
   - Sonoff Mini
-  - Aqara Wireless relay (LLKZMK11LM)
 - Plugs:
   - TP-Link HS110
   - Xiaomi Mi Smart Plug EU (ZNCZ05CM)
@@ -56,7 +55,7 @@
   - Aqara Water Immersing Sensor (SJCGQ11LM, lumi.sensor_wleak.aq1)
   - MiJia Honeywell Gas Leak Detector (lumi.sensor_natgas.v1)
 - Other:
-  - Aqara Cube (MFKZQ01LM)
+  - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)
 
 #### Bluetooth Devices:
 - Sensors:
@@ -66,16 +65,19 @@
   - Google Chromecast 1 Gen
   - Google Chromecast 3 Gen
   - Google Home Mini
+  - Samsung TV Series 5
+  - Samsung TV Series 7
 
 **Other:**
 - [Neptun Bugatti Base](https://neptun-mcs.ru/catalog/complects/neptun_base/sistema_kontrolya_protechki_vody_neptun_bugatti_base/)
 - [SAURES R2 m3](https://www.saures.ru/blog/obzory-tovarov/obzor-modifikatsiy-kontrollera-saures-r2/)
+- AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series
 
 ### Software
 
 **Server:**
 - Ubuntu 20.04 LTS
-- Home Assistant Core Supervised
+- Home Assistant (Supervised)
 - Nginx
 
 **WiFi Access Point:**
