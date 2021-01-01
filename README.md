@@ -76,7 +76,7 @@
 ### Software
 
 **Server:**
-- Ubuntu 20.04 LTS
+- Ubuntu Server 20.04 LTS
 - Home Assistant (Supervised)
 - Nginx
 
