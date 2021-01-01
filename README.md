@@ -6,7 +6,7 @@
 
 **Server:**
 - Intel NUC [NUC7PJYH](https://ark.intel.com/content/www/ru/ru/ark/products/126137/intel-nuc-kit-nuc7pjyh.html):
-- CPU: Intel Pentium Silver J5005
+- CPU: Intel Pentium Silver [J5005](https://ark.intel.com/content/www/ru/ru/ark/products/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz.html)
 - RAM: 8 Gb
 
 **Network:**
