@@ -271,9 +271,8 @@ cards:
             icon: mdi:battery-outline
           - entity: sensor.0x158d0004030d84_battery
             name: Датчик протечки (под Ванной)
-          - entity: sensor.battery_status_158d0003045123
+          - entity: sensor.0x158d0003045123_battery
             name: Датчик движения (Кладовая)
-            icon: mdi:battery-outline
           - entity: sensor.battery_status_158d000309920a
             name: Датчик движения (Прихожая)
             icon: mdi:battery-outline

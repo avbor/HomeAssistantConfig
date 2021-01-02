@@ -182,7 +182,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.motion_sensor_158d0003045123
+    entity_id: binary_sensor.0x158d0003045123_motion
     to: 'on'
   condition:
     condition: state
@@ -196,7 +196,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.motion_sensor_158d0003045123
+    entity_id: binary_sensor.0x158d0003045123_motion
     to: 'off'
 #    for:
 #      minutes: 3
