@@ -10,31 +10,54 @@
 - RAM: 8 Gb
 
 **Network:**
-- Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))
+- Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))\
+  Also as Device Tracker via "Keenetic NDMS2 Routers"
+
 - Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)
 - Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
 
 **ZigBee/BT Gateways:**
-- Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)   
-- Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)
+- Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
+  Integration "Xiaomi Gateway (Aqara)"
+
+- Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)
 
 #### WiFi Devices:
 - Relays:
-  - Sonoff Mini
+  - Sonoff Mini\
+  Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN)
 - Plugs:
-  - TP-Link HS110
-  - Xiaomi Mi Smart Plug EU (ZNCZ05CM)
+  - TP-Link HS110\
+  Integration "TP-Link Kasa Smart"
+  - Xiaomi Mi Smart Plug EU (ZNCZ05CM)\
+  Integration "Xiaomi Miio"
 - Light:
-  - Yeelight LED Color Bulb (YLDP03YL, yeelink.light.color3)
-  - Yeelight LED Color Bulb 1S (YLDP13YL, yeelink.light.color2)
-  - Yeelight Lightstrip Plus + Extension (YLDD04YL + YLOT01YL, yeelink.light.strip2)
-  - Xiaomi Mi Desk Lamp (MJTD01YL, yeelink.light.lamp1)
+  - Yeelight LED Color Bulb (YLDP03YL, yeelink.light.color3)\
+  Integration "Yeelight"
+
+  - Yeelight LED Color Bulb 1S (YLDP13YL, yeelink.light.color2)\
+  Integration "Yeelight"
+
+  - Yeelight Lightstrip Plus + Extension (YLDD04YL + YLOT01YL, yeelink.light.strip2)\
+  Integration "Yeelight"
+
+  - Xiaomi Mi Desk Lamp (MJTD01YL, yeelink.light.lamp1)\
+  Integration "Yeelight"
+
 - Other
-  - Xiaomi Smartmi Zhimi Air Humidifier 2 (CJXJSQ02ZM, zhimi.humidifier.ca1)
-  - Xiaomi Mi Robot Vacuum Cleaner 1S (SDJQR03RR)
-  - Xiaomi Dafang 1080p (ZRM4040RT) flashed to [Xiaomi DaFang Hacks](https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks)
+  - Xiaomi Smartmi Zhimi Air Humidifier 2 (CJXJSQ02ZM, zhimi.humidifier.ca1)\
+  Integration "Xiaomi Miio"
+
+  - Xiaomi Mi Robot Vacuum Cleaner 1S (SDJQR03RR)\
+  Integration "Xiaomi Miio"
+
+  - Xiaomi Dafang 1080p (ZRM4040RT) flashed to [Xiaomi DaFang Hacks](https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks)\
+  Integration "Generic Camera" & "MJPEG IP Camera"
+
   - Xiaomi Xiao AI Smart Alarm Clock (zimi.clock.myk01)
-  - Tuya Smart IR Remote
+  - Tuya Smart IR Remote\
+  Integration "Tuya"
 
 #### ZigBee Devices:
 - Relays:
@@ -59,7 +82,8 @@
 
 #### Bluetooth Devices:
 - Sensors:
-  - Xiaomi TH Sensor 2 (LYWSD03MMC, miaomiaoche.sensor_ht.t2)
+  - Xiaomi TH Sensor 2 (LYWSD03MMC, miaomiaoche.sensor_ht.t2)\
+  Via Xiaomi Gateway 3
 
 **Media Players:**
   - Google Chromecast (Gen 1)
@@ -70,8 +94,11 @@
 
 **Other:**
 - [Neptun Bugatti Base](https://neptun-mcs.ru/catalog/complects/neptun_base/sistema_kontrolya_protechki_vody_neptun_bugatti_base/)
-- [SAURES R2 m3](https://www.saures.ru/blog/obzory-tovarov/obzor-modifikatsiy-kontrollera-saures-r2/)
-- AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series
+- [SAURES R2 m3](https://www.saures.ru/blog/obzory-tovarov/obzor-modifikatsiy-kontrollera-saures-r2/)\
+Integration "Integration Saures controllers with HA" by [volshebniks](https://github.com/volshebniks/sauresha)
+
+- AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series\
+  Via Tuya SmartIR, Xiaomi Magnet Sensors and Scenes from Tuya Cloud
 
 ### Software
 
