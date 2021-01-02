@@ -59,7 +59,7 @@
 
 #### Bluetooth Devices:
 - Sensors:
-  - Xiaomi TH Sensor 2 (LYWSD03MMC)
+  - Xiaomi TH Sensor 2 (LYWSD03MMC, miaomiaoche.sensor_ht.t2)
 
 **Media Players:**
   - Google Chromecast (Gen 1)

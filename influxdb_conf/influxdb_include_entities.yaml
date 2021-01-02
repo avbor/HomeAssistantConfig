@@ -41,7 +41,7 @@
 - sensor.battery_status_158d00039e2ecb
 - sensor.0x158d00035ff631_battery
 - sensor.0x158d0003045123_battery
-- sensor.battery_status_158d000400e77d
+- sensor.0x158d000400e77d_battery
 - sensor.battery_status_158d000309920a
 - sensor.battery_status_158d00044cea8e
 - sensor.0x158d0003fac0ec_battery

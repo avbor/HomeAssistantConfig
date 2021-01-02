@@ -121,7 +121,7 @@
         *Статус устройств*
         `-= Датчики протечки =-`
         Нептун (кладовая, туалет, ванна, кухня): *{{ states('binary_sensor.neptun_water_leakage') }}*
-        Aqara кладовая: *{{ states('binary_sensor.water_leak_sensor_158d000400e77d') }}*
+        Aqara кладовая: *{{ states('binary_sensor.0x158d000400e77d_moisture') }}*
         Aqara под ванной (слева): *{{ states('binary_sensor.0x158d0004030d84_moisture') }}*
         `-= Кондиционеры =-`
         Детская: *{{ states('binary_sensor.door_window_sensor_158d00039cf974') }}*

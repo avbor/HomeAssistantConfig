@@ -72,7 +72,7 @@ water_leak_protection:
         platform: state
         entity_id:
           - binary_sensor.neptun_water_leakage
-          - binary_sensor.water_leak_sensor_158d000400e77d
+          - binary_sensor.0x158d000400e77d_moisture
           - binary_sensor.0x158d0004030d84_moisture
         from: 'off'
         to: 'on'
@@ -161,7 +161,7 @@ water_leak_protection:
       initial_state: true
       trigger:
         platform: state
-        entity_id: binary_sensor.water_leak_sensor_158d000400e77d
+        entity_id: binary_sensor.0x158d000400e77d_moisture
         from: "off"
         to: "on"
       action:

@@ -265,9 +265,8 @@ cards:
           - entity: sensor.battery_status_158d00033efd9e
             name: Кнопка (свет Детская)
             icon: mdi:battery-outline
-          - entity: sensor.battery_status_158d000400e77d
+          - entity: sensor.0x158d000400e77d_battery
             name: Датчик протечки (Кладовая)
-            icon: mdi:battery-outline
           - entity: sensor.0x158d0004030d84_battery
             name: Датчик протечки (под Ванной)
           - entity: sensor.0x158d0003045123_battery

@@ -62,8 +62,6 @@ switch.plug_158d000391fb00:
   friendly_name: Розетка Xiaomi ZigBee Plug 02
 switch.sonoff_1000b68886:
   friendly_name: Нептун - Питание
-binary_sensor.water_leak_sensor_158d000400e77d:
-  friendly_name: Датчик протечки - Кладовая
 binary_sensor.0x158d0004030d84_moisture:
   friendly_name: Датчик протечки - Под ванной слева
 sensor.illumination_158d000309920a:

@@ -71,7 +71,7 @@ cards:
       - type: horizontal-stack
         cards:
         - type: entity
-          entity: binary_sensor.water_leak_sensor_158d000400e77d
+          entity: binary_sensor.0x158d000400e77d_moisture
           name: Кладовая
         - type: entity
           entity: binary_sensor.0x158d0004030d84_moisture
