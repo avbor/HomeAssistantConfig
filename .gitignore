@@ -13,6 +13,9 @@
 !custom_components/
 !custom_components/*
 !custom_components/**
+!docs/
+!docs/*
+!docs/**
 !entities/
 !entities/*
 !entities/**
