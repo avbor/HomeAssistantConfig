@@ -2,6 +2,8 @@
 
 **Here you can find my [Home Assistant](https://www.home-assistant.io/) configuration and some information about used hardware and software.**
 
+Some screenshots from my HA can be found [here](docs/screenshots.md).
+
 ### Hardware
 
 **Server:**
