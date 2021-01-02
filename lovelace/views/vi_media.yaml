@@ -187,6 +187,10 @@ cards:
           state: "unavailable"
         - entity: media_player.plex_tv_ue32es5500
           state: "unavailable"
+        - entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+          state: "unavailable"
+        - entity: media_player.plex_guest_plex_for_android_mobile_oneplus_a3003
+          state: "unavailable"
       card:
         type: markdown
         content: >
@@ -211,6 +215,15 @@ cards:
         entity: media_player.plex_tv_ue32es5500
     - type: conditional
       conditions:
+        - entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+          state_not: "off"
+        - entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+          state_not: "unavailable"
+      card:
+        type: media-control
+        entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+    - type: conditional
+      conditions:
         - entity: media_player.plex_tv_ue43ru7470uxru
           state_not: "off"
         - entity: media_player.plex_tv_ue43ru7470uxru
@@ -218,3 +231,12 @@ cards:
       card:
         type: media-control
         entity: media_player.plex_tv_ue43ru7470uxru
+    - type: conditional
+      conditions:
+        - entity: media_player.plex_guest_plex_for_android_mobile_oneplus_a3003
+          state_not: "off"
+        - entity: media_player.plex_guest_plex_for_android_mobile_oneplus_a3003
+          state_not: "unavailable"
+      card:
+        type: media-control
+        entity: media_player.plex_guest_plex_for_android_mobile_oneplus_a3003

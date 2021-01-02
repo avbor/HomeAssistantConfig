@@ -1,5 +1,7 @@
 ## Here you can find some screenshots from my HA interface
-Most of the pages are prepared for easy use both on desktop and mobile apps.
+Most of the pages are prepared for easy use both on desktop and mobile apps.\
+I use vertical and horizontal stack to organize cards in one vertical ribbon in mobile app.\
+Big cards are very useful in both - mobile and desktop.
 
 **Climate**\
 ![Climate](screenshots/Climate.png)
@@ -9,6 +11,12 @@ Most of the pages are prepared for easy use both on desktop and mobile apps.
 
 **Vacuum cleaner**\
 ![Vacuum_Cleaner](screenshots/Vacuum_Cleaner.png)
+
+**Media players**\
+![Media](screenshots/Media.png)
+
+**Cameras**\
+![Cam](screenshots/Cam.png)
 
 **Water leakage control**\
 ![Water](screenshots/Water.png)
@@ -20,5 +28,5 @@ Most of the pages are prepared for easy use both on desktop and mobile apps.
 ![GW3](screenshots/GW3_Stats.png)
 
 |**System information**|**Some system controls**|
-|---|---|
+|----------------------|------------------------|
 |![Sys_Info](screenshots/Sys_Info.png)|![Sys_Controls](screenshots/Sys_Control.png)|
