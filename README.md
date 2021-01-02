@@ -49,7 +49,7 @@
 - Sensors:
   - MiJia Door & Window Sensor (MCCGQ01LM, lumi.sensor_magnet)
   - MiJia Occupancy Sensor (RTCGQ01LM, lumi.sensor_motion)
-  - Aqara Occupancy Sensor (RTCGQ11LM)
+  - Aqara Occupancy Sensor (RTCGQ11LM, lumi.sensor_motion.aq2)
   - MiJia Humidity & Temperature Sensor (WSDCGQ01LM)
   - Aqara Humidity & Temperature Sensor (WSDCGQ11LM)
   - Aqara Water Immersing Sensor (SJCGQ11LM, lumi.sensor_wleak.aq1)
