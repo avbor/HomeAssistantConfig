@@ -260,9 +260,8 @@ cards:
           - entity: sensor.battery_status_158d00039e2ecb
             name: Датчик температуры (Кладовая)
             icon: mdi:battery-outline
-          - entity: sensor.battery_status_158d00035ff631
+          - entity: sensor.0x158d00035ff631_battery
             name: Кнопка (Кухня)
-            icon: mdi:battery-outline
           - entity: sensor.battery_status_158d00033efd9e
             name: Кнопка (свет Детская)
             icon: mdi:battery-outline
@@ -279,9 +278,8 @@ cards:
           - entity: sensor.battery_status_158d00044cea8e
             name: Датчик движения (Детская)
             icon: mdi:battery-outline
-          - entity: sensor.battery_status_158d0003fac0ec
+          - entity: sensor.0x158d0003fac0ec_battery
             name: Датчик движения Aqara (Кухня)
-            icon: mdi:battery-outline
           - entity: sensor.battery_status_158d00031c790f
             name: Датчик входной двери
             icon: mdi:battery-outline
@@ -299,7 +297,7 @@ cards:
           - entity: sensor.a4c138414e9a_battery
             name: Датчик температуры (Туалет)
           - entity: sensor.0x158d00044ee524_battery
-            name: Нептун (датчик закрытия кранов)
+            name: Нептун (Активация)
           - entity: sensor.0x158d0004ab468e_battery
             name: Кнопка Aqara 1
           - entity: sensor.0x158d00054859d5_battery

@@ -4,11 +4,11 @@
 - sensor.gismeteo_temperature
 - sensor.illumination_158d000309920a
 - sensor.illumination_158d00044cea8e
-- sensor.illumination_158d0003fac0ec
-- binary_sensor.0x158d0003045123_motion # Кладовка
+- sensor.0x158d0003fac0ec_illuminance
+- binary_sensor.0x158d0003045123_motion
 - binary_sensor.motion_sensor_158d000309920a
 - binary_sensor.motion_sensor_158d00044cea8e
-- binary_sensor.motion_sensor_158d0003fac0ec
+- binary_sensor.0x158d0003fac0ec_motion
 - sensor.temperature_158d0003931a55
 - sensor.temperature_158d0003931aec
 - sensor.temperature_158d0003230618
@@ -39,12 +39,12 @@
 - sensor.battery_status_158d0003931b0e
 - sensor.battery_status_158d0003931a55
 - sensor.battery_status_158d00039e2ecb
-- sensor.battery_status_158d00035ff631
+- sensor.0x158d00035ff631_battery
 - sensor.0x158d0003045123_battery
 - sensor.battery_status_158d000400e77d
 - sensor.battery_status_158d000309920a
 - sensor.battery_status_158d00044cea8e
-- sensor.battery_status_158d0003fac0ec
+- sensor.0x158d0003fac0ec_battery
 - sensor.battery_status_158d00031c790f
 - sensor.battery_status_158d00039cf974
 - sensor.battery_status_158d0004073b67

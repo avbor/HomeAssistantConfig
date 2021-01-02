@@ -104,11 +104,9 @@
 
 - alias: 'Подсветка на кухне (кнопка Xiaomi)'
   trigger:
-    platform: event
-    event_type: xiaomi_aqara.click
-    event_data:
-      entity_id: binary_sensor.switch_158d00035ff631
-      click_type: single
+    platform: state
+    entity_id: sensor.0x158d00035ff631_action
+    to: 'single'
   action:
     service: light.toggle
     data:
@@ -116,11 +114,9 @@
 
 - alias: 'Люстра на кухне (кнопка Xiaomi)'
   trigger:
-    platform: event
-    event_type: xiaomi_aqara.click
-    event_data:
-      entity_id: binary_sensor.switch_158d00035ff631
-      click_type: double
+    platform: state
+    entity_id: sensor.0x158d00035ff631_action
+    to: 'double'
   action:
     service: light.toggle
     data:
@@ -130,7 +126,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.motion_sensor_158d0003fac0ec
+    entity_id: binary_sensor.0x158d0003fac0ec_motion
     to: 'on'
   condition:
     condition: and
@@ -139,7 +135,7 @@
         after: '21:00'
         before: '9:00'
       - condition: numeric_state
-        entity_id: sensor.illumination_158d0003fac0ec
+        entity_id: sensor.0x158d0003fac0ec_illuminance
         below: 15
   action:
     service: homeassistant.turn_on
@@ -149,7 +145,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.motion_sensor_158d0003fac0ec
+    entity_id: binary_sensor.0x158d0003fac0ec_motion
     to: 'off'
     for:
       minutes: 3
@@ -167,7 +163,7 @@
 #    platform: event
 #    event_type: xiaomi_aqara.click
 #    event_data:
-#      entity_id: binary_sensor.switch_158d00035ff631
+#      entity_id: sensor.0x158d00035ff631_action
 #      click_type: double
 #  action:
 #    service: homeassistant.toggle
