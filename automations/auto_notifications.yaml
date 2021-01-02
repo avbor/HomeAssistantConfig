@@ -200,7 +200,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.natgas_sensor_158d000413b210
+    entity_id: binary_sensor.0x158d000413b210_gas
     from: 'off'
     to: 'on'
   action:

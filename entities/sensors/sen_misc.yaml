@@ -83,7 +83,7 @@
       value_template: >
         {% if (states('sensor.tplinksmartplug01_amps') | float) > 4 %}On{% else %}Off{% endif %}
     xiaomi_gas_density:
-      value_template: "{{ state_attr('binary_sensor.natgas_sensor_158d000413b210', 'Density') }}"
+      value_template: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
     ha_uptime:
       friendly_name: HA Uptime
       icon_template: mdi:clock
