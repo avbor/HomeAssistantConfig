@@ -48,12 +48,12 @@
   - Aqara Wireless Switch with Gyroscope (WXKG12LM, lumi.sensor_switch.aq3)
 - Sensors:
   - MiJia Door & Window Sensor (MCCGQ01LM, lumi.sensor_magnet)
-  - MiJia Occupancy Sensor (RTCGQ01LM)
+  - MiJia Occupancy Sensor (RTCGQ01LM, lumi.sensor_motion)
   - Aqara Occupancy Sensor (RTCGQ11LM)
   - MiJia Humidity & Temperature Sensor (WSDCGQ01LM)
   - Aqara Humidity & Temperature Sensor (WSDCGQ11LM)
   - Aqara Water Immersing Sensor (SJCGQ11LM, lumi.sensor_wleak.aq1)
-  - MiJia Honeywell Gas Leak Detector (lumi.sensor_natgas.v1)
+  - MiJia Honeywell Gas Leak Detector (JTQJ-BF-01LM/BW, lumi.sensor_natgas.v1)
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)
 
