@@ -136,3 +136,7 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 - Mosquitto broker
 - SSH & Web Terminal
 - Visual Studio Code
+
+**Mobile Apps:**
+- [Home Assistant](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android) official app on Android\
+Also as Device Tracker via "Mobile App"
