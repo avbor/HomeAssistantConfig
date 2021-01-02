@@ -13,7 +13,9 @@
 - Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
-- Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)
+- Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)\
+~30-35 wireless clients, generally 2.4Ghz - IoT, 5Ghz - mobile clients
+
 - Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
 
 **ZigBee/BT Gateways:**
@@ -55,7 +57,7 @@
   Integration "Xiaomi Miio"
 
   - Xiaomi Dafang 1080p (ZRM4040RT) flashed to [Xiaomi DaFang Hacks](https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks)\
-  Integration "Generic Camera" & "MJPEG IP Camera"
+  Integrations "Generic Camera" & "MJPEG IP Camera"
 
   - Xiaomi Xiao AI Smart Alarm Clock (zimi.clock.myk01)
   - Tuya Smart IR Remote\
@@ -64,13 +66,17 @@
 #### ZigBee Devices:
 - Relays:
   - Aqara Wireless Relay (LLKZMK11LM, lumi.relay.c2acn01)
+
 - Plugs:
   - MiJia Smart Power Plug 2 (ZNCZ02LM)
+
 - Light:
   - Ikea TRÅDFRI LED Bulb E14 (LED1649C5, ikea.light.led1649c5)
+
 - Switches:
   - MiJia Wireless Switch (WXKG01LM, lumi.sensor_switch)
   - Aqara Wireless Switch with Gyroscope (WXKG12LM, lumi.sensor_switch.aq3)
+
 - Sensors:
   - MiJia Door & Window Sensor (MCCGQ01LM, lumi.sensor_magnet)
   - MiJia Occupancy Sensor (RTCGQ01LM, lumi.sensor_motion)
@@ -79,6 +85,7 @@
   - Aqara Humidity & Temperature Sensor (WSDCGQ11LM)
   - Aqara Water Immersing Sensor (SJCGQ11LM, lumi.sensor_wleak.aq1)
   - MiJia Honeywell Gas Leak Detector (JTQJ-BF-01LM/BW, lumi.sensor_natgas.v1)
+
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)
 
@@ -93,9 +100,12 @@
   - Google Home Mini
   - Samsung TV Series 5
   - Samsung TV Series 7
+  - Plex Media Server
 
 **Other:**
-- [Neptun Bugatti Base](https://neptun-mcs.ru/catalog/complects/neptun_base/sistema_kontrolya_protechki_vody_neptun_bugatti_base/)
+- [Neptun Bugatti Base](https://neptun-mcs.ru/catalog/complects/neptun_base/sistema_kontrolya_protechki_vody_neptun_bugatti_base/)\
+  Via modified Xiaomi Magnet Sensors, Aqara 2ch Relay and Sonoff Mini for power control
+
 - [SAURES R2 m3](https://www.saures.ru/blog/obzory-tovarov/obzor-modifikatsiy-kontrollera-saures-r2/)\
 Integration "Integration Saures controllers with HA" by [volshebniks](https://github.com/volshebniks/sauresha)
 
