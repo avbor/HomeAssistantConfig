@@ -30,8 +30,10 @@
 - Plugs:
   - TP-Link HS110\
   Integration "TP-Link Kasa Smart"
+
   - Xiaomi Mi Smart Plug EU (ZNCZ05CM)\
   Integration "Xiaomi Miio"
+
 - Light:
   - Yeelight LED Color Bulb (YLDP03YL, yeelink.light.color3)\
   Integration "Yeelight"
