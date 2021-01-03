@@ -1,0 +1,123 @@
+#################################################
+# Package Humidifiers
+#################################################
+
+humidifiers_pack:
+
+  # Devices
+  fan:
+    - platform: xiaomi_miio
+      host: 172.16.16.224
+      name: Smartmi Humidifier 01
+      token: !secret xiaomi_air_humidifier_01_token
+
+  # Input Select
+  input_select:
+    smartmi_humidifier_01_speed:
+      name: 'Выбор скорости:'
+      options:
+        - Silent
+        - Medium
+        - High
+        - Auto
+      initial: Auto
+      icon: mdi:speedometer
+
+  # Sensors
+  sensor:
+    - platform: template
+      sensors:
+        smartmi_humidifier_01_temperature:
+          friendly_name: "Температура"
+          value_template: >
+            {{ state_attr('fan.xiaomi_miio_device', 'temperature') | float }}
+          unit_of_measurement: °C
+          device_class: temperature
+        smartmi_humidifier_01_humidity:
+          friendly_name: "Влажность"
+          value_template: >
+            {{ state_attr('fan.xiaomi_miio_device', 'humidity') | int }}
+          unit_of_measurement: '%'
+          device_class: humidity
+        smartmi_humidifier_01_water_level:
+          friendly_name: "Остаток воды"
+          value_template: >
+            {{ ((state_attr('fan.xiaomi_miio_device', 'depth') / 120) * 100) | int }}
+          unit_of_measurement: '%'
+        smartmi_humidifier_01_speed:
+          friendly_name: "Скорость работы"
+          value_template: >
+            {{ state_attr('fan.xiaomi_miio_device', 'speed') }}
+
+  # Scripts
+  script:
+    set_smartmi_humidifier_speed:
+      fields:
+        fan_entity:
+          description: "entity_id увлажнителя"
+          example: "fan.xiaomi_miio_device"
+        fan_speed:
+          description: "Скорость работы увлажнителя"
+          example: "Silent"
+      sequence:
+        service: fan.set_speed
+        data_template:
+          entity_id: "{{ fan_entity }}"
+          speed: "{{ fan_speed }}"
+
+  # Automations
+  automation:
+
+    ### Smartmi Humidifier 01 - Детская #############
+    - alias: 'Smartmi Humidifier 01 - Заданчивается вода'
+      initial_state: true
+      trigger:
+        platform: numeric_state
+        entity_id:
+          - sensor.smartmi_humidifier_01_water_level
+        below: 15
+      action:
+        - service: notify.telegram_stall
+          data_template:
+            message: >
+              *Smartmi Humidifier 01*: заканчивается вода (осталось *{{ trigger.to_state.state }}*%)!
+          
+    - alias: 'Smartmi Humidifier 01 - Выбор скорости'
+      trigger:
+        platform: state
+        entity_id: input_select.smartmi_humidifier_01_speed
+      action:
+        service: script.set_smartmi_humidifier_speed
+        data_template:
+          fan_entity: fan.xiaomi_miio_device
+          fan_speed: "{{ trigger.to_state.state }}"
+        
+    - alias: 'Увлажнение детской - Старт [время]'
+      trigger:
+        platform: time
+        at: "20:00:00"
+      condition:
+        - condition: state
+          entity_id: fan.xiaomi_miio_device
+          state: 'off'
+        - condition: numeric_state
+          entity_id: sensor.humidity_158d0003931aec
+          below: 45
+        - condition: numeric_state
+          entity_id: sensor.smartmi_humidifier_01_water_level
+          above: 25
+      action:
+        service: fan.turn_on
+        entity_id: fan.xiaomi_miio_device
+      
+    - alias: 'Увлажнение детской - Стоп [время]'
+      trigger:
+        platform: time
+        at: "07:00:00"
+      condition:
+        condition: state
+        entity_id: fan.xiaomi_miio_device
+        state: 'on'
+      action:
+        service: fan.turn_off
+        entity_id: fan.xiaomi_miio_device

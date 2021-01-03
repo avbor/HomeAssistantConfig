@@ -150,12 +150,6 @@ light:
     name: Гостиная - подсветка на окне
     entity_id: switch.plug_158d000391fb00
 
-fan:
-  - platform: xiaomi_miio
-    host: 172.16.16.224
-    name: Smartmi Humidifier 01
-    token: !secret xiaomi_air_humidifier_01_token
-
 #tuya:
 #  platform: smart_life
 #  username: !secret tuya_user

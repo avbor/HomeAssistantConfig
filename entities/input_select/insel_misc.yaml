@@ -24,13 +24,3 @@ output_device:
       - Детская (TV)
     initial: Гостинная (Home Mini)
     icon: mdi:speaker-wireless
-
-smartmi_humidifier_01_speed:
-  name: 'Выбор скорости:'
-  options:
-    - Silent
-    - Medium
-    - High
-    - Auto
-  initial: Auto
-  icon: mdi:speedometer

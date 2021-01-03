@@ -61,7 +61,7 @@
       friendly_name: HA Supervisor Current Version
       value_template: "{{state_attr('sensor.supervisor_updates','current_version')}}"
     ha_supervisor_latest_version:
-      friendly_name: HA Supervisor Current Version
+      friendly_name: HA Supervisor Latest Version
       value_template: "{{state_attr('sensor.supervisor_updates','newest_version')}}"
     entrance_door_status:
       value_template: >
