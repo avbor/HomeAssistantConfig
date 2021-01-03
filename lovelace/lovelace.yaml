@@ -1,0 +1,8 @@
+#################################################
+# Lovelace configuration
+#################################################
+
+mode: yaml
+resources:
+  - url: /hacsfiles/flex-table-card/flex-table-card.js
+    type: module

@@ -112,11 +112,7 @@ influxdb:
   include:
     entities: !include influxdb_conf/influxdb_include_entities.yaml
 
-lovelace:
-  mode: yaml
-  resources:
-    - url: /hacsfiles/flex-table-card/flex-table-card.js
-      type: module
+lovelace: !include lovelace/lovelace.yaml
 
 tts:
   - platform: google_translate
@@ -201,9 +197,6 @@ notify:
   - name: telegram_iborisochka
     platform: telegram
     chat_id: !secret tlg_iborisochka_id
-
-#xiaomi_gateway3:
-#  debug: mqtt
 
 #################################################
 # Inclusions
