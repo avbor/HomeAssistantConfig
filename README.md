@@ -99,12 +99,23 @@ Some screenshots from my HA can be found [here](docs/screenshots.md).
   Via Xiaomi Gateway 3
 
 **Media Players:**
-  - Google Chromecast (Gen 1)
-  - Google Chromecast (Gen 3)
-  - Google Home Mini
-  - Samsung TV Series 5
-  - Samsung TV Series 7
-  - Plex Media Server
+  - Google Chromecast (Gen 1)\
+  Integration "Google Cast"
+
+  - Google Chromecast (Gen 3)\
+  Integration "Google Cast"
+
+  - Google Home Mini\
+  Integration "Google Cast"
+
+  - Samsung TV Series 5 (ES, 2012 model year)\
+  Integration "Samsung Smart TV"
+
+  - Samsung TV Series 7 (RU, 2019 model year)\
+  Integration "SamsungTV Tizen" by [jaruba](https://github.com/jaruba/ha-samsungtv-tizen)
+
+  - Plex Media Server\
+  Integration "Plex Media Server"
 
 **Other:**
 - [Neptun Bugatti Base](https://neptun-mcs.ru/catalog/complects/neptun_base/sistema_kontrolya_protechki_vody_neptun_bugatti_base/)\

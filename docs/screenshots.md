@@ -32,7 +32,6 @@ Big cards are very useful in both - mobile and desktop.
 |![Sys_Info](screenshots/Sys_Info.png)|![Sys_Controls](screenshots/Sys_Control.png)|
 
 **Mobile App Look**
-||||
-|---|---|---|
 |![Mob_Climate](screenshots/Mob_Climate.jpg)|![Mob_Light](screenshots/Mob_Light.jpg)|![Mob_Vacuum](screenshots/Mob_Vacuum.jpg)|
+|---|---|---|
 |![Mob_Media](screenshots/Mob_Media.jpg)|![Mob_Water](screenshots/Mob_Water.jpg)|![Mob_Stat](screenshots/Mob_Stat.jpg)|
