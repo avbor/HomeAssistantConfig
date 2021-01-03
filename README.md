@@ -1,8 +1,10 @@
 # Home Assistant
 
-**Here you can find my [Home Assistant](https://www.home-assistant.io/) configuration and some information about used hardware and software.**
+**Here you can find my [Home Assistant](https://www.home-assistant.io/) configuration and some information about used hardware and software.**\
+Feel free to contact me by [Telegram](https://t.me/avbor) if you have any further questions.
 
-Some screenshots from my HA can be found [here](docs/screenshots.md).
+
+Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 
 ### Hardware
 
