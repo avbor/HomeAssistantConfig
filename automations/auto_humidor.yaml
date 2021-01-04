@@ -33,7 +33,7 @@
   trigger:
     platform: numeric_state
     entity_id: sensor.a4c1381b3d13_temperature
-    above: 20
+    below: 20
     for:
       minutes: 30
   action:
