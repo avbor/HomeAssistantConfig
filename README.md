@@ -17,6 +17,7 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 
 **Network:**
 - Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))\
+  2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
 - Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)\
