@@ -1,0 +1,55 @@
+#################################################
+# Automations for Humidor (Smoking kills!)
+#################################################
+
+- alias: 'Humidity in humidor too low'
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.a4c1381b3d13_humidity
+    below: 70
+    for:
+      minutes: 30
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: Влажность в хьюмидоре ниже 70% (текущая {{ states("sensor.a4c1381b3d13_humidity") }}%)
+
+- alias: 'Humidity in humidor too high'
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.a4c1381b3d13_humidity
+    above: 80
+    for:
+      minutes: 30
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: Влажность в хьюмидоре выше 80% (текущая {{ states("sensor.a4c1381b3d13_humidity") }}%)
+
+- alias: 'Temperature in humidor too low'
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.a4c1381b3d13_temperature
+    above: 20
+    for:
+      minutes: 30
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: Температура в хьюмидоре ниже 20°C (текущая {{ states("sensor.a4c1381b3d13_temperature") }}°C)
+
+- alias: 'Temperature in humidor too high'
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.a4c1381b3d13_temperature
+    above: 24
+    for:
+      minutes: 30
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: Температура в хьюмидоре выше 24°C (текущая {{ states("sensor.a4c1381b3d13_temperature") }}°C)

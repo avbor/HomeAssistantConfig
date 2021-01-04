@@ -56,6 +56,9 @@
 - sensor.0x158d0004ab468e_battery
 - sensor.0x158d0004030d84_battery
 - sensor.0x158d00054859d5_battery
+- sensor.e72e0081ac21_battery
+- sensor.a4c1387179f4_battery
+- sensor.a4c1381b3d13_battery
 # Power sensors
 - sensor.tplinksmartplug01_volts
 - sensor.tplinksmartplug01_amps

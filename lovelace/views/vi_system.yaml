@@ -301,3 +301,9 @@ cards:
             name: Кнопка Aqara 1
           - entity: sensor.0x158d00054859d5_battery
             name: Кнопка Aqara 2
+          - entity: sensor.e72e0081ac21_battery
+            name: Часы TH (Гостиная)
+          - entity: sensor.a4c1387179f4_battery
+            name: Датчик температуры (Холодитьник)
+          - entity: sensor.a4c1381b3d13_battery
+            name: Датчик температуры (Хьюмидор)

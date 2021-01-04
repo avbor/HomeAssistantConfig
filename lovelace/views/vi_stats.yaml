@@ -56,6 +56,20 @@ cards:
           - sensor.temperature_158d0003931a55
           - sensor.a4c138414e9a_temperature
           - sensor.temperature_158d00039e2ecb
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - entity: sensor.a4c1381b3d13_temperature
+            name: Хьюмидор
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - entity: sensor.a4c1387179f4_temperature
+            name: Холодильник
+  - type: vertical-stack
+    cards:
       - type: markdown
         content: >
           ### Влажность:
@@ -69,6 +83,18 @@ cards:
           - sensor.humidity_158d0003931a55
           - sensor.a4c138414e9a_humidity
           - sensor.humidity_158d00039e2ecb
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - entity: sensor.a4c1381b3d13_humidity
+            name: Хьюмидор
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - entity: sensor.a4c1387179f4_humidity
+            name: Холодильник
   - type: vertical-stack
     cards:
       - type: markdown

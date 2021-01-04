@@ -66,7 +66,7 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - Xiaomi Dafang 1080p (ZRM4040RT) flashed to [Xiaomi DaFang Hacks](https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks)\
   Integrations "Generic Camera" & "MJPEG IP Camera"
 
-  - Xiaomi Xiao AI Smart Alarm Clock (zimi.clock.myk01)\
+  - Xiaomi Xiao AI Smart Alarm Clock (AI01ZM, zimi.clock.myk01)\
   Not used in HA
 
   - Tuya Smart IR Remote\
