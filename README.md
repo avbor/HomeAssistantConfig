@@ -10,8 +10,10 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 
 **Server:**
 - Intel NUC [NUC7PJYH](https://ark.intel.com/content/www/ru/ru/ark/products/126137/intel-nuc-kit-nuc7pjyh.html):
-- CPU: Intel Pentium Silver [J5005](https://ark.intel.com/content/www/ru/ru/ark/products/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz.html)
-- RAM: 8 Gb
+  - CPU: Intel Pentium Silver [J5005](https://ark.intel.com/content/www/ru/ru/ark/products/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz.html)
+  - RAM: 8 Gb
+  - SD 64 Gb A2 (OS)
+  - HDD 500 Gb (Data)
 
 **Network:**
 - Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))\
