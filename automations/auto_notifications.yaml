@@ -22,6 +22,7 @@
         message: >
           {{ trigger.to_state.attributes.friendly_name }}
           {% if trigger.to_state.state == 'home' %}дома!
+          {% elif trigger.to_state.state == 'dacha' %}на даче!
           {% else %}скорее всего вне дома.
           {% endif %}
 
