@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass, field
 from typing import *
 
@@ -5,7 +6,10 @@ from homeassistant.config import DATA_CUSTOMIZE
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import Entity
 
-from .utils import DOMAIN
+from . import bluetooth, zigbee
+from .utils import DOMAIN, attributes_template
+
+_LOGGER = logging.getLogger(__name__)
 
 
 # TODO: rewrite all usage to dataclass
@@ -16,6 +20,9 @@ class XiaomiDevice:
     mac: str
     type: str  # gateway, zigbee, ble, mesh
     online: bool
+
+    lumi_spec: list
+    miot_spec: list
 
     device_info: Dict[str, Any]
 
@@ -36,6 +43,8 @@ class DevicesRegistry:
     """
     devices: Dict[str, dict] = {}
     setups: Dict[str, Callable] = None
+
+    defaults: Dict[str, dict] = {}
 
     def add_setup(self, domain: str, handler):
         """Add hass device setup funcion."""
@@ -59,6 +68,38 @@ class DevicesRegistry:
     def remove_entity(self, entity: 'XiaomiEntity'):
         entity.device['entities'].pop(entity.attr)
 
+    def find_or_create_device(self, device: dict) -> dict:
+        type_ = device['type']
+        did = device['did'] if type_ != 'ble' else device['mac'].lower()
+        if did in self.devices:
+            return self.devices[did]
+
+        self.devices[did] = device
+
+        # update device with specs
+        if type_ in ('gateway', 'zigbee'):
+            device.update(zigbee.get_device(device['model']))
+        elif type_ == 'mesh':
+            device.update(bluetooth.get_device(device['model'], 'Mesh'))
+        elif type_ == 'ble':
+            device.update(bluetooth.get_device(device['model'], 'BLE'))
+
+        model = device['model']
+        if model in self.defaults:
+            device.update(self.defaults[model])
+
+        if did in self.defaults:
+            device.update(self.defaults[did])
+
+        mac = device['mac'].lower()
+        if did != mac and mac in self.defaults:
+            device.update(self.defaults[mac])
+
+        device['entities'] = {}
+        device['gateways'] = []
+
+        return device
+
 
 class XiaomiEntity(Entity):
     _ignore_offline = None
@@ -71,9 +112,9 @@ class XiaomiEntity(Entity):
         self.attr = attr
         self._attrs = {}
 
-        self._unique_id = f"{self.device['mac']}_{self.attr}"
-        self._name = (self.device['device_name'] + ' ' +
-                      self.attr.replace('_', ' ').title())
+        self._unique_id = f"{device.get('entity_name', device['mac'])}_{attr}"
+        self._name = (device['device_name'] + ' ' +
+                      attr.replace('_', ' ').title())
 
         self.entity_id = f"{DOMAIN}.{self._unique_id}"
 
@@ -87,6 +128,8 @@ class XiaomiEntity(Entity):
 
         if 'init' in self.device and self._state is None:
             self.update(self.device['init'])
+
+        self.render_attributes_template()
 
         self.gw.set_entity(self)
 
@@ -161,3 +204,17 @@ class XiaomiEntity(Entity):
 
     def update(self, data: dict):
         pass
+
+    def render_attributes_template(self):
+        try:
+            attrs = attributes_template(self.hass).async_render({
+                'attr': self.attr,
+                'device': self.device,
+                'gateway': self.gw.device
+            })
+            if isinstance(attrs, dict):
+                self._attrs.update(attrs)
+        except AttributeError:
+            pass
+        except:
+            _LOGGER.exception("Can't render attributes")

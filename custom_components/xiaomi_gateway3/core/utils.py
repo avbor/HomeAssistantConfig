@@ -6,6 +6,7 @@ import string
 import time
 import uuid
 from datetime import datetime
+from functools import lru_cache
 from typing import List, Optional
 
 import requests
@@ -13,6 +14,7 @@ from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.helpers.device_registry import DeviceRegistry
 from homeassistant.helpers.entity_registry import EntityRegistry
+from homeassistant.helpers.template import Template
 from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.requirements import async_process_requirements
 
@@ -151,25 +153,27 @@ async def get_bindkey(cloud: MiCloud, did: str):
     return bindkey
 
 
+def reverse_mac(s: str):
+    return f"{s[10:]}{s[8:10]}{s[6:8]}{s[4:6]}{s[2:4]}{s[:2]}"
+
+
 EZSP_URLS = {
-    7: 'https://master.dl.sourceforge.net/project/mgl03/zigbee/ncp-uart-sw_mgl03_6_6_2_stock.gbl?viasf=1',
-    8: 'https://master.dl.sourceforge.net/project/mgl03/zigbee/ncp-uart-sw_mgl03_6_7_8_z2m.gbl?viasf=1',
+    7: 'https://master.dl.sourceforge.net/project/mgl03/zigbee/'
+       'ncp-uart-sw_mgl03_6_6_2_stock.gbl?viasf=1',
+    8: 'https://master.dl.sourceforge.net/project/mgl03/zigbee/'
+       'ncp-uart-sw_mgl03_6_7_8_z2m.gbl?viasf=1',
 }
 
 
 def _update_zigbee_firmware(host: str, ezsp_version: int):
     shell = TelnetShell(host)
 
-    ps = shell.get_running_ps()
-    if "Lumi_Z3GatewayHost_MQTT" in ps:
-        shell.stop_lumi_zigbee()
-    if "tcp-l:8888" in ps:
-        shell.stop_zigbee_tcp()
+    # stop all utilities without checking if they are running
+    shell.stop_lumi_zigbee()
+    shell.stop_zigbee_tcp()
     # flash on another port because running ZHA or z2m can breake process
-    if "tcp-l:8889" not in ps:
-        shell.check_or_download_socat()
-        shell.run_zigbee_tcp(port=8889)
-        time.sleep(.5)
+    shell.run_zigbee_tcp(port=8889)
+    time.sleep(.5)
 
     _LOGGER.debug(f"Try update EZSP to version {ezsp_version}")
 
@@ -203,6 +207,13 @@ async def update_zigbee_firmware(hass: HomeAssistantType, host: str,
     return await hass.async_add_executor_job(
         _update_zigbee_firmware, host, ezsp_version
     )
+
+
+@lru_cache(maxsize=0)
+def attributes_template(hass: HomeAssistantType) -> Template:
+    template = hass.data[DOMAIN]['attributes_template']
+    template.hass = hass
+    return template
 
 
 TITLE = "Xiaomi Gateway 3 Debug"

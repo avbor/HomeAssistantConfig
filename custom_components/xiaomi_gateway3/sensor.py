@@ -6,7 +6,7 @@ from homeassistant.const import *
 from homeassistant.util.dt import now
 
 from . import DOMAIN
-from .core import zigbee
+from .core import zigbee, utils
 from .core.gateway3 import Gateway3
 from .core.helpers import XiaomiEntity
 
@@ -22,6 +22,7 @@ UNITS = {
     'conductivity': "µS/cm",
     'consumption': ENERGY_WATT_HOUR,
     'gas density': '% LEL',
+    'supply': '%',
     'smoke density': '% obs/ft',
     'moisture': '%',
     'tvoc': CONCENTRATION_PARTS_PER_BILLION,
@@ -99,13 +100,12 @@ class GatewayStats(XiaomiSensor):
         return True
 
     async def async_added_to_hass(self):
-        self.gw.add_stats(self.device['did'], self.update)
+        self.gw.set_stats(self.device['did'], self)
         # update available when added to Hass
         self.update()
 
     async def async_will_remove_from_hass(self) -> None:
-        await super().async_will_remove_from_hass()
-        self.gw.remove_stats(self.device['did'], self.update)
+        self.gw.remove_stats(self.device['did'], self)
 
     def update(self, data: dict = None):
         # empty data - update state to available time
@@ -142,12 +142,12 @@ class ZigbeeStats(XiaomiSensor):
                 'unresponsive': 0,
                 'last_missed': 0,
             }
+            self.render_attributes_template()
 
-        self.gw.add_stats(self._attrs['ieee'], self.update)
+        self.gw.set_stats(self._attrs['ieee'], self)
 
     async def async_will_remove_from_hass(self) -> None:
-        await super().async_will_remove_from_hass()
-        self.gw.remove_stats(self._attrs['ieee'], self.update)
+        self.gw.remove_stats(self._attrs['ieee'], self)
 
     def update(self, data: dict = None):
         if 'sourceAddress' in data:
@@ -214,12 +214,12 @@ class BLEStats(XiaomiSensor):
                 'mac': self.device['mac'],
                 'msg_received': 0,
             }
+            self.render_attributes_template()
 
-        self.gw.add_stats(self.device['did'], self.update)
+        self.gw.set_stats(self.device['mac'], self)
 
     async def async_will_remove_from_hass(self) -> None:
-        await super().async_will_remove_from_hass()
-        self.gw.remove_stats(self.device['did'], self.update)
+        self.gw.remove_stats(self.device['mac'], self)
 
     def update(self, data: dict = None):
         self._attrs['msg_received'] += 1
@@ -233,6 +233,7 @@ BUTTON = {
     2: 'double',
     3: 'triple',
     4: 'quadruple',
+    5: 'quintuple',  # only Yeelight Dimmer
     16: 'hold',
     17: 'release',
     18: 'shake',
@@ -256,6 +257,7 @@ VIBRATION = {
 
 class XiaomiAction(XiaomiEntity):
     _state = ''
+    _action_attrs = None
 
     @property
     def state(self):
@@ -264,6 +266,10 @@ class XiaomiAction(XiaomiEntity):
     @property
     def icon(self):
         return 'mdi:bell'
+
+    @property
+    def device_state_attributes(self):
+        return self._action_attrs or self._attrs
 
     def update(self, data: dict = None):
         for k, v in data.items():
@@ -287,8 +293,7 @@ class XiaomiAction(XiaomiEntity):
                 break
 
         if self.attr in data:
-            # TODO: fix me
-            self._attrs = data
+            self._action_attrs = {**self._attrs, **data}
             self._state = data[self.attr]
             self.schedule_update_ha_state()
 
@@ -297,7 +302,7 @@ class XiaomiAction(XiaomiEntity):
                 'entity_id': self.entity_id, 'click_type': self._state
             })
 
-            time.sleep(.1)
+            time.sleep(.3)
 
             self._state = ''
 

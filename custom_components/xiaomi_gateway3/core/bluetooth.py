@@ -4,9 +4,9 @@ from typing import Optional
 # Bluetooth Model: [Manufacturer, Device Name, Device Model]
 # params: [siid, piid, hass attr name, hass domain]
 DEVICES = [{
-    # BLE
-    131: ["Xiaomi", "Kettle", "YM-K1501"],
+    # MiBeacon from official support
     152: ["Xiaomi", "Flower Care", "HHCCJCY01"],
+    349: ["Xiaomi", "Flower Pot", "HHCCPOT002"],
     426: ["Xiaomi", "TH Sensor", "LYWSDCGQ/01ZM"],
     794: ["Xiaomi", "Door Lock", "MJZNMS02LM"],
     839: ["Xiaomi", "Qingping TH Sensor", "CGG1"],
@@ -14,6 +14,7 @@ DEVICES = [{
     982: ["Xiaomi", "Qingping Door Sensor", "CGH1"],
     1034: ["Xiaomi", "Mosquito Repellent", "WX08ZM"],
     1115: ["Xiaomi", "TH Clock", "LYWSD02MMC"],
+    1161: ["Xiaomi", "Toothbrush T500", "MES601"],
     1249: ["Xiaomi", "Magic Cube", "XMMF01JQD"],
     1371: ["Xiaomi", "TH Sensor 2", "LYWSD03MMC"],
     1398: ["Xiaomi", "Alarm Clock", "CGD1"],
@@ -38,11 +39,14 @@ DEVICES = [{
     996: ["Yeelight", "Mesh Bulb E27", "YLDP10YL"],
     997: ["Yeelight", "Mesh Spotlight", "YLSD04YL"],
     1771: ["Xiaomi", "Mesh Bulb", "MJDP09YL"],
-    1772: ["Xiaomi", "Mesh Downlight", "MJTS01YL"],
+    1772: ["Xiaomi", "Mesh Downlight", "MJTS01YL/MJTS003"],
     2076: ["Yeelight", "Mesh Downlight M2", "YLTS02YL/YLTS04YL"],
+    2293: ["Unknown", "Mesh Lightstrip (RF ready)", "2293"],
     2342: ["Yeelight", "Mesh Bulb M2", "YLDP25YL/YLDP26YL"],
     2584: ["XinGuang", "XinGuang Smart Light", "LIBMDA09X"],
-    'params': [
+    3164: ["Unknown", "Mesh Downlight (RF ready)", "3164"],
+    3416: ["Unknown", "Mesh Downlight (Yeelight compatible)", "3416"],
+    'miot_spec': [
         [2, 1, 'light', 'light'],
         [2, 2, 'brightness', None],
         [2, 3, 'color_temp', None],
@@ -50,20 +54,20 @@ DEVICES = [{
 }, {
     # Mesh Switches
     1946: ["Xiaomi", "Mesh Wall Double Switch", "DHKG02ZM"],
-    'params': [
+    'miot_spec': [
         [2, 1, 'left_switch', 'switch'],
         [3, 1, 'right_switch', 'switch'],
     ]
 }, {
     1945: ["Xiaomi", "Mesh Wall Switch", "DHKG01ZM"],
     2007: ["Unknown", "Mesh Switch Controller"],
-    'params': [
+    'miot_spec': [
         [2, 1, 'switch', 'switch']
     ],
 }, {
     2093: ["PTX", "Mesh Wall Triple Switch", "PTX-TK3/M"],
     3878: ["PTX", "Mesh Wall Triple Switch", "PTX-SK3M"],
-    'params': [
+    'miot_spec': [
         [2, 1, 'left_switch', 'switch'],
         [3, 1, 'middle_switch', 'switch'],
         [4, 1, 'right_switch', 'switch'],
@@ -74,7 +78,7 @@ DEVICES = [{
     ]
 }, {
     2257: ["PTX", "Mesh Wall Double Switch", "PTX-SK2M"],
-    'params': [
+    'miot_spec': [
         [2, 1, 'left_switch', 'switch'],
         [3, 1, 'right_switch', 'switch'],
         [8, 1, 'backlight', 'switch'],
@@ -83,14 +87,14 @@ DEVICES = [{
     ]
 }, {
     2258: ["PTX", "Mesh Wall Single Switch", "PTX-SK1M"],
-    'params': [
+    'miot_spec': [
         [2, 1, 'switch', 'switch'],
         [8, 1, 'backlight', 'switch'],
         [8, 2, 'smart', 'switch'],
     ]
 }, {
-    2717: ["Xiaomi", "Mesh Wall Triple Switch", "ISA-KG03HL"],
-    'params': [
+    2717: ["Xiaomi", "Mesh Wall Triple Switch", "ZNKG03HL/ISA-KG03HL"],
+    'miot_spec': [
         [2, 1, 'left_switch', 'switch'],
         [3, 1, 'middle_switch', 'switch'],
         [4, 1, 'right_switch', 'switch'],
@@ -99,7 +103,7 @@ DEVICES = [{
     ]
 }, {
     3083: ["Xiaomi", "Mi Smart Electrical Outlet", "ZNCZ01ZM"],
-    'params': [
+    'miot_spec': [
         [2, 1, 'outlet', 'switch'],
         [3, 1, 'power', 'sensor'],
         [4, 1, 'backlight', 'switch'],
@@ -112,7 +116,10 @@ COLOR_TEMP = {
 }
 # if max brightness not default 65535
 MAX_BRIGHTNESS = {
-    2584: 100
+    2293: 100,
+    2584: 100,
+    3164: 100,
+    3416: 100,
 }
 
 BLE_FINGERPRINT_ACTION = [
@@ -189,7 +196,7 @@ def get_ble_domain(param: str) -> Optional[str]:
     elif param in (
             'action', 'rssi', 'temperature', 'humidity', 'illuminance',
             'moisture', 'conductivity', 'battery', 'formaldehyde',
-            'mosquitto', 'idle_time'):
+            'supply', 'idle_time'):
         return 'sensor'
 
     return None
@@ -283,7 +290,7 @@ def parse_xiaomi_ble(event: dict, pdid: int) -> Optional[dict]:
 
     elif eid == 0x1013 and length == 1:  # 4115
         # Remaining percentage, range 0~100
-        return {'mosquitto': data[0]}
+        return {'supply': data[0]}
 
     elif eid == 0x1014 and length == 1:  # 4116
         return {'water_leak': data[0]}  # 1 => on => wet
@@ -376,6 +383,13 @@ def parse_xiaomi_ble(event: dict, pdid: int) -> Optional[dict]:
             {'motion': 1, 'light': int(value >= 100)}
         )
 
+    elif eid == 0x10 and len(data) == 2:  # 16
+        # Toothbrush Т500
+        if data[0] == 0:
+            return {'action': 'start', 'counter': data[1]}
+        else:
+            return {'action': 'finish', 'score': data[1]}
+
     return None
 
 
@@ -387,7 +401,8 @@ def get_device(pdid: int, default_name: str) -> Optional[dict]:
                 'device_manufacturer': desc[0],
                 'device_name': desc[0] + ' ' + desc[1],
                 'device_model': desc[2] if len(desc) > 2 else pdid,
-                'params': device.get('params'),
+                'lumi_spec': None,
+                'miot_spec': device.get('miot_spec'),
                 # if color temp not default 2700..6500
                 'color_temp': COLOR_TEMP.get(pdid),
                 'max_brightness': MAX_BRIGHTNESS.get(pdid)
@@ -396,8 +411,9 @@ def get_device(pdid: int, default_name: str) -> Optional[dict]:
     return {
         'device_name': default_name,
         'device_model': pdid,
+        'lumi_spec': None,
         # default Mesh device will be Bulb
-        'params': [
+        'miot_spec': [
             [2, 1, 'light', 'light'],
             [2, 2, 'brightness', None],
             [2, 3, 'color_temp', None],
