@@ -48,6 +48,7 @@ media_source:
 my:
 dhcp:
 image:
+#energy:
 
 http:
   #base_url: !secret external_url

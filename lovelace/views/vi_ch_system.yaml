@@ -1,0 +1,21 @@
+title: System
+path: ch_system
+icon: mdi:cog-outline
+cards:
+  - type: vertical-stack
+    cards:
+    - type: markdown
+      content: >
+        ### <center>Huawei LTE</center>
+    - type: entities
+      show_header_toggle: false
+      entities:
+        - entity: binary_sensor.huawei_e5372_mobile_connection
+          name: "Mobile Connection"
+        - entity: sensor.huawei_e5372_rssi
+          name: "RSSI"
+        - entity: sensor.huawei_e5372_sinr
+          name: "SINR"
+        - entity: sensor.huawei_e5372_newmsg
+          name: "New SMS"
+          icon: mdi:email-outline

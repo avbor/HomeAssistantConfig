@@ -11,17 +11,16 @@ cards:
         hours_to_show: 24
         refresh_interval: 600
         entities:
-          - sensor.tplinksmartplug01_watts
-          - sensor.tplinksmartplug01_amps
-          - sensor.tplinksmartplug01_volts
+          - sensor.tplink_smartplug_01_current_consumption
+          - sensor.tplink_smartplug_01_current
+          - sensor.tplink_smartplug_01_voltage
       - type: entities
         entities:
-          - entity: sensor.tplinksmartplug01_today_kwh
+          - entity: sensor.tplink_smartplug_01_today_s_consumption
             name: "Потрачено сегодня:"
             icon: mdi:flash-outline
-          - entity: sensor.tplinksmartplug01_total_kwh
+          - entity: sensor.tplink_smartplug_01_total_consumption
             name: "Потрачено всего:"
-            icon: mdi:flash
   - type: vertical-stack
     cards:
       - type: markdown
@@ -31,17 +30,16 @@ cards:
         hours_to_show: 24
         refresh_interval: 600
         entities:
-          - sensor.tplinksmartplug02_watts
-          - sensor.tplinksmartplug02_amps
-          - sensor.tplinksmartplug02_volts
+          - sensor.tplink_smartplug_02_current_consumption
+          - sensor.tplink_smartplug_02_current
+          - sensor.tplink_smartplug_02_voltage
       - type: entities
         entities:
-          - entity: sensor.tplinksmartplug02_today_kwh
+          - entity: sensor.tplink_smartplug_02_today_s_consumption
             name: "Потрачено сегодня:"
             icon: mdi:flash-outline
-          - entity: sensor.tplinksmartplug02_total_kwh
+          - entity: sensor.tplink_smartplug_02_total_consumption
             name: "Потрачено всего:"
-            icon: mdi:flash
   - type: vertical-stack
     cards:
       - type: markdown

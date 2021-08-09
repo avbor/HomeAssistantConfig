@@ -24,3 +24,10 @@ dashboards:
     icon: mdi:tools
     show_in_sidebar: true
     require_admin: true
+  dash-chouse:
+    mode: yaml
+    filename: lovelace/dash-chouse.yaml
+    title: Дача
+    icon: mdi:tree
+    show_in_sidebar: true
+    require_admin: false

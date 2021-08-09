@@ -12,3 +12,5 @@
 - sensor.*_illuminance
 - sensor.*_power
 - sensor.*_consumption
+- sensor.*_voltage
+- sensor.tplink_*_current

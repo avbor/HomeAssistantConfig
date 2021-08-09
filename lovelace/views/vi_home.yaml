@@ -66,6 +66,18 @@ cards:
             show:
               labels: false
 
+  - type: gauge
+    entity: sensor.average_voltage_in_flat
+    name: "Напряжение в сети"
+    #unit: V
+    needle: true
+    min: 205
+    max: 245
+    severity:
+      yellow: 0
+      green: 215
+      red: 235
+
     # --- Сейчас дома:
   - type: vertical-stack
     cards:
@@ -159,7 +171,6 @@ cards:
               entities:
                 - sensor.do_doma_sasha
                 - sensor.do_doma_ira_luxoft
-
 
 # --- Домофон
   - type: vertical-stack

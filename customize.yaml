@@ -44,3 +44,7 @@ sensor.start_time:
   unit_of_measurement: 's'
 climate.boiler_194340:
   friendly_name: Centurio IQ 2.0
+sensor.average_voltage_in_flat:
+  device_class: voltage
+  unit_of_measurement: V
+  icon: mdi:sine-wave

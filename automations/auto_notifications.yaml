@@ -277,7 +277,9 @@
           '^binary_sensor.lamp_status_|'
           '^sensor.lamp_status_|'
           '^sensor.mirobot_1s_|'
-          '^switch.smartir_'
+          '^switch.smartir_|'
+          '^sensor.smartmi_humidifier_.*_spalnia_target_humidity$|'
+          '^sensor.smartmi_humidifier_.*_spalnia_motor_speed$'
           )
         }}
     - condition: template
@@ -416,3 +418,22 @@
       title: "*Найдено новое устройство в сети!*"
       message: |
         MAC: {{ trigger.event.data.mac }}
+
+- alias: Boiler - Low Temperature Alert
+  id: fe98880b-2fcd-4b6f-9ded-adc174b9b958
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.boiler_water_temp
+      below: 50
+    - platform: numeric_state
+      entity_id: sensor.boiler_water_temp
+      below: 40
+    - platform: numeric_state
+      entity_id: sensor.boiler_water_temp
+      below: 30
+  action:
+    - service: notify.telegram_stall
+      data_template:
+        title: "*Внимание!*"
+        message: |
+          Температура воды в бойлере {{ trigger.to_state.state }}°C

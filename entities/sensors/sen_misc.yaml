@@ -99,6 +99,15 @@
       friendly_name: "Electrolux Centurio IQ Status"
       value_template: >
         {% if (states('sensor.tplinksmartplug01_amps') | float) > 4 %}On{% else %}Off{% endif %}
+    boiler_water_temp:
+      unit_of_measurement: °C
+      device_class: temperature
+      value_template: >
+        {% if state_attr('climate.centurio_iq_194340', 'current_temperature') %}
+          {{ state_attr('climate.centurio_iq_194340', 'current_temperature') }}
+        {% else %}
+          0
+        {% endif %}
     xiaomi_gas_density:
       value_template: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
     ha_uptime:
@@ -150,3 +159,9 @@
     - sensor.0x158d0003931b0e_humidity
     - sensor.0x158d00039e2ecb_humidity
     - sensor.a4c138414e9a_humidity
+- platform: min_max
+  name: Average Voltage In Flat
+  type: median
+  entity_ids:
+    - sensor.tplink_smartplug_01_voltage
+    - sensor.tplink_smartplug_02_voltage

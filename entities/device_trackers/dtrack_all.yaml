@@ -19,3 +19,7 @@
 #- platform: google_maps
 #  interval_seconds: 60
 #  username: !secret google_maps_username
+#- platform: luci
+#  host: 192.168.10.1
+#  username: !secret chouse_gw01_user
+#  password: !secret chouse_gw01_pass

@@ -10,6 +10,7 @@ xiaomi_gateway_3:
       options:
         - Gateway 3-1
         - Gateway 3-2
+        - CH Gateway 3-1
       initial: Gateway 3-1
       icon: mdi:router-wireless
 
@@ -64,4 +65,6 @@ xiaomi_gateway_3:
                 remote.0x588e81fffedca899_pair
               {% elif trigger.to_state.state == 'Gateway 3-2' %}
                 remote.0x842e14fffe4dff7f_pair
+              {% elif trigger.to_state.state == 'CH Gateway 3-1' %}
+                remote.0xbc33acfffe051bfe_pair
               {% endif %}

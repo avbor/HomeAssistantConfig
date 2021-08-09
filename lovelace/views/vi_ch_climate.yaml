@@ -1,0 +1,34 @@
+title: Climate
+path: ch-climate
+icon: mdi:home-thermometer-outline
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>На улице (крыльцо)</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.0x158d00040e019e_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.0x158d00040e019e_humidity
+            name: Влажность
+            graph: line
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Дом</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.a4c138d358e9_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.a4c138d358e9_humidity
+            name: Влажность
+            graph: line

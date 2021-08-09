@@ -20,13 +20,13 @@
 - binary_sensor.neptun_water_leakage
 - sensor.yaml_code_lines_count
 # Power sensors
-- sensor.tplinksmartplug01_volts
-- sensor.tplinksmartplug01_amps
-- sensor.tplinksmartplug01_watts
-- sensor.tplinksmartplug02_volts
-- sensor.tplinksmartplug02_amps
-- sensor.tplinksmartplug02_watts
-- sensor.mipowerplug01_watts
+#- sensor.tplinksmartplug01_volts
+#- sensor.tplinksmartplug01_amps
+#- sensor.tplinksmartplug01_watts
+#- sensor.tplinksmartplug02_volts
+#- sensor.tplinksmartplug02_amps
+#- sensor.tplinksmartplug02_watts
+#- sensor.mipowerplug01_watts
 # COVID-19
 #- sensor.russia_coronavirus_confirmed
 #- sensor.russia_coronavirus_current
