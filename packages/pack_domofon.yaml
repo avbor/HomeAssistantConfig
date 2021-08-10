@@ -18,9 +18,9 @@ domofon_pack:
           entity_id: binary_sensor.domofon_incoming_call
           state: 'on'
       action:
-        service: notify.telegram_stall
+        service: notify.telegram_group_flat_1
         data:
-          message: "Домофон открыт кнопкой"
+          message: "_Домофон_: открыт кнопкой"
 
     - alias: Domofon - Incoming Call Notification
       id: 741a9858-1687-4b2d-8afd-73373e8cc8ba
@@ -30,9 +30,9 @@ domofon_pack:
         entity_id: binary_sensor.domofon_incoming_call
         to: 'on'
       action:
-        service: notify.telegram_stall
+        service: notify.telegram_group_flat_1
         data:
-          message: "Звонок в домофон {% if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') %}(откроется автоматически){% endif %}"
+          message: "_Домофон_: входящий звонок... {% if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') %}(*откроется автоматически*){% endif %}"
           data:
             inline_keyboard:
               - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
@@ -51,6 +51,13 @@ domofon_pack:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "{{ 'Открываю...' if is_state('binary_sensor.domofon_incoming_call', 'on') else 'Нет входящего звонка' }}"
         - service: esphome.domofon_accept_call
+        - service: telegram_bot.edit_message
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            message: |
+              _Домофон_: входящий звонок...
+              {{ 'Домофон *открыт*!' if is_state('binary_sensor.domofon_incoming_call', 'on') else '' }}
 
     - alias: Domofon - Telegram Control - domofon_reject
       id: a50fb75b-0083-4866-8496-bdd013332a88
@@ -66,6 +73,13 @@ domofon_pack:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "{{ 'Отклоняю...' if is_state('binary_sensor.domofon_incoming_call', 'on') else 'Нет входящего звонка' }}"
         - service: esphome.domofon_reject_call
+        - service: telegram_bot.edit_message
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            message: |
+              _Домофон_: входящий звонок...
+              {{ 'Звонок *сброшен*!' if is_state('binary_sensor.domofon_incoming_call', 'on') else '' }}
 
     - alias: Domofon - Mute and UnMute by Time
       id: 97a74c5f-6a9f-4af6-9f8e-2a7fcd0a5070
@@ -90,14 +104,14 @@ domofon_pack:
         - platform: state
           entity_id: binary_sensor.domofon_status
       action:
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_flat_1
           data:
             message: |
               *Внимание!*
               {% if trigger.to_state.state == 'off' -%}
-                Домофон: потеряно подключение к HA.
+                _Домофон_: потеряно подключение к HA.
               {% elif trigger.to_state.state == 'on' -%}
-                Домофон: восстановлено подключение к HA
+                _Домофон_: восстановлено подключение к HA
               {% endif %}
 
     - alias: Domofon - Open Once for Couriers
@@ -123,9 +137,9 @@ domofon_pack:
         - service: switch.turn_on
           data:
             entity_id: switch.domofon_automatically_open_once
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_flat_1
           data:
-            message: "Курьер уже в пути, для домофона включен режим однократного авто-открытия."
+            message: "_Домофон_: Курьер уже в пути, включен режим однократного авто-открытия."
 
     - alias: Domofon - Open Once at Enter to Home Zone
       id: 40d4a1f6-576c-438a-b20f-ba161d9bd3ee
@@ -143,7 +157,7 @@ domofon_pack:
         - service: switch.turn_on
           data:
             entity_id: switch.domofon_mute_sound_once
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_flat_1
           data:
             message: "_Домофон_: включен режим однократного авто-открытия."
         - wait_for_trigger:
@@ -161,6 +175,6 @@ domofon_pack:
               - service: switch.turn_off
                 data:
                   entity_id: switch.domofon_mute_sound_once
-              - service: notify.telegram_stall
+              - service: notify.telegram_group_flat_1
                 data:
                   message: "_Домофон_: отключен режим однократного авто-открытия."

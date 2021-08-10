@@ -11,10 +11,10 @@
     from: 'off'
     to: 'on'
   action:
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data:
         message: "В *Детской* обнаружено движение:"
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: "Camera Snapshot 1"
         data:
@@ -22,7 +22,7 @@
             - url: !secret dafangcam_03_snapshot_url
     - delay:
         seconds: 1
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data:
         message: "Camera Snapshot 2"
         data:
@@ -30,7 +30,7 @@
             - url: !secret dafangcam_03_snapshot_url
     - delay:
         seconds: 1
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data:
         message: "Camera Snapshot 3"
         data:
@@ -72,7 +72,7 @@
   action:
     - delay:
         seconds: 3
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: "Camera Snapshot 1"
         data:
@@ -80,7 +80,7 @@
             - url: !secret dafangcam_02_snapshot_url
     - delay:
         seconds: 1
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: "Camera Snapshot 2"
         data:
@@ -88,7 +88,7 @@
             - url: !secret dafangcam_02_snapshot_url
     - delay:
         seconds: 2
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: "Camera Snapshot 3"
         data:
@@ -96,7 +96,7 @@
             - url: !secret dafangcam_02_snapshot_url
     - delay:
         seconds: 3
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: "Camera Snapshot 4"
         data:

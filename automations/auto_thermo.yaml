@@ -15,7 +15,7 @@
       for:
         minutes: 5
   action:
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: >-
           В *Детской*
@@ -36,7 +36,7 @@
       for:
         minutes: 5
   action:
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: >-
           В *Гостиной*
@@ -57,7 +57,7 @@
       for:
         minutes: 5
   action:
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data_template:
         message: >-
           В *Спальне*
@@ -80,10 +80,10 @@
     for:
       hours: 8
   action:
-    service: notify.telegram_stall
+    service: notify.telegram_group_flat_1
     data_template:
       message: >
-        Внимание, *{{ trigger.to_state.attributes.friendly_name }}* работает больше 8 часов.
+        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' Contact','') }}* работает больше 8 часов.
 
 - alias: AC - long running [16h]
   id: 970eef7a-4b66-4186-88ff-a0542c13c10a
@@ -99,10 +99,10 @@
     for:
       hours: 16
   action:
-    service: notify.telegram_stall
+    service: notify.telegram_group_flat_1
     data_template:
       message: >
-        Внимание, *{{ trigger.to_state.attributes.friendly_name }}* работает больше *16* часов.
+        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' Contact','') }}* работает больше *16* часов.
 
 - alias: AC - long running [24h]
   id: 106513d8-941c-4bfe-8f42-1fe9c95a77de
@@ -118,7 +118,7 @@
     for:
       hours: 24
   action:
-    service: notify.telegram_stall
+    service: notify.telegram_group_flat_1
     data_template:
       message: >
-        Внимание, *{{ trigger.to_state.attributes.friendly_name }}* работает больше *24* часов.
+        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' Contact','') }}* работает больше *24* часов.

@@ -3,12 +3,7 @@
 #################################################
 vacuum_cleaner:
 
-# Devices
-  #vacuum:
-  #  - platform: xiaomi_miio
-  #    host: 172.16.16.219
-  #    token: !secret mi_vacuum_1s_token
-
+# Map
   camera:
     - platform: xiaomi_cloud_map_extractor
       name: Mi Vacuum Cleaner 1S Cam
@@ -232,7 +227,7 @@ vacuum_cleaner:
 
 # Automations
   automation:
-    - alias: 'Оповещение о начале уборки [notify to stall]'
+    - alias: 'Оповещение о начале уборки'
       id: 61fb954b-3450-4fc6-9848-cc5304b54a16
       initial_state: true
       trigger:
@@ -242,10 +237,59 @@ vacuum_cleaner:
       action:
         - service: telegram_bot.send_message
           data:
-            target: !secret tlg_stall_id
-            message: "Mi Robot начал уборку."
+            target: !secret tlg_group_flat_1
+            message: "_Mi Robot_: начал уборку."
             inline_keyboard:
               - 'Остановить:/vacuum_stop, На базу:/vacuum_go_home'
+
+    - alias: 'Vacuum - Telegram Control - Stop'
+      id: 78e4ee4f-d0d7-4d23-9e3c-4ec125f19400
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/vacuum_stop'
+      action:
+        - service: vacuum.pause
+          entity_id: vacuum.xiaomi_vacuum_cleaner
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Команда отправлена'
+        - service: telegram_bot.edit_message
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            message: |
+              _Mi Robot_: начал уборку.
+              Уборка остановлена.
+            inline_keyboard:
+              - 'На базу:/vacuum_go_home'
+
+    - alias: 'Vacuum - Telegram Control - Go to Base'
+      id: 0b1fd434-4044-4ce7-ab8a-262d6250407a
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/vacuum_go_home'
+      action:
+        - service: vacuum.pause
+          entity_id: vacuum.xiaomi_vacuum_cleaner
+        - delay: 1
+        - service: vacuum.return_to_base
+          entity_id: vacuum.xiaomi_vacuum_cleaner
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Команда отправлена'
+        - service: telegram_bot.edit_message
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            message: |
+              _Mi Robot_: начал уборку.
+              Уборка остановлена, робот отправлен на базу.
 
     - alias: 'Оповещение о возращении пылесоса на базу [notify to stall]'
       id: 68311ec4-1030-4d7d-a2ea-e9cb21f7f40c
@@ -259,9 +303,9 @@ vacuum_cleaner:
         value_template: >
           {{ trigger.from_state.state != 'unavailable'}}
       action:
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_flat_1
           data:
-            message: "Mi Robot вернулся на базу (закончил уборку)."
+            message: "_Mi Robot_: вернулся на базу (закончил уборку)."
 
     - alias: 'Оповещение о забытом пылесосе [notify to stall]'
       id: db76ec80-b5d6-4991-8a6c-9272b25c1a39
@@ -275,8 +319,8 @@ vacuum_cleaner:
       action:
         - service: notify.telegram_stall
           data:
-            message: "Mi Robot потерялся и бездельничает, отправляем на базу."
-        - service: vacuum.return_to_base
+            message: "_Mi Robot_: потерялся и бездельничает, отправляем на базу."
+        - service: vacuum.telegram_group_flat_1
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
 
@@ -291,7 +335,7 @@ vacuum_cleaner:
         - service: notify.telegram_stall
           data_template:
             message: |
-              Mi Robot: Произошла *ошибка*!
+              _Mi Robot_: Произошла *ошибка*!
               {{ state_attr('vacuum.xiaomi_vacuum_cleaner', "error") }}
 
     - alias: 'Ежедневная уборка по будням [утро]'
@@ -373,36 +417,3 @@ vacuum_cleaner:
             {% elif trigger.to_state.state == 'Gentle' %}
               script.set_vacuum_power_gentle
             {% endif %}
-
-    - alias: 'Vacuum - Telegram Control - Stop'
-      id: 78e4ee4f-d0d7-4d23-9e3c-4ec125f19400
-      trigger:
-        platform: event
-        event_type: telegram_callback
-        event_data:
-          data: '/vacuum_stop'
-      action:
-        - service: vacuum.pause
-          entity_id: vacuum.xiaomi_vacuum_cleaner
-        - service: telegram_bot.answer_callback_query
-          data_template:
-            callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Команда отправлена'
-
-    - alias: 'Vacuum - Telegram Control - Go to Base'
-      id: 0b1fd434-4044-4ce7-ab8a-262d6250407a
-      trigger:
-        platform: event
-        event_type: telegram_callback
-        event_data:
-          data: '/vacuum_go_home'
-      action:
-        - service: vacuum.pause
-          entity_id: vacuum.xiaomi_vacuum_cleaner
-        - delay: 1
-        - service: vacuum.return_to_base
-          entity_id: vacuum.xiaomi_vacuum_cleaner
-        - service: telegram_bot.answer_callback_query
-          data_template:
-            callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Команда отправлена'

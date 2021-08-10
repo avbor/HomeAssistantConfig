@@ -18,10 +18,14 @@
 - alias: 'Telegram Bot - Start'
   id: d50c7e2c-9f67-40f2-9495-41ba1140c9b5
   trigger:
-    platform: event
-    event_type: telegram_command
-    event_data: 
-      command: '/start'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/start'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/start@HAutoBot'
   action:
     service: telegram_bot.send_message
     data_template:
@@ -31,10 +35,14 @@
 - alias: 'Telegram Bot - Help'
   id: 1e265eea-3d26-4a04-8402-f25a828f841d
   trigger:
-    platform: event
-    event_type: telegram_command
-    event_data: 
-      command: '/help'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/help'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/help@HAutoBot'
   action:
     service: telegram_bot.send_message
     data_template:
@@ -49,10 +57,14 @@
 - alias: 'Telegram Bot - Ping'
   id: 936c648b-18b6-4636-a941-cc3f3361fdd0
   trigger:
-    platform: event
-    event_type: telegram_command
-    event_data: 
-      command: '/ping'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/ping'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/ping@HAutoBot'
   action:
     service: telegram_bot.send_message
     data_template:
@@ -66,14 +78,18 @@
 - alias: 'Telegram Bot - Who is home?'
   id: f3af5ecc-3eb8-4542-8207-97f90b6f5abf
   trigger:
-    platform: event
-    event_type: telegram_command
-    event_data: 
-      command: '/whoishome'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/whoishome'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/whoishome@HAutoBot'
   action:
     service: telegram_bot.send_message
     data_template:
-      target: '{{ trigger.event.data.user_id }}'
+      target: '{{ trigger.event.data.chat_id }}'
       message: |
         Сейчас дома:
         {%- set entites = expand('group.family_persons') %}{% for prs in entites %}{% if prs.state == "home" %}
@@ -83,10 +99,14 @@
 - alias: 'Telegram Bot - Weather'
   id: b0b0a539-14fb-440c-b57c-269460961819
   trigger:
-    platform: event
-    event_type: telegram_command
-    event_data: 
-      command: '/weather'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/weather'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/weather@HAutoBot'
   action:
     - service: telegram_bot.send_photo
       data_template:
@@ -101,10 +121,14 @@
 - alias: 'Telegram Bot - Status'
   id: 51572bf5-4960-4034-b09a-17d202c07c18
   trigger:
-    platform: event
-    event_type: telegram_command
-    event_data: 
-      command: '/status'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/status'
+    - platform: event
+      event_type: telegram_command
+      event_data: 
+        command: '/status@HAutoBot'
   action:
     service: telegram_bot.send_message
     data_template:

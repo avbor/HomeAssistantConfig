@@ -51,3 +51,6 @@
     boiler_status:
       device_class: power
       value_template: "{{ is_state('switch.tplink_smartplug_01', 'on') }}"
+    coutry_house_presence:
+      device_class: presence
+      value_template: "{{ 'Дача' in (expand('group.family_persons') | map(attribute='state') | list) }}"

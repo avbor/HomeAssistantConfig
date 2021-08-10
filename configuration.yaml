@@ -197,6 +197,7 @@ telegram_bot:
     allowed_chat_ids:
       - !secret tlg_stall_id
       - !secret tlg_iborisochka_id
+      - !secret tlg_group_flat_1
 
 notify:
   - name: telegram_stall
@@ -205,6 +206,9 @@ notify:
   - name: telegram_iborisochka
     platform: telegram
     chat_id: !secret tlg_iborisochka_id
+  - name: telegram_group_flat_1
+    platform: telegram
+    chat_id: !secret tlg_group_flat_1
 
 #################################################
 # Inclusions

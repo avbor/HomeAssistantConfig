@@ -109,11 +109,41 @@ cards:
           card:
             type: glance
             show_state: false
+
+      # --- Сейчас на даче:
+      - type: markdown
+        content: >
+          ### <center>Сейчас на даче</center>
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.coutry_house_presence
+            state: "off"
+        card:
+          type: markdown
+          content: >
+            *Никого нет...*
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.coutry_house_presence
+            state: "on"
+        card:
+          type: entity-filter
+          entities:
+            - person.alexander
+            - person.irina
+          state_filter:
+            - "Дача"
+          card:
+            type: glance
+            show_state: false
+
     # --- Карта:
       - type: conditional
         conditions:
           - entity: group.devices_to_map
             state: "not_home"
+          - entity: binary_sensor.coutry_house_presence
+            state: "off"
         card:
           type: vertical-stack
           cards:

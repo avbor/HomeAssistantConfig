@@ -140,7 +140,7 @@ water_leak_protection:
         - service: switch.turn_on
           data:
             entity_id: switch.sonoff_1000b68886
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_flat_1
           data:
             message: |
               _INFO:_ Нептун был перезапущен.
@@ -169,7 +169,7 @@ water_leak_protection:
         entity_id: binary_sensor.neptun_water_leakage
         to: "on"
       action:
-        service: notify.telegram_stall
+        service: notify.telegram_group_flat_1
         data:
           title: "*Внимание!*"
           message: |
@@ -185,7 +185,7 @@ water_leak_protection:
         entity_id: binary_sensor.neptun_water_leakage
         to: "off"
       action:
-        service: notify.telegram_stall
+        service: notify.telegram_group_flat_1
         data:
           message: Нептун деактивирован.
         
@@ -198,7 +198,7 @@ water_leak_protection:
         from: "off"
         to: "on"
       action:
-        service: notify.telegram_stall
+        service: notify.telegram_group_flat_1
         data:
           title: "*Внимание!*"
           message: |
@@ -215,7 +215,7 @@ water_leak_protection:
         from: "off"
         to: "on"
       action:
-        service: notify.telegram_stall
+        service: notify.telegram_group_flat_1
         data:
           title: "*Внимание!*"
           message: |
@@ -231,7 +231,7 @@ water_leak_protection:
         to: 'off'
         for: "00:02:00"
       action:
-        service: notify.telegram_stall
+        service: notify.telegram_group_flat_1
         data:
           title: "*Внимание!*"
           message: |

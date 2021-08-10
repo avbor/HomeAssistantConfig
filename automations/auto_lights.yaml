@@ -151,7 +151,7 @@
   action:
     - service: homeassistant.turn_off
       entity_id: light.detskaia
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_flat_1
       data:
         message: _{{ now().strftime("%d.%m.%Y %H:%M:%S") }}_ автоматически выключен свет в детской.
 
