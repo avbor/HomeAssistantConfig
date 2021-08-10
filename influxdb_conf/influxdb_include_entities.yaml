@@ -7,6 +7,7 @@
 - binary_sensor.0x158d0003fac0ec_motion
 - sensor.average_temperature_in_flat
 - sensor.average_humidity_in_flat
+- sensor.average_voltage_in_flat
 - sensor.0x158d0003230618_pressure
 - sensor.local_pressure_mmhg
 - binary_sensor.0x158d00031c790f_contact
@@ -19,6 +20,8 @@
 - binary_sensor.0x158d00044ee524_contact
 - binary_sensor.neptun_water_leakage
 - sensor.yaml_code_lines_count
+- sensor.do_dachi
+- sensor.do_doma_ot_dachi
 # Power sensors
 #- sensor.tplinksmartplug01_volts
 #- sensor.tplinksmartplug01_amps
