@@ -317,10 +317,10 @@ vacuum_cleaner:
         for:
           minutes: 15
       action:
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_flat_1
           data:
             message: "_Mi Robot_: потерялся и бездельничает, отправляем на базу."
-        - service: vacuum.telegram_group_flat_1
+        - service: vacuum.return_to_base
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
 
@@ -332,7 +332,7 @@ vacuum_cleaner:
         entity_id: vacuum.xiaomi_vacuum_cleaner
         to: "error"
       action:
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_flat_1
           data_template:
             message: |
               _Mi Robot_: Произошла *ошибка*!
