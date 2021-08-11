@@ -1,0 +1,53 @@
+substitutions:
+  board_name: sonoff_basic_02
+  esp_platform: ESP8266
+  esp_board: esp01_1m
+  room_name: Country House
+
+packages:
+  wifi: !include common/wifi_ch.yaml
+  device_base: !include common/device_base.yaml
+
+web_server:
+  port: 80
+
+binary_sensor:
+  # Button
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Sonoff Basic Button"
+    on_press:
+      - switch.toggle: button
+
+switch:
+  # Relay switch
+  - platform: gpio
+    id: relay
+    pin: GPIO12
+  # Template switch for button
+  - platform: template
+    name: "Sonoff Basic Relay"
+    optimistic: true
+    id: button
+    turn_on_action:
+    - switch.turn_on: relay
+    - light.turn_on: led
+    turn_off_action:
+    - switch.turn_off: relay
+    - light.turn_off: led
+
+output:
+  - platform: esp8266_pwm
+    id: basic_green_led
+    pin:
+      number: GPIO13
+      inverted: True
+
+light:
+  - platform: monochromatic
+    name: "Sonoff Basic Green LED"
+    output: basic_green_led
+    id: led
