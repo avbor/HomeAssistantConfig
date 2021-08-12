@@ -6,7 +6,7 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### Время в пути:
+          ### <center>Время в пути</center>
       - type: entities
         entities:
           #- entity: sensor.do_dachi
@@ -34,3 +34,9 @@ cards:
             name: Дом -> Дача
           - entity: sensor.do_doma_ot_dachi
             name: Дача -> Дом
+      - type: markdown
+        content: >
+          ### <center>Погода</center>
+      - type: weather-forecast
+        entity: weather.nivki_2
+        name: Нивки-2

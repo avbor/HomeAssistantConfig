@@ -355,6 +355,7 @@ cards:
           ### <center>Погода</center>
       - type: weather-forecast
         entity: weather.gismeteo
+        name: Москва
       - type: 'custom:mini-graph-card'
         name: Атмосферное давление
         icon: mdi:gauge
