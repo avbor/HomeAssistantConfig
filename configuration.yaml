@@ -131,9 +131,9 @@ tts:
   - platform: google_translate
     language: 'ru'
 
-weather:
-  - platform: gismeteo
-    mode: daily
+#weather:
+#  - platform: gismeteo
+#    mode: daily
 
 discovery:
   ignore:
