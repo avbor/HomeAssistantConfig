@@ -47,6 +47,7 @@
     service: telegram_bot.send_message
     data_template:
       target: '{{ trigger.event.data.user_id }}'
+      parse_mode: html
       message: |
         Доступные комманды:
         /status - Текущий статус устройств
