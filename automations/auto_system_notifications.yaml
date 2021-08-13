@@ -254,7 +254,10 @@
           '^sensor.lamp_status_|'
           '^sensor.mirobot_1s_|'
           '^switch.smartir_|'
-          '.*\.smartmi_humidifier_\d{2}_\w+_.*'
+          '.*\.smartmi_humidifier_\d{2}_\w+_.*|'
+          '^sensor.nivki_2_|'
+          '^sensor.moskva_danilovskii_|'
+          '^sensor.tplink_smartplug_01_'
           )
         }}
     - condition: template
