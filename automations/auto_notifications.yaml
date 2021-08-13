@@ -167,6 +167,9 @@
     - platform: numeric_state
       entity_id: sensor.boiler_water_temp
       below: 30
+  condition:
+    condition: template
+    value_template: "{{ (trigger.to_state.state | int) != 0 }}"
   action:
     - service: notify.telegram_group_flat_1
       data_template:
