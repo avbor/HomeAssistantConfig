@@ -104,7 +104,7 @@ domofon_pack:
         - platform: state
           entity_id: binary_sensor.domofon_status
       action:
-        - service: notify.telegram_group_flat_1
+        - service: notify.telegram_stall
           data:
             message: |
               *Внимание!*
