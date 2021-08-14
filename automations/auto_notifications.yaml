@@ -84,14 +84,15 @@
     from: "off"
     to: "on"
   action:
-    service: notify.telegram_group_flat_1
-    data:
-      title: "*Внимание!*"
-      message: |
-        Сработал датчик *газа* на кухне.
-        Откройте окна и перекройте подачу газа (за холодильником).
-      inline_keyboard:
-        - 'Отключить датчик:/poweroff_gas_sensor'
+    - service: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_flat_1
+        title: "*Внимание!*"
+        message: |
+          Сработал датчик *газа* на кухне.
+          Откройте окна и перекройте подачу газа (за холодильником).
+        inline_keyboard:
+          - 'Отключить датчик:/poweroff_gas_sensor'
 
 - alias: Gas Alert - Telegram control - poweroff_gas_sensor
   id: 3254a184-a04f-4b31-bbe9-1a00e403f134
@@ -124,13 +125,14 @@
     to: 'off'
     for: "00:30:00"
   action:
-    service: notify.telegram_group_flat_1
-    data:
-      title: "*Внимание!*"
-      message: |
-        Питание датчика *газа* отключено более 30 минут!
-      inline_keyboard:
-        - 'Включить датчик:/poweron_gas_sensor'
+    - service: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_flat_1
+        title: "*Внимание!*"
+        message: |
+          Питание датчика *газа* отключено более 30 минут!
+        inline_keyboard:
+          - 'Включить датчик:/poweron_gas_sensor'
 
 - alias: Gas Alert - Telegram control - poweroff_gas_sensor
   id: 50892fe7-741c-4b4d-a71c-a498be52d6b7
