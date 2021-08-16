@@ -19,3 +19,18 @@ cards:
         - entity: sensor.huawei_e5372_newmsg
           name: "New SMS"
           icon: mdi:email-outline
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Холодильник</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.a4c1384e2b64_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.a4c1384e2b64_humidity
+            name: Влажность
+            graph: line

@@ -6,7 +6,10 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### <center>На улице (крыльцо)</center>
+          ### <center>На улице</center>
+      - type: markdown
+        content: >
+          <center>Крыльцо</center>
       - type: horizontal-stack
         cards:
           - type: sensor
@@ -22,6 +25,9 @@ cards:
       - type: markdown
         content: >
           ### <center>Дом</center>
+      - type: markdown
+        content: >
+          <center>Гостиная</center>
       - type: horizontal-stack
         cards:
           - type: sensor
@@ -30,5 +36,31 @@ cards:
             graph: line
           - type: sensor
             entity: sensor.a4c138d358e9_humidity
+            name: Влажность
+            graph: line
+      - type: markdown
+        content: >
+          <center>Комната Кирилла</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.a4c138c7ded2_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.a4c138c7ded2_humidity
+            name: Влажность
+            graph: line
+      - type: markdown
+        content: >
+          <center>Комната Егора</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.a4c1380b3a85_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.a4c1380b3a85_humidity
             name: Влажность
             graph: line
