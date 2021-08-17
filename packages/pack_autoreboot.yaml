@@ -60,7 +60,7 @@ autoreboot_pack:
                   title: "*Внимание!*"
                   message: |
                     Автоматическая перезагрузка Home Assistant остановлена.
-                    Кол-во состоявшихся перезагрузок: *{{ (states('counter.auto_reboot') }}*
+                    Кол-во состоявшихся перезагрузок: *{{ states('counter.auto_reboot') }}*
                     Текущее кол-во ошибок в логе: *{{ states('counter.syslog_errors') }}*
 
   automation:
