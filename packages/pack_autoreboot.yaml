@@ -59,7 +59,9 @@ autoreboot_pack:
                   target: !secret tlg_stall_id
                   title: "*Внимание!*"
                   message: |
-                    Автоматическая перезагрузка Home Assistant остановлена (HA был перезагружен 2 раза).
+                    Автоматическая перезагрузка Home Assistant остановлена.
+                    Кол-во состоявшихся перезагрузок: *{{ (states('counter.auto_reboot') }}*
+                    Текущее кол-во ошибок в логе: *{{ states('counter.syslog_errors') }}*
 
   automation:
     - alias: "Auto Reboot: Reset Automatic Reboot Counter"
