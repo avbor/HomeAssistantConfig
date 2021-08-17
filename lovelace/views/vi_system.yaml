@@ -87,7 +87,7 @@ cards:
         - type: entities
           entities:
             - entity: input_number.auto_reboot_error_threshold
-              name: "ERRORs count:"
+              name: "Errors count:"
     - type: markdown
       content: >
         ### <center>Xiaomi Gateway 3 Control</center>
