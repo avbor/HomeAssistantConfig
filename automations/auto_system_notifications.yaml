@@ -74,6 +74,9 @@
     - service: script.turn_on
       target:
         entity_id: script.hass_warnings_counter_set_at_startup
+    - service: script.turn_on
+      target:
+        entity_id: script.auto_reboot_by_errors_after_boot
 
 - alias: "HASS: Home Assistant Shutdown"
   id: 44bdbc77-2894-4c80-9739-6c690bde13f9

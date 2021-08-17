@@ -1,0 +1,101 @@
+#################################################
+# Package Auto Reboot by Errors During Startup
+#################################################
+
+autoreboot_pack:
+
+  input_number:
+    auto_reboot_error_threshold:
+      name: Number of errors after boot cause auto restart HA
+      icon: mdi:alert-circle-outline
+      min: 1
+      max: 20
+      step: 1
+
+  counter:
+    auto_reboot:
+      name: "Automatic reboot counter"
+      step: 1
+      restore: true
+      icon: mdi:restart-alert
+
+  script:
+    auto_reboot_by_errors_after_boot:
+      alias: Automatic Reboot by Errors in SysLog after Boot
+      sequence:
+        - alias: Check Errors Counter
+          condition: template
+          value_template: "{{ (states('sensor.errors_in_system_log_command_line') | int) >= (states('input_number.auto_reboot_error_threshold') | int) }}"
+        - choose:
+          - alias: If Auto Reboot Counter <= 2
+            conditions:
+              - condition: template
+                value_template: "{{ (states('counter.auto_reboot') | int) <= 2 }}"
+            sequence:
+              - alias: Send Notification
+                service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_stall_id
+                  title: "*Внимание!*"
+                  message: |
+                    Home Assistant будет автоматически перезагружен через 15 секунд из за ошибок во время загрузки.
+                  inline_keyboard:
+                    - 'Отменить перезагрузку:/cancel_auto_reboot'
+              - alias: Wait 15 seconds
+                delay: "00:00:15"
+              - alias: Increase AutoReboot Counter
+                service: counter.increment
+                entity_id: counter.auto_reboot
+              - alias: Restart HA
+                service: homeassistant.restart
+          - alias: If Auto Reboot Counter > 2
+            conditions:
+              - condition: template
+                value_template: "{{ (states('counter.auto_reboot') | int) > 2 }}"
+            sequence:
+              - alias: Send Notification
+                service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_stall_id
+                  title: "*Внимание!*"
+                  message: |
+                    Автоматическая перезагрузка Home Assistant остановлена (HA был перезагружен 2 раза).
+
+  automation:
+    - alias: "Auto Reboot: Reset Automatic Reboot Counter"
+      id: 950840e8-8ef1-4984-8996-6ddee1f56cb7
+      trigger:
+        - platform: state
+          entity_id: sensor.ha_uptime
+          to: "10"
+      condition:
+        condition: template
+        value_template: "{{ (states('counter.auto_reboot') | int) > 0 }}"
+      action:
+        - service: counter.configure
+          target:
+            entity_id: counter.auto_reboot
+          data:
+            value: "0"
+
+    - alias: "Auto Reboot: Telegram Control - Cancel Auto Reboot"
+      id: 5524cadd-7b96-41f8-b489-90782e17af80
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/cancel_auto_reboot'
+      action:
+        - service: script.turn_off
+          entity_id: script.auto_reboot_by_errors_after_boot
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Команда отправлена'
+        - service: telegram_bot.edit_message
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            title: "*Внимание!*"
+            message: |
+              Автоматическая перезагрузка Home Assistant *отменена*!
