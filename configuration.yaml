@@ -14,6 +14,7 @@ homeassistant:
   name: Home, Sweeet Home...
   time_zone: !secret home_timezone
   unit_system: metric
+  currency: RUB
   latitude: !secret home_latitude
   longitude: !secret home_longitude
   elevation: !secret home_elevation
