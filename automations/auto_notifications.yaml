@@ -186,7 +186,12 @@
       entity_id: sensor.huawei_e5372_sms_unread
   condition:
     - condition: template
-      value_template: "{{ (trigger.to_state.state | int) > (trigger.from_state.state | int) }}"
+      value_template: >
+        {% set ignore = ['unknown', 'unavailable', 'none', None, null, '', 'null'] %}
+        {{ trigger.to_state.state not in ignore and trigger.from_state.state != '' }}
+    - condition: template
+      value_template: >
+        {{ (trigger.to_state.state | int) > (trigger.from_state.state | int) }}
   action:
     - service: notify.telegram_stall
       data:
