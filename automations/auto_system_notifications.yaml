@@ -67,7 +67,7 @@
       data:
         message: |
           _INFO:_ Home Assistant *запущен* за {{ states('sensor.start_time') }} сек.
-          Errors: *{{ states('sensor.errors_in_system_log_command_line') }}*, Warnings: *{{ states('sensor.warnings_in_system_log_command_line') }}*
+          Ошибок: *{{ states('sensor.errors_in_system_log_command_line') }}*, Предупреждений: *{{ states('sensor.warnings_in_system_log_command_line') }}*
     - service: script.turn_on
       target:
         entity_id: script.hass_errors_counter_set_at_startup
