@@ -38,15 +38,17 @@ cards:
       entities:
         - entity: sensor.start_time
           name: Время загрузки
-    - type: markdown
-      content: >
-        #### SysLog:
-    - type: entities
-      entities:
-        - entity: counter.syslog_warnings
-          name: "Warnings:"
-        - entity: counter.syslog_errors
-          name: "Errors:"
+    - type: custom:vertical-stack-in-card
+      cards:
+        - type: markdown
+          content: >
+            #### SysLog
+        - type: entities
+          entities:
+            - entity: counter.syslog_warnings
+              name: "Warnings:"
+            - entity: counter.syslog_errors
+              name: "Errors:"
 
   - type: vertical-stack
     cards:
@@ -77,10 +79,15 @@ cards:
             service_data:
               entity_id: script.hass_restart
           entity: script.hass_restart
-    - type: entities
-      entities:
-        - entity: input_number.auto_reboot_error_threshold
-          name: "ERRORs to Reboot [At Start]"
+    - type: custom:vertical-stack-in-card
+      cards:
+        - type: markdown
+          content: >
+            #### Errors during startup, leading to automatic reboot
+        - type: entities
+          entities:
+            - entity: input_number.auto_reboot_error_threshold
+              name: "ERRORs count:"
     - type: markdown
       content: >
         ### <center>Xiaomi Gateway 3 Control</center>
