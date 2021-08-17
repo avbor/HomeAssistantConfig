@@ -19,7 +19,7 @@ hass_check_config:
   sequence:
     - service: homeassistant.check_config
 
-errors_counter_set_at_startup:
+hass_errors_counter_set_at_startup:
   alias: Set Errors Counter at Startup
   sequence:
     - wait_template: "{{ (states('sensor.errors_in_system_log_command_line') | int) >= 0 }}"
@@ -29,7 +29,7 @@ errors_counter_set_at_startup:
       data:
         value: "{{ states('sensor.errors_in_system_log_command_line') | int }}"
 
-warnings_counter_set_at_startup:
+hass_warnings_counter_set_at_startup:
   alias: Set Warnings Counter at Startup
   sequence:
     - wait_template: "{{ (states('sensor.warnings_in_system_log_command_line') | int) >= 0 }}"

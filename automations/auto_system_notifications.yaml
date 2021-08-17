@@ -70,10 +70,10 @@
           Errors: *{{ states('sensor.errors_in_system_log_command_line') }}*, Warnings: *{{ states('sensor.warnings_in_system_log_command_line') }}*
     - service: script.turn_on
       target:
-        entity_id: script.errors_counter_set_at_startup
+        entity_id: script.hass_errors_counter_set_at_startup
     - service: script.turn_on
       target:
-        entity_id: script.warnings_counter_set_at_startup
+        entity_id: script.hass_warnings_counter_set_at_startup
 
 - alias: "HASS: Home Assistant Shutdown"
   id: 44bdbc77-2894-4c80-9739-6c690bde13f9
