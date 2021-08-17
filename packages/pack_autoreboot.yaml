@@ -9,7 +9,7 @@ autoreboot_pack:
       name: Number of errors after boot cause auto restart HA
       icon: mdi:alert-circle-outline
       min: 1
-      max: 20
+      max: 10
       step: 1
 
   counter:

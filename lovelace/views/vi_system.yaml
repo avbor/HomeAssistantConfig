@@ -77,6 +77,10 @@ cards:
             service_data:
               entity_id: script.hass_restart
           entity: script.hass_restart
+    - type: entities
+      entities:
+        - entity: input_number.auto_reboot_error_threshold
+          name: "ERRORs to Reboot [At Start]"
     - type: markdown
       content: >
         ### <center>Xiaomi Gateway 3 Control</center>
