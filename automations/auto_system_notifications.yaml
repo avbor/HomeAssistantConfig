@@ -49,9 +49,17 @@
     - platform: homeassistant
       event: start
   action:
-    service: notify.telegram_stall
-    data:
-      message: "_INFO:_ Home Assistant *запущен* за {{ states('sensor.start_time') }} сек."
+    - service: homeassistant.update_entity
+      target:
+        entity_id: sensor.errors_in_system_log_command_line
+    - service: homeassistant.update_entity
+      target:
+        entity_id: sensor.warnings_in_system_log_command_line
+    - service: notify.telegram_stall
+      data:
+        message: |
+          _INFO:_ Home Assistant *запущен* за {{ states('sensor.start_time') }} сек.
+          Errors: *{{ states('sensor.errors_in_system_log_command_line') }}*, Warnings: *{{ states('sensor.warnings_in_system_log_command_line') }}*
 
 - alias: "HASS: Home Assistant Shutdown"
   id: 44bdbc77-2894-4c80-9739-6c690bde13f9
