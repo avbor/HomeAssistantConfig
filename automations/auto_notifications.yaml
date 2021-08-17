@@ -178,3 +178,17 @@
         title: "*Внимание!*"
         message: |
           Температура воды в бойлере *{{ trigger.to_state.state }}*°C
+
+- alias: Huawei E5372 - New Unread SMS Alert
+  id: a3215213-fe61-43f1-8eb4-ea572a4acee2
+  trigger:
+    - platform: state
+      entity_id: sensor.huawei_e5372_sms_unread
+  condition:
+    - condition: template
+      value_template: "{{ (trigger.to_state.state | int) > (trigger.from_state.state | int) }}"
+  action:
+    - service: notify.telegram_stall
+      data:
+        message: |
+          _Huawei E5372_ Непрочитанных SMS: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*

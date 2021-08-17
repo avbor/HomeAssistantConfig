@@ -16,9 +16,8 @@ cards:
           name: "RSSI"
         - entity: sensor.huawei_e5372_sinr
           name: "SINR"
-        - entity: sensor.huawei_e5372_newmsg
-          name: "New SMS"
-          icon: mdi:email-outline
+        - entity: sensor.huawei_e5372_sms_unread
+          name: "Unread SMS"
   - type: vertical-stack
     cards:
       - type: markdown
