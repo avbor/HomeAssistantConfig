@@ -196,4 +196,4 @@
     - service: notify.telegram_stall
       data:
         message: |
-          _Huawei E5372_ Непрочитанных SMS: {{ trigger.from_state.state }}, новых: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*
+          _Huawei E5372_, Непрочитанных SMS: *{{ states('sensor.huawei_e5372_sms_unread') }}*, новых: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*
