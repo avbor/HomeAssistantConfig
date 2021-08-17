@@ -102,6 +102,9 @@ recorder:
       - sun.sun
       - counter.syslog_errors
       - counter.syslog_warnings
+      - sensor.domofon_uptime
+      - sensor.ym_dacha_dom_hr
+      - sensor.ym_dom_dacha_hr
     event_types:
       - call_service
 
