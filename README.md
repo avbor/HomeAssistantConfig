@@ -42,6 +42,10 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 - Relays:
   - Sonoff MINI & MINI R2\
   Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN)
+
+  - Sonoff Basic R2 flashed to ESPHome\
+  Integration "ESPHome"
+
 - Plugs:
   - TP-Link HS110\
   Integration "TP-Link Kasa Smart"
@@ -171,6 +175,8 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 - Mosquitto broker
 - SSH & Web Terminal
 - Visual Studio Code
+- Loki
+- Promtail
 
 **Mobile Apps:**
 - [Home Assistant](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android) official app on Android\
