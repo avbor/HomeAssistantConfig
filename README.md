@@ -157,7 +157,7 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 
 **Server:**
 - Ubuntu Server 20.04 LTS
-- Home Assistant (Supervised)
+- Home Assistant (KVM Virtual Machine)
 - Nginx
 
 **WiFi Access Point:**
