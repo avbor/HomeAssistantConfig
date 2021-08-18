@@ -208,6 +208,17 @@
     data_template:
       message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
 
+- alias: "HASSIO: New Home Assistant OS Version Available [notify to stall]"
+  id: e1febbae-54ca-44b3-b808-83f74f29bf36
+  initial_state: true
+  trigger:
+    platform: template
+    value_template: "{{ states('sensor.home_assistant_operating_system_version') < states('sensor.home_assistant_operating_system_newest_version') }}"
+  action:
+    service: notify.telegram_stall
+    data_template:
+      message: "_INFO:_ Доступна новая версия Home Assistant OS ({{ states('sensor.home_assistant_operating_system_newest_version') }})"
+
 - alias: "HASSIO: New Addons Update Available [notify to stall]"
   id: 19295cc3-b128-4b64-925a-ffde2688cf9c
   initial_state: true

@@ -20,6 +20,12 @@ cards:
         - entity: sensor.ha_supervisor_latest_version
           name: "Supervisor последняя версия:"
           icon: mdi:home-assistant
+        - entity: sensor.home_assistant_operating_system_version
+          name: "HA OS текущая версия:"
+          icon: mdi:linux
+        - entity: sensor.home_assistant_operating_system_newest_version
+          name: "HA OS последняя версия:"
+          icon: mdi:linux
         - entity: sensor.supervisor_updates
           name: "Обновления Add-ons:"
           icon: mdi:view-module
