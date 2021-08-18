@@ -43,7 +43,7 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - Sonoff MINI & MINI R2\
   Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN)
 
-  - Sonoff Basic R2 flashed to ESPHome\
+  - Sonoff Basic R2 flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
 
 - Plugs:
@@ -79,7 +79,7 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - Tuya SmartIR Remote (UFO-R1 and similar) flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
 
-  - Analog intercom integrated via [custom board](https://github.com/Anonym-tsk/smart-domofon/tree/master/ge1mer) based on ESP8266\
+  - Analog intercom integrated via [custom board](https://github.com/Anonym-tsk/smart-domofon/tree/master/ge1mer) based on ESP8266 and [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
 
   - Xiaomi Xiao AI Smart Alarm Clock (AI01ZM, zimi.clock.myk01)\
