@@ -32,23 +32,30 @@ cards:
         - entity: sensor.influxdb_database_size
           name: "Размер БД InfluxDB:"
           icon: mdi:database
-    - type: history-graph
-      hours_to_show: 24
-      refresh_interval: 600
-      entities:
-        - entity: sensor.start_time
-          name: Время загрузки
     - type: custom:vertical-stack-in-card
       cards:
         - type: markdown
           content: >
-            #### SysLog
+            #### Errors during startup, leading to automatic reboot
+        - type: entities
+          entities:
+            - entity: input_number.auto_reboot_error_threshold
+              name: "Errors count:"
+        - type: markdown
+          content: >
+            #### SysLog counters
         - type: entities
           entities:
             - entity: counter.syslog_warnings
               name: "Warnings:"
             - entity: counter.syslog_errors
               name: "Errors:"
+    - type: history-graph
+      hours_to_show: 24
+      refresh_interval: 600
+      entities:
+        - entity: sensor.start_time
+          name: Время загрузки
 
   - type: vertical-stack
     cards:
@@ -79,15 +86,6 @@ cards:
             service_data:
               entity_id: script.hass_restart
           entity: script.hass_restart
-    - type: custom:vertical-stack-in-card
-      cards:
-        - type: markdown
-          content: >
-            #### Errors during startup, leading to automatic reboot
-        - type: entities
-          entities:
-            - entity: input_number.auto_reboot_error_threshold
-              name: "Errors count:"
     - type: markdown
       content: >
         ### <center>Xiaomi Gateway 3 Control</center>
