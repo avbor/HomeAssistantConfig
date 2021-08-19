@@ -7,37 +7,59 @@ cards:
     - type: markdown
       content: >
         ### <center>System information</center>
-    - type: entities
-      show_header_toggle: false
-      entities:
-        - entity: sensor.current_version
-          name: "HA текущая версия:"
-        - entity: sensor.latest_version
-          name: "HA последняя версия:"
-        - entity: sensor.ha_supervisor_current_version
-          name: "Supervisor текущая версия:"
-          icon: mdi:home-assistant
-        - entity: sensor.ha_supervisor_latest_version
-          name: "Supervisor последняя версия:"
-          icon: mdi:home-assistant
-        - entity: sensor.home_assistant_operating_system_version
-          name: "HA OS текущая версия:"
-          icon: mdi:linux
-        - entity: sensor.home_assistant_operating_system_newest_version
-          name: "HA OS последняя версия:"
-          icon: mdi:linux
-        - entity: sensor.supervisor_updates
-          name: "Обновления Add-ons:"
-          icon: mdi:view-module
-        - entity: sensor.hacs
-          name: "Обновления HACS:"
-        - type: section
-        - entity: sensor.hass_db_size
-          name: "Размер БД MariaDB:"
-          icon: mdi:database
-        - entity: sensor.influxdb_database_size
-          name: "Размер БД InfluxDB:"
-          icon: mdi:database
+    - type: custom:vertical-stack-in-card
+      cards:
+        - type: markdown
+          content: >
+            #### Component's versions
+        - type: entities
+          show_header_toggle: false
+          entities:
+            - entity: sensor.home_assistant_operating_system_newest_version
+              type: custom:multiple-entity-row
+              name: "OS"
+              state_header: "latest"
+              icon: mdi:linux
+              entities:
+                - entity: sensor.home_assistant_operating_system_version
+                  name: "current"
+            - type: section
+            - entity: sensor.ha_supervisor_latest_version
+              type: custom:multiple-entity-row
+              name: "Supervisor"
+              state_header: "latest"
+              icon: mdi:home-assistant
+              entities:
+                - entity: sensor.ha_supervisor_current_version
+                  name: "current"
+            - type: section
+            - entity: sensor.latest_version
+              type: custom:multiple-entity-row
+              name: "Core"
+              state_header: "latest"
+              entities:
+                - entity: sensor.current_version
+                  name: "current"
+            - type: section
+            - entity: sensor.supervisor_updates
+              name: "Обновления Add-ons"
+              icon: mdi:view-module
+            - entity: sensor.hacs
+              name: "Обновления HACS"
+    - type: custom:vertical-stack-in-card
+      cards:
+        - type: markdown
+          content: >
+            #### Database sizes
+        - type: entities
+          show_header_toggle: false
+          entities:
+            - entity: sensor.hass_db_size
+              name: "MariaDB"
+              icon: mdi:database
+            - entity: sensor.influxdb_database_size
+              name: "InfluxDB"
+              icon: mdi:database
     - type: custom:vertical-stack-in-card
       cards:
         - type: markdown
@@ -56,12 +78,19 @@ cards:
               name: "Warnings:"
             - entity: counter.syslog_errors
               name: "Errors:"
-    - type: history-graph
-      hours_to_show: 24
-      refresh_interval: 600
+    - type: entities
       entities:
+        - entity: sensor.yaml_code_lines_count
+          name: "Строк YAML:"
+          icon: mdi:text
         - entity: sensor.start_time
-          name: Время загрузки
+          name: "Время загрузки:"
+          icon: mdi:progress-clock
+      footer:
+        type: graph
+        entity: sensor.start_time
+        hours_to_show: 48
+        detail: 2
 
   - type: vertical-stack
     cards:
