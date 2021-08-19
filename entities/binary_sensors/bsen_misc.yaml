@@ -54,3 +54,8 @@
     coutry_house_presence:
       device_class: presence
       value_template: "{{ 'Дача' in (expand('group.family_persons') | map(attribute='state') | list) }}"
+- platform: command_line
+  name: "Mount mnt nas check"
+  command: 'grep -c /mnt/nas /proc/mounts || true'
+  payload_on: "1"
+  payload_off: "0"

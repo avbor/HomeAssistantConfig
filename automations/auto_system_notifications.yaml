@@ -367,3 +367,29 @@
       title: "*Найдено новое устройство в сети!*"
       message: |
         MAC: {{ trigger.event.data.mac }}
+
+- alias: "Auto Backup Completed"
+  trigger:
+    platform: event
+    event_type: auto_backup.snapshot_successful
+  action:
+    service: notify.telegram_stall
+    data:
+      title: "*Внимание!*"
+      message: |
+        _INFO:_ Создание резервной копии завершилось успешно.
+        Задание: {{ trigger.event.data.name }}
+
+- alias: "Auto Backup Failure"
+  id: 24f2bb2c-3e2c-47b5-ba9a-a92f0f5bf63a
+  trigger:
+    platform: event
+    event_type: auto_backup.snapshot_failed
+  action:
+    service: notify.telegram_stall
+    data:
+      title: "*Внимание!*"
+      message: |
+        Создание резервной копии завершилось ошибкой.
+        Задание: {{ trigger.event.data.name }}
+        Ошибка: {{ trigger.event.data.error }}

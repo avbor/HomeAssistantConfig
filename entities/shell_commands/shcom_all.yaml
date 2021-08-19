@@ -5,3 +5,4 @@
 reboot_beurer_carecam: "curl -X GET \"http://{{ ip_addr }}/?action=command&command=restart_system\""
 delete_file_by_path: "rm -f \"{{ file_path }}\""
 delete_all_cam_snapshots: "rm -f /config/www/cam_snapshots/*.jpg"
+mount_mnt_nas: "mkdir -p /mnt/nas; mount -t nfs4 172.16.16.4:/nfs /mnt/nas"

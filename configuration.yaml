@@ -24,6 +24,7 @@ homeassistant:
     - /config/
     - /config/www/weather_icons/
     - /config/www/cam_snapshots/
+    - /mnt/nas
 
 #################################################
 # Features
@@ -63,6 +64,7 @@ http:
 logger:
   default: warn
 #  logs:
+#    homeassistant.components.shell_command: debug
 #    custom_components.electrolux_remote: debug
 #    homeassistant.components.tuya: debug
 #    homeassistant.components.http.ban: warning
