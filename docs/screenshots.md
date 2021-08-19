@@ -3,6 +3,9 @@ Most of the pages are prepared for easy use both on desktop and mobile apps.\
 I use vertical and horizontal stack to organize cards in one vertical ribbon in mobile app.\
 Big cards are very useful in both - mobile and desktop.
 
+**Home**
+![Home](screenshots/Home.png)
+
 **Climate**\
 ![Climate](screenshots/Climate.png)
 
@@ -35,7 +38,7 @@ Big cards are very useful in both - mobile and desktop.
 **Xiaomi Gateway 3 Radio Stats**\
 ![GW3](screenshots/GW3_Stats.png)
 
-**Mobile App Look**
+**Mobile App Look** (Outdated)
 |![Mob_Climate](screenshots/Mob_Climate.jpg)|![Mob_Light](screenshots/Mob_Light.jpg)|![Mob_Vacuum](screenshots/Mob_Vacuum.jpg)|
 |---|---|---|
 |![Mob_Media](screenshots/Mob_Media.jpg)|![Mob_Water](screenshots/Mob_Water.jpg)|![Mob_Stat](screenshots/Mob_Stat.jpg)|
