@@ -15,17 +15,6 @@ packages:
 web_server:
   port: 80
 
-binary_sensor:
-  # toggle relay on/off
-  - platform: gpio
-    pin:
-      number: GPIO13
-      mode: INPUT_PULLUP
-      inverted: True
-    id: "${board_name}_button_state"
-    on_press:
-      - switch.toggle: button_switch
-
 sensor:
   - platform: adc
     pin: VCC
@@ -81,6 +70,31 @@ sensor:
     device_class: energy
     icon: mdi:calendar-clock
 
+binary_sensor:
+  - platform: gpio
+    id: "${board_name}_button_state"
+    pin:
+      number: GPIO13
+      mode: INPUT_PULLUP
+      inverted: True
+    on_press:
+      - switch.toggle: button_switch
+
+switch:
+  - platform: gpio
+    pin: GPIO15
+    id: relay
+
+  - platform: template
+    name: "${board_name} - Switch"
+    icon: mdi:power
+    optimistic: true
+    id: button_switch
+    turn_on_action:
+      - switch.turn_on: relay
+    turn_off_action:
+      - switch.turn_off: relay
+
 status_led:
   pin:
     number: GPIO02
@@ -92,17 +106,3 @@ output:
     pin: GPIO00
     inverted: true
     id: led_red
-
-switch:
-  - platform: template
-    name: "${board_name} - Switch"
-    icon: mdi:power
-    optimistic: true
-    id: button_switch
-    turn_on_action:
-      - switch.turn_on: relay
-    turn_off_action:
-      - switch.turn_off: relay
-  - platform: gpio
-    pin: GPIO15
-    id: relay

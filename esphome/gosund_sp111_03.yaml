@@ -1,12 +1,12 @@
 substitutions:
-  board_name: gosund_sp111_02
+  board_name: gosund_sp111_03
   esp_platform: ESP8266
   esp_board: esp8285
   room_name: Country House
   # Higher value gives lower watt readout
   current_res: "0.00121"
   # Lower value gives lower voltage readout
-  voltage_div: "766"
+  voltage_div: "767"
 
 packages:
   wifi: !include common/wifi_ch.yaml
