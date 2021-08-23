@@ -139,7 +139,33 @@ domofon_pack:
             entity_id: switch.domofon_automatically_open_once
         - service: notify.telegram_group_flat_1
           data:
-            message: "_Домофон_: Курьер уже в пути, включен режим однократного авто-открытия."
+            message: "_Домофон_: Курьер уже в пути, домофон откроется автоматически."
+            inline_keyboard:
+              - 'Отключить звук:/domofon_mute_once'
+
+    - alias: Domofon - Telegram Control - domofon_mute_once
+      id: 97093f78-f059-4918-b451-ca50f698a49d
+      initial_state: true
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/domofon_mute_once'
+      action:
+        - service: telegram_bot.answer_callback_query
+          data:
+            callback_query_id: "{{ trigger.event.data.id }}"
+            message: "Команда отправлена"
+        - service: switch.turn_on
+          data:
+            entity_id: switch.domofon_mute_sound_once
+        - service: telegram_bot.edit_message
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            message: |
+              _Домофон_: Курьер уже в пути, домофон откроется автоматически.
+              Звонок домофона *отключен* (однократно).
 
     - alias: Domofon - Open Once at Enter to Home Zone
       id: 40d4a1f6-576c-438a-b20f-ba161d9bd3ee
