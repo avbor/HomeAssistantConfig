@@ -53,6 +53,9 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - Xiaomi Mi Smart Plug EU (ZNCZ05CM)\
   Integration "Xiaomi Miio"
 
+  - Gosund SP111 flashed to [ESPHome](https://esphome.io/)\
+  Integration "ESPHome"
+
 - Light:
   - Yeelight LED Color Bulb (YLDP03YL, yeelink.light.color3)\
   Integration "Yeelight"
