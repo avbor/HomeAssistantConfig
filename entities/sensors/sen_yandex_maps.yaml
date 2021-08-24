@@ -13,11 +13,11 @@
 - platform: yandex_maps
   start: zone.home
   destination: !secret yandex_map_dest_2
-  name: До работы [Ира] [Luxoft]
+  name: До работы [Ира]
 - platform: yandex_maps
   start: !secret yandex_map_dest_2
   destination: zone.home
-  name: До дома [Ира] [Luxoft]
+  name: До дома [Ира]
 - platform: yandex_maps
   start: zone.home
   destination: !secret yandex_map_dest_3

@@ -171,13 +171,13 @@ cards:
             - type: entities
               entities:
                 - sensor.do_raboty_sasha
-                - sensor.do_raboty_ira_luxoft
+                - sensor.do_raboty_ira
             - type: history-graph
               hours_to_show: 2
               refresh_interval: 60
               entities:
                 - sensor.do_raboty_sasha
-                - sensor.do_raboty_ira_luxoft
+                - sensor.do_raboty_ira
       # --- Время в пути (Вечер)
       - type: conditional
         conditions:
@@ -194,13 +194,13 @@ cards:
             - type: entities
               entities:
                 - sensor.do_doma_sasha
-                - sensor.do_doma_ira_luxoft
+                - sensor.do_doma_ira
             - type: history-graph
               hours_to_show: 2
               refresh_interval: 60
               entities:
                 - sensor.do_doma_sasha
-                - sensor.do_doma_ira_luxoft
+                - sensor.do_doma_ira
 
 # --- Домофон
   - type: vertical-stack
