@@ -293,7 +293,9 @@
           '.*\.smartmi_humidifier_\d{2}_\w+_.*|'
           '^sensor.nivki_2_|'
           '^sensor.moskva_danilovskii_|'
-          '^sensor.tplink_smartplug_01_'
+          '^sensor.tplink_smartplug_01_|'
+          '^sensor.gosund_sp111_\d{2}_.*|'
+          '^switch.gosund_sp111_\d{2}_restart'
           )
         }}
     - condition: template
