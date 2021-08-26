@@ -1,0 +1,52 @@
+#################################################
+# Package FeedReader (RSS\Atom)
+#################################################
+
+feedreader_pack:
+
+  feedreader:
+    urls:
+      - https://alerts.home-assistant.io/feed.xml
+      - https://moscow.mchs.gov.ru/deyatelnost/press-centr/operativnaya-informaciya/shtormovye-i-ekstrennye-preduprezhdeniya/rss
+
+  automation:
+  - alias: "RSS feed notifications"
+    id: 7acc6aec-3319-44e8-bf1c-dc36109f1b89
+    mode: queued
+    max: 50
+    trigger:
+      platform: event
+      event_type: feedreader
+    action:
+      - choose:
+        - alias: Home Assistant Alerts
+          conditions:
+            condition: template
+            value_template: >
+              {{ trigger.event.data.link | regex_search('alerts.home-assistant.io') }}
+          sequence:
+            - service: telegram_bot.send_message
+              data:
+                target: !secret tlg_stall_id
+                disable_web_page_preview: true
+                parse_mode: html
+                title: "<b>Внимание!</b>"
+                message: |
+                  Новое сообщение на alerts.home-assistant.io:
+                  {{ trigger.event.data.title }}
+                  {{ trigger.event.data.link }}
+        - alias: MCHS Moscow Alerts
+          conditions:
+            condition: template
+            value_template: >
+              {{ trigger.event.data.link | regex_search('moscow.mchs.gov.ru') }}
+          sequence:
+            - service: telegram_bot.send_message
+              data:
+                target: !secret tlg_stall_id
+                parse_mode: html
+                title: "<b>Внимание!</b>"
+                message: |
+                  Новое оповещение от МЧС (Москва):
+                  {{ trigger.event.data.title }}
+                  {{ trigger.event.data.link }}
