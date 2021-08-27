@@ -5,7 +5,10 @@
 feedreader_pack:
 
   feedreader:
+    scan_interval:
+      minutes: 15
     urls:
+      - https://www.home-assistant.io/atom.xml
       - https://alerts.home-assistant.io/feed.xml
       - https://moscow.mchs.gov.ru/deyatelnost/press-centr/operativnaya-informaciya/shtormovye-i-ekstrennye-preduprezhdeniya/rss
 
@@ -13,12 +16,28 @@ feedreader_pack:
   - alias: "RSS feed notifications"
     id: 7acc6aec-3319-44e8-bf1c-dc36109f1b89
     mode: queued
-    max: 50
+    max: 100
     trigger:
       platform: event
       event_type: feedreader
     action:
       - choose:
+        - alias: Home Assistant News and Blog Posts
+          conditions:
+            condition: template
+            value_template: >
+              {{ trigger.event.data.link | regex_search('www.home-assistant.io') and (states('sensor.ha_uptime') | int) > 1 }}
+          sequence:
+            - service: telegram_bot.send_message
+              data:
+                target: !secret tlg_stall_id
+                disable_web_page_preview: true
+                parse_mode: html
+                title: "<i>INFO</i>:"
+                message: |
+                  Новое пост на www.home-assistant.io:
+                  <b>{{ trigger.event.data.title }}</b>
+                  {{ trigger.event.data.link }}
         - alias: Home Assistant Alerts
           conditions:
             condition: template
@@ -33,7 +52,7 @@ feedreader_pack:
                 title: "<b>Внимание!</b>"
                 message: |
                   Новое сообщение на alerts.home-assistant.io:
-                  {{ trigger.event.data.title }}
+                  <b>{{ trigger.event.data.title }}</b>
                   {{ trigger.event.data.link }}
         - alias: MCHS Moscow Alerts
           conditions:
@@ -48,5 +67,5 @@ feedreader_pack:
                 title: "<b>Внимание!</b>"
                 message: |
                   Новое оповещение от МЧС (Москва):
-                  {{ trigger.event.data.title }}
+                  <b>{{ trigger.event.data.title }}</b>
                   {{ trigger.event.data.link }}
