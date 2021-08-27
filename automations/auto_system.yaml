@@ -67,7 +67,7 @@
     - service: auto_backup.snapshot_full
       data:
         name: "ha_daily_backup_{{ now().strftime('%Y%m%d') }}"
-        keep_days: 7
+        keep_days: 6
         backup_path: "/mnt/nas/ha_backups/daily"
 
 - alias: "HASS: ERRORs in System Log - Counter"
