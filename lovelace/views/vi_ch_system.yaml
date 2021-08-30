@@ -49,6 +49,7 @@ cards:
             entities:
               - entity: sensor.gosund_sp111_01_ampere
                 name: false
+          - type: section
           - entity: switch.gosund_sp111_02_switch
             name: Освещение двора
             icon: mdi:outdoor-lamp
