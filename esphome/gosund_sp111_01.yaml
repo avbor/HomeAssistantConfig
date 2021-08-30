@@ -31,7 +31,7 @@ sensor:
     voltage_divider: ${voltage_div}
 
     change_mode_every: 4
-    update_interval: 5s
+    update_interval: 15s
 
     current:
       name: "${board_name} - Ampere"

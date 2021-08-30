@@ -19,6 +19,7 @@ homeassistant:
   longitude: !secret home_longitude
   elevation: !secret home_elevation
   customize: !include customize.yaml
+  customize_glob: !include customize_glob.yaml
   packages: !include_dir_merge_named packages
   allowlist_external_dirs:
     - /config/
