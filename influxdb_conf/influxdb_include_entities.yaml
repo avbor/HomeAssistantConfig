@@ -8,6 +8,7 @@
 - sensor.average_temperature_in_flat
 - sensor.average_humidity_in_flat
 - sensor.average_voltage_in_flat
+- sensor.average_voltage_in_country_house
 - sensor.0x158d0003230618_pressure
 - sensor.local_pressure_mmhg
 - binary_sensor.0x158d00031c790f_contact

@@ -1,6 +1,7 @@
 wifi:
   reboot_timeout: 15min
 #  fast_connect: true
+  output_power: 20dB
   power_save_mode: none
   networks:
     - ssid: !secret wifi_ch_ssid

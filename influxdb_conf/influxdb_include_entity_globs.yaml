@@ -11,6 +11,10 @@
 - sensor.illumination_*
 - sensor.*_illuminance
 - sensor.*_power
+- sensor.*_watt
+- sensor.*_ampere
 - sensor.*_consumption
+- sensor.*_todays_usage
 - sensor.*_voltage
+- sensor.*_volt
 - sensor.tplink_*_current

@@ -177,3 +177,9 @@
   entity_ids:
     - sensor.tplink_smartplug_01_voltage
     - sensor.tplink_smartplug_02_voltage
+- platform: min_max
+  name: Average Voltage In Country House
+  type: median
+  entity_ids:
+    - sensor.gosund_sp111_01_volt
+    - sensor.gosund_sp111_02_volt

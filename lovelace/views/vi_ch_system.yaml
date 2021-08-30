@@ -33,3 +33,28 @@ cards:
             entity: sensor.a4c1384e2b64_humidity
             name: Влажность
             graph: line
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Розетки</center>
+      - type: entities
+        entities:
+          - entity: switch.gosund_sp111_01_switch
+            name: Бойлер
+            icon: mdi:water-boiler
+          - entity: sensor.gosund_sp111_01_watt
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            entities:
+              - entity: sensor.gosund_sp111_01_ampere
+                name: false
+          - entity: switch.gosund_sp111_02_switch
+            name: Освещение двора
+            icon: mdi:outdoor-lamp
+          - entity: sensor.gosund_sp111_02_watt
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            entities:
+              - entity: sensor.gosund_sp111_02_ampere
+                name: false
