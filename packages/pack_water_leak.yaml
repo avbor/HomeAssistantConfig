@@ -169,13 +169,16 @@ water_leak_protection:
         entity_id: binary_sensor.neptun_water_leakage
         to: "on"
       action:
-        service: notify.telegram_group_flat_1
-        data:
-          title: "*Внимание!*"
-          message: |
-            Сработал датчик протечки *Нептун*.
-            Водопроводные краны перекрыты!
-            Необходимо проверить Кухню, Ванную, Туалет, Кладовую.
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              Сработал датчик протечки *Нептун*.
+              Водопроводные краны перекрыты!
+              Необходимо проверить Кухню, Ванную, Туалет, Кладовую.
+            inline_keyboard:
+              - 'Открыть краны:/water_valves_open'
         
     - alias: Оповещение о деактивации Нептуна [notify to group flat]
       id: 344fff46-b0f1-41c3-b6e7-6386b5bc1256
@@ -185,9 +188,10 @@ water_leak_protection:
         entity_id: binary_sensor.neptun_water_leakage
         to: "off"
       action:
-        service: notify.telegram_group_flat_1
-        data:
-          message: Нептун деактивирован.
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            message: Нептун деактивирован.
         
     - alias: Оповещение о протечке Aqara в Кладовой [notify to group flat]
       id: 48575884-108e-403b-afe0-cb16ad5652cb
@@ -198,13 +202,16 @@ water_leak_protection:
         from: "off"
         to: "on"
       action:
-        service: notify.telegram_group_flat_1
-        data:
-          title: "*Внимание!*"
-          message: |
-            Сработал датчик протечки Aqara в *Кладовой*.
-            Водопроводные краны перекрыты!
-            Необходимо проверить наличие воды за стиральной машиной.
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              Сработал датчик протечки Aqara в *Кладовой*.
+              Водопроводные краны перекрыты!
+              Необходимо проверить наличие воды за стиральной машиной.
+            inline_keyboard:
+              - 'Открыть краны:/water_valves_open'
 
     - alias: Оповещение о протечке Aqara под Ванной [notify to group flat]
       id: db363ec5-2617-4234-9657-303dce6a91fe
@@ -215,13 +222,16 @@ water_leak_protection:
         from: "off"
         to: "on"
       action:
-        service: notify.telegram_group_flat_1
-        data:
-          title: "*Внимание!*"
-          message: |
-            Сработал датчик протечки Aqara в *Ванной*.
-            Водопроводные краны перекрыты!
-            Необходимо проверить наличие воды *слева под ванной*.
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              Сработал датчик протечки Aqara в *Ванной*.
+              Водопроводные краны перекрыты!
+              Необходимо проверить наличие воды *слева под ванной*.
+            inline_keyboard:
+              - 'Открыть краны:/water_valves_open'
 
     - alias: Оповещение об отключенном Нептуне (>2 мин)
       id: 1a017a47-40b1-4315-892e-36760a8e86ec
@@ -231,8 +241,65 @@ water_leak_protection:
         to: 'off'
         for: "00:02:00"
       action:
-        service: notify.telegram_group_flat_1
-        data:
-          title: "*Внимание!*"
-          message: |
-            Питание контроллера Нептун отключено более 2х минут!
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              Питание контроллера Нептун отключено более 2х минут!
+            inline_keyboard:
+              - 'Включить:/neptune_poweron'
+
+    - alias: 'Neptune - Telegram Control - Open'
+      id: d42cd9f6-1a89-4116-8348-d99970407b75
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/neptune_poweron'
+      action:
+        - service: switch.turn_on
+          entity_id: switch.sonoff_1000b68886
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Команда отправлена'
+        - service: telegram_bot.edit_message
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            message: |
+              Питание контроллера Нептун отключено более 2х минут!
+              Нептун включен.
+
+    - alias: 'Water Valves - Telegram Control - Open'
+      id: b5321723-bc10-4146-88a5-7080d0fe70a8
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/water_valves_open'
+      action:
+        - service: script.turn_on
+          entity_id: script.water_valves_open
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Команда отправлена'
+        - service: telegram_bot.edit_replymarkup
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            inline_keyboard: []
+        - alias: "Wait for script.water_valves_open to stop"
+          wait_for_trigger:
+            - platform: state
+              entity_id: script.water_valves_open
+              from: "on"
+              to: "off"
+          timeout: "00:00:40"
+          continue_on_timeout: false
+        - service: telegram_bot.send_message
+          data:
+            target: '{{ trigger.event.data.chat_id }}'
+            message: "Водопроводные краны открыты."
