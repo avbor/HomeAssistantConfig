@@ -60,7 +60,7 @@ cards:
                   service: humidifier.toggle
                   service_data:
                     entity_id: humidifier.smartmi_humidifier_01_detskaia
-              - entity: sensor.smartmi_humidifier_01_water_level
+              - entity: sensor.smartmi_humidifier_01_detskaia_water_level
                 name: "Вода"
               - entity: sensor.smartmi_humidifier_01_detskaia_mode
                 name: "Режим"
@@ -174,7 +174,7 @@ cards:
                   service: humidifier.toggle
                   service_data:
                     entity_id: humidifier.smartmi_humidifier_02_spalnia
-              - entity: sensor.smartmi_humidifier_02_water_level
+              - entity: sensor.smartmi_humidifier_02_spalnia_water_level
                 name: "Вода"
               - entity: sensor.smartmi_humidifier_02_spalnia_mode
                 name: "Режим"

@@ -9,6 +9,16 @@
       friendly_name: Лампа на столе в Спальне
       icon_template: mdi:desk-lamp
       value_template: "{{ is_state('light.spalnia_stol', 'on') }}"
+    lamp_status_spalnia_bra_right:
+      device_class: power
+      friendly_name: Бра в Спальне - Право
+      icon_template: mdi:wall-sconce-flat
+      value_template: "{{ is_state('light.sonoff_1001045426', 'on') }}"
+    lamp_status_spalnia_bra_left:
+      device_class: power
+      friendly_name: Бра в Спальне - Лево
+      icon_template: mdi:wall-sconce-flat
+      value_template: "{{ is_state('light.sonoff_100105887b', 'on') }}"
     lamp_status_detskaia:
       device_class: power
       friendly_name: Люстра в Детской

@@ -52,18 +52,18 @@
     data:
       message: Входная дверь закрыта.
 
-- alias: "Torrent Completed [notify to stall]"
+- alias: "Torrent Completed [notify to group system]"
   id: fe45c917-f489-4c38-a3a1-c66e5fedb07f
   initial_state: true
   trigger:
     platform: event
     event_type: transmission_downloaded_torrent
   action:
-    service: notify.telegram_stall
+    service: notify.telegram_group_system
     data_template:
       message: "Загрузка torrent-файла завершена"
 
-- alias: "Полнолуние [notify to stall]"
+- alias: "Полнолуние [notify to group system]"
   id: d698bdcc-4ce9-4954-a118-8a1f29cf327e
   initial_state: true
   trigger:
@@ -71,7 +71,7 @@
     entity_id: sensor.moon
     to: "full_moon"
   action:
-    service: notify.telegram_stall
+    service: notify.telegram_group_system
     data_template:
       message: "Сегодня полнолуние!"
 
@@ -193,7 +193,7 @@
       value_template: >
         {{ (trigger.to_state.state | int) > (trigger.from_state.state | int) }}
   action:
-    - service: notify.telegram_stall
+    - service: notify.telegram_group_system
       data:
         message: |
           _Huawei E5372_, Непрочитанных SMS: *{{ states('sensor.huawei_e5372_sms_unread') }}*, новых: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*

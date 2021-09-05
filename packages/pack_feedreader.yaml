@@ -30,7 +30,7 @@ feedreader_pack:
           sequence:
             - service: telegram_bot.send_message
               data:
-                target: !secret tlg_stall_id
+                target: !secret tlg_group_system
                 disable_web_page_preview: true
                 parse_mode: html
                 title: "<i>INFO</i>:"
@@ -46,7 +46,7 @@ feedreader_pack:
           sequence:
             - service: telegram_bot.send_message
               data:
-                target: !secret tlg_stall_id
+                target: !secret tlg_group_system
                 disable_web_page_preview: true
                 parse_mode: html
                 title: "<b>Внимание!</b>"
@@ -62,7 +62,7 @@ feedreader_pack:
           sequence:
             - service: telegram_bot.send_message
               data:
-                target: !secret tlg_stall_id
+                target: !secret tlg_group_system
                 parse_mode: html
                 title: "<b>Внимание!</b>"
                 message: |

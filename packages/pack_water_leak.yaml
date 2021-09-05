@@ -161,7 +161,7 @@ water_leak_protection:
           entity_id: "{{ trigger.entity_id }}"
 
     # Оповещения
-    - alias: Оповещение об активации Нептуна [notify to stall]
+    - alias: Оповещение об активации Нептуна [notify to group flat]
       id: 05f8b487-bec7-43fa-bc7d-58bb1699c162
       initial_state: true
       trigger: 
@@ -177,7 +177,7 @@ water_leak_protection:
             Водопроводные краны перекрыты!
             Необходимо проверить Кухню, Ванную, Туалет, Кладовую.
         
-    - alias: Оповещение о деактивации Нептуна [notify to stall]
+    - alias: Оповещение о деактивации Нептуна [notify to group flat]
       id: 344fff46-b0f1-41c3-b6e7-6386b5bc1256
       initial_state: true
       trigger: 
@@ -189,7 +189,7 @@ water_leak_protection:
         data:
           message: Нептун деактивирован.
         
-    - alias: Оповещение о протечке Aqara в Кладовой [notify to stall]
+    - alias: Оповещение о протечке Aqara в Кладовой [notify to group flat]
       id: 48575884-108e-403b-afe0-cb16ad5652cb
       initial_state: true
       trigger:
@@ -206,7 +206,7 @@ water_leak_protection:
             Водопроводные краны перекрыты!
             Необходимо проверить наличие воды за стиральной машиной.
 
-    - alias: Оповещение о протечке Aqara под Ванной [notify to stall]
+    - alias: Оповещение о протечке Aqara под Ванной [notify to group flat]
       id: db363ec5-2617-4234-9657-303dce6a91fe
       initial_state: true
       trigger:

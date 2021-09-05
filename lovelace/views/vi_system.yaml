@@ -60,24 +60,6 @@ cards:
             - entity: sensor.influxdb_database_size
               name: "InfluxDB"
               icon: mdi:database
-    - type: custom:vertical-stack-in-card
-      cards:
-        - type: markdown
-          content: >
-            #### Errors during startup, leading to automatic reboot
-        - type: entities
-          entities:
-            - entity: input_number.auto_reboot_error_threshold
-              name: "Errors count:"
-        - type: markdown
-          content: >
-            #### SysLog counters
-        - type: entities
-          entities:
-            - entity: counter.syslog_warnings
-              name: "Warnings:"
-            - entity: counter.syslog_errors
-              name: "Errors:"
     - type: entities
       entities:
         - entity: sensor.yaml_code_lines_count
@@ -121,6 +103,36 @@ cards:
             service_data:
               entity_id: script.hass_restart
           entity: script.hass_restart
+
+    - type: custom:vertical-stack-in-card
+      cards:
+        - type: markdown
+          content: >
+            #### Errors during startup, leading to automatic restart
+        - type: entities
+          entities:
+            - entity: input_number.auto_reboot_error_threshold
+              name: "Errors count:"
+        - type: markdown
+          content: >
+            #### SysLog counters
+        - type: entities
+          entities:
+            - entity: counter.syslog_warnings
+              name: "Warnings:"
+            - entity: counter.syslog_errors
+              name: "Errors:"
+
+    - type: custom:vertical-stack-in-card
+      cards:
+        - type: markdown
+          content: >
+            #### Alert at remaining battery percentage
+        - type: entities
+          entities:
+            - entity: input_number.low_battery_alert_threshold
+              name: "Send notification at:"
+
     - type: markdown
       content: >
         ### <center>Xiaomi Gateway 3 Control</center>
@@ -197,9 +209,9 @@ cards:
       - type: entities
         show_header_toggle: false
         entities:
-          - entity: automation.hass_warnings_in_system_log_notify_to_stall
+          - entity: automation.hass_warnings_in_system_log_notify_to_group_system
             name: Warnings в Telegram
-          - entity: automation.hass_errors_in_system_log_notify_to_stall
+          - entity: automation.hass_errors_in_system_log_notify_to_group_system
             name: Errors в Telegram 
           - type: section
             label: Общее
@@ -209,7 +221,7 @@ cards:
 #            name: Выкл подсветку кухни [сенсор] (23:30 - 06:30)
           - type: section
             label: Уборка
-          - entity: automation.opoveshchenie_o_zabytom_pylesose_notify_to_stall
+          - entity: automation.opoveshchenie_o_zabytom_pylesose_notify_to_group_flat
             name: Возвращать забытый пылесос на базу
           - entity: automation.ezhednevnaia_uborka_po_budniam_utro
             name: Ежедневная уборка по будням [Утро]
@@ -313,5 +325,11 @@ cards:
               - entity: light.sonoff_1000f2a500
                 name: Споты в коридоре
                 icon: mdi:spotlight-beam
+              - entity: light.sonoff_100105887b
+                name: Бра в Спальне - Лево
+                icon: mdi:wall-sconce-flat
+              - entity: light.sonoff_1001045426
+                name: Бра в Спальне - Право
+                icon: mdi:wall-sconce-flat
             state_filter:
               - unavailable

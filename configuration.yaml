@@ -25,7 +25,7 @@ homeassistant:
     - /config/
     - /config/www/weather_icons/
     - /config/www/cam_snapshots/
-    - /mnt/nas
+#    - /mnt/nas
 
 #################################################
 # Features
@@ -182,6 +182,12 @@ sonoff:
     1000f2a500:
       devicekey: d32b0517-cca8-4d92-a1ef-ac9fbd4e0f0a
       device_class: light
+    "1001045426":
+      devicekey: fcca23e4-233a-48c6-9bb1-2ca8d00162cb
+      device_class: light
+    100105887b:
+      devicekey: 40fbcf58-4ee7-4189-8eb1-532562247f7c
+      device_class: light
 
 start_time:
 
@@ -206,6 +212,7 @@ telegram_bot:
       - !secret tlg_stall_id
       - !secret tlg_iborisochka_id
       - !secret tlg_group_flat_1
+      - !secret tlg_group_system
 
 notify:
   - name: telegram_stall
@@ -217,6 +224,9 @@ notify:
   - name: telegram_group_flat_1
     platform: telegram
     chat_id: !secret tlg_group_flat_1
+  - name: telegram_group_system
+    platform: telegram
+    chat_id: !secret tlg_group_system
 
 #################################################
 # Inclusions

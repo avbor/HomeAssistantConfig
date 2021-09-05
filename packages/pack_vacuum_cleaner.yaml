@@ -291,7 +291,7 @@ vacuum_cleaner:
               _Mi Robot_: начал уборку.
               Уборка остановлена, робот отправлен на базу.
 
-    - alias: 'Оповещение о возращении пылесоса на базу [notify to stall]'
+    - alias: 'Оповещение о возращении пылесоса на базу [notify to group flat]'
       id: 68311ec4-1030-4d7d-a2ea-e9cb21f7f40c
       initial_state: true
       trigger:
@@ -307,7 +307,7 @@ vacuum_cleaner:
           data:
             message: "_Mi Robot_: вернулся на базу (закончил уборку)."
 
-    - alias: 'Оповещение о забытом пылесосе [notify to stall]'
+    - alias: 'Оповещение о забытом пылесосе [notify to group flat]'
       id: db76ec80-b5d6-4991-8a6c-9272b25c1a39
       initial_state: true
       trigger:
@@ -324,7 +324,7 @@ vacuum_cleaner:
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
 
-    - alias: 'Оповещение об ошибке [notify to stall]'
+    - alias: 'Оповещение об ошибке [notify to group flat]'
       id: fe6bb5c1-f886-4161-bad7-4bf04be83258
       initial_state: true
       trigger:

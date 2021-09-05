@@ -10,7 +10,7 @@
 #    to: 'unavailable'
 #  action:
 #    - service: ffmpeg.restart
-#    - service: notify.telegram_stall
+#    - service: notify.telegram_group_system
 #      data:
 #        message: "_INFO:_ Перезапущен процесс ffmpeg"
 #    - delay:
@@ -46,12 +46,12 @@
       weekday:
         - thu
   action:
-    - service: auto_backup.snapshot_full
+    - service: auto_backup.backup_full
       data_template:
         name: >
           ha_weekly_backup_{{ now().strftime('%Y%m%d') }}
         keep_days: 13
-        backup_path: "/mnt/nas/ha_backups/weekly"
+        download_path: "/mnt/nas/ha_backups/weekly"
 
 - alias: "HA: Create Daily Backup"
   id: acac055e-ea1e-41cd-9f46-62e7a8c006aa
@@ -64,11 +64,11 @@
       entity_id: binary_sensor.mount_mnt_nas_check
       state: "on"
   action:
-    - service: auto_backup.snapshot_full
+    - service: auto_backup.backup_full
       data:
         name: "ha_daily_backup_{{ now().strftime('%Y%m%d') }}"
         keep_days: 6
-        backup_path: "/mnt/nas/ha_backups/daily"
+        download_path: "/mnt/nas/ha_backups/daily"
 
 - alias: "HASS: ERRORs in System Log - Counter"
   id: 3b8230a5-49d5-437b-8bd9-d3f72f95425f
@@ -123,7 +123,7 @@
 #        - sensor.kb2003_poslednee_uvedomlenie
 #        - sensor.mi_8_poslednee_uvedomlenie
 #  action:
-#    - service: notify.telegram_stall
+#    - service: notify.telegram_group_system
 #      data:
 #        message: |
 #          {{ trigger.to_state.attributes.package }}

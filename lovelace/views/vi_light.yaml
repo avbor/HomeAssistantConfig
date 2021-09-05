@@ -179,6 +179,26 @@ cards:
       - type: markdown
         content: >
           ### <center>Спальня</center>
+      - type: horizontal-stack
+        cards:
+          - type: conditional
+            conditions:
+              - entity: light.sonoff_100105887b
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.sonoff_100105887b
+              name: Бра - Лево
+              icon: mdi:wall-sconce-flat
+          - type: conditional
+            conditions:
+              - entity: light.sonoff_1001045426
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.sonoff_1001045426
+              name: Бра - Право
+              icon: mdi:wall-sconce-flat
       - type: conditional
         conditions:
           - entity: light.spalnia_stol

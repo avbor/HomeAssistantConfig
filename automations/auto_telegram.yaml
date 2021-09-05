@@ -9,7 +9,7 @@
     platform: event
     event_type: telegram_text
   action:
-    service: notify.telegram_stall
+    service: notify.telegram_group_system
     data_template:
       message: |
         *{{ trigger.event.data.from_first }} {{ trigger.event.data.from_last }} [{{ trigger.event.data.user_id }}] пишет:*

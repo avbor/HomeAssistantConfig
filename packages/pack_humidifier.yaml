@@ -54,23 +54,6 @@ humidifiers_pack:
     - platform: template
       sensors:
         # 01
-        # --?-- #
-        smartmi_humidifier_01_water_level:
-          friendly_name: "Остаток воды"
-          value_template: >
-            {% if state_attr('fan.smartmi_humidifier_01_detskaia', 'depth') %}
-              {{ ((state_attr('fan.smartmi_humidifier_01_detskaia', 'depth') | float ) * 100.0 / 125.0) | round(0) }}
-            {% else %}
-              0
-            {% endif %}
-          unit_of_measurement: "%"
-          icon_template: >-
-            {% if ((state_attr('fan.smartmi_humidifier_01_detskaia', 'depth') | float ) * 100.0 / 125.0) | round(0) >= 10 %}
-            mdi:cup-water
-            {% else %}
-            mdi:cup-off-outline
-            {% endif %}
-        # ----- #
         smartmi_humidifier_01_detskaia_mode:
           friendly_name: "Режим работы"
           value_template: >
@@ -84,23 +67,6 @@ humidifiers_pack:
           value_template: >
             {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'humidity') }}
         # 02
-        # --?-- #
-        smartmi_humidifier_02_water_level:
-          friendly_name: "Остаток воды"
-          value_template: >
-            {% if state_attr('fan.smartmi_humidifier_02_spalnia', 'depth') %}
-              {{ ((state_attr('fan.smartmi_humidifier_02_spalnia', 'depth') | float ) * 100.0 / 125.0) | round(0) }}
-            {% else %}
-              0
-            {% endif %}
-          unit_of_measurement: "%"
-          icon_template: >-
-            {% if ((state_attr('fan.smartmi_humidifier_02_spalnia', 'depth') | float ) * 100.0 / 125.0) | round(0) >= 10 %}
-            mdi:cup-water
-            {% else %}
-            mdi:cup-off-outline
-            {% endif %}
-        # ----- #
         smartmi_humidifier_02_spalnia_mode:
           friendly_name: "Режим работы"
           value_template: >
@@ -140,14 +106,14 @@ humidifiers_pack:
       trigger:
         platform: numeric_state
         entity_id:
-          - sensor.smartmi_humidifier_01_water_level
-          - sensor.smartmi_humidifier_02_water_level
+          - sensor.smartmi_humidifier_01_detskaia_water_level
+          - sensor.smartmi_humidifier_02_spalnia_water_level
         below: 15
       condition:
         condition: template
         value_template: "{{ (trigger.to_state.state | int) != 0 }}"
       action:
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data_template:
             message: >-
               {% if '_01_' in trigger.entity_id -%}
@@ -162,8 +128,8 @@ humidifiers_pack:
       trigger:
         platform: numeric_state
         entity_id:
-          - sensor.smartmi_humidifier_01_water_level
-          - sensor.smartmi_humidifier_02_water_level
+          - sensor.smartmi_humidifier_01_detskaia_water_level
+          - sensor.smartmi_humidifier_02_spalnia_water_level
         below: 10
       condition:
         condition: template
@@ -177,7 +143,7 @@ humidifiers_pack:
               {% elif '_02_' in trigger.entity_id -%}
               humidifier.smartmi_humidifier_02_spalnia
               {% endif -%}
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: >-
               {% if '_01_' in trigger.entity_id -%}
@@ -212,7 +178,7 @@ humidifiers_pack:
           entity_id: sensor.0x158d0003931aec_humidity
           below: input_number.target_humidity_01_detskaia
         - condition: numeric_state
-          entity_id: sensor.smartmi_humidifier_01_water_level
+          entity_id: sensor.smartmi_humidifier_01_detskaia_water_level
           above: 25
       action:
         service: fan.turn_on
@@ -253,12 +219,12 @@ humidifiers_pack:
           entity_id: humidifier.smartmi_humidifier_01_detskaia
           state: "off"
         - condition: numeric_state
-          entity_id: sensor.smartmi_humidifier_01_water_level
+          entity_id: sensor.smartmi_humidifier_01_detskaia_water_level
           above: 15
       action:
         - service: fan.turn_on
           entity_id: humidifier.smartmi_humidifier_01_detskaia
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: |
               В *Детской* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
@@ -284,7 +250,7 @@ humidifiers_pack:
       action:
         - service: humidifier.turn_off
           entity_id: humidifier.smartmi_humidifier_01_detskaia
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: |
               В *Детской* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
@@ -321,12 +287,12 @@ humidifiers_pack:
           entity_id: humidifier.smartmi_humidifier_02_spalnia
           state: "off"
         - condition: numeric_state
-          entity_id: sensor.smartmi_humidifier_02_water_level
+          entity_id: sensor.smartmi_humidifier_02_spalnia_water_level
           above: 15
       action:
         - service: fan.turn_on
           entity_id: humidifier.smartmi_humidifier_02_spalnia
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: |
               В *Спальне* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%
@@ -352,7 +318,7 @@ humidifiers_pack:
       action:
         - service: humidifier.turn_off
           entity_id: humidifier.smartmi_humidifier_02_spalnia
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: |
               В *Спальне* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%

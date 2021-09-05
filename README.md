@@ -22,14 +22,24 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - HDD 500 Gb (Data)
 
 **Network:**
-- Router Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga))\
+
+_Main site (city apartment):_
+
+- Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga)) as Router and Wireguard VPN Server\
   2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
-- Access Point Xiaomi Mi WiFi 3G (v1) flashed to [OpenWRT](http://openwrt.org/)\
-~35-40 wireless clients, generally 2.4Ghz - IoT, 5Ghz - mobile clients
+- Xiaomi Mi WiFi 3G (v1) as Access Point. Flashed to [OpenWRT](http://openwrt.org/)\
+~40-45 wireless clients, generally 2.4Ghz - IoT, 5Ghz - mobile clients
 
 - Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
+
+_Remote site (country house):_
+
+- Huawei E5372 as LTE Modem with 4G Antenna (Baltic Signal [OMEGA](https://baltic-signal.ru/catalog/antennas/antennas-4g/antenna-baltic-signal-omega-3g-4g/))\
+  Integration "Huawei LTE"
+
+- Xiaomi Mi WiFi 3G (v1) as Router, WireGuard VPN Client and Access Point. Flashed to [OpenWRT](http://openwrt.org/)
 
 **ZigBee/BT Gateways:**
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
@@ -160,8 +170,9 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 
 **Server:**
 - Ubuntu Server 20.04 LTS
-- Home Assistant (KVM Virtual Machine)
-- Nginx
+- KVM-QEMU + libvirt
+- Home Assistant (Virtual Machine)
+- NGINX as revers proxy
 
 **WiFi Access Point:**
 - OpenWRT 19.07

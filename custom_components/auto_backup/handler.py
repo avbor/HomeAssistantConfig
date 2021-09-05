@@ -71,7 +71,7 @@ class HassIO:
         This method return a coroutine.
         """
         backup_type = "partial" if partial else "full"
-        command = f"/snapshots/new/{backup_type}"
+        command = f"/backups/new/{backup_type}"
         return self.send_command(command, payload=data, timeout=timeout)
 
     @api_data
@@ -80,7 +80,7 @@ class HassIO:
 
         This method return a coroutine.
         """
-        return self.send_command(f"/snapshots/{slug}/remove", timeout=300)
+        return self.send_command(f"/backups/{slug}", method="delete", timeout=300)
 
     async def send_command(self, command, method="post", payload=None, timeout=10):
         """Send API command to Hass.io.
@@ -112,11 +112,11 @@ class HassIO:
 
         raise HassioAPIError("Failed to call %s" % command)
 
-    async def download_snapshot(
+    async def download_backup(
         self, slug: str, destination: str, timeout: int = DEFAULT_BACKUP_TIMEOUT_SECONDS
     ):
-        """Download and save a snapshot from Hass.io."""
-        command = f"/snapshots/{slug}/download"
+        """Download and save a backup from Hass.io."""
+        command = f"/backups/{slug}/download"
 
         try:
             with async_timeout.timeout(timeout):
@@ -138,7 +138,7 @@ class HassIO:
                             break
                         file.write(chunk)
 
-                _LOGGER.info("Downloaded snapshot '%s' to '%s'", slug, destination)
+                _LOGGER.info("Downloaded backup '%s' to '%s'", slug, destination)
                 return
 
         except asyncio.TimeoutError:
@@ -148,8 +148,8 @@ class HassIO:
             _LOGGER.error("Client error on %s request %s", command, err)
 
         except IOError:
-            _LOGGER.error("Failed to download snapshot '%s' to '%s'", slug, destination)
+            _LOGGER.error("Failed to download backup '%s' to '%s'", slug, destination)
 
         raise HassioAPIError(
-            "Snapshot download failed. Check the logs for more information."
+            "Backup download failed. Check the logs for more information."
         )

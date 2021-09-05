@@ -104,7 +104,7 @@ domofon_pack:
         - platform: state
           entity_id: binary_sensor.domofon_status
       action:
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: |
               *Внимание!*
@@ -139,7 +139,7 @@ domofon_pack:
             entity_id: switch.domofon_automatically_open_once
         - service: telegram_bot.send_message
           data:
-            target: !secret tlg_stall_id
+            target: !secret tlg_group_system
             message: "_Домофон_: Курьер уже в пути, домофон откроется автоматически."
             inline_keyboard:
               - 'Отключить звук:/domofon_mute_once'

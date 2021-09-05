@@ -34,6 +34,10 @@ light.sonoff_1000f2f14a:
   friendly_name: Прихожая - Споты
 light.sonoff_1000f2a500:
   friendly_name: Коридор - Споты
+light.sonoff_1001045426:
+  friendly_name: Спальня - Бра - Право
+light.sonoff_100105887b:
+  friendly_name: Спальня - Бра - Лево
 switch.sonoff_1000b68886:
   friendly_name: Нептун - Питание
 binary_sensor.0x158d00044ee524_contact:

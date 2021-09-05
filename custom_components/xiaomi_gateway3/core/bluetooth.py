@@ -18,6 +18,7 @@ DEVICES = [{
     1249: ["Xiaomi", "Magic Cube", "XMMF01JQD"],
     1371: ["Xiaomi", "TH Sensor 2", "LYWSD03MMC"],
     1398: ["Xiaomi", "Alarm Clock", "CGD1"],
+    1647: ["Xiaomi", "Qingping TH Lite", "CGDK2"],
     1694: ["Aqara", "Door Lock N100", "ZNMS16LM"],
     1695: ["Aqara", "Door Lock N200", "ZNMS17LM"],
     1747: ["Xiaomi", "ZenMeasure Clock", "MHO-C303"],
@@ -26,6 +27,7 @@ DEVICES = [{
     2147: ["Xiaomi", "Water Leak Sensor", "SJWS01LM"],
     2443: ["Xiaomi", "Door Sensor 2", "MCCGQ02HL"],
     2444: ["Xiaomi", "Door Lock", "XMZNMST02YD"],
+    2455: ["Honeywell", "Smoke Alarm", "JTYJ-GD-03MI"],
     2480: ["Xiaomi", "Safe Box", "BGX-5/X1-3001"],
     2691: ["Xiaomi", "Qingping Motion Sensor", "CGPR1"],
     # logs: https://github.com/AlexxIT/XiaomiGateway3/issues/180
@@ -46,6 +48,7 @@ DEVICES = [{
     2584: ["XinGuang", "XinGuang Smart Light", "LIBMDA09X"],
     3164: ["Unknown", "Mesh Downlight (RF ready)", "3164"],
     3416: ["Unknown", "Mesh Downlight (Yeelight compatible)", "3416"],
+    3531: ["Unknown", "ightctl Light", "3531"],
     'miot_spec': [
         [2, 1, 'light', 'light'],
         [2, 2, 'brightness', None],
@@ -108,11 +111,27 @@ DEVICES = [{
         [3, 1, 'power', 'sensor'],
         [4, 1, 'backlight', 'switch'],
     ]
+}, {
+    2715: ["Xiaomi", "Mesh Wall Single Switch", "ZNKG01HL"],
+    'miot_spec': [
+        [2, 1, 'switch', 'switch'],
+        [6, 1, 'humidity', 'sensor'],
+        [6, 7, 'temperature', 'sensor'],
+    ]
+}, {
+    2716: ["Xiaomi", "Mesh Wall Double Switch", "ZNKG02HL"],
+    'miot_spec': [
+        [2, 1, 'left_switch', 'switch'],
+        [3, 1, 'right_switch', 'switch'],
+        [6, 1, 'humidity', 'sensor'],
+        [6, 7, 'temperature', 'sensor'],
+    ]
 }]
 
 # if color temp not default 2700..6500
 COLOR_TEMP = {
     2584: [3000, 6400],
+    3531: [3000, 6400],
 }
 # if max brightness not default 65535
 MAX_BRIGHTNESS = {
@@ -120,6 +139,7 @@ MAX_BRIGHTNESS = {
     2584: 100,
     3164: 100,
     3416: 100,
+    3531: 100,
 }
 
 BLE_FINGERPRINT_ACTION = [
@@ -323,6 +343,8 @@ def parse_xiaomi_ble(event: dict, pdid: int) -> Optional[dict]:
 
     elif eid == 0x0006 and len(data) == 5:
         action = int.from_bytes(data[4:], 'little')
+        if action >= len(BLE_FINGERPRINT_ACTION):
+            return None
         # status, action, state
         return {
             'action': 'fingerprint',
@@ -333,6 +355,8 @@ def parse_xiaomi_ble(event: dict, pdid: int) -> Optional[dict]:
 
     elif eid == 0x0007:
         # TODO: lock timestamp
+        if data[0] >= len(BLE_DOOR_ACTION):
+            return None
         return {
             'action': 'door',
             'action_id': data[0],
@@ -360,6 +384,9 @@ def parse_xiaomi_ble(event: dict, pdid: int) -> Optional[dict]:
 
         timestamp = int.from_bytes(data[5:], 'little')
         timestamp = datetime.fromtimestamp(timestamp).isoformat()
+
+        if action not in BLE_LOCK_ACTION or method not in BLE_LOCK_METHOD:
+            return None
 
         return {
             'action': 'lock',
@@ -400,7 +427,7 @@ def get_device(pdid: int, default_name: str) -> Optional[dict]:
             return {
                 'device_manufacturer': desc[0],
                 'device_name': desc[0] + ' ' + desc[1],
-                'device_model': desc[2] if len(desc) > 2 else pdid,
+                'device_model': desc[2] if len(desc) > 2 else str(pdid),
                 'lumi_spec': None,
                 'miot_spec': device.get('miot_spec'),
                 # if color temp not default 2700..6500
@@ -410,7 +437,7 @@ def get_device(pdid: int, default_name: str) -> Optional[dict]:
 
     return {
         'device_name': default_name,
-        'device_model': pdid,
+        'device_model': str(pdid),
         'lumi_spec': None,
         # default Mesh device will be Bulb
         'miot_spec': [
@@ -420,5 +447,5 @@ def get_device(pdid: int, default_name: str) -> Optional[dict]:
         ]
     } if default_name == 'Mesh' else {
         'device_name': default_name,
-        'device_model': pdid,
+        'device_model': str(pdid),
     }

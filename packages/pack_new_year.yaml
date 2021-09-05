@@ -33,7 +33,7 @@ new_year_holidays_pack:
           data:
             # Подсветка окна в гостиной
             entity_id: light.gostinaia_podsvetka_na_okne
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: Отключаем новогоднюю подсветку (пора спать).
           
@@ -60,7 +60,7 @@ new_year_holidays_pack:
           data:
             # Подсветка окна в гостиной
             entity_id: light.gostinaia_podsvetka_na_okne
-        - service: notify.telegram_stall
+        - service: notify.telegram_group_system
           data:
             message: Включаем новогоднюю подсветку (с добрым утром).
 
@@ -79,7 +79,7 @@ new_year_holidays_pack:
 #      - service: switch.turn_off
 #        data:
 #          entity_id: switch.0x158d000391fb00_switch
-#      - service: notify.telegram_stall
+#      - service: notify.telegram_group_system
 #        data:
 #          message: Отключаем новогоднюю подсветку (никого нет дома).
 
@@ -97,6 +97,6 @@ new_year_holidays_pack:
 #      - service: switch.turn_on
 #        data:
 #          entity_id: switch.0x158d000391fb00_switch
-#      - service: notify.telegram_stall
+#      - service: notify.telegram_group_system
 #        data:
 #          message: Включаем новогоднюю подсветку (кто-то пришел домой).

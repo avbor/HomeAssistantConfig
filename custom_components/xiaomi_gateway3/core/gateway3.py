@@ -8,8 +8,8 @@ from threading import Thread
 from typing import Optional
 
 import yaml
-from paho.mqtt.client import Client, MQTTMessage
 
+from paho.mqtt.client import Client, MQTTMessage
 from . import bluetooth, utils, zigbee
 from .helpers import DevicesRegistry, XiaomiEntity
 from .mini_miio import SyncmiIO
@@ -147,7 +147,7 @@ class GatewayMesh(GatewayBase):
                 bulk[did] = {}
 
             # TODO: fix this dirty hack
-            if device['model'] == 3083 and prop == 'power':
+            if device['model'] == 3083 and prop == 'power' and param['value']:
                 param['value'] /= 100.0
 
             # https://github.com/AlexxIT/XiaomiGateway3/issues/312
@@ -735,7 +735,7 @@ class GatewayEntry(Thread, GatewayBLE):
                         'nwk': nwks.get(ieee),
                         'model': model,
                         'type': 'zigbee',
-                        'fw_ver': retain.get('fw_ver'),
+                        'fw_ver': retain.get('fw_ver') or retain.get('1.4'),
                         'init': zigbee.fix_xiaomi_props(model, params),
                         'online': retain.get('alive', 1) == 1
                     }
@@ -994,9 +994,9 @@ class GatewayEntry(Thread, GatewayBLE):
                     payload[prop] = param['value'] / 100.0
             elif prop == 'pressure':
                 payload[prop] = param['value'] / 100.0
-            elif prop in ('battery', 'voltage'):
+            elif prop in ('battery', 'battery_voltage'):
                 # sometimes voltage and battery came in one payload
-                if prop == 'voltage' and 'battery' in payload:
+                if prop == 'battery_voltage' and 'battery' in payload:
                     continue
                 # I do not know if the formula is correct, so battery is more
                 # important than voltage
@@ -1014,6 +1014,16 @@ class GatewayEntry(Thread, GatewayBLE):
                 payload[prop] = param['value'] / 1000.0
             elif prop in ('consumption', 'power'):
                 payload[prop] = round(param['value'], 2)
+            elif prop in ('voltage', 'current'):
+                payload[prop] = round(param['value'] / 1000.0, 2)
+            elif prop == 'energy':
+                # energy consumption Wh to kWh
+                payload[prop] = round(param['value'] / 1000.0, 3)
+            elif prop == 'fw_ver' and param['value'] != device['fw_ver']:
+                device['fw_ver'] = param['value']
+                self._update_device_fw_ver(device, param['value'])
+            elif prop == 'ota_progress':
+                self._update_device_fw_ver(device, f"Update {param['value']}%")
             elif 'value' in param:
                 payload[prop] = param['value']
             elif 'arguments' in param:
@@ -1047,6 +1057,15 @@ class GatewayEntry(Thread, GatewayBLE):
 
         # return for tests purpose
         return payload
+
+    @staticmethod
+    def _update_device_fw_ver(device: dict, fw_ver: str):
+        for entity in device['entities'].values():
+            if entity:
+                utils.update_device_info(
+                    entity.hass, device['did'], sw_version=fw_ver
+                )
+                break
 
     def process_pair(self, raw: bytes):
         _LOGGER.debug(f"!!! {raw}")
