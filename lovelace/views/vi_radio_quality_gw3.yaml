@@ -106,7 +106,7 @@ cards:
             name: Last Seen
             modify: >
               var dt = new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x)));
-                dt.toTimeString().split(" ")[0] : ""
+              isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""
         css:
           table+: "padding-top: 15px;"
           "tbody tr:nth-child(even)": "background-color: #a2542f6;"
