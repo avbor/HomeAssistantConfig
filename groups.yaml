@@ -49,6 +49,50 @@ all_lamps:
     - light.sonoff_100105887b
     - light.sonoff_1001045426
 
+light_detskaia:
+  name: Весь свет в Детской
+  entities:
+    - light.detskaia
+    - light.detskaia_podsvetka_na_okne
+
+light_prikhozhaya:
+  name: Весь свет в Прихожей
+  entities:
+    - light.sonoff_1000f2f14a
+
+light_koridor:
+  name: Весь свет в Коридоре
+  entities:
+    - light.sonoff_1000f2a500
+
+light_gostinaia:
+  name: Весь свет в Гостиной
+  entities:
+    - light.0x86bd7fffe616b72_light
+    - light.gostinaia_podsvetka_na_okne
+    - light.sonoff_1000ab3c28
+    - light.sonoff_1000f3035d
+    - light.sonoff_1000f30a9e
+
+light_kukhnia:
+  name: Весь свет в Кухне
+  entities:
+    - light.kukhnia_lenta
+    - light.kukhnia_liustra
+    - light.sonoff_1000b72483
+
+light_kladovaya:
+  name: Весь свет в Кладовой
+  entities:
+    - light.sonoff_1000b6831b
+
+light_spalnia:
+  name: Весь свет в Спальне
+  entities:
+    - light.spalnia_stol
+    - light.sonoff_100105887b
+    - light.sonoff_1001045426
+
 nursery_switch_autos:
   name: Автоматизации кнопок в детской
   entities:
