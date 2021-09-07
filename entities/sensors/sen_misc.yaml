@@ -110,7 +110,7 @@
     boiler_status:
       friendly_name: "Electrolux Centurio IQ Status"
       value_template: >
-        {% if (states('sensor.tplinksmartplug01_amps') | float) > 4 %}On{% else %}Off{% endif %}
+        {% if (states('sensor.tplink_smartplug_01_current') | float) > 4 %}On{% else %}Off{% endif %}
     boiler_water_temp:
       unit_of_measurement: °C
       device_class: temperature
