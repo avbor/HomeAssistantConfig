@@ -183,6 +183,17 @@ cards:
         cards:
           - type: conditional
             conditions:
+              - entity: light.sonoff_1001053235
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.sonoff_1001053235
+              name: Люстра
+              icon: mdi:ceiling-light
+      - type: horizontal-stack
+        cards:
+          - type: conditional
+            conditions:
               - entity: light.sonoff_100105887b
                 state_not: "unavailable"
             card:
@@ -190,6 +201,17 @@ cards:
               entity: light.sonoff_100105887b
               name: Бра - Лево
               icon: mdi:wall-sconce-flat
+          - type: conditional
+            conditions:
+              - entity: light.spalnia_stol
+                state_not: "unavailable"
+            card:
+              type: vertical-stack
+              cards:
+                - type: light
+                  entity: light.spalnia_stol
+                  name: Стол
+                  icon: mdi:desk-lamp
           - type: conditional
             conditions:
               - entity: light.sonoff_1001045426
@@ -206,10 +228,6 @@ cards:
         card:
           type: vertical-stack
           cards:
-            - type: light
-              entity: light.spalnia_stol
-              name: Стол
-              icon: mdi:desk-lamp
             - type: entities
               entities:
                 - entity: automation.sunrise_lighting_bedroom

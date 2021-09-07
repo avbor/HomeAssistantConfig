@@ -131,7 +131,13 @@
   action:
     service: light.turn_off
     data:
-      entity_id: group.all_lamps
+      entity_id:
+        - group.light_detskaia
+        - group.light_prikhozhaya
+        - group.light_koridor
+        - group.light_gostinaia
+        - group.light_kukhnia
+        - group.light_kladovaya
 
 ### Детская
 
@@ -146,8 +152,8 @@
       minutes: 2
   condition:
     condition: time
-    after: "0:00"
-    before: "6:30"
+    after: "00:00"
+    before: "06:30"
   action:
     - service: homeassistant.turn_off
       entity_id: light.detskaia
@@ -318,7 +324,7 @@
     conditions:
       - condition: time
         after: "21:00"
-        before: "9:00"
+        before: "09:00"
       - condition: numeric_state
         entity_id: sensor.0x158d0003fac0ec_illuminance
         below: 15
@@ -338,7 +344,7 @@
   condition:
     condition: time
     after: "21:00"
-    before: "9:00"
+    before: "09:00"
   action:
     service: homeassistant.turn_off
     entity_id: light.kukhnia_lenta
@@ -378,6 +384,65 @@
     entity_id: light.sonoff_1000b6831b
 
 # Спальня
+
+- alias: "Кнопки Xiaomi в Спальне single"
+  id: 28d3fc25-b07c-4a8e-8da9-ca60d730da41
+  trigger:
+    - platform: state
+      entity_id: sensor.0x158d0003d17762_action
+      to: "single"
+    - platform: state
+      entity_id: sensor.0x158d0003d15d00_action
+      to: "single"
+  action:
+    - service: light.toggle
+      data:
+        entity_id: light.sonoff_1001053235
+
+- alias: "Кнопки Xiaomi в Спальне double"
+  id: a7d07612-155d-481b-9357-9bfdcaba8057
+  trigger:
+    - platform: state
+      entity_id: sensor.0x158d0003d17762_action
+      to: "double"
+    - platform: state
+      entity_id: sensor.0x158d0003d15d00_action
+      to: "double"
+  action:
+    choose:
+      - alias: If Group is On
+        conditions:
+          - condition: state
+            entity_id: group.light_spalnia_bra
+            state: "on"
+        sequence:
+          - service: homeassistant.turn_off
+            data:
+              entity_id: group.light_spalnia_bra
+      - alias: If Group is Off
+        conditions:
+          - condition: state
+            entity_id: group.light_spalnia_bra
+            state: "off"
+        sequence:
+          - service: homeassistant.turn_on
+            data:
+              entity_id: group.light_spalnia_bra
+
+- alias: "Кнопки Xiaomi в Спальне hold"
+  id: 7a0d0886-9eaf-4286-a70f-e1dd049484e7
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.0x158d0003d17762_action
+      to: "hold"
+    - platform: state
+      entity_id: sensor.0x158d0003d15d00_action
+      to: "hold"
+  action:
+    service: light.turn_off
+    data:
+      entity_id: group.all_lamps
 
 - alias: Sunrise Lighting (Bedroom)
   id: 35fa00c7-72bd-4a5f-9bef-7bcf13a3bf49

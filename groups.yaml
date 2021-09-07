@@ -48,6 +48,7 @@ all_lamps:
     - light.sonoff_1000f2a500
     - light.sonoff_100105887b
     - light.sonoff_1001045426
+    - light.sonoff_1001053235
 
 light_detskaia:
   name: Весь свет в Детской
@@ -90,6 +91,13 @@ light_spalnia:
   name: Весь свет в Спальне
   entities:
     - light.spalnia_stol
+    - light.sonoff_100105887b
+    - light.sonoff_1001045426
+    - light.sonoff_1001053235
+
+light_spalnia_bra:
+  name: Все бра в спальне
+  entities:
     - light.sonoff_100105887b
     - light.sonoff_1001045426
 

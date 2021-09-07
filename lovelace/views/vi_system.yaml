@@ -331,5 +331,8 @@ cards:
               - entity: light.sonoff_1001045426
                 name: Бра в Спальне - Право
                 icon: mdi:wall-sconce-flat
+              - entity: light.sonoff_1001053235
+                name: Люстра в Спальне
+                icon: mdi:ceiling-light
             state_filter:
               - unavailable
