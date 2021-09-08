@@ -161,25 +161,71 @@ water_leak_protection:
           entity_id: "{{ trigger.entity_id }}"
 
     # Оповещения
-    - alias: Оповещение об активации Нептуна [notify to group flat]
-      id: 05f8b487-bec7-43fa-bc7d-58bb1699c162
-      initial_state: true
-      trigger: 
-        platform: state
-        entity_id: binary_sensor.neptun_water_leakage
-        to: "on"
+    - alias: Оповещения об активации датчиков [notify to group flat]
+      id: 54d437ce-2ec6-4779-93cb-3f36fe99b44c
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.neptun_water_leakage
+          to: "on"
+          id: "neptun_on"
+        - platform: state
+          entity_id: binary_sensor.0x158d000400e77d_moisture
+          from: "off"
+          to: "on"
+          id: "aqara_storeroom_on"
+        - platform: state
+          entity_id: binary_sensor.0x158d0004030d84_moisture
+          from: "off"
+          to: "on"
+          id: "aqara_under_bath_on"
       action:
-        - service: telegram_bot.send_message
-          data:
-            target: !secret tlg_group_flat_1
-            title: "*Внимание!*"
-            message: |
-              Сработал датчик протечки *Нептун*.
-              Водопроводные краны перекрыты!
-              Необходимо проверить Кухню, Ванную, Туалет, Кладовую.
-            inline_keyboard:
-              - 'Открыть краны:/water_valves_open'
-        
+        - choose:
+          - alias: "neptun_on"
+            conditions:
+              - condition: trigger
+                id: "neptun_on"
+            sequence:
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_flat_1
+                  title: "*Внимание!*"
+                  message: |
+                    Сработал датчик протечки *Нептун*.
+                    Водопроводные краны перекрыты!
+                    Необходимо проверить Кухню, Ванную, Туалет, Кладовую.
+                  inline_keyboard:
+                    - 'Открыть краны:/water_valves_open'
+          - alias: "aqara_storeroom_on"
+            conditions:
+              - condition: trigger
+                id: "aqara_storeroom_on"
+            sequence:
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_flat_1
+                  title: "*Внимание!*"
+                  message: |
+                    Сработал датчик протечки Aqara в *Кладовой*.
+                    Водопроводные краны перекрыты!
+                    Необходимо проверить наличие воды за стиральной машиной.
+                  inline_keyboard:
+                    - 'Открыть краны:/water_valves_open'
+          - alias: "aqara_under_bath_on"
+            conditions:
+              - condition: trigger
+                id: "aqara_storeroom_on"
+            sequence:
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_flat_1
+                  title: "*Внимание!*"
+                  message: |
+                    Сработал датчик протечки Aqara в *Ванной*.
+                    Водопроводные краны перекрыты!
+                    Необходимо проверить наличие воды *слева под ванной*.
+                  inline_keyboard:
+                    - 'Открыть краны:/water_valves_open'
+
     - alias: Оповещение о деактивации Нептуна [notify to group flat]
       id: 344fff46-b0f1-41c3-b6e7-6386b5bc1256
       initial_state: true
@@ -192,46 +238,6 @@ water_leak_protection:
           data:
             target: !secret tlg_group_flat_1
             message: Нептун деактивирован.
-        
-    - alias: Оповещение о протечке Aqara в Кладовой [notify to group flat]
-      id: 48575884-108e-403b-afe0-cb16ad5652cb
-      initial_state: true
-      trigger:
-        platform: state
-        entity_id: binary_sensor.0x158d000400e77d_moisture
-        from: "off"
-        to: "on"
-      action:
-        - service: telegram_bot.send_message
-          data:
-            target: !secret tlg_group_flat_1
-            title: "*Внимание!*"
-            message: |
-              Сработал датчик протечки Aqara в *Кладовой*.
-              Водопроводные краны перекрыты!
-              Необходимо проверить наличие воды за стиральной машиной.
-            inline_keyboard:
-              - 'Открыть краны:/water_valves_open'
-
-    - alias: Оповещение о протечке Aqara под Ванной [notify to group flat]
-      id: db363ec5-2617-4234-9657-303dce6a91fe
-      initial_state: true
-      trigger:
-        platform: state
-        entity_id: binary_sensor.0x158d0004030d84_moisture
-        from: "off"
-        to: "on"
-      action:
-        - service: telegram_bot.send_message
-          data:
-            target: !secret tlg_group_flat_1
-            title: "*Внимание!*"
-            message: |
-              Сработал датчик протечки Aqara в *Ванной*.
-              Водопроводные краны перекрыты!
-              Необходимо проверить наличие воды *слева под ванной*.
-            inline_keyboard:
-              - 'Открыть краны:/water_valves_open'
 
     - alias: Оповещение об отключенном Нептуне (>2 мин)
       id: 1a017a47-40b1-4315-892e-36760a8e86ec
