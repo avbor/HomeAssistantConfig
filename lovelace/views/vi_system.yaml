@@ -60,6 +60,13 @@ cards:
             - entity: sensor.influxdb_database_size
               name: "InfluxDB"
               icon: mdi:database
+#        - type: history-graph
+#          hours_to_show: 168
+#          entities:
+#            - entity: sensor.hass_db_size
+#              name: "MariaDB"
+#            - entity: sensor.influxdb_database_size
+#              name: "InfluxDB"
     - type: entities
       entities:
         - entity: sensor.yaml_code_lines_count

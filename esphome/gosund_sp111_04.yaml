@@ -4,9 +4,9 @@ substitutions:
   esp_board: esp8285
   room_name: Country House
   # Higher value gives lower watt readout
-  current_res: "0.00121"
+  current_res: "0.00119"
   # Lower value gives lower voltage readout
-  voltage_div: "767"
+  voltage_div: "765"
 
 packages:
   wifi: !include common/wifi_ch.yaml
