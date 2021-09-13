@@ -20,13 +20,13 @@ cards:
             modify: '(x+"").replace(/ Gateway$/,"")'
           - data: network_pan_id
             name: Network PAN ID
-            modify: x+''
+            modify: 'x == "" ? "-" : x+""'
           - data: radio_tx_power
             name: Radio TX Power
-            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+            modify: 'isNaN(parseInt(x, 10)) ? "-" : parseInt(x, 10)'
           - data: radio_channel
             name: Radio Channel
-            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+            modify: 'isNaN(parseInt(x, 10)) ? "-" : parseInt(x, 10)'
           - data: free_mem
             name: Memory Free (KB)
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
