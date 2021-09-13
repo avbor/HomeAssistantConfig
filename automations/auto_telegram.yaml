@@ -177,6 +177,10 @@
         Детская: *{{ states('binary_sensor.0x158d00039cf974_contact') }}*
         Гостинная: *{{ states('binary_sensor.0x158d0003d54725_contact') }}*
         Спальня: *{{ states('binary_sensor.0x158d0004073b67_contact') }}*
+        `-= Крупная бытовая техника =-`
+        Водонагреватель: *{{ states('binary_sensor.boiler_status') }}* ({{ states('sensor.tplink_smartplug_01_current_consumption') }} W)
+        Стиральная машина: *{{ states('binary_sensor.washer_status') }}* ({{ states('sensor.tplink_smartplug_02_current_consumption') }} W)
+        Посудомоечная машина: *{{ states('binary_sensor.dishwasher_status') }}* ({{ states('sensor.gosund_sp111_06_watt') }} W)
         `-= Свет =-`
         Споты в прихожей: *{{ states('light.sonoff_1000f2f14a') }}*
         Споты в коридоре: *{{ states('light.sonoff_1000f2a500') }}*
@@ -215,6 +219,5 @@
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
         Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*
-        Водонагреватель: *{{ states('sensor.boiler_status') }}* ({{ states('sensor.tplink_smartplug_01_current_consumption') }} W)
         Transmission Status: *{{ states('sensor.transmission_status') }}*
         Plex Users: *{{ states('sensor.plex_plexonubuntu') }}*

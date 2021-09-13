@@ -2,24 +2,28 @@ substitutions:
   board_name: gosund_sp111_05
   esp_platform: ESP8266
   esp_board: esp8285
-  room_name: Country House
+  room_name: Kitchen
   # Higher value gives lower watt readout
   current_res: "0.00125"
   # Lower value gives lower voltage readout
   voltage_div: "747"
 
 packages:
-  wifi: !include common/wifi_ch.yaml
+  wifi: !include common/wifi.yaml
   device_base: !include common/device_base.yaml
+
+esphome:
+  on_boot:
+    - switch.turn_on: button_switch
 
 web_server:
   port: 80
 
 sensor:
-  - platform: adc
-    pin: VCC
-    name: "${board_name} - VCC Volt"
-    icon: mdi:flash-outline
+#  - platform: adc
+#    pin: VCC
+#    name: "${board_name} - VCC Volt"
+#    icon: mdi:flash-outline
 
   - platform: hlw8012
     sel_pin:
@@ -66,7 +70,7 @@ sensor:
       # Multiplication factor from W to kW is 0.001
       - multiply: 0.001
     unit_of_measurement: kWh
-    state_class: measurement
+    state_class: total_increasing
     device_class: energy
     icon: mdi:calendar-clock
 
@@ -84,6 +88,7 @@ switch:
   - platform: gpio
     pin: GPIO15
     id: relay
+    restore_mode: ALWAYS_ON
 
   - platform: template
     name: "${board_name} - Switch"

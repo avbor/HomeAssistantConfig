@@ -317,9 +317,13 @@ cards:
             icon: mdi:door
           - entity: vacuum.xiaomi_vacuum_cleaner
             name: "Пылесос Mi Robot"
-          - entity: sensor.boiler_status
+          - entity: binary_sensor.boiler_status
             name: "Бойлер"
             icon: mdi:water-boiler
+          - entity: binary_sensor.washer_status
+            name: "Стиральная машина"
+          - entity: binary_sensor.dishwasher_status
+            name: "Посудомоечная машина"
           # Кондиционеры
           - type: section
             label: Кондиционеры

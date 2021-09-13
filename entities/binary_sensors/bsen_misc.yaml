@@ -49,8 +49,25 @@
             {% endif %}
       value_template: "{{ is_state('fan.smartmi_humidifier_02', 'on') }}"
     boiler_status:
+      friendly_name: "Water Boiler Status"
+      device_class: heat
+      value_template: "{{ (states('sensor.tplink_smartplug_01_current') | float) > 4 }}"
+      icon_template: mdi:water-boiler
+    kettle_status:
+      friendly_name: "Electric Kettle Status"
+      device_class: heat
+      value_template: "{{ (states('sensor.gosund_sp111_05_watt') | float) > 100 }}"
+      icon_template: mdi:kettle
+    dishwasher_status:
       device_class: power
-      value_template: "{{ is_state('switch.tplink_smartplug_01', 'on') }}"
+      friendly_name: "Dishwasher Status"
+      value_template: "{{ (states('sensor.gosund_sp111_06_watt') | float) > 5 }}"
+      icon_template: mdi:dishwasher
+    washer_status:
+      device_class: power
+      friendly_name: "Washing Machine Status"
+      value_template: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float) > 5 }}"
+      icon_template: mdi:washing-machine
     coutry_house_presence:
       device_class: presence
       value_template: "{{ 'Дача' in (expand('group.family_persons') | map(attribute='state') | list) }}"
