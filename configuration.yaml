@@ -110,6 +110,8 @@ recorder:
       - sensor.ym_dacha_dom_hr
       - sensor.ym_dom_dacha_hr
       - sensor.huawei_e5372_current_connection_duration
+      - sensor.huawei_e5372_rssi
+      - sensor.huawei_e5372_sinr
     event_types:
       - call_service
 
