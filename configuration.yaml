@@ -157,6 +157,12 @@ light:
     name: Гостиная - подсветка на окне
     entity_id: switch.0x158d000391fb00_switch
 
+zha:
+  zigpy_config:
+    ota:
+      ikea_provider: true
+      #ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
+
 sonoff:
   username: !secret sonoff_username
   password: !secret sonoff_pass
