@@ -66,6 +66,9 @@ _Remote site (country house):_
   - Gosund SP111 flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
 
+  - BroadLink SP4L-EU\
+  Integration "Broadlink"
+
 - Light:
   - Yeelight LED Color Bulb (YLDP03YL, yeelink.light.color3)\
   Integration "Yeelight"
@@ -107,11 +110,13 @@ _Remote site (country house):_
   - MiJia Smart Power Plug 2 (ZNCZ02LM, lumi.plug)
 
 - Light:
-  - Ikea TRÅDFRI LED Bulb E14 (LED1649C5, ikea.light.led1649c5)
+  - IKEA TRÅDFRI LED Bulb E14 (LED1649C5, ikea.light.led1649c5)
+  - IKEA TRÅDFRI LED Bulb E27 (LED1836G9)
 
 - Switches:
   - MiJia Wireless Switch (WXKG01LM, lumi.sensor_switch)
   - Aqara Wireless Switch with Gyroscope (WXKG12LM, lumi.sensor_switch.aq3)
+  - IKEA TRÅDFRI ON/OFF Switch (E1743)
 
 - Sensors:
   - MiJia Door & Window Sensor (MCCGQ01LM, lumi.sensor_magnet)
