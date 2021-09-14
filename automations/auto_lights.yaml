@@ -444,6 +444,72 @@
     data:
       entity_id: group.all_lamps
 
+
+- alias: "Кнопки IKEA в Спальне"
+  id: ffd8dce9-55d7-449c-a5ed-280604c00930
+  trigger:
+    - platform: event
+      event_type: zha_event
+      event_data:
+        device_ieee: "84:fd:27:ff:fe:90:a6:46"
+      id: "ikea_sw_1"
+    - platform: event
+      event_type: zha_event
+      event_data:
+        device_ieee: "84:fd:27:ff:fe:9e:e4:06"
+      id: "ikea_sw_2"
+  action:
+    choose:
+      - alias: 'command: on'
+        conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.command == 'on' }}"
+        sequence:
+          - service: light.toggle
+            data:
+              entity_id: light.sonoff_1001053235
+      - alias: "command: off"
+        conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.command == 'off' }}"
+        sequence:
+          choose:
+            - alias: 'If Group is On'
+              conditions:
+                - condition: state
+                  entity_id: group.light_spalnia_bra
+                  state: "on"
+              sequence:
+                - service: homeassistant.turn_off
+                  data:
+                    entity_id: group.light_spalnia_bra
+            - alias: 'If Group is Off'
+              conditions:
+                - condition: state
+                  entity_id: group.light_spalnia_bra
+                  state: "off"
+              sequence:
+                - service: homeassistant.turn_on
+                  data:
+                    entity_id: group.light_spalnia_bra
+      - alias: 'command: move_with_on_off'
+        conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.command == 'move_with_on_off' }}"
+        sequence:
+          - service: light.toggle
+            data:
+              entity_id: light.spalnia_stol
+      - alias: 'command: move'
+        conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.command == 'move' }}"
+        sequence:
+          - service: light.turn_off
+            data:
+              entity_id: group.all_lamps
+
+
 - alias: Sunrise Lighting (Bedroom)
   id: 35fa00c7-72bd-4a5f-9bef-7bcf13a3bf49
   initial_state: true
