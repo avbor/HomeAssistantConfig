@@ -53,6 +53,11 @@
       device_class: heat
       value_template: "{{ (states('sensor.tplink_smartplug_01_current') | float) > 4 }}"
       icon_template: mdi:water-boiler
+    fridge_status:
+      device_class: cold
+      friendly_name: "Fridge Status"
+      value_template: "{{ is_state('switch.gosund_sp111_04_switch', 'on') }}"
+      icon_template: mdi:fridge-outline
     kettle_status:
       friendly_name: "Electric Kettle Status"
       device_class: heat
