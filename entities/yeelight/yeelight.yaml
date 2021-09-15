@@ -9,8 +9,8 @@ devices:
     name: Детская
   172.16.16.214:
     name: Кухня - Лента
-  172.16.16.203:
-    name: Кухня - Люстра
+#  172.16.16.203:
+#    name: Кухня - Люстра
 custom_effects:
   - name: 'Sunrise'
     flow_params:

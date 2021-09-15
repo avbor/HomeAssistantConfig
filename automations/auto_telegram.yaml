@@ -194,7 +194,7 @@
         Лампа на столе в гостиной: *{{ states('light.0x86bd7fffe616b72_light') }}*
         Споты на кухне: *{{ states('light.sonoff_1000b72483') }}*
         Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
-        Люстра на кухне: *{{ states('light.kukhnia_liustra') }}*
+        Люстра на кухне: *{{ states('light.ikea_e27_kukhnia') }}*
         Люстра в кладовой: *{{ states('light.sonoff_1000b6831b') }}*
         Люстра в спальне: *{{ states('light.sonoff_1001053235') }}*
         Бра в спальне - лево: *{{ states('light.sonoff_100105887b') }}*

@@ -63,7 +63,8 @@
       device_class: power
       friendly_name: Люстра на Кухне
       icon_template: mdi:ceiling-light
-      value_template: "{{ is_state('light.kukhnia_liustra', 'on') }}"
+#      value_template: "{{ is_state('light.kukhnia_liustra', 'on') }}"
+      value_template: "{{ is_state('light.ikea_e27_kukhnia', 'on') }}"
     lamp_status_kukhnia_spots:
       device_class: power
       friendly_name: Споты на Кухне

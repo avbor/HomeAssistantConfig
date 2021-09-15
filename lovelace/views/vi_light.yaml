@@ -150,11 +150,13 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.kukhnia_liustra
+#              - entity: light.kukhnia_liustra
+              - entity: light.ikea_e27_kukhnia
                 state_not: "unavailable"
             card:
               type: light
-              entity: light.kukhnia_liustra
+#              entity: light.kukhnia_liustra
+              entity: light.ikea_e27_kukhnia
               name: Люстра
               icon: mdi:ceiling-light
           - type: conditional

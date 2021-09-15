@@ -38,7 +38,8 @@ all_lamps:
     - light.sonoff_1000ab3c28
     - light.gostinaia_podsvetka_na_okne
     - light.kukhnia_lenta
-    - light.kukhnia_liustra
+#    - light.kukhnia_liustra
+    - light.ikea_e27_kukhnia
     - light.sonoff_1000b72483
     - light.sonoff_1000b6831b
     - light.spalnia_stol
@@ -79,7 +80,8 @@ light_kukhnia:
   name: Весь свет в Кухне
   entities:
     - light.kukhnia_lenta
-    - light.kukhnia_liustra
+#    - light.kukhnia_liustra
+    - light.ikea_e27_kukhnia
     - light.sonoff_1000b72483
 
 light_kladovaya:
