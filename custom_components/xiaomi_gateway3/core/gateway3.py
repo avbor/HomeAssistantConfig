@@ -696,7 +696,10 @@ class GatewayEntry(Thread, GatewayBLE):
                 # read Xiaomi devices DB
                 raw = shell.read_file(shell.zigbee_db, as_base64=True)
                 # self.debug(f"Devices RAW: {raw}")
-                if raw.startswith(b'unqlite'):
+                if raw is None:
+                    self.debug("No zigbee database")
+                    data = {}
+                elif raw.startswith(b'unqlite'):
                     db = Unqlite(raw)
                     data = db.read_all()
                 else:
@@ -745,23 +748,23 @@ class GatewayEntry(Thread, GatewayBLE):
             if self.ble_mode:
                 raw = shell.read_file('/data/miio/mible_local.db',
                                       as_base64=True)
-                db = SQLite(raw)
-
-                # load BLE devices
-                rows = db.read_table('gateway_authed_table')
-                for row in rows:
-                    device = {
-                        'did': row[4],
-                        'mac': utils.reverse_mac(row[1]),
-                        'model': row[2],
-                        'type': 'ble',
-                        'online': True,
-                        'init': {}
-                    }
-                    devices.append(device)
-
-                # load Mesh groups
                 try:
+                    db = SQLite(raw)
+
+                    # load BLE devices
+                    rows = db.read_table('gateway_authed_table')
+                    for row in rows:
+                        device = {
+                            'did': row[4],
+                            'mac': utils.reverse_mac(row[1]),
+                            'model': row[2],
+                            'type': 'ble',
+                            'online': True,
+                            'init': {}
+                        }
+                        devices.append(device)
+
+                    # load Mesh groups
                     mesh_groups = {}
 
                     rows = db.read_table(shell.mesh_group_table)
@@ -994,16 +997,10 @@ class GatewayEntry(Thread, GatewayBLE):
                     payload[prop] = param['value'] / 100.0
             elif prop == 'pressure':
                 payload[prop] = param['value'] / 100.0
-            elif prop in ('battery', 'battery_voltage'):
-                # sometimes voltage and battery came in one payload
-                if prop == 'battery_voltage' and 'battery' in payload:
-                    continue
+            elif prop == 'battery':
                 # I do not know if the formula is correct, so battery is more
                 # important than voltage
-                payload['battery'] = (
-                    param['value'] if param['value'] < 1000
-                    else int((min(param['value'], 3200) - 2600) / 6)
-                )
+                payload[prop] = zigbee.fix_xiaomi_battery(param['value'])
             elif prop == 'alive' and param['value']['status'] == 'offline':
                 device['online'] = False
             elif prop == 'angle':
