@@ -209,3 +209,45 @@
     - service: notify.telegram_group_flat_1
       data:
         message: Чайник *вскипел*!
+
+- alias: Washing Machine - Wash Finished Notification
+  id: eed153ad-dca8-464d-8cc5-b30421eec1a1
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.washer_status
+      from: "on"
+      to: "off"
+  action:
+    - service: notify.telegram_group_flat_1
+      data:
+        title: "Стиральная машина:"
+        message: Стирка *закончена*, не забудьте достать белье.
+
+- alias: Dishwasher - Dishwashing Finished Notification
+  id: 9ef4d500-e688-4b70-b565-43ebb754bfe2
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.dishwasher_status
+    from: "on"
+    to: "off"
+  action:
+    - service: notify.telegram_group_flat_1
+      data:
+        title: "Посудомоечная машина:"
+        message: Программа *закончена*, посуда вымыта.
+
+- alias: GitHub HA Repo - Stars
+  id: b8a8f7d3-1875-4271-b576-1586f2ab425f
+  trigger:
+    - platform: webhook
+      webhook_id: !secret github_ha_repo_stars_webhook
+  action:
+    - service: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_system
+        parse_mode: html
+        disable_web_page_preview: true
+        title: "<b>GitHub HA Repo</b>:"
+        message: |
+          Star {{ trigger.json.action }}!
+          https://github.com/avbor/HomeAssistantConfig/stargazers
