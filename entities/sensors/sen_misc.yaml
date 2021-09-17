@@ -86,6 +86,20 @@
           {% set day_num = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"] %}
           {% set day_of_week = day_num[now().weekday()] %}
           {{ day_of_week }}
+    date_current_month:
+      friendly_name: "{{ states('date_current_month') }}"
+      icon_template: mdi:calendar
+      value_template: >-
+        {% set month_num = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] %}
+        {% set month = month_num[(now().month - 1)] %}
+        {{ month }}
+    date_previous_month:
+      friendly_name: "{{ states('date_previous_month') }}"
+      icon_template: mdi:calendar
+      value_template: >-
+        {% set month_num = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] %}
+        {% set month = month_num[(now().month - 2)] %}
+        {{ month }}
     ha_supervisor_current_version:
       friendly_name: HA Supervisor Current Version
       value_template: "{{state_attr('sensor.supervisor_updates','current_version')}}"

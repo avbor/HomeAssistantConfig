@@ -54,3 +54,31 @@ sensor.average_voltage_in_flat:
   device_class: voltage
   unit_of_measurement: V
   icon: mdi:sine-wave
+sensor.0x158d00033b702e_energy:
+  friendly_name: Подсветка на окне в Детской
+sensor.0x158d000391fb00_energy:
+  friendly_name: Подсветка на окне в Гостиной
+switch.tplink_smartplug_02:
+  friendly_name: Стиральная машина
+sensor.tplink_smartplug_02_today_s_consumption:
+  friendly_name: Стиральная машина
+switch.tplink_smartplug_01:
+  friendly_name: Бойлер
+sensor.tplink_smartplug_01_today_s_consumption:
+  friendly_name: Бойлер
+switch.gosund_sp111_06_switch:
+  friendly_name: Посудомоечная машина
+sensor.gosund_sp111_06_todays_usage:
+  friendly_name: Посудомоечная машина
+switch.gosund_sp111_05_switch:
+  friendly_name: Чайник
+sensor.gosund_sp111_05_todays_usage:
+  friendly_name: Чайник
+switch.gosund_sp111_04_switch:
+  friendly_name: Холодильник
+sensor.gosund_sp111_04_todays_usage:
+  friendly_name: Холодильник
+switch.gosund_sp111_03_switch:
+  friendly_name: Серверная
+sensor.gosund_sp111_03_todays_usage:
+  friendly_name: Серверная
