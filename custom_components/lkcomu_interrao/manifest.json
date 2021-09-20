@@ -4,13 +4,13 @@
     "documentation": "https://github.com/alryaz/hass-lkcomu-interrao",
     "issue_tracker": "https://github.com/alryaz/hass-lkcomu-interrao/issues",
     "dependencies": [],
-    "version": "0.0.21",
+    "version": "0.0.22",
     "codeowners": ["@alryaz"],
     "requirements": [
         "python-dateutil==2.8.1",
         "cached-property==1.5.1",
         "fake_useragent==0.1.11",
-        "inter-rao-energosbyt-python==0.0.21"
+        "inter-rao-energosbyt-python==0.0.22"
     ],
     "config_flow": true,
     "iot_class": "cloud_polling"

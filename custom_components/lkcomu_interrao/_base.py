@@ -68,6 +68,7 @@ from custom_components.lkcomu_interrao.const import (
     DATA_FINAL_CONFIG,
     DATA_PROVIDER_LOGOS,
     DATA_UPDATE_DELEGATORS,
+    DOMAIN,
     FORMAT_VAR_ACCOUNT_CODE,
     FORMAT_VAR_ACCOUNT_ID,
     FORMAT_VAR_CODE,
@@ -373,6 +374,28 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
         self._account_config: ConfigType = account_config
         self._entity_updater = None
 
+    @property
+    def api_hostname(self) -> str:
+        return urlparse(self._account.api.BASE_URL).netloc
+
+    @property
+    def device_info(self) -> Dict[str, Any]:
+        account_object = self._account
+
+        device_info = {
+            "name": f"№ {account_object.code}",
+            "identifiers": {(DOMAIN, f"{account_object.__class__.__name__}__{account_object.id}")},
+            "manufacturer": account_object.provider_name,
+            "model": self.api_hostname,
+            "sw_version": account_object.api.APP_VERSION,  # placeholder for future releases
+        }
+
+        account_address = account_object.address
+        if account_address is not None:
+            device_info["suggested_area"] = account_address
+
+        return device_info
+
     def _handle_dev_presentation(
         self,
         mapping: MutableMapping[str, Any],
@@ -442,8 +465,9 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
         """Return the attribute(s) of the sensor"""
 
         attributes = {
-            ATTR_ATTRIBUTION: (ATTRIBUTION_RU if IS_IN_RUSSIA else ATTRIBUTION_EN)
-            % urlparse(self._account.api.BASE_URL).netloc,
+            ATTR_ATTRIBUTION: (
+                (ATTRIBUTION_RU if IS_IN_RUSSIA else ATTRIBUTION_EN) % self.api_hostname
+            ),
             **(self.sensor_related_attributes or {}),
         }
 

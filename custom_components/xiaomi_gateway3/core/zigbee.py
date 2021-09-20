@@ -330,11 +330,21 @@ DEVICES = [{
 }, {
     'lumi.lock.aq1': ["Aqara", "Door Lock S1", "ZNMS11LM"],
     'lumi.lock.acn02': ["Aqara", "Door Lock S2", "ZNMS12LM"],
-    'lumi.lock.acn03': ["Aqara", "Door Lock S2 Pro", "ZNMS12LM"],
     'lumi_spec': [
         ['13.1.85', None, 'key_id', 'sensor'],
         ['13.20.85', 'lock_state', 'lock', 'binary_sensor'],
         ['8.0.2001', 'battery', 'battery', 'sensor'],
+    ]
+}, {
+    'lumi.lock.acn03': ["Aqara", "Door Lock S2 Pro", "ZNMS12LM"],
+    'lumi_spec': [
+        ['3.1.85', 'reverse_lock_state', 'lock', 'binary_sensor'],
+        ['13.26.85', 'door_state', 'door', 'binary_sensor'],
+        ['8.0.2001', 'bat_percent', 'battery', 'sensor'],
+        ['13.1.85', None, 'key_id', None],
+        ['13.25.85', None, 'lock_control', None],
+        ['13.28.85', None, 'lock_state', None],
+        [None, None, 'action', 'sensor'],
     ]
 }, {
     # https://github.com/AlexxIT/XiaomiGateway3/issues/101
@@ -446,6 +456,28 @@ DEVICES = [{
         ['8.1', None, 'button_2: 1', None],
         ['8.2', None, 'button_2: 2', None],
         ['9.1', None, 'button_both: 4', None],
+        [None, None, 'action', 'sensor'],
+    ]
+}, {
+    'lumi.remote.acn003': ["Aqara", "Single Wall Button E1", "WXKG16LM"],
+    'miot_spec': [
+        ['2.1', None, 'button: 1', None],  # single
+        ['2.2', None, 'button: 2', None],  # double
+        ['2.3', None, 'button: 16', None],  # long
+        ['3.2', '3.2', 'battery', 'sensor'],
+        [None, None, 'action', 'sensor'],
+    ]
+}, {
+    'lumi.remote.acn004': ["Aqara", "Double Wall Button E1", "WXKG17LM"],
+    'miot_spec': [
+        ['2.1', None, 'button_1: 1', None],  # single
+        ['2.2', None, 'button_1: 2', None],  # double
+        ['2.3', None, 'button_1: 16', None],  # long
+        ['7.1', None, 'button_2: 1', None],  # single
+        ['7.2', None, 'button_2: 2', None],  # double
+        ['7.3', None, 'button_2: 16', None],  # long
+        ['8.1', None, 'button_both: 4', None],  # single
+        ['3.2', '3.2', 'battery', 'sensor'],
         [None, None, 'action', 'sensor'],
     ]
 }, {
