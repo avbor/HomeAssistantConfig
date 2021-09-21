@@ -196,6 +196,7 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 - Visual Studio Code
 - Loki
 - Promtail
+- phpMyAdmin
 
 **Mobile Apps:**
 - [Home Assistant](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android) official app on Android\
