@@ -6,9 +6,25 @@
   db_url: !secret mysql_url
   queries:
     - name: HASS DB Size
-      query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1048576, 2) "value" FROM information_schema.tables WHERE table_schema="homeassistant" GROUP BY table_schema;'
+      query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1048576, 2) AS "value" FROM information_schema.tables WHERE table_schema="homeassistant" GROUP BY table_schema;'
       column: 'value'
       unit_of_measurement: MB
+    - name: HASS DB States Rows Count
+      query: 'SELECT COUNT(*) AS "rows" FROM states;'
+      column: 'rows'
+      unit_of_measurement: rows
+    - name: HASS DB Events Rows Count
+      query: 'SELECT COUNT(*) AS "rows" FROM events;'
+      column: 'rows'
+      unit_of_measurement: rows
+    - name: HASS DB Statistics Rows Count
+      query: 'SELECT COUNT(*) AS "rows" FROM statistics;'
+      column: 'rows'
+      unit_of_measurement: rows
+    - name: HASS DB Total Rows Count
+      query: 'SELECT SUM(table_rows) AS "total_rows" FROM information_schema.tables WHERE table_schema = "homeassistant";'
+      column: 'total_rows'
+      unit_of_measurement: rows
 - platform: influxdb
   host: a0d7b954-influxdb
   port: 8086
@@ -190,9 +206,8 @@
   type: median
   entity_ids:
     - sensor.tplink_smartplug_01_voltage
-    - sensor.tplink_smartplug_02_voltage
+    - sensor.gosund_sp111_03_volt
     - sensor.gosund_sp111_05_volt
-    - sensor.gosund_sp111_06_volt
 - platform: min_max
   name: Average Voltage In Country House
   type: median

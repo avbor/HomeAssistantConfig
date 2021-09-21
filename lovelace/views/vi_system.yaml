@@ -57,6 +57,23 @@ cards:
             - entity: sensor.hass_db_size
               name: "MariaDB"
               icon: mdi:database
+            - entity: sensor.hass_db_total_rows_count
+              type: custom:multiple-entity-row
+              name: []
+              icon: []
+              unit: []
+              state_header: total
+              secondary_info: Строк
+              entities:
+                - entity: sensor.hass_db_events_rows_count
+                  name: events
+                  unit: []
+                - entity: sensor.hass_db_states_rows_count
+                  name: states
+                  unit: []
+                - entity: sensor.hass_db_statistics_rows_count
+                  name: statistics
+                  unit: []
             - entity: sensor.influxdb_database_size
               name: "InfluxDB"
               icon: mdi:database

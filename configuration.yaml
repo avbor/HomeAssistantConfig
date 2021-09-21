@@ -96,11 +96,15 @@ recorder:
       - sensor.*_ble
       - sensor.keenetic_gateway_*
       - sensor.*_poslednee_uvedomlenie
+      - sensor.*_wifi_rssi
+      - sensor.gosund_sp111_*_volt
     entities:
       - sensor.time
       - sensor.date
       - sensor.date_time_iso
       - sensor.date_formatted
+      - sensor.date_current_month
+      - sensor.date_previous_month
       - sensor.uptime
       - sensor.moon
       - sun.sun

@@ -1,0 +1,2 @@
+sensor.hass_db_*_rows_count:
+  scan_interval: 300
