@@ -55,8 +55,11 @@ cards:
           show_header_toggle: false
           entities:
             - entity: sensor.hass_db_size
+              type: custom:multiple-entity-row
               name: "MariaDB"
               icon: mdi:database
+              styles:
+                font-weight: bold
             - entity: sensor.hass_db_total_rows_count
               type: custom:multiple-entity-row
               name: []
@@ -75,8 +78,11 @@ cards:
                   name: statistics
                   unit: []
             - entity: sensor.influxdb_database_size
+              type: custom:multiple-entity-row
               name: "InfluxDB"
               icon: mdi:database
+              styles:
+                font-weight: bold
 #        - type: history-graph
 #          hours_to_show: 168
 #          entities:
