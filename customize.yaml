@@ -20,10 +20,16 @@ script.radio_play:
 script.radio_stop:
   friendly_name: Выключить
   icon: mdi:stop
+light.detskaia:
+  friendly_name: Детская - Люстра
 light.sonoff_1000b6831b:
-  friendly_name: Кладовая
+  friendly_name: Кладовая - Люстра
 light.sonoff_1000b72483:
   friendly_name: Кухня - Споты
+light.ikea_e27_kukhnia:
+  friendly_name: Кухня - Люстра
+light.0x86bd7fffe616b72_light:
+  friendly_name: Гостиная - Настольная лампа
 light.sonoff_1000ab3c28:
   friendly_name: Гостиная - Бра
 light.sonoff_1000f3035d:
