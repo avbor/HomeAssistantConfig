@@ -334,7 +334,7 @@ cards:
               - entity: light.sonoff_1000b6831b
                 name: Свет в Кладовой
                 icon: mdi:vanity-light
-              - entity: light.0x86bd7fffe616b72_light
+              - entity: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
                 name: Лампа на столе в Гостиной
                 icon: mdi:desk-lamp
               - entity: light.sonoff_1000b72483

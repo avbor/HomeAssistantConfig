@@ -79,7 +79,7 @@
       device_class: power
       friendly_name: Лампа на столе в Гостиной
       icon_template: mdi:desk-lamp
-      value_template: "{{ is_state('light.0x86bd7fffe616b72_light', 'on') }}"
+      value_template: "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off', 'on') }}"
     lamp_status_prikhozhaya:
       device_class: power
       friendly_name: Споты в Прихожей

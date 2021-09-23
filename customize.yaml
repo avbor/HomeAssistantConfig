@@ -28,7 +28,7 @@ light.sonoff_1000b72483:
   friendly_name: Кухня - Споты
 light.ikea_e27_kukhnia:
   friendly_name: Кухня - Люстра
-light.0x86bd7fffe616b72_light:
+light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off:
   friendly_name: Гостиная - Настольная лампа
 light.sonoff_1000ab3c28:
   friendly_name: Гостиная - Бра

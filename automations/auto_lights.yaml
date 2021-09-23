@@ -569,7 +569,7 @@
   action:
     - service: light.toggle
       data:
-        entity_id: light.0x86bd7fffe616b72_light
+        entity_id: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
 
 - alias: "Кнопка Aqara 1 double"
   id: d7cb6c13-4f80-46cd-9c3b-a862657f1db0
@@ -624,10 +624,10 @@
         command: "rotate_right"
   action:
     - service: light.turn_on
-      entity_id: light.0x86bd7fffe616b72_light
+      entity_id: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
       data:
         brightness: >-
-          {{ (state_attr('light.0x86bd7fffe616b72_light', 'brightness') | int) +
+          {{ (state_attr('light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off', 'brightness') | int) +
           (trigger.event.data.args.relative_degrees | int) }}
 
 - alias: Aqara Cube Flip 90
@@ -644,7 +644,7 @@
         {{ (trigger.event.data.args.flip_degrees | int) == 90 }}
   action:
     - service: light.toggle
-      entity_id: light.0x86bd7fffe616b72_light
+      entity_id: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
       data:
         brightness: 255
 

@@ -34,7 +34,7 @@ all_lamps:
   entities:
     - light.detskaia
     - light.detskaia_podsvetka_na_okne
-    - light.0x86bd7fffe616b72_light
+    - light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
     - light.sonoff_1000ab3c28
     - light.gostinaia_podsvetka_na_okne
     - light.kukhnia_lenta
@@ -70,7 +70,7 @@ light_koridor:
 light_gostinaia:
   name: Весь свет в Гостиной
   entities:
-    - light.0x86bd7fffe616b72_light
+    - light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
     - light.gostinaia_podsvetka_na_okne
     - light.sonoff_1000ab3c28
     - light.sonoff_1000f3035d
