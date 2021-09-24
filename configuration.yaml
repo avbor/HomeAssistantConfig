@@ -11,7 +11,7 @@ homeassistant:
         - 172.16.16.0/24
       trusted_users:
         172.16.16.0/24: 5eb99a825ace48779fad323aac28014d
-  name: Home, Sweeet Home...
+  name: Home, Sweet Home...
   time_zone: !secret home_timezone
   unit_system: metric
   currency: RUB
