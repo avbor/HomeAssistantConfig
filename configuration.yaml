@@ -167,7 +167,7 @@ zha:
   zigpy_config:
     ota:
       ikea_provider: true
-      #ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
+      ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
 
 sonoff:
   username: !secret sonoff_username
