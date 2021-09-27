@@ -7,7 +7,6 @@ homeassistant:
     - type: homeassistant
     - type: trusted_networks
       trusted_networks:
-        - 127.0.0.1
         - 172.16.16.0/24
       trusted_users:
         172.16.16.0/24: 5eb99a825ace48779fad323aac28014d
