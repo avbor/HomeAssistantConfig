@@ -51,7 +51,7 @@ cards:
                   icon: mdi:ceiling-light
               - type: conditional
                 conditions:
-                  - entity: light.detskaia
+                  - entity: light.detskaia_podsvetka_na_okne
                     state_not: "unavailable"
                 card:
                   type: light
