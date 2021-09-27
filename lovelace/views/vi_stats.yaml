@@ -164,6 +164,12 @@ cards:
               - entity: sensor.apartment_enegry_cost_halfpeak
                 name: полупик
                 unit: "₽"
+          - entity: input_number.apartment_enegry_cost_current
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: Текущая
+            unit: "₽"
           - type: section
             label: Квартира
           - entity: sensor.date_current_month
