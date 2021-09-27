@@ -22,31 +22,26 @@ energy_pack:
       icon: mdi:timeline-clock-outline
       has_date: false
       has_time: true
-      #initial: "07:00:00"
     apartment_enegry_start_time_peak_2:
       name: Начало тарифа пик 2
       icon: mdi:timeline-clock-outline
       has_date: false
       has_time: true
-      #initial: "17:00:00"
     apartment_enegry_start_time_halfpeak_1:
       name: Начало тарифа полупик 1
       icon: mdi:timeline-clock-outline
       has_date: false
       has_time: true
-      #initial: "10:00:00"
     apartment_enegry_start_time_halfpeak_2:
       name: Начало тарифа полупик 2
       icon: mdi:timeline-clock-outline
       has_date: false
       has_time: true
-      #initial: "21:00:00"
     apartment_enegry_start_time_night:
       name: Начало тарифа ночь
       icon: mdi:timeline-clock-outline
       has_date: false
       has_time: true
-      #initial: "23:00:00"
 
 # Sensors
   sensor:
@@ -310,6 +305,7 @@ energy_pack:
               ((state_attr('sensor.socket_water_boiler_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
               ((state_attr('sensor.socket_water_boiler_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
             }}
+
         # Fridge
         energy_cost_fridge_monthly:
           device_class: monetary
@@ -363,6 +359,7 @@ energy_pack:
 
 # Utility Meters
   utility_meter:
+    # For Main
     switch_main_energy_daily:
       name: Main Daily Energy
       source: sensor.energy_flat_main_usage
@@ -392,6 +389,7 @@ energy_pack:
       tariffs:
         - total
 
+    # For Server Room
     socket_server_room_energy_daily:
       name: Server Room Daily Energy
       source: sensor.gosund_sp111_03_todays_usage
@@ -415,6 +413,7 @@ energy_pack:
       tariffs:
         - total
 
+    # For Fridge
     socket_kitchen_fridge_energy_daily:
       name: Kitchen Fridge Daily Energy
       source: sensor.gosund_sp111_04_todays_usage
@@ -438,6 +437,7 @@ energy_pack:
       tariffs:
         - total
 
+    # For Electric Kettle
     socket_kitchen_kettle_energy_daily:
       name: Kitchen Electric Kettle Daily Energy
       source: sensor.gosund_sp111_05_todays_usage
@@ -461,6 +461,7 @@ energy_pack:
       tariffs:
         - total
 
+    # For Dishwasher
     socket_kitchen_dishwasher_energy_daily:
       name: Kitchen Dishwasher Daily Energy
       source: sensor.gosund_sp111_06_todays_usage
@@ -484,6 +485,7 @@ energy_pack:
       tariffs:
         - total
 
+    # For Washing Machine
     socket_washmachine_energy_daily:
       name: Washmachine Daily Energy
       source: sensor.tplink_smartplug_02_today_s_consumption
@@ -507,6 +509,7 @@ energy_pack:
       tariffs:
         - total
 
+    # For Water Boiler
     socket_water_boiler_energy_daily:
       name: Water Boiler Daily Energy
       source: sensor.tplink_smartplug_01_today_s_consumption
@@ -529,6 +532,24 @@ energy_pack:
       cycle: monthly
       tariffs:
         - total
+
+# Groups
+  group:
+    all_energy_utility_meters:
+      - utility_meter.switch_main_energy_daily
+      - utility_meter.switch_main_energy_monthly
+      - utility_meter.socket_server_room_energy_daily
+      - utility_meter.socket_server_room_energy_monthly
+      - utility_meter.socket_kitchen_fridge_energy_daily
+      - utility_meter.socket_kitchen_fridge_energy_monthly
+      - utility_meter.socket_kitchen_kettle_energy_daily
+      - utility_meter.socket_kitchen_kettle_energy_monthly
+      - utility_meter.socket_kitchen_dishwasher_energy_daily
+      - utility_meter.socket_kitchen_dishwasher_energy_monthly
+      - utility_meter.socket_washmachine_energy_daily
+      - utility_meter.socket_washmachine_energy_monthly
+      - utility_meter.socket_water_boiler_energy_daily
+      - utility_meter.socket_water_boiler_energy_monthly
 
 # Automations
   automation:
@@ -612,21 +633,7 @@ energy_pack:
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_peak') | float }}"
               - service: utility_meter.select_tariff
-                entity_id:
-                  - utility_meter.switch_main_energy_daily
-                  - utility_meter.switch_main_energy_monthly
-                  - utility_meter.socket_server_room_energy_daily
-                  - utility_meter.socket_server_room_energy_monthly
-                  - utility_meter.socket_kitchen_fridge_energy_daily
-                  - utility_meter.socket_kitchen_fridge_energy_monthly
-                  - utility_meter.socket_kitchen_kettle_energy_daily
-                  - utility_meter.socket_kitchen_kettle_energy_monthly
-                  - utility_meter.socket_kitchen_dishwasher_energy_daily
-                  - utility_meter.socket_kitchen_dishwasher_energy_monthly
-                  - utility_meter.socket_washmachine_energy_daily
-                  - utility_meter.socket_washmachine_energy_monthly
-                  - utility_meter.socket_water_boiler_energy_daily
-                  - utility_meter.socket_water_boiler_energy_monthly
+                entity_id: group.all_energy_utility_meters
                 data:
                   tariff: peak
           # Set Halfpeak Tariff
@@ -641,21 +648,7 @@ energy_pack:
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_halfpeak') | float }}"
               - service: utility_meter.select_tariff
-                entity_id:
-                  - utility_meter.switch_main_energy_daily
-                  - utility_meter.switch_main_energy_monthly
-                  - utility_meter.socket_server_room_energy_daily
-                  - utility_meter.socket_server_room_energy_monthly
-                  - utility_meter.socket_kitchen_fridge_energy_daily
-                  - utility_meter.socket_kitchen_fridge_energy_monthly
-                  - utility_meter.socket_kitchen_kettle_energy_daily
-                  - utility_meter.socket_kitchen_kettle_energy_monthly
-                  - utility_meter.socket_kitchen_dishwasher_energy_daily
-                  - utility_meter.socket_kitchen_dishwasher_energy_monthly
-                  - utility_meter.socket_washmachine_energy_daily
-                  - utility_meter.socket_washmachine_energy_monthly
-                  - utility_meter.socket_water_boiler_energy_daily
-                  - utility_meter.socket_water_boiler_energy_monthly
+                entity_id: group.all_energy_utility_meters
                 data:
                   tariff: halfpeak
           # Set Night Tariff
@@ -670,20 +663,6 @@ energy_pack:
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_night') | float }}"
               - service: utility_meter.select_tariff
-                entity_id:
-                  - utility_meter.switch_main_energy_daily
-                  - utility_meter.switch_main_energy_monthly
-                  - utility_meter.socket_server_room_energy_daily
-                  - utility_meter.socket_server_room_energy_monthly
-                  - utility_meter.socket_kitchen_fridge_energy_daily
-                  - utility_meter.socket_kitchen_fridge_energy_monthly
-                  - utility_meter.socket_kitchen_kettle_energy_daily
-                  - utility_meter.socket_kitchen_kettle_energy_monthly
-                  - utility_meter.socket_kitchen_dishwasher_energy_daily
-                  - utility_meter.socket_kitchen_dishwasher_energy_monthly
-                  - utility_meter.socket_washmachine_energy_daily
-                  - utility_meter.socket_washmachine_energy_monthly
-                  - utility_meter.socket_water_boiler_energy_daily
-                  - utility_meter.socket_water_boiler_energy_monthly
+                entity_id: group.all_energy_utility_meters
                 data:
                   tariff: night
