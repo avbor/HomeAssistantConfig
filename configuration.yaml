@@ -115,6 +115,8 @@ recorder:
       - sensor.huawei_e5372_current_connection_duration
       - sensor.huawei_e5372_rssi
       - sensor.huawei_e5372_sinr
+      - sensor.energy_flat_main_voltage
+      - sensor.energy_flat_main_current
     event_types:
       - call_service
 

@@ -9,7 +9,7 @@ energy_pack:
     apartment_enegry_cost_current:
       name: Стоимость кВт⋅ч текущая
       icon: mdi:cash
-      unit_of_measurement: 'RUB'
+      unit_of_measurement: 'RUB/kWh'
       min: 0.01
       max: 100
       step: 0.01
@@ -73,7 +73,68 @@ energy_pack:
           icon_template: mdi:cash
           value_template: "{{ state_attr('sensor.mes_07762_153_47_account', 'zone_t2_tariff') }}"
 
+      # Main Power Meter
+        energy_flat_main_power:
+          device_class: power
+          unit_of_measurement: "W"
+          icon_template: mdi:flash
+          value_template: "{{ state_attr('switch.sonoff_1001322978','power') }}"
+        energy_flat_main_current:
+          device_class: current
+          unit_of_measurement: "A"
+          icon_template: mdi:current-ac
+          value_template: "{{ state_attr('switch.sonoff_1001322978','current') }}"
+        energy_flat_main_voltage:
+          device_class: voltage
+          unit_of_measurement: "V"
+          icon_template: mdi:sine-wave
+          value_template: "{{ state_attr('switch.sonoff_1001322978','voltage') }}"
+
       # Individual monthly\daily costs
+        # Main
+        energy_cost_main_monthly:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              (((states('sensor.switch_main_energy_monthly_peak') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
+              ((states('sensor.switch_main_energy_monthly_halfpeak') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
+              ((states('sensor.switch_main_energy_monthly_night') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+            }}
+        energy_cost_main_monthly_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              (((state_attr('sensor.switch_main_energy_monthly_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
+              ((state_attr('sensor.switch_main_energy_monthly_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
+              ((state_attr('sensor.switch_main_energy_monthly_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+            }}
+        energy_cost_main_daily_avg:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_main_monthly_prev') | float) / ( days | float )) | round(2) }}
+        energy_cost_main_daily_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              (((state_attr('sensor.switch_main_energy_daily_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
+              ((state_attr('sensor.switch_main_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
+              ((state_attr('sensor.switch_main_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+            }}
+
         # Server room
         energy_cost_server_room_monthly:
           device_class: monetary
@@ -293,8 +354,44 @@ energy_pack:
               ((state_attr('sensor.socket_kitchen_fridge_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
             }}
 
+    # kWh from W
+    - platform: integration
+      source: sensor.energy_flat_main_power
+      name: energy_flat_main_usage
+      unit_prefix: k
+      round: 2
+
 # Utility Meters
   utility_meter:
+    switch_main_energy_daily:
+      name: Main Daily Energy
+      source: sensor.energy_flat_main_usage
+      cycle: daily
+      tariffs:
+        - peak
+        - halfpeak
+        - night
+    switch_main_energy_daily_sum:
+      name: Main Daily Energy Total
+      source: sensor.energy_flat_main_usage
+      cycle: daily
+      tariffs:
+        - total
+    switch_main_energy_monthly:
+      name: Main Monthly Energy
+      source: sensor.energy_flat_main_usage
+      cycle: monthly
+      tariffs:
+        - peak
+        - halfpeak
+        - night
+    switch_main_energy_monthly_sum:
+      name: Main Monthly Energy Total
+      source: sensor.energy_flat_main_usage
+      cycle: monthly
+      tariffs:
+        - total
+
     socket_server_room_energy_daily:
       name: Server Room Daily Energy
       source: sensor.gosund_sp111_03_todays_usage
@@ -516,6 +613,8 @@ energy_pack:
                   value: "{{ states('sensor.apartment_enegry_cost_peak') | float }}"
               - service: utility_meter.select_tariff
                 entity_id:
+                  - utility_meter.switch_main_energy_daily
+                  - utility_meter.switch_main_energy_monthly
                   - utility_meter.socket_server_room_energy_daily
                   - utility_meter.socket_server_room_energy_monthly
                   - utility_meter.socket_kitchen_fridge_energy_daily
@@ -543,6 +642,8 @@ energy_pack:
                   value: "{{ states('sensor.apartment_enegry_cost_halfpeak') | float }}"
               - service: utility_meter.select_tariff
                 entity_id:
+                  - utility_meter.switch_main_energy_daily
+                  - utility_meter.switch_main_energy_monthly
                   - utility_meter.socket_server_room_energy_daily
                   - utility_meter.socket_server_room_energy_monthly
                   - utility_meter.socket_kitchen_fridge_energy_daily
@@ -570,6 +671,8 @@ energy_pack:
                   value: "{{ states('sensor.apartment_enegry_cost_night') | float }}"
               - service: utility_meter.select_tariff
                 entity_id:
+                  - utility_meter.switch_main_energy_daily
+                  - utility_meter.switch_main_energy_monthly
                   - utility_meter.socket_server_room_energy_daily
                   - utility_meter.socket_server_room_energy_monthly
                   - utility_meter.socket_kitchen_fridge_energy_daily

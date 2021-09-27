@@ -88,3 +88,11 @@ switch.gosund_sp111_03_switch:
   friendly_name: Серверная
 sensor.gosund_sp111_03_todays_usage:
   friendly_name: Серверная
+sensor.energy_flat_main_power:
+  state_class: measurement
+sensor.energy_flat_main_current:
+  state_class: measurement
+sensor.energy_flat_main_voltage:
+  state_class: measurement
+sensor.energy_flat_main_usage:
+  friendly_name: Main Power Meter

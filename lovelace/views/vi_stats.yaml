@@ -7,6 +7,39 @@ cards:
       - type: markdown
         content: >
           ### <center>Электроэнергия (kWh)</center>
+      - type: horizontal-stack
+        cards:
+          - type: 'custom:mini-graph-card'
+            name: Квартира
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 80
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.switch_main_energy_daily_sum_total
+          - type: 'custom:mini-graph-card'
+            name: Квартира
+            show:
+              icon: false
+              labels: false
+            font_size_header: 12
+            font_size: 80
+            line_color: '#00b4d8'
+            hours_to_show: 24
+            points_per_hour: 12
+            decimals: 0
+            hour24: true
+            entities:
+                - entity: sensor.energy_flat_main_power
+
       - type: 'custom:mini-graph-card'
         name: Серверная
         show:
@@ -111,6 +144,57 @@ cards:
                 unit: "₽"
               - entity: sensor.apartment_enegry_cost_halfpeak
                 name: полупик
+                unit: "₽"
+          - type: section
+            label: Квартира
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.switch_main_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_main_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.switch_main_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_main_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_main_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_main_daily_prev
+                name: вчера
                 unit: "₽"
           - type: section
             label: Серверная
