@@ -47,7 +47,7 @@ all_lamps:
     - light.sonoff_1000f30a9e
     - light.sonoff_1000f2f14a
     - light.sonoff_1000f2a500
-    - light.sonoff_100105887b
+    - light.sonoff_01minizb_47ef08fe_on_off
     - light.sonoff_1001045426
     - light.sonoff_1001053235
 
@@ -93,14 +93,14 @@ light_spalnia:
   name: Весь свет в Спальне
   entities:
     - light.spalnia_stol
-    - light.sonoff_100105887b
+    - light.sonoff_01minizb_47ef08fe_on_off
     - light.sonoff_1001045426
     - light.sonoff_1001053235
 
 light_spalnia_bra:
   name: Все бра в спальне
   entities:
-    - light.sonoff_100105887b
+    - light.sonoff_01minizb_47ef08fe_on_off
     - light.sonoff_1001045426
 
 nursery_switch_autos:

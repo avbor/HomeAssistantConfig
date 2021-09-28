@@ -18,7 +18,7 @@
       device_class: power
       friendly_name: Бра в Спальне - Лево
       icon_template: mdi:wall-sconce-flat
-      value_template: "{{ is_state('light.sonoff_100105887b', 'on') }}"
+      value_template: "{{ is_state('light.sonoff_01minizb_47ef08fe_on_off', 'on') }}"
     lamp_status_spalnia_liustra:
       device_class: power
       friendly_name: Люстра в Спальне

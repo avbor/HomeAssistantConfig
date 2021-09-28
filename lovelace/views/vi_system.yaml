@@ -355,7 +355,7 @@ cards:
               - entity: light.sonoff_1000f2a500
                 name: Споты в коридоре
                 icon: mdi:spotlight-beam
-              - entity: light.sonoff_100105887b
+              - entity: light.sonoff_01minizb_47ef08fe_on_off
                 name: Бра в Спальне - Лево
                 icon: mdi:wall-sconce-flat
               - entity: light.sonoff_1001045426

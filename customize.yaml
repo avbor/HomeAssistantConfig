@@ -42,7 +42,7 @@ light.sonoff_1000f2a500:
   friendly_name: Коридор - Споты
 light.sonoff_1001045426:
   friendly_name: Спальня - Бра - Право
-light.sonoff_100105887b:
+light.sonoff_01minizb_47ef08fe_on_off:
   friendly_name: Спальня - Бра - Лево
 light.sonoff_1001053235:
   friendly_name: Спальня - Люстра

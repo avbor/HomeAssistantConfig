@@ -197,7 +197,7 @@
         Люстра на кухне: *{{ states('light.ikea_e27_kukhnia') }}*
         Люстра в кладовой: *{{ states('light.sonoff_1000b6831b') }}*
         Люстра в спальне: *{{ states('light.sonoff_1001053235') }}*
-        Бра в спальне - лево: *{{ states('light.sonoff_100105887b') }}*
+        Бра в спальне - лево: *{{ states('light.sonoff_01minizb_47ef08fe_on_off') }}*
         Бра в спальне - право: *{{ states('light.sonoff_1001045426') }}*
         Лампа на столе в спальне: *{{ states('light.spalnia_stol') }}*
         `-= Розетки =-`

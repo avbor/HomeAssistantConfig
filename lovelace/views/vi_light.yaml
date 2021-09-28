@@ -196,11 +196,11 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.sonoff_100105887b
+              - entity: light.sonoff_01minizb_47ef08fe_on_off
                 state_not: "unavailable"
             card:
               type: light
-              entity: light.sonoff_100105887b
+              entity: light.sonoff_01minizb_47ef08fe_on_off
               name: Бра - Лево
               icon: mdi:wall-sconce-flat
           - type: conditional
