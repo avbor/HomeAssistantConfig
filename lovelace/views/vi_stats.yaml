@@ -6,7 +6,7 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### <center>Электроэнергия (kWh)</center>
+          ### <center>Электроэнергия (kWh\W)</center>
       - type: horizontal-stack
         cards:
           - type: 'custom:mini-graph-card'
@@ -38,6 +38,7 @@ cards:
             decimals: 0
             hour24: true
             aggregate_func: max
+            align_state: right
             entities:
                 - entity: sensor.energy_flat_main_power
 
@@ -72,6 +73,7 @@ cards:
             decimals: 0
             hour24: true
             aggregate_func: max
+            align_state: right
             entities:
                 - entity: sensor.gosund_sp111_03_watt
 
@@ -84,7 +86,7 @@ cards:
               graph: bar
               labels: false
             font_size_header: 12
-            font_size: 80
+            font_size: 65
             line_color: '#f6bd60'
             hours_to_show: 168
             hour24: true
@@ -93,6 +95,11 @@ cards:
             bar_spacing: 8
             entities:
                 - entity: sensor.gosund_sp111_04_todays_usage
+                - entity: sensor.gosund_sp111_04_watt
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
           - type: 'custom:mini-graph-card'
             name: Бойлер
             show:
@@ -100,7 +107,7 @@ cards:
               graph: bar
               labels: false
             font_size_header: 12
-            font_size: 80
+            font_size: 65
             line_color: '#f6bd60'
             hours_to_show: 168
             hour24: true
@@ -109,6 +116,11 @@ cards:
             bar_spacing: 8
             entities:
                 - entity: sensor.tplink_smartplug_01_today_s_consumption
+                - entity: sensor.tplink_smartplug_01_current_consumption
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
       - type: horizontal-stack
         cards:
           - type: 'custom:mini-graph-card'
@@ -118,7 +130,7 @@ cards:
               graph: bar
               labels: false
             font_size_header: 12
-            font_size: 80
+            font_size: 65
             line_color: '#f6bd60'
             hours_to_show: 168
             hour24: true
@@ -127,6 +139,11 @@ cards:
             bar_spacing: 8
             entities:
                 - entity: sensor.tplink_smartplug_02_today_s_consumption
+                - entity: sensor.tplink_smartplug_02_current_consumption
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
           - type: 'custom:mini-graph-card'
             name: Посудомоечная машина
             show:
@@ -134,7 +151,7 @@ cards:
               graph: bar
               labels: false
             font_size_header: 12
-            font_size: 80
+            font_size: 65
             line_color: '#f6bd60'
             hours_to_show: 168
             hour24: true
@@ -143,6 +160,10 @@ cards:
             bar_spacing: 8
             entities:
                 - entity: sensor.gosund_sp111_06_todays_usage
+                - entity: sensor.gosund_sp111_06_watt
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
 
   - type: vertical-stack
     cards:
@@ -170,6 +191,8 @@ cards:
             icon: []
             secondary_info: Текущая
             unit: "₽"
+            styles:
+              font-weight: bold
           - type: section
             label: Квартира
           - entity: sensor.date_current_month
