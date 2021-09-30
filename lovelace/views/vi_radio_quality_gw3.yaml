@@ -35,7 +35,7 @@ cards:
             modify: '(x+"").split("|").slice(0, 3).join(", ")'
           - data: rssi
             name: RSSI
-            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+            modify: 'isNaN(parseInt(x, 10)) ? "" : (100 + parseInt(x, 10)) * -1'
           - data: uptime
             name: Gateway Uptime
             modify: x+''
