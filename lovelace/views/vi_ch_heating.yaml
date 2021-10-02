@@ -1,0 +1,111 @@
+title: Heating
+path: ch-heating
+icon: 'mdi:radiator'
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Гостиная</center>
+      - type: custom:simple-thermostat
+        entity: climate.country_house_living_room
+        layout:
+          step: row
+          mode:
+            names: false
+        header: false
+        sensors:
+          - entity: binary_sensor.ch_heater_living_room_status
+            name: Статус
+        control:
+          hvac:
+            _name: "Режим:"
+        hide:
+          state: true
+          temperature: true
+      - type: 'custom:mini-graph-card'
+        name: Температура
+        icon: mdi:thermometer
+        hours_to_show: 24
+        points_per_hour: 12
+        line_width: 2
+        font_size: 75
+        font_size_header: 12
+        height: 82
+        decimals: 1
+        hour24: true
+        align_state: center
+        entities:
+            - entity: sensor.a4c138d358e9_temperature
+              name: Температура
+            - entity: sensor.a4c138d358e9_humidity
+              name: Влажность
+              show_state: true
+              show_graph: false
+            - entity: sensor.ch_heater_living_room_status
+              y_axis: secondary
+              smoothing: false
+              show_legend: false
+              show_line: false
+              show_points: false
+              color: salmon
+        show:
+          name: false
+          icon: false
+          labels: false
+          labels_secondary: false
+          fill: fade
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Дети</center>
+      - type: custom:simple-thermostat
+        entity: climate.country_house_kids_rooms
+        layout:
+          step: row
+          mode:
+            names: false
+        header: false
+        sensors:
+          - entity: binary_sensor.ch_heater_kids_rooms_status
+            name: Статус
+        control:
+          hvac:
+            _name: "Режим:"
+        hide:
+          state: true
+          temperature: true
+      - type: 'custom:mini-graph-card'
+        name: Температура
+        icon: mdi:thermometer
+        hours_to_show: 24
+        points_per_hour: 12
+        line_width: 2
+        font_size: 75
+        font_size_header: 12
+        height: 82
+        decimals: 1
+        hour24: true
+        align_state: center
+        entities:
+            - entity: sensor.country_house_avg_temp_kids_rooms
+              name: Температура
+            - entity: sensor.country_house_avg_humidity_kids_rooms
+              name: Влажность
+              show_state: true
+              show_graph: false
+            - entity: sensor.ch_heater_kids_rooms_status
+              y_axis: secondary
+              smoothing: false
+              show_legend: false
+              show_line: false
+              show_points: false
+              color: salmon
+        show:
+          name: false
+          icon: false
+          labels: false
+          labels_secondary: false
+          fill: fade

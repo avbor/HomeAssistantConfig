@@ -2,4 +2,5 @@ title: 'Дача'
 views:
   - !include views/vi_ch_home.yaml
   - !include views/vi_ch_climate.yaml
+  - !include views/vi_ch_heating.yaml
   - !include views/vi_ch_system.yaml
