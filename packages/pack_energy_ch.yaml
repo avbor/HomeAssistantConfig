@@ -1,0 +1,129 @@
+#################################################
+# Energy Consumption Monitoring - Country House
+#################################################
+
+energy_pack_ch:
+
+# Input Numbers
+  input_number:
+    country_house_enegry_cost_current:
+      name: Стоимость кВт⋅ч текущая
+      icon: mdi:cash
+      unit_of_measurement: 'RUB/kWh'
+      min: 0.01
+      max: 100
+      step: 0.01
+      mode: box
+
+# Sensors
+  sensor:
+    - platform: template
+      sensors:
+
+        # Radiator - Living Room
+        energy_cost_ch_radiator_livingroom_monthly:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              ((states('sensor.socket_ch_radiator_livingroom_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+        energy_cost_ch_radiator_livingroom_monthly_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+        energy_cost_ch_radiator_livingroom_daily_avg:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_livingroom_monthly_prev') | float) / ( days | float )) | round(2) }}
+        energy_cost_ch_radiator_livingroom_daily_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        # Radiator - Kid's Rooms
+        energy_cost_ch_radiator_kidsrooms_monthly:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              ((states('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+        energy_cost_ch_radiator_kidsrooms_monthly_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+        energy_cost_ch_radiator_kidsrooms_daily_avg:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_kidsrooms_monthly_prev') | float) / ( days | float )) | round(2) }}
+        energy_cost_ch_radiator_kidsrooms_daily_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+
+# Utility Meters
+  utility_meter:
+
+    # For Radiator in Living Room
+    socket_ch_radiator_livingroom_energy_daily:
+      name: Server Room Daily Energy
+      source: sensor.gosund_sp111_07_todays_usage
+      cycle: daily
+      tariffs:
+        - total
+    socket_ch_radiator_livingroom_energy_monthly:
+      name: Server Room Monthly Energy
+      source: sensor.gosund_sp111_07_todays_usage
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Radiator in Kid's Rooms 
+    socket_ch_radiator_kidsrooms_energy_daily:
+      name: Server Room Daily Energy
+      source: sensor.gosund_sp111_08_todays_usage
+      cycle: daily
+      tariffs:
+        - total
+    socket_ch_radiator_kidsrooms_energy_monthly:
+      name: Server Room Monthly Energy
+      source: sensor.gosund_sp111_08_todays_usage
+      cycle: monthly
+      tariffs:
+        - total

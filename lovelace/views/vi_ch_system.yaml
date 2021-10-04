@@ -82,3 +82,12 @@ cards:
             entities:
               - entity: sensor.gosund_sp111_07_ampere
                 name: false
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Электроэнергия</center>
+      - type: entities
+        entities:
+          - entity: input_number.country_house_enegry_cost_current
+            name: Стоимость кВт⋅ч
