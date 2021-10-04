@@ -139,7 +139,7 @@ domofon_pack:
             entity_id: switch.domofon_automatically_open_once
         - service: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            target: !secret tlg_group_flat_1
             message: "_Домофон_: Курьер уже в пути, домофон откроется автоматически."
             inline_keyboard:
               - 'Отключить звук:/domofon_mute_once'
