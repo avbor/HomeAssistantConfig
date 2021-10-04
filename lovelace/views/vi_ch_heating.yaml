@@ -26,6 +26,7 @@ cards:
       - type: 'custom:mini-graph-card'
         name: Температура
         icon: mdi:thermometer
+        cache: false
         hours_to_show: 24
         points_per_hour: 12
         line_width: 2
@@ -80,6 +81,7 @@ cards:
       - type: 'custom:mini-graph-card'
         name: Температура
         icon: mdi:thermometer
+        cache: false
         hours_to_show: 24
         points_per_hour: 12
         line_width: 2

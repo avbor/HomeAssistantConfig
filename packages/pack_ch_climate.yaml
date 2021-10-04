@@ -53,7 +53,7 @@ ch_climate_pack:
     - platform: generic_thermostat
       unique_id: 9b877559-21bf-424b-8edc-0e1efb8c5834
       name: Country House Living Room
-      heater: switch.broadlink_smartplug_02_switch
+      heater: switch.gosund_sp111_07_switch
       target_sensor: sensor.a4c138d358e9_temperature
       min_temp: 5
       max_temp: 30
@@ -66,7 +66,7 @@ ch_climate_pack:
     - platform: generic_thermostat
       unique_id: 5c3bb751-1458-4b32-b86c-5ef3206ded5a
       name: Country House Kids Rooms
-      heater: switch.broadlink_smartplug_01_switch
+      heater: switch.gosund_sp111_08_switch
       target_sensor: sensor.country_house_avg_temp_kids_rooms
       min_temp: 5
       max_temp: 30

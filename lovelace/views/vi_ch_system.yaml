@@ -46,6 +46,7 @@ cards:
           - entity: sensor.gosund_sp111_01_watt
             type: custom:multiple-entity-row
             name: "Потребление"
+            icon: []
             entities:
               - entity: sensor.gosund_sp111_01_ampere
                 name: false
@@ -56,13 +57,28 @@ cards:
           - entity: sensor.gosund_sp111_02_watt
             type: custom:multiple-entity-row
             name: "Потребление"
+            icon: []
             entities:
               - entity: sensor.gosund_sp111_02_ampere
                 name: false
           - type: section
-          - entity: switch.broadlink_smartplug_01_switch
+          - entity: switch.gosund_sp111_08_switch
             name: Обогреватель - Дети
             icon: mdi:radiator
-          - entity: switch.broadlink_smartplug_02_switch
+          - entity: sensor.gosund_sp111_08_watt
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.gosund_sp111_08_ampere
+                name: false
+          - entity: switch.gosund_sp111_07_switch
             name: Обогреватель - Гостиная
             icon: mdi:radiator
+          - entity: sensor.gosund_sp111_07_watt
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.gosund_sp111_07_ampere
+                name: false
