@@ -21,9 +21,9 @@ ch_climate_pack:
     - platform: template
       sensors:
         ch_heater_living_room_status:
-          value_template: "{{ (state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs }}"
+          value_template: "{{ ((state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs) * 100 }}"
         ch_heater_kids_rooms_status:
-          value_template: "{{ (state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs }}"
+          value_template: "{{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}"
 
 # Binary Sensors:
   binary_sensor:
