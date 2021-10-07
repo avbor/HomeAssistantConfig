@@ -19,7 +19,7 @@ cards:
               type: light
               entity: light.sonoff_1000f2f14a
               name: Прихожая
-              icon: mdi:spotlight-beam
+              icon: mdi:light-recessed
           - type: conditional
             conditions:
               - entity: light.sonoff_1000f2a500
@@ -28,7 +28,7 @@ cards:
               type: light
               entity: light.sonoff_1000f2a500
               name: Коридор
-              icon: mdi:spotlight-beam
+              icon: mdi:light-recessed
 
   # Детская
   - type: vertical-stack
@@ -87,7 +87,7 @@ cards:
               type: light
               entity: light.sonoff_1000f30a9e
               name: Споты
-              icon: mdi:spotlight-beam
+              icon: mdi:light-recessed
 
       - type: horizontal-stack
         cards:
@@ -145,7 +145,7 @@ cards:
           type: light
           entity: light.sonoff_1000b72483
           name: Споты
-          icon: mdi:spotlight-beam
+          icon: mdi:light-recessed
       - type: horizontal-stack
         cards:
           - type: conditional

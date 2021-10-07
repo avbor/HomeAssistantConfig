@@ -339,7 +339,7 @@ cards:
                 icon: mdi:desk-lamp
               - entity: light.sonoff_1000b72483
                 name: Споты на Кухне
-                icon: mdi:spotlight-beam
+                icon: mdi:light-recessed
               - entity: light.sonoff_1000ab3c28
                 name: Бра в гостиной
                 icon: mdi:wall-sconce-flat
@@ -348,13 +348,13 @@ cards:
                 icon: mdi:ceiling-light
               - entity: light.sonoff_1000f30a9e
                 name: Споты в гостиной
-                icon: mdi:spotlight-beam
+                icon: mdi:light-recessed
               - entity: light.sonoff_1000f2f14a
                 name: Споты в прихожей
-                icon: mdi:spotlight-beam
+                icon: mdi:light-recessed
               - entity: light.sonoff_1000f2a500
                 name: Споты в коридоре
-                icon: mdi:spotlight-beam
+                icon: mdi:light-recessed
               - entity: light.sonoff_01minizb_47ef08fe_on_off
                 name: Бра в Спальне - Лево
                 icon: mdi:wall-sconce-flat

@@ -209,11 +209,11 @@ sonoff:
 
 start_time:
 
-tplink:
-  discovery: false
-  switch:
-    - host: 172.16.16.213
-    - host: 172.16.16.216
+#tplink:
+#  discovery: false
+#  switch:
+#    - host: 172.16.16.213
+#    - host: 172.16.16.216
 
 #zabbix:
 #  host: home.intra
