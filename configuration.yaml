@@ -36,7 +36,7 @@ hassio:
 system_health:
 stream:
 zeroconf:
-ssdp:
+#ssdp:
 sun:
 map:
 mobile_app:
