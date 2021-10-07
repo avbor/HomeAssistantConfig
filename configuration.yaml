@@ -24,7 +24,6 @@ homeassistant:
     - /config/
     - /config/www/weather_icons/
     - /config/www/cam_snapshots/
-#    - /mnt/nas
 
 #################################################
 # Features
@@ -146,15 +145,9 @@ tts:
   - platform: google_translate
     language: 'ru'
 
-#weather:
-#  - platform: gismeteo
-#    mode: daily
-
 discovery:
   ignore:
     - homekit
-#    - yeelight
-#    - igd
 
 light:
   - platform: switch
@@ -208,12 +201,6 @@ sonoff:
       devicekey: eafc1b38-9eee-4dee-a45b-c801a9cba55e
 
 start_time:
-
-#tplink:
-#  discovery: false
-#  switch:
-#    - host: 172.16.16.213
-#    - host: 172.16.16.216
 
 #zabbix:
 #  host: home.intra
