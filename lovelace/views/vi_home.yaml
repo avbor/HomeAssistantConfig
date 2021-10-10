@@ -343,7 +343,9 @@ cards:
           - type: section
             label: Увлажнители воздуха
           - entity: binary_sensor.humidifier_nursery_status
+            name: Детская
           - entity: binary_sensor.humidifier_bedroom_status
+            name: Спальня
           # Разное
           - type: section
             label: Разное
