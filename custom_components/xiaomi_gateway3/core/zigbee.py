@@ -235,6 +235,8 @@ DEVICES = [{
         ['0.1.85', 'temperature', 'temperature', 'sensor'],
         ['0.2.85', 'humidity', 'humidity', 'sensor'],
         ['0.3.85', 'pressure', 'pressure', 'sensor'],
+        # old gateway fw v1.4.6 doesn't send voltage, only percent
+        ['8.0.2001', 'battery', 'battery_percent', None],
         ['8.0.2008', 'voltage', 'battery', 'sensor'],
     ]
 }, {
@@ -494,14 +496,14 @@ DEVICES = [{
 }]
 
 GLOBAL_PROP = {
-    '8.0.2001': 'battery',
+    # '8.0.2001': 'battery',
     '8.0.2002': 'reset_cnt',
     '8.0.2003': 'send_all_cnt',
     '8.0.2004': 'send_fail_cnt',
     '8.0.2005': 'send_retry_cnt',
     '8.0.2006': 'chip_temperature',
     '8.0.2007': 'lqi',
-    '8.0.2008': 'battery_voltage',
+    # '8.0.2008': 'battery_voltage',
     '8.0.2009': 'pv_state',
     '8.0.2010': 'cur_state',
     '8.0.2011': 'pre_state',
@@ -583,6 +585,9 @@ def fix_xiaomi_props(model, params) -> dict:
         if k in ('temperature', 'humidity', 'pressure'):
             if model != 'lumi.airmonitor.acn01':
                 params[k] = v / 100.0
+        elif k == 'voltage' and v and v > 1000:
+            # retain 'load_voltage': 234721
+            params[k] = round(v / 1000.0, 2)
         elif v in ('on', 'open'):
             params[k] = 1
         elif v in ('off', 'close'):
@@ -598,6 +603,10 @@ def fix_xiaomi_props(model, params) -> dict:
             else:
                 params[k] = 2
 
+    # fix lumi.weather on gateway fw v1.4.6
+    if not params.get('battery') and params.get('battery_percent'):
+        params['battery'] = params['battery_percent']
+
     return params
 
 
@@ -612,24 +621,33 @@ def fix_xiaomi_battery(value: int) -> int:
     return int((value - 2700) / 5)
 
 
-def get_buttons(model: str):
-    model, _ = model.split(' ', 1)
+def get_buttons(device_model: str):
+    zigbee_model, _ = device_model.split(' ', 1)
     for device in DEVICES:
-        if model in device:
+        if zigbee_model not in device:
+            continue
+        if 'lumi_spec' in device:
             return [
                 param[2] for param in device['lumi_spec']
                 if param[2].startswith('button')
             ]
+        elif 'miot_spec' in device:
+            buttons = []
+            for _, _, param, _ in device['miot_spec']:
+                if not param.startswith('button'):
+                    continue
+                param, _ = param.split(':', 1)
+                if param not in buttons:
+                    buttons.append(param)
+            return buttons
     return None
 
 
 def get_fw_ver(device: dict) -> int:
-    """Support int (30) and str (1.0.0_0034) versions."""
-    version = device.get('fw_ver', 0)
-    if isinstance(version, int):
-        return version
     try:
-        return int(version.rsplit('_', 1)[1])
+        # mod: 21 hw: 0 fw: 21
+        _, fw = device['fw_ver'].rsplit(' ', 1)
+        return int(fw)
     except:
         return 0
 

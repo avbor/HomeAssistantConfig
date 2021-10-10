@@ -11,7 +11,7 @@ import yaml
 
 from paho.mqtt.client import Client, MQTTMessage
 from . import bluetooth, utils, zigbee
-from .helpers import DevicesRegistry, XiaomiEntity
+from .helpers import DevicesRegistry
 from .mini_miio import SyncmiIO
 from .shell import TelnetShell, ntp_time
 from .unqlite import Unqlite, SQLite
@@ -241,14 +241,12 @@ class GatewayStats(GatewayMesh):
 
         device['stats'].update(payload)
 
-    def process_zb_stats(self, payload: dict) -> bool:
+    def process_zb_stats(self, payload: dict):
         # convert ieee to did
         did = 'lumi.' + str(payload['eui64']).lstrip('0x').lower()
         device = self.devices.get(did)
         if device and device.get('stats'):
             device['stats'].update(payload)
-            return True
-        return False
 
     def process_ble_stats(self, mac: str, data: dict = None):
         device = self.devices.get(mac)
@@ -314,21 +312,31 @@ class GatewayStats(GatewayMesh):
             for i in m1:
                 ieee = '0x' + i[1]
 
-                nwk = i[0]
+                nwk = i[0]  # FFFF
                 ago = int(i[2])
                 type_ = 'device' if i[1] in m2 else \
                     'router' if i[1] in m3 else '-'
-                parent = '0x' + m4[nwk][0] if nwk in m4 else '-'
+                parent = '0x' + m4[nwk][0].lower() if nwk in m4 else '-'
+                nwk = '0x' + nwk.lower()  # 0xffff
 
                 payload = {
                     'eui64': ieee,
-                    'nwk': '0x' + nwk,
+                    'nwk': nwk,
                     'ago': ago,
                     'type': type_,
                     'parent': parent
                 }
 
-                if not self.process_zb_stats(payload):
+                did = 'lumi.' + str(payload['eui64']).lstrip('0x').lower()
+                device = self.devices.get(did)
+                if device and device.get('stats'):
+                    # the device remains in the gateway database after deletion
+                    # and may appear on another gw with another nwk
+                    if nwk == device.get('nwk'):
+                        self.process_zb_stats(payload)
+                    else:
+                        self.debug(f"Zigbee device with wrong NWK: {ieee}")
+                else:
                     self.debug(f"Unknown zigbee device {ieee}: {payload}")
 
             # one hour later
@@ -402,10 +410,8 @@ class GatewayBLE(GatewayStats):
 
         # init entities if needed
         init = device['init']
-        for k in payload.keys():
-            if k in init:
-                # update for retain
-                init[k] = payload[k]
+        for k, v in payload.items():
+            if k in device['entities']:
                 continue
 
             init[k] = payload[k]
@@ -484,6 +490,10 @@ class GatewayEntry(Thread, GatewayBLE):
     @property
     def ble_mode(self):
         return self.options.get('ble', True)
+
+    @property
+    def zha_mode(self):
+        return self.options.get('zha', False)
 
     @property
     def parent_scan_interval(self):
@@ -600,7 +610,7 @@ class GatewayEntry(Thread, GatewayBLE):
                     self.debug("Enable buzzer")
                     shell.run_buzzer()
 
-            if self.options.get('zha'):
+            if self.zha_mode:
                 # stop lumi without checking if it's running
                 shell.stop_lumi_zigbee()
 
@@ -668,41 +678,26 @@ class GatewayEntry(Thread, GatewayBLE):
             }]
 
             # 2. Read zigbee devices
-            if not self.options.get('zha'):
-                # read Silicon devices DB
-                nwks = {}
-                try:
-                    raw = shell.read_file(
-                        '/data/silicon_zigbee_host/devices.txt')
-                    raw = raw.decode().split(' ')
-                    for i in range(0, len(raw) - 1, 32):
-                        ieee = reversed(raw[i + 3:i + 11])
-                        ieee = ''.join(f"{i:>02s}" for i in ieee)
-                        nwks[ieee] = f"{raw[i]:>04s}"
-                except:
-                    _LOGGER.exception("Can't read Silicon devices DB")
+            if not self.zha_mode:
+                raw = shell.read_file('/data/zigbee/device.info')
+                lumi = json.loads(raw)['devInfo']
 
                 # read Xiaomi devices DB
                 raw = shell.read_file(shell.zigbee_db, as_base64=True)
                 # self.debug(f"Devices RAW: {raw}")
                 if raw is None:
                     self.debug("No zigbee database")
-                    data = {}
+                    xiaomi = {}
                 elif raw.startswith(b'unqlite'):
                     db = Unqlite(raw)
-                    data = db.read_all()
+                    xiaomi = db.read_all()
                 else:
                     raw = re.sub(br'}\s*{', b',', raw)
-                    data = json.loads(raw)
+                    xiaomi = json.loads(raw)
 
-                # data = {} or data = {'dev_list': 'null'}
-                dev_list = json.loads(data.get('dev_list', 'null')) or []
-
-                for did in dev_list:
-                    model = data.get(did + '.model')
-                    if not model:
-                        self.debug(f"{did} has not in devices DB")
-                        continue
+                for item in lumi:
+                    did = item['did']
+                    model = item['model']
                     desc = zigbee.get_device(model)
 
                     # skip unknown model
@@ -710,7 +705,12 @@ class GatewayEntry(Thread, GatewayBLE):
                         self.debug(f"{did} has an unsupported modell: {model}")
                         continue
 
-                    retain = json.loads(data[did + '.prop'])['props']
+                    try:
+                        retain = json.loads(xiaomi[did + '.prop'])['props']
+                    except:
+                        self.debug(f"{did} is not in the Xiaomi database")
+                        continue
+
                     self.debug(f"{did} {model} retain: {retain}")
 
                     params = {
@@ -719,15 +719,16 @@ class GatewayEntry(Thread, GatewayBLE):
                         if p[1] is not None
                     }
 
-                    ieee = f"{data[did + '.mac']:>016s}"
+                    ver = f"mod: {item['model_ver']} hw: {item['hardVer']} " \
+                          f"fw: {item['appVer']}"
+
                     device = {
                         'did': did,
-                        'mac': '0x' + data[did + '.mac'],
-                        'ieee': ieee,
-                        'nwk': nwks.get(ieee),
+                        'mac': item['mac'],  # 0xff without leading zeroes
+                        'nwk': item['shortId'],  # 0xffff
                         'model': model,
                         'type': 'zigbee',
-                        'fw_ver': retain.get('fw_ver') or retain.get('1.4'),
+                        'fw_ver': ver,
                         'init': zigbee.fix_xiaomi_props(model, params),
                         'online': retain.get('alive', 1) == 1
                     }
@@ -914,7 +915,12 @@ class GatewayEntry(Thread, GatewayBLE):
                 self.did = device['did']
                 self.gw_topic = f"gw/{device['mac'][2:].upper()}/"
 
-            if type_ in ('gateway', 'zigbee', 'mesh'):
+            if type_ == 'gateway' and self.zha_mode:
+                # only firmware lock
+                param = device['lumi_spec'][-1]
+                self.add_entity(param[3], device, param[2])
+
+            elif type_ in ('gateway', 'zigbee', 'mesh'):
                 for param in device['lumi_spec'] or []:
                     self.add_entity(param[3], device, param[2])
                 for param in device['miot_spec'] or []:
@@ -1095,25 +1101,34 @@ class GatewayEntry(Thread, GatewayBLE):
 
         # convert hass prop to lumi prop
         if device['miot_spec']:
-            params = []
-            for k, v in data.items():
-                if k == 'switch':
-                    v = bool(v)
-                k = next(p[0] for p in device['miot_spec'] if p[2] == k)
-                params.append({
-                    'siid': int(k[0]), 'piid': int(k[2]), 'value': v
-                })
+            try:
+                params = []
+                for k, v in data.items():
+                    k = next(p[0] for p in device['miot_spec'] if p[2] == k)
+                    if k == 'switch':
+                        v = bool(v)
+                    params.append({
+                        'siid': int(k[0]), 'piid': int(k[2]), 'value': v
+                    })
 
-            # Attention! mi_spec are used in payload
-            payload['mi_spec'] = params
-        else:
-            params = [{
-                'res_name': next(p[0] for p in device['lumi_spec']
-                                 if p[2] == k),
-                'value': v
-            } for k, v in data.items()]
+                # Attention! mi_spec are used in payload
+                payload['mi_spec'] = params
+            except StopIteration:
+                pass
 
-            payload['params'] = params
+        # lumi_spec and miot_spec persist simultaneously only in gateway
+        if device['lumi_spec']:
+            try:
+                params = [{
+                    'res_name': next(
+                        p[0] for p in device['lumi_spec'] if p[2] == k
+                    ),
+                    'value': v
+                } for k, v in data.items()]
+
+                payload['params'] = params
+            except StopIteration:
+                pass
 
         self.debug(f"{device['did']} {device['model']} => {payload}")
         payload = json.dumps(payload, separators=(',', ':')).encode()

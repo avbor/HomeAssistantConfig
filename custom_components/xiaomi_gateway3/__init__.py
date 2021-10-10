@@ -47,11 +47,12 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
         info = await hass.helpers.system_info.async_get_system_info()
         _LOGGER.debug(f"SysInfo: {info}")
 
+        # update global debug_mode for all gateways
         if 'debug_mode' in config[CONF_LOGGER]:
             setattr(Gateway3, 'debug_mode', config[CONF_LOGGER]['debug_mode'])
 
-    if 'devices' in config:
-        for k, v in config['devices'].items():
+    if CONF_DEVICES in config:
+        for k, v in config[CONF_DEVICES].items():
             # AA:BB:CC:DD:EE:FF => aabbccddeeff
             k = k.replace(':', '').lower()
             DevicesRegistry.defaults[k] = v
@@ -211,21 +212,23 @@ async def _handle_device_remove(hass: HomeAssistant):
         if not hass_device or not hass_device.identifiers:
             return
 
-        identifier = next(iter(hass_device.identifiers))
-
         # handle only our devices
-        if identifier[0] != DOMAIN or hass_device.name_by_user != 'delete':
+        for hass_did in hass_device.identifiers:
+            if hass_did[0] == DOMAIN and hass_device.name_by_user == 'delete':
+                break
+        else:
             return
 
         # remove from Mi Home
         for gw in hass.data[DOMAIN].values():
             if not isinstance(gw, Gateway3):
                 continue
-            gw_device = gw.get_device(identifier[1])
+            gw_device = gw.get_device(hass_did[1])
             if not gw_device:
                 continue
-            gw.debug(f"Remove device: {gw_device['did']}")
-            gw.miio.send('remove_device', [gw_device['did']])
+            if gw_device['type'] == 'zigbee':
+                gw.debug(f"Remove device: {gw_device['did']}")
+                gw.miio.send('remove_device', [gw_device['did']])
             break
 
         # remove from Hass
