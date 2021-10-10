@@ -1,0 +1,22 @@
+#################################################
+# Temperature sensors for use in ESPHome firmwares
+#################################################
+- sensor:
+
+  - name: for_esphome_temp_in_livingroom
+    #friendly_name: Температура в гостиной
+    unit_of_measurement: °C
+    device_class: temperature
+    state: "{{ states('sensor.0x158d0003230618_temperature') }}"
+
+  - name: for_esphome_temp_in_bedroom
+    #friendly_name: Температура в спальне
+    unit_of_measurement: °C
+    device_class: temperature
+    state: "{{ states('sensor.0x158d0003931b0e_temperature') }}"
+
+  - name: for_esphome_temp_in_nursery
+    #friendly_name: Температура в детской
+    unit_of_measurement: °C
+    device_class: temperature
+    state: "{{ states('sensor.0x158d0003931aec_temperature') }}"

@@ -247,6 +247,7 @@ counter: !include_dir_merge_named entities/counters
 device_tracker: !include_dir_merge_list entities/device_trackers
 sensor: !include_dir_merge_list entities/sensors
 binary_sensor: !include_dir_merge_list entities/binary_sensors
+template: !include_dir_merge_list entities/template
 switch: !include_dir_merge_list entities/switches
 media_player: !include_dir_merge_list entities/media_players
 input_select: !include_dir_merge_named entities/input_select

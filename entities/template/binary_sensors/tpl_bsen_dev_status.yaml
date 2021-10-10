@@ -1,0 +1,29 @@
+#################################################
+# Device status sensors
+#################################################
+- binary_sensor:
+
+  - name: Boiler Status
+    device_class: heat
+    state: "{{ (states('sensor.tplink_smartplug_01_current') | float) > 4 }}"
+    icon: mdi:water-boiler
+
+  - name: Fridge Status
+    device_class: cold
+    state: "{{ is_state('switch.gosund_sp111_04_switch', 'on') }}"
+    icon: mdi:fridge-outline
+
+  - name: Kettle Status
+    device_class: heat
+    state: "{{ (states('sensor.gosund_sp111_05_watt') | float) > 100 }}"
+    icon: mdi:kettle
+
+  - name: Dishwasher Status
+    device_class: power
+    state: "{{ (states('sensor.gosund_sp111_06_watt') | float) > 1 }}"
+    icon: mdi:dishwasher
+
+  - name: Washer Status
+    device_class: power
+    state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float) > 5 }}"
+    icon: mdi:washing-machine

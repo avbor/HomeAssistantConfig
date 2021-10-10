@@ -49,6 +49,31 @@ humidifiers_pack:
       max: 80
       step: 5
 
+  # Binary Sensors
+  binary_sensor:
+    - platform: template
+      sensors:
+        humidifier_nursery_status:
+          device_class: power
+          friendly_name: Увлажнитель воздуха в Детской
+          icon_template: >-
+                {% if states('humidifier.smartmi_humidifier_01_detskaia') == 'on' -%}
+                  mdi:air-humidifier
+                {% else -%}
+                  mdi:air-humidifier-off
+                {% endif %}
+          value_template: "{{ is_state('humidifier.smartmi_humidifier_01_detskaia', 'on') }}"
+        humidifier_bedroom_status:
+          device_class: power
+          friendly_name: Увлажнитель воздуха в Спальне
+          icon_template: >-
+                {% if states('humidifier.smartmi_humidifier_02_spalnia') == 'on' -%}
+                  mdi:air-humidifier
+                {% else -%}
+                  mdi:air-humidifier-off
+                {% endif %}
+          value_template: "{{ is_state('humidifier.smartmi_humidifier_02_spalnia', 'on') }}"
+
   # Sensors
   sensor:
     - platform: template

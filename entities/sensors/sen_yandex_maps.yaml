@@ -26,12 +26,3 @@
   start: !secret yandex_map_dest_3
   destination: zone.home
   name: До дома [от дачи]
-
-- platform: template
-  sensors:
-    ym_dom_dacha_hr:
-      value_template: >
-        {{ strptime(((states('sensor.do_dachi') | int * 60) | timestamp_utc),'%Y-%m-%d %H:%M:%S').strftime('%-H ч. %M мин.') }}
-    ym_dacha_dom_hr:
-      value_template: >
-        {{ strptime(((states('sensor.do_doma_ot_dachi') | int * 60) | timestamp_utc),'%Y-%m-%d %H:%M:%S').strftime('%-H ч. %M мин.') }}

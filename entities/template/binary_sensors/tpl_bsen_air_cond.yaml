@@ -1,0 +1,16 @@
+#################################################
+# AC binary sensors
+#################################################
+- binary_sensor:
+
+    - name: AC Nursery Status
+      device_class: power
+      state: "{{ is_state('binary_sensor.0x158d00039cf974_contact', 'on') }}"
+
+    - name: AC Living Room Status
+      device_class: power
+      state: "{{ is_state('binary_sensor.0x158d0003d54725_contact', 'on') }}"
+
+    - name: AC Bedroom Status
+      device_class: power
+      state: "{{ is_state('binary_sensor.0x158d0004073b67_contact', 'on') }}"

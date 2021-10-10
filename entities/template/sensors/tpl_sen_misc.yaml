@@ -1,0 +1,12 @@
+#################################################
+# Miscellaneous template sensors
+#################################################
+- sensor:
+
+  - name: ym_dom_dacha_hr
+    state: >
+      {{ strptime(((states('sensor.do_dachi') | int * 60) | timestamp_utc),'%Y-%m-%d %H:%M:%S').strftime('%-H ч. %M мин.') }}
+
+  - name: ym_dacha_dom_hr
+    state: >
+      {{ strptime(((states('sensor.do_doma_ot_dachi') | int * 60) | timestamp_utc),'%Y-%m-%d %H:%M:%S').strftime('%-H ч. %M мин.') }}
