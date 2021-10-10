@@ -10,3 +10,23 @@
   - name: ym_dacha_dom_hr
     state: >
       {{ strptime(((states('sensor.do_doma_ot_dachi') | int * 60) | timestamp_utc),'%Y-%m-%d %H:%M:%S').strftime('%-H ч. %M мин.') }}
+
+  - name: Xiaomi Gas Density
+    state: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
+
+  - name: Entrance Door Status
+    state: >
+      {% if is_state('binary_sensor.0x158d00031c790f_contact', "on") %}Открыта
+      {% elif is_state('binary_sensor.0x158d00031c790f_contact', "off") %}Закрыта
+      {% else %}Unavailable
+      {% endif %}
+
+  - name: Local Pressure mmhg
+    unit_of_measurement: mmHg
+    state: >
+      {% set pressure = states('sensor.0x158d0003230618_pressure') | float(default=-1) %}
+      {% if pressure != -1 and (((states('sensor.0x158d0003230618_pressure') | float) / 1.333) | round(2)) > 500 %}
+      {{ ((states('sensor.0x158d0003230618_pressure') | float) / 1.333) | round(2) }}
+      {% else %}
+      {{ states('sensor.local_pressure_mmhg') }}
+      {% endif %}

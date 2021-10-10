@@ -122,21 +122,6 @@
     ha_supervisor_latest_version:
       friendly_name: HA Supervisor Latest Version
       value_template: "{{state_attr('sensor.supervisor_updates','newest_version')}}"
-    entrance_door_status:
-      value_template: >
-        {% if is_state('binary_sensor.0x158d00031c790f_contact', "on") %}Открыта
-        {% elif is_state('binary_sensor.0x158d00031c790f_contact', "off") %}Закрыта
-        {% else %}Unavailable
-        {% endif %}
-    local_pressure_mmhg:
-      value_template: >
-        {% set pressure = states('sensor.0x158d0003230618_pressure') | float(default=-1) %}
-        {% if pressure != -1 and (((states('sensor.0x158d0003230618_pressure') | float) / 1.333) | round(2)) > 500 %}
-        {{ ((states('sensor.0x158d0003230618_pressure') | float) / 1.333) | round(2) }}
-        {% else %}
-        {{ states('sensor.local_pressure_mmhg') }}
-        {% endif %}
-      unit_of_measurement: mmHg
     boiler_status:
       friendly_name: "Electrolux Centurio IQ Status"
       value_template: >
@@ -150,8 +135,6 @@
         {% else %}
           0
         {% endif %}
-    xiaomi_gas_density:
-      value_template: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
     ha_uptime:
       friendly_name: HA Uptime
       icon_template: mdi:clock
@@ -167,7 +150,6 @@
       icon_template: mdi:weather-sunset-down
       value_template: >-
         {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H:%M') }}
-
 - platform: min_max
   name: Average Temperature In Flat
   type: median
