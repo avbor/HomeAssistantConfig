@@ -319,16 +319,16 @@ cards:
               ### <center>Недоступные лампы</center>
           - type: entity-filter
             entities:
-              - entity: sensor.lamp_status_detskaia
+              - entity: light.detskaia
                 name: Свет в Детской
                 icon: mdi:ceiling-light
-              - entity: sensor.lamp_status_kukhnia_lenta
+              - entity: light.kukhnia_lenta
                 name: Подсветка Кухни
                 icon: mdi:led-strip-variant
-              - entity: sensor.lamp_status_kukhnia_liustra
+              - entity: light.ikea_e27_kukhnia
                 name: Люстра на  Кухне
                 icon: mdi:ceiling-light
-              - entity: sensor.lamp_status_spalnia_stol
+              - entity: light.spalnia_stol
                 name: Лампа в Спальне
                 icon: mdi:desk-lamp
               - entity: light.sonoff_1000b6831b
