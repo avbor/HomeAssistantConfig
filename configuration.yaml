@@ -76,6 +76,8 @@ system_log:
 frontend:
   themes: !include_dir_merge_named themes
 
+lovelace: !include lovelace/lovelace.yaml
+
 recorder:
   db_url: !secret mysql_url
   purge_keep_days: 7
@@ -139,8 +141,6 @@ influxdb:
         - msg_received
         - last_msg
 
-lovelace: !include lovelace/lovelace.yaml
-
 tts:
   - platform: google_translate
     language: 'ru'
@@ -148,64 +148,6 @@ tts:
 discovery:
   ignore:
     - homekit
-
-light:
-  - platform: switch
-    name: Детская - подсветка на окне
-    entity_id: switch.0x158d00033b702e_switch
-  - platform: switch
-    name: Гостиная - подсветка на окне
-    entity_id: switch.0x158d000391fb00_switch
-
-zha:
-  zigpy_config:
-    ota:
-      ikea_provider: true
-      ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
-
-sonoff:
-  username: !secret sonoff_username
-  password: !secret sonoff_pass
-  devices:
-    1000b6831b:
-      devicekey: 87c5267d-054f-4a71-8c51-49d027b80d71
-      device_class: light
-    1000b72483:
-      devicekey: bed13aa0-97b7-4177-9b8e-922167e60aea
-      device_class: light
-    1000ab3c28:
-      devicekey: 4158540f-d7c0-4453-aeac-958355a85756
-      device_class: light
-    1000f3035d:
-      devicekey: 71f2d399-79e7-4bf4-9543-1420a806dda7
-      device_class: light
-    1000f30a9e:
-      devicekey: 10541ed9-c3bd-476e-9229-3c852bbfcfe5
-      device_class: light
-    1000f2f14a:
-      devicekey: b8de3a5e-fc76-4110-b8ab-2f6487d7796b
-      device_class: light
-    1000f2a500:
-      devicekey: d32b0517-cca8-4d92-a1ef-ac9fbd4e0f0a
-      device_class: light
-    "1001045426":
-      devicekey: fcca23e4-233a-48c6-9bb1-2ca8d00162cb
-      device_class: light
-    100105887b:
-      devicekey: 40fbcf58-4ee7-4189-8eb1-532562247f7c
-      device_class: light
-    "1001053235":
-      devicekey: d993043f-4e91-4e1e-9450-c3111a1bcf22
-      device_class: light
-    "1001322978":
-      devicekey: eafc1b38-9eee-4dee-a45b-c801a9cba55e
-
-start_time:
-
-#zabbix:
-#  host: home.intra
-#  username: !secret zbx_user
-#  password: !secret zbx_pass
 
 telegram_bot:
   - platform: webhooks # or "polling"
@@ -233,6 +175,19 @@ notify:
     platform: telegram
     chat_id: !secret tlg_group_system
 
+zha:
+  zigpy_config:
+    ota:
+      ikea_provider: true
+      ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
+
+#zabbix:
+#  host: home.intra
+#  username: !secret zbx_user
+#  password: !secret zbx_pass
+
+start_time:
+
 #################################################
 # Inclusions
 #################################################
@@ -248,6 +203,7 @@ device_tracker: !include_dir_merge_list entities/device_trackers
 sensor: !include_dir_merge_list entities/sensors
 binary_sensor: !include_dir_merge_list entities/binary_sensors
 template: !include_dir_merge_list entities/templates
+light: !include_dir_merge_list entities/lights
 switch: !include_dir_merge_list entities/switches
 media_player: !include_dir_merge_list entities/media_players
 input_select: !include_dir_merge_named entities/input_select
@@ -258,3 +214,4 @@ input_text: !include_dir_merge_named entities/input_text
 shell_command: !include_dir_merge_named entities/shell_commands
 rest_command: !include_dir_merge_named entities/rest_command
 yeelight: !include entities/yeelight/yeelight.yaml
+sonoff: !include entities/sonofflan/sonofflan.yaml
