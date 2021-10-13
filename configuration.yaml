@@ -39,7 +39,6 @@ ssdp:
 sun:
 map:
 mobile_app:
-#wwlln:
 wake_on_lan:
 person:
 logbook:
@@ -50,6 +49,10 @@ my:
 dhcp:
 image:
 energy:
+usb:
+#wwlln:
+#cloud:
+#updater:
 
 http:
   #base_url: !secret external_url
