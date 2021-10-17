@@ -43,7 +43,7 @@ cards:
     cards:
     - type: markdown
       content: > 
-        ### <center>Chromecast</center>
+        ### <center>Google</center>
     - type: conditional
       conditions:
         - entity: group.all_chromecasts
@@ -80,6 +80,26 @@ cards:
       card:
         type: media-control
         entity: media_player.googlehome3792
+    - type: markdown
+      content: > 
+        ### <center>Yandex</center>
+    - type: conditional
+      conditions:
+        - entity: media_player.yandex_station_lite_detskaia
+          state_not: "on"
+      card:
+        type: markdown
+        content: >
+          *Нет включенных устройств...*
+    - type: conditional
+      conditions:
+        - entity: media_player.yandex_station_lite_detskaia
+          state_not: "paused"
+        - entity: media_player.yandex_station_lite_detskaia
+          state_not: "idle"
+      card:
+        type: media-control
+        entity: media_player.yandex_station_lite_detskaia
 
 # --- Television
   - type: vertical-stack
@@ -117,9 +137,9 @@ cards:
     # --- Гостиная
     - type: conditional
       conditions:
-        - entity: media_player.samsung_ue46es5507
+        - entity: media_player.ue46es5507
           state_not: "off"
-        - entity: media_player.samsung_ue46es5507
+        - entity: media_player.ue46es5507
           state_not: "unknown"
       card:
         type: vertical-stack
@@ -128,13 +148,13 @@ cards:
             content: >
               *Гостинная:*
           - type: media-control
-            entity: media_player.samsung_ue46es5507
+            entity: media_player.ue46es5507
     # --- Кухня
     - type: conditional
       conditions:
-        - entity: media_player.samsung_ue32es5500
+        - entity: media_player.ue32es5500
           state_not: "off"
-        - entity: media_player.samsung_ue32es5500
+        - entity: media_player.ue32es5500
           state_not: "unknown"
       card:
         type: vertical-stack
@@ -143,7 +163,7 @@ cards:
             content: >
               *Кухня:*
           - type: media-control
-            entity: media_player.samsung_ue32es5500
+            entity: media_player.ue32es5500
     # --- Детская
     - type: markdown
       content: >

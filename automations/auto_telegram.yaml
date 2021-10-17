@@ -209,8 +209,8 @@
         Розетка Xiaomi WiFi Plug 02: *{{ states('switch.mi_smartplugwifi_02') }}*
         `-= ТВ =-`
         Спальня: *{{ states('media_player.samsungtv_ue43ru7470') }}*
-        Гостинная: *{{ states('media_player.samsung_ue46es5507') }}*
-        Кухня: *{{ states('media_player.samsung_ue32es5500') }}*
+        Гостинная: *{{ states('media_player.ue46es5507') }}*
+        Кухня: *{{ states('media_player.ue32es5500') }}*
         Детская: *{{ states('binary_sensor.samsungtv_40c5100') }}*
         `-= Chromecast =-`
         Гостинная: *{{ states('media_player.gostinaia') }}*
