@@ -134,6 +134,7 @@ _Remote site (country house):_
   - Aqara Water Immersing Sensor (SJCGQ11LM, lumi.sensor_wleak.aq1)
   - MiJia Honeywell Gas Leak Detector (JTQJ-BF-01LM/BW, lumi.sensor_natgas.v1)
   - MiJia Light Sensor (GZCGQ01LM, lumi.sen_ill.mgl01)
+  - Trust Motion Sensor (ZPIR-8000)
 
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)
