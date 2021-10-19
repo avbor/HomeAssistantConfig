@@ -20,17 +20,21 @@
       - condition: state
         entity_id: group.all_chromecasts
         state: "on"
+      - condition: state
+        entity_id: media_player.yandex_station_lite_detskaia
+        state: "playing"
   action:
     - service: homeassistant.turn_off
       data:
         entity_id: group.all_tv
     - service: media_player.media_stop
       data:
-        entity_id: group.all_chromecasts
+        entity_id:
+          - group.all_chromecasts
+          - group.all_yandex_stations
 
 - alias: "Wakeup Radio - Childrens"
   id: 75d1f4fc-c40b-433a-b6bc-ed480b53365e
-  initial_state: true
   trigger:
     platform: time
     at: input_datetime.wakeup_radio_in_nursery
@@ -40,15 +44,16 @@
     state: "on"
   action:
     - service: media_player.volume_set
-      entity_id: media_player.googlehome3792
+      entity_id: media_player.yandex_station_lite_detskaia
       data:
-        volume_level: "0.1"
-    - service: media_player.play_media
+        volume_level: "0.0"
+    - delay: "00:00:01"
+    - service: yandex_station.send_command
       data:
-        entity_id: media_player.googlehome3792
-        media_content_id: "http://ic7.101.ru:8000/a199"
-        media_content_type: music
-    - alias: Increase volume by 5%
+        entity_id: media_player.yandex_station_lite_detskaia
+        command: sendText
+        text: Включи детское радио
+    - alias: Increase volume by 10%
       repeat:
         while:
           - condition: template
@@ -56,10 +61,15 @@
         sequence:
           - delay: "00:03:00"
           - service: media_player.volume_set
-            entity_id: media_player.googlehome3792
+            entity_id: media_player.yandex_station_lite_detskaia
             data_template:
               volume_level: >
-                {% set level = (state_attr('media_player.googlehome3792', 'volume_level') | float) + (0.05 | float) %}
+                {% set level = (state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') | float) + (0.1 | float) %}
                 {% if level < 1 %} {{ level }}
                 {% else %} 1
                 {% endif %}
+    - service: yandex_station.send_command
+      data:
+        entity_id: media_player.yandex_station_lite_detskaia
+        command: sendText
+        text: Повтори за мной 'Доброе утро, пора вставать!'
