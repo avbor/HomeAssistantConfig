@@ -9,3 +9,85 @@ toggle_kitchen_led_automation:
       entity_id:
         - automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
         - automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
+
+sunrise_in_nursery:
+  sequence:
+  # Start at brightness 1% and color temp 454
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        color_temp: 454
+        brightness_pct: 1
+    - delay: "00:00:05"
+  # Go to brightness 10% in 3 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 180
+        brightness_pct: 10
+    - delay: "00:03:05"
+  # To color temp 400 in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 90
+        color_temp: 400
+    - delay: "00:01:35"
+  # To brightness 20% in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 90
+        brightness_pct: 20
+    - delay: "00:01:35"
+  # Color temp 350 in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 90
+        color_temp: 350
+    - delay: "00:01:35"
+  # Brightness 30% in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 90
+        brightness_pct: 30
+    - delay: "00:01:35"
+  # Color 300 in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 90
+        color_temp: 300
+    - delay: "00:01:35"
+  # Brightness 40% in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 90
+        brightness_pct: 40
+    - delay: "00:01:35"
+  # Color 270 in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 90
+        color_temp: 270
+    - delay: "00:01:35"
+  # Brightness 100 in 1.5 min
+    - service: light.turn_on
+      target: 
+        entity_id: light.ikea_e27_detskaia
+      data:
+        transition: 255
+        brightness_pct: 100
