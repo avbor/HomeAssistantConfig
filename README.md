@@ -48,6 +48,9 @@ _Remote site (country house):_
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
   Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) & "Zigbee Home Automation (ZHA)"
 
+- Phoscon ConBee 2 by dresden elektronik\
+  Integration "Zigbee Home Automation (ZHA)"
+
 #### WiFi Devices:
 - Relays:
   - Sonoff MINI & MINI R2\
@@ -113,8 +116,9 @@ _Remote site (country house):_
   - MiJia Smart Power Plug 2 (ZNCZ02LM, lumi.plug)
 
 - Light:
-  - IKEA TRÅDFRI LED Bulb E14 (LED1649C5, ikea.light.led1649c5)
-  - IKEA TRÅDFRI LED Bulb E27 (LED1836G9)
+  - IKEA TRÅDFRI LED Bulb E14 400lm (LED1649C5, ikea.light.led1649c5)
+  - IKEA TRÅDFRI LED Bulb E27 806lm (LED1836G9)
+  - IKEA TRÅDFRI LED Bulb E27 1000lm (LED1732G11)
 
 - Switches:
   - MiJia Wireless Switch (WXKG01LM, lumi.sensor_switch)
@@ -133,6 +137,7 @@ _Remote site (country house):_
 
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)
+  - IKEA TRÅDFRI Repeater (E1746)
 
 #### Bluetooth Devices:
 - Sensors:
@@ -151,6 +156,9 @@ _Remote site (country house):_
 
   - Google Home Mini\
   Integration "Google Cast"
+
+  - Yandex Station Lite\
+  Integration "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 
   - Samsung TV Series 5 (ES, 2012 model year)\
   Integration "Samsung Smart TV"
