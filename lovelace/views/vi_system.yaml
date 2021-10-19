@@ -319,8 +319,8 @@ cards:
               ### <center>Недоступные лампы</center>
           - type: entity-filter
             entities:
-              - entity: light.detskaia
-                name: Свет в Детской
+              - entity: light.ikea_e27_detskaia
+                name: Люстра в Детской
                 icon: mdi:ceiling-light
               - entity: light.kukhnia_lenta
                 name: Подсветка Кухни
@@ -332,7 +332,7 @@ cards:
                 name: Лампа в Спальне
                 icon: mdi:desk-lamp
               - entity: light.sonoff_1000b6831b
-                name: Свет в Кладовой
+                name: Люстра в Кладовой
                 icon: mdi:vanity-light
               - entity: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
                 name: Лампа на столе в Гостиной

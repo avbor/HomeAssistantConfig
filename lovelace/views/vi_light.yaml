@@ -42,11 +42,11 @@ cards:
             cards:
               - type: conditional
                 conditions:
-                  - entity: light.detskaia
+                  - entity: light.ikea_e27_detskaia
                     state_not: "unavailable"
                 card:
                   type: light
-                  entity: light.detskaia
+                  entity: light.ikea_e27_detskaia
                   name: Люстра
                   icon: mdi:ceiling-light
               - type: conditional

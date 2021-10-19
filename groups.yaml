@@ -37,7 +37,8 @@ all_yandex_stations:
 all_lamps:
   name: Все лампы
   entities:
-    - light.detskaia
+#    - light.detskaia
+    - light.ikea_e27_detskaia
     - light.detskaia_podsvetka_na_okne
     - light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
     - light.sonoff_1000ab3c28
@@ -59,7 +60,8 @@ all_lamps:
 light_detskaia:
   name: Весь свет в Детской
   entities:
-    - light.detskaia
+#    - light.detskaia
+    - light.ikea_e27_detskaia
     - light.detskaia_podsvetka_na_okne
 
 light_prikhozhaya:

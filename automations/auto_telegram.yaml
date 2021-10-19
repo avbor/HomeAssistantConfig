@@ -185,7 +185,7 @@
         `-= Свет =-`
         Споты в прихожей: *{{ states('light.sonoff_1000f2f14a') }}*
         Споты в коридоре: *{{ states('light.sonoff_1000f2a500') }}*
-        Люстра в детской: *{{ states('light.detskaia') }}*
+        Люстра в детской: *{{ states('light.ikea_e27_detskaia') }}*
         Подсветка окна в детской: *{{ states('light.detskaia_podsvetka_na_okne') }}*
         Люстра в гостиной: *{{ states('light.sonoff_1000f3035d') }}*
         Споты в гостиной: *{{ states('light.sonoff_1000f30a9e') }}*

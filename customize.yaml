@@ -22,6 +22,8 @@ script.radio_stop:
   icon: mdi:stop
 light.detskaia:
   friendly_name: Детская - Люстра
+light.ikea_e27_detskaia:
+  friendly_name: Детская - Люстра
 light.sonoff_1000b6831b:
   friendly_name: Кладовая - Люстра
 light.sonoff_1000b72483:

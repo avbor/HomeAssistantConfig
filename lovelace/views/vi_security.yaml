@@ -7,7 +7,7 @@ cards:
       - type: picture-glance
         title: Детская
         entities:
-          - light.detskaia
+          - light.ikea_e27_detskaia
         camera_image: camera.dafangcam_03_rtsp
       - type: entities
         show_header_toggle: false

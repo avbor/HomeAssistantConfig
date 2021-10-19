@@ -28,7 +28,7 @@
       device_class: power
       friendly_name: Люстра в Детской
       icon_template: mdi:ceiling-light
-      value_template: "{{ is_state('light.detskaia', 'on') }}"
+      value_template: "{{ is_state('light.ikea_e27_detskaia', 'on') }}"
     lamp_status_detskaia_okno:
       device_class: power
       friendly_name: Подсветка окна в Детской
