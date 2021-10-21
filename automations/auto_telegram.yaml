@@ -216,7 +216,6 @@
         Гостинная: *{{ states('media_player.gostinaia') }}*
         Гостинная (Home Mini): *{{ states('media_player.googlehome9967') }}*
         Детская: *{{ states('media_player.detskaia') }}*
-        Детская: (Home Mini): *{{ states('media_player.googlehome3792') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
         Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*

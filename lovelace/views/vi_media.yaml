@@ -38,7 +38,7 @@ cards:
                     entity_id: script.radio_stop
                 entity: script.radio_stop
 
-# --- Chromecast
+# --- Google
   - type: vertical-stack
     cards:
     - type: markdown
@@ -73,13 +73,14 @@ cards:
       card:
         type: media-control
         entity: media_player.googlehome9967
-    - type: conditional
-      conditions:
-        - entity: media_player.googlehome3792
-          state_not: "off"
-      card:
-        type: media-control
-        entity: media_player.googlehome3792
+#    - type: conditional
+#      conditions:
+#        - entity: media_player.googlehome3792
+#          state_not: "off"
+#      card:
+#        type: media-control
+#        entity: media_player.googlehome3792
+# --- Yandex
     - type: markdown
       content: > 
         ### <center>Yandex</center>
