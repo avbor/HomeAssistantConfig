@@ -58,7 +58,6 @@ http:
   #base_url: !secret external_url
   use_x_forwarded_for: true
   trusted_proxies: 
-    - 127.0.0.1
     - 172.16.16.253
   ip_ban_enabled: true
   login_attempts_threshold: 3
@@ -71,6 +70,12 @@ logger:
 #    homeassistant.components.tuya: debug
 #    homeassistant.components.http.ban: warning
 #    homeassistant.components.device_tracker: debug
+  filters:
+    zeroconf:
+      - "Received invalid packet from .* at offset .* while unpacking .*"
+    custom_component.gismeteo:
+      - "Timeout fetching gismeteo data"
+      - "Error fetching gismeteo data: Can't update weather data! Invalid server response"
 
 system_log:
   max_entries: 50
