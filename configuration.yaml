@@ -73,7 +73,7 @@ logger:
   filters:
     zeroconf:
       - "Received invalid packet from .* at offset .* while unpacking .*"
-    custom_component.gismeteo:
+    custom_components.gismeteo:
       - "Timeout fetching gismeteo data"
       - "Error fetching gismeteo data: Can't update weather data! Invalid server response"
 
