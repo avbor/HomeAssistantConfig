@@ -161,6 +161,9 @@ _Remote site (country house):_
   - Yandex Station Lite\
   Integration "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 
+  - Tandex Station Mini-2\
+  Integration "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
+
   - Samsung TV Series 5 (ES, 2012 model year)\
   Integration "Samsung Smart TV"
 
