@@ -196,6 +196,8 @@ zha:
 
 start_time:
 
+yandex_smart_home: !include entities/yandex_smart_home/yandex_smart_home.yaml
+
 #################################################
 # Inclusions
 #################################################

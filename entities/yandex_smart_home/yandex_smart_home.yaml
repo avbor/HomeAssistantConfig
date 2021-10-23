@@ -1,0 +1,102 @@
+#################################################
+# Yandex Smart Home Settings
+#################################################
+notifier:
+  - oauth_token: !secret ysm_notifier_oauth_token
+    skill_id: !secret ysm_notifier_skill_id
+    user_id: !secret ysm_notifier_user_id
+filter:
+  include_entities:
+    - sensor.average_temperature_in_flat # Квартира - Температура
+    - light.sonoff_1000f2f14a # Прихожая - Споты
+    - light.sonoff_1000f2a500 # Коридор - Споты
+    - light.ikea_e27_detskaia # Детская - Люстра
+    - light.detskaia_podsvetka_na_okne # Детская - Подсветка на окне
+    - sensor.0x158d0003931aec_temperature # Детская - Температура
+    - vacuum.xiaomi_vacuum_cleaner # Гостиная - Пылесос
+    - light.sonoff_1000f30a9e # Гостиная - Споты
+    - light.sonoff_1000ab3c28 # Гостиная - Бра
+    - light.sonoff_1000f3035d # Гостиная - Люстра
+    - light.gostinaia_podsvetka_na_okne # Гостиная - Подсветка на окне
+    - sensor.0x158d0003230618_temperature # Гостиная - Температура
+    - light.sonoff_1000b72483 # Кухня - Споты
+    - light.ikea_e27_kukhnia # Кухня - Люстра
+    - light.kukhnia_lenta # Кухня - Подсветка
+    - light.sonoff_1000b6831b # Кладовая - Люстра
+    - light.sonoff_1001053235 # Спальня - Люстра
+    - sensor.0x158d0003931b0e_temperature # Спальня - Температура
+entity_config:
+  light.sonoff_1000f2a500:
+    name: Споты
+    room: Коридор
+  light.sonoff_1000f2f14a:
+    name: Споты
+    room: Прихожая
+  light.ikea_e27_detskaia:
+    name: Люстра
+    room: Детская
+  light.detskaia_podsvetka_na_okne:
+    name: Подсветка
+    room: Детская
+  light.sonoff_1000f30a9e:
+    name: Споты
+    room: Гостиная
+  light.sonoff_1000ab3c28:
+    name: Бра
+    room: Гостиная
+  light.sonoff_1000f3035d:
+    name: Люстра
+    room: Гостиная
+  light.gostinaia_podsvetka_na_okne:
+    name: Подсветка
+    room: Гостиная
+  light.sonoff_1000b72483:
+    name: Споты
+    room: Кухня
+  light.ikea_e27_kukhnia:
+    name: Люстра
+    room: Кухня
+  light.kukhnia_lenta:
+    name: Подсветка
+    room: Кухня
+  light.sonoff_1000b6831b:
+    name: Люстра
+    room: Кладовая
+  light.sonoff_1001053235:
+    name: Люстра
+    room: Спальня
+  sensor.average_temperature_in_flat:
+    name: Климат в квартире
+    room: Квартира
+    properties:
+      - type: temperature
+        entity: sensor.average_temperature_in_flat
+      - type: humidity
+        entity: sensor.average_humidity_in_flat
+  sensor.0x158d0003931aec_temperature:
+    name: Климат в детской
+    room: Детская
+    properties:
+      - type: humidity
+        entity: sensor.0x158d0003931aec_humidity
+      - type: battery_level
+        entity: sensor.0x158d0003931aec_battery
+  sensor.0x158d0003230618_temperature:
+    name: Климат в гостиной
+    room: Гостиная
+    properties:
+      - type: humidity
+        entity: sensor.0x158d0003230618_humidity
+      - type: battery_level
+        entity: sensor.0x158d0003230618_battery
+  sensor.0x158d0003931b0e_temperature:
+    name: Климат в спальне
+    room: Спальня
+    properties:
+      - type: humidity
+        entity: sensor.0x158d0003931b0e_humidity
+      - type: battery_level
+        entity: sensor.0x158d0003931b0e_battery
+  vacuum.xiaomi_vacuum_cleaner:
+    name: Пылесос
+    room: Гостиная
