@@ -201,12 +201,7 @@
         Бра в спальне - право: *{{ states('light.sonoff_1001045426') }}*
         Лампа на столе в спальне: *{{ states('light.spalnia_stol') }}*
         `-= Розетки =-`
-        Розетка TP-Link SmartPlug 01: *{{ states('switch.tplink_smartplug_01') }}*
-        Розетка TP-Link SmartPlug 02: *{{ states('switch.tplink_smartplug_02') }}*
-        Розетка Xiaomi ZigBee Plug 01: *{{ states('switch.0x158d00033b702e_switch') }}*
-        Розетка Xiaomi ZigBee Plug 02: *{{ states('switch.0x158d000391fb00_switch') }}*
         Розетка Xiaomi WiFi Plug 01: *{{ states('switch.mi_smartplugwifi_01') }}*
-        Розетка Xiaomi WiFi Plug 02: *{{ states('switch.mi_smartplugwifi_02') }}*
         `-= ТВ =-`
         Спальня: *{{ states('media_player.samsungtv_ue43ru7470') }}*
         Гостинная: *{{ states('media_player.ue46es5507') }}*
@@ -215,8 +210,12 @@
         `-= Chromecast =-`
         Гостинная: *{{ states('media_player.gostinaia') }}*
         Детская: *{{ states('media_player.detskaia') }}*
+        `-= Yandex =-`
+        Гостинная: *{{ states('media_player.yandex_station_mini2_gostinaia') }}*
+        Детская: *{{ states('media_player.yandex_station_lite_detskaia') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
+        Датчик газа: *{{ states('switch.mi_smartplugwifi_02') }}*
         Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*
         Transmission Status: *{{ states('sensor.transmission_status') }}*
         Plex Users: *{{ states('sensor.plex_plexonubuntu') }}*
