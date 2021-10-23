@@ -214,7 +214,6 @@
         Детская: *{{ states('binary_sensor.samsungtv_40c5100') }}*
         `-= Chromecast =-`
         Гостинная: *{{ states('media_player.gostinaia') }}*
-        Гостинная (Home Mini): *{{ states('media_player.googlehome9967') }}*
         Детская: *{{ states('media_player.detskaia') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
