@@ -33,6 +33,7 @@ all_yandex_stations:
   name: Все Яндекс станции
   entities:
     - media_player.yandex_station_lite_detskaia
+    - media_player.yandex_station_mini2_gostinaia
 
 all_lamps:
   name: Все лампы

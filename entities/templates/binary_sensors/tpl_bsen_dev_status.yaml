@@ -27,3 +27,11 @@
     device_class: power
     state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float) > 5 }}"
     icon: mdi:washing-machine
+
+  - name: Yandex Station Mini2 Gostinaia Status
+    device_class: power
+    state: "{{ not states('media_player.yandex_station_mini2_gostinaia') in ('paused', 'idle') }}"
+
+  - name: Yandex Station Lite Detskaia Status
+    device_class: power
+    state: "{{ not states('media_player.yandex_station_lite_detskaia') in ('paused', 'idle') }}"

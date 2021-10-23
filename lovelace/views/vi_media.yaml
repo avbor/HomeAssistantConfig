@@ -86,7 +86,9 @@ cards:
         ### <center>Yandex</center>
     - type: conditional
       conditions:
-        - entity: media_player.yandex_station_lite_detskaia
+        - entity: binary_sensor.yandex_station_lite_detskaia_status
+          state_not: "on"
+        - entity: binary_sensor.yandex_station_mini2_gostinaia_status
           state_not: "on"
       card:
         type: markdown
@@ -101,6 +103,17 @@ cards:
       card:
         type: media-control
         entity: media_player.yandex_station_lite_detskaia
+    - type: conditional
+      conditions:
+        - entity: media_player.yandex_station_mini2_gostinaia
+          state_not: "paused"
+        - entity: media_player.yandex_station_mini2_gostinaia
+          state_not: "idle"
+      card:
+        type: media-control
+        entity: media_player.yandex_station_mini2_gostinaia
+
+#media_player.yandex_station_mini2_gostinaia
 
 # --- Television
   - type: vertical-stack
