@@ -25,6 +25,8 @@ filter:
     - light.sonoff_1000b6831b # Кладовая - Люстра
     - light.sonoff_1001053235 # Спальня - Люстра
     - sensor.0x158d0003931b0e_temperature # Спальня - Температура
+    - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
+    - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
 entity_config:
   light.sonoff_1000f2a500:
     name: Споты
@@ -100,3 +102,17 @@ entity_config:
   vacuum.xiaomi_vacuum_cleaner:
     name: Пылесос
     room: Гостиная
+  sensor.a4c138d358e9_temperature:
+    name: Климат в гостиной
+    properties:
+      - type: humidity
+        entity: sensor.a4c138d358e9_humidity
+      - type: battery_level
+        entity: sensor.a4c138d358e9_battery
+  sensor.country_house_avg_temp_kids_rooms:
+    name: Климат у детей
+    properties:
+      - type: temperature
+        entity: sensor.country_house_avg_temp_kids_rooms
+      - type: humidity
+        entity: sensor.country_house_avg_humidity_kids_rooms
