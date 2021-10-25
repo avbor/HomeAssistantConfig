@@ -11,6 +11,22 @@ cards:
       cards:
         - type: markdown
           content: >
+            #### Memory usage
+        - type: statistics-graph
+          entities:
+            - entity: sensor.memory_use_percent
+              name: []
+          days_to_show: 7
+          chart_type: line
+          stat_types:
+            - min
+            - mean
+            - max
+#            - sum
+    - type: custom:vertical-stack-in-card
+      cards:
+        - type: markdown
+          content: >
             #### Component's versions
         - type: entities
           show_header_toggle: false

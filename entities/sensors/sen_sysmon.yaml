@@ -1,0 +1,9 @@
+#################################################
+# System Monitor sensors
+#################################################
+- platform: systemmonitor
+  resources:
+    - type: processor_use
+    - type: memory_use_percent
+    - type: memory_use
+    - type: memory_free
