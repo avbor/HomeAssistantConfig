@@ -83,7 +83,7 @@
     service: notify.telegram_group_flat_1
     data_template:
       message: >
-        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' Contact','') }}* работает больше 8 часов.
+        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше 8 часов.
 
 - alias: AC - long running [16h]
   id: 970eef7a-4b66-4186-88ff-a0542c13c10a
@@ -102,7 +102,7 @@
     service: notify.telegram_group_flat_1
     data_template:
       message: >
-        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' Contact','') }}* работает больше *16* часов.
+        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *16* часов.
 
 - alias: AC - long running [24h]
   id: 106513d8-941c-4bfe-8f42-1fe9c95a77de
@@ -121,4 +121,4 @@
     service: notify.telegram_group_flat_1
     data_template:
       message: >
-        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' Contact','') }}* работает больше *24* часов.
+        Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *24* часов.

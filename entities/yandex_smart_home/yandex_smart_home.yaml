@@ -6,6 +6,8 @@ notifier:
     skill_id: !secret ysm_notifier_skill_id
     user_id: !secret ysm_notifier_user_id
 filter:
+  include_domains:
+    - vacuum
   include_entities:
     - sensor.average_temperature_in_flat # Квартира - Температура
     - light.sonoff_1000f2f14a # Прихожая - Споты
@@ -13,7 +15,6 @@ filter:
     - light.ikea_e27_detskaia # Детская - Люстра
     - light.detskaia_podsvetka_na_okne # Детская - Подсветка на окне
     - sensor.0x158d0003931aec_temperature # Детская - Температура
-    - vacuum.xiaomi_vacuum_cleaner # Гостиная - Пылесос
     - light.sonoff_1000f30a9e # Гостиная - Споты
     - light.sonoff_1000ab3c28 # Гостиная - Бра
     - light.sonoff_1000f3035d # Гостиная - Люстра
@@ -101,7 +102,7 @@ entity_config:
         entity: sensor.0x158d0003931b0e_battery
   vacuum.xiaomi_vacuum_cleaner:
     name: Пылесос
-    room: Гостиная
+    room: Квартира
   sensor.a4c138d358e9_temperature:
     name: Климат в гостиной
     properties:

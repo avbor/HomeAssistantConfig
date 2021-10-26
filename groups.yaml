@@ -114,6 +114,4 @@ light_spalnia_bra:
 nursery_switch_autos:
   name: Автоматизации кнопок в детской
   entities:
-    - automation.iarkost_sveta_v_detskoi
-    - automation.svet_v_detsoki_vkl_vykl
-    - automation.podsvetka_okna_v_detskoi_vkl_vykl
+    - automation.knopka_xiaomi_v_detskoi

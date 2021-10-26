@@ -24,6 +24,7 @@ vacuum_cleaner:
           right: 17
       attributes:
         - calibration_points
+        - vacuum_position
       #auto_update: true
       scan_interval: 15
 
