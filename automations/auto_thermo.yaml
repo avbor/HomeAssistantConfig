@@ -7,11 +7,11 @@
   id: bb3a7df3-3e20-4ebe-8b49-bc9ba69ad2b6
   trigger:
     - platform: template
-      value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float) < 22 }}"
+      value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float(0)) < 22 }}"
       for:
         minutes: 5
     - platform: template
-      value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float) > 25 }}"
+      value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float(0)) > 25 }}"
       for:
         minutes: 5
   action:
@@ -19,8 +19,8 @@
       data_template:
         message: >-
           В *Детской*
-          {% if (trigger.to_state.state | float) > 23 -%} жарко,
-          {% elif (trigger.to_state.state | float) < 23 -%} холодно,
+          {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
+          {% elif (trigger.to_state.state | float(0)) < 23 -%} холодно,
           {% endif -%} температура: *{{ trigger.to_state.state }}°C*
 
 # Гостиная ######################################
@@ -28,11 +28,11 @@
   id: 0e135e8d-3ad5-40cb-9d8f-9ab3df6b91bd
   trigger:
     - platform: template
-      value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float) < 22 }}"
+      value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float(0)) < 22 }}"
       for:
         minutes: 5
     - platform: template
-      value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float) > 25 }}"
+      value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float(0)) > 25 }}"
       for:
         minutes: 5
   action:
@@ -40,8 +40,8 @@
       data_template:
         message: >-
           В *Гостиной*
-          {% if (trigger.to_state.state | float) > 23 -%} жарко,
-          {% elif (trigger.to_state.state | float) < 23 -%} холодно,
+          {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
+          {% elif (trigger.to_state.state | float(0)) < 23 -%} холодно,
           {% endif -%} температура: *{{ trigger.to_state.state }}°C*
 
 # Спальня #######################################
@@ -49,11 +49,11 @@
   id: 524b5b92-0f5d-4429-88d2-9903ec325389
   trigger:
     - platform: template
-      value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float) < 21 }}"
+      value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float(0)) < 21 }}"
       for:
         minutes: 5
     - platform: template
-      value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float) > 24.5 }}"
+      value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float(0)) > 24.5 }}"
       for:
         minutes: 5
   action:
@@ -61,8 +61,8 @@
       data_template:
         message: >-
           В *Спальне*
-          {% if (trigger.to_state.state | float) > 23 -%} жарко,
-          {% elif (trigger.to_state.state | float) < 23 -%} холодно,
+          {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
+          {% elif (trigger.to_state.state | float(0)) < 23 -%} холодно,
           {% endif -%} температура: *{{ trigger.to_state.state }}°C*
 
 # Оповещения о долгой работе кондиционеров ######

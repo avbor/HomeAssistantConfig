@@ -79,8 +79,8 @@
     platform: state
     entity_id: binary_sensor.0x158d000309920a_motion
     to: "off"
-  #    for:
-  #      minutes: 3
+    for:
+      minutes: 1
   condition:
     condition: state
     entity_id: light.sonoff_1000f2f14a
