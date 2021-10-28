@@ -26,6 +26,12 @@ cards:
             name: IEEE
           - name: NWK
             prop: nwk
+#          - name: Neighbours
+#            attr: neighbors
+#            modify: >-
+#              x.map((n, idx) => { let s = ""; if (idx > 0) s = "<br />"; s = s + n.relationship + " " + n.nwk; return s; })
+          - name: Type
+            attr: device_type
           - attr: lqi
             name: LQI
           - attr: rssi
