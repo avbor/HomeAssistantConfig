@@ -33,6 +33,12 @@ cards:
           - data: load_avg
             name: Load Avg (1m, 5m, 15m)
             modify: '(x+"").split("|").slice(0, 3).join(", ")'
+          - data: zigbee
+            name: ZB Port Errors
+            modify: x.oe
+          - data: bluetooth
+            name: BT Port Errors
+            modify: x.oe
           - data: rssi
             name: RSSI
             modify: 'isNaN(parseInt(x, 10)) ? "" : (100 + parseInt(x, 10)) * -1'
@@ -74,13 +80,13 @@ cards:
             modify: (x+'').toLowerCase()
           - data: nwk
             name: NWK
-            modify: (x+'').replace(/^0x/,"").toLowerCase()
+            modify: (x+'').replace(/^0x/,"")
           - data: parent
             name: Parent
             modify: (x+'').replace(/^0x/,"").toLowerCase()
-          - data: type
-            name: Type
-            modify: (x+'').replace(/^-$/, "child device")
+#          - data: type
+#            name: Type
+#            modify: (x+'').replace(/^-$/, "child device")
           - data: msg_received
             name: Received
             modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
@@ -92,6 +98,9 @@ cards:
             modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
           - data: unresponsive
             name: Unresponsive
+            modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
+          - data: reset_cnt
+            name: Reset Count
             modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
           - data: link_quality
             name: LQI
