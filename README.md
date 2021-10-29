@@ -46,7 +46,7 @@ _Remote site (country house):_
   Integration "Xiaomi Gateway (Aqara)"
 
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
-  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) & "Zigbee Home Automation (ZHA)"
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)"
 
 - Phoscon ConBee 2 by dresden elektronik\
   Integration "Zigbee Home Automation (ZHA)"
