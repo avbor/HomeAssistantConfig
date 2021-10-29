@@ -101,19 +101,19 @@ cards:
             modify: (x+'').replace(/^-$/, "child device")
           - data: msg_received
             name: Received
-            modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: msg_missed
             name: Missed (Total)
-            modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: last_missed
             name: Missed (Last)
-            modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: unresponsive
             name: Unresponsive
-            modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: reset_cnt
             name: Reset Count
-            modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: link_quality
             name: LQI
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
