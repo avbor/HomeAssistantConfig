@@ -114,6 +114,7 @@ _Remote site (country house):_
 
 - Plugs:
   - MiJia Smart Power Plug 2 (ZNCZ02LM, lumi.plug)
+  - BlitzWolf SHP15 (BW-SHP15, TS011F)
 
 - Light:
   - IKEA TRÅDFRI LED Bulb E14 400lm (LED1649C5, ikea.light.led1649c5)
