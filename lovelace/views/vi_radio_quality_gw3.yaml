@@ -34,10 +34,22 @@ cards:
             name: Load Avg (1m, 5m, 15m)
             modify: '(x+"").split("|").slice(0, 3).join(", ")'
           - data: zigbee
-            name: ZB Port Errors
+            name: ZB Tx
+            modify: x.tx
+          - data: zigbee
+            name: ZB Rx
+            modify: x.rx
+          - data: zigbee
+            name: ZB Err
             modify: x.oe
           - data: bluetooth
-            name: BT Port Errors
+            name: BT Tx
+            modify: x.tx
+          - data: bluetooth
+            name: BT Rx
+            modify: x.rx
+          - data: bluetooth
+            name: BT Err
             modify: x.oe
           - data: rssi
             name: RSSI
@@ -84,9 +96,9 @@ cards:
           - data: parent
             name: Parent
             modify: (x+'').replace(/^0x/,"").toLowerCase()
-#          - data: type
-#            name: Type
-#            modify: (x+'').replace(/^-$/, "child device")
+          - data: type
+            name: Type
+            modify: (x+'').replace(/^-$/, "child device")
           - data: msg_received
             name: Received
             modify: "isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)"

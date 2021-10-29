@@ -41,7 +41,7 @@ MD5_BUSYBOX = '099137899ece96f311ac5ab554ea6fec'
 MD5_SER2NET = 'f27a481e54f94ea7613b461bda090b0f'
 
 
-def sed(app: str, pattern: str, repl: str, g: str = ''):
+def sed(app: str, pattern: str, repl: str):
     """sed with extended regex and edit file in-place"""
     repl = repl.replace('$', '\$').replace('&', '\&').replace('=', '\='). \
         replace('`', '\`').replace('"', '\\"').replace('\n', '\\n')
@@ -57,6 +57,11 @@ PATCH_MIIO_MQTT = sed(
 PATCH_BLETOOTH_MQTT = sed(
     "miio", "^ +silabs_ncp_bt .+$",
     "/data/silabs_ncp_bt /dev/ttyS1 $RESTORE 2>&1 >/dev/null | mosquitto_pub -t log/ble -l &"
+)
+
+PATCH_ZIGBEE_PARENTS = sed(
+    "app", "^ +(Lumi_Z3GatewayHost_MQTT [^>]+).+$",
+    "\\1-l 0 | mosquitto_pub -t log/z3 -l &"
 )
 
 # replace default Z3 to ser2net
@@ -111,7 +116,7 @@ PATCH_DISABLE_BLUETOOTH = sed(
     "miio", "^ +if.+bt_dont_need_startup.+$", "if false; then"
 )
 PATCH_DISABLE_BUZZER1 = "[ -f /tmp/basic_gw ] || (cp /bin/basic_gw /tmp && sed -r 's=dev_query=xxx_query=' -i /tmp/basic_gw)"
-PATCH_DISABLE_BUZZER2 = sed("miio", "^ +basic_gw", "/tmp/basic_gw", 'g')
+PATCH_DISABLE_BUZZER2 = sed("miio", "^ +basic_gw", "/tmp/basic_gw")
 
 SYNC_MEMORY_FILE = """[ "`md5sum /tmp/{0}|cut -d' ' -f1`" != "`md5sum /data/{0}|cut -d' ' -f1`" ] && cp /tmp/{0} /data/{0}"""
 
@@ -195,7 +200,8 @@ class TelnetShell:
     async def update_daemon_app(self, patches: list):
         await self.exec("killall daemon_app.sh")
         await self.exec(
-            "killall Lumi_Z3GatewayHost_MQTT ser2net socat zigbee_gw")
+            "killall Lumi_Z3GatewayHost_MQTT ser2net socat zigbee_gw; pkill -f log/z3"
+        )
 
         if not patches:
             await self.exec(f"daemon_app.sh &")
@@ -212,8 +218,9 @@ class TelnetShell:
         with patches hash in process list.
         """
         await self.exec("killall daemon_miio.sh")
-        await self.exec("killall miio_client silabs_ncp_bt mosquitto_pub")
-        await self.exec("killall -9 basic_gw")
+        await self.exec(
+            "killall miio_client silabs_ncp_bt; killall -9 basic_gw; pkill -f 'log/ble|log/miio'"
+        )
 
         if not patches:
             await self.exec(f"daemon_miio.sh &")

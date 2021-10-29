@@ -7,7 +7,7 @@ cards:
     cards:
       # ZHA
       - type: markdown
-        content: '### <center> ZigBee Home Automation </center>'
+        content: "### <center> ZigBee Home Automation [ [Map](/config/zha/visualization) ]</center>"
       - type: 'custom:zha-network-card'
         sort_by: available
         clickable: false
