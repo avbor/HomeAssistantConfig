@@ -390,9 +390,9 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
             "sw_version": account_object.api.APP_VERSION,  # placeholder for future releases
         }
 
-        account_address = account_object.address
-        if account_address is not None:
-            device_info["suggested_area"] = account_address
+        # account_address = account_object.address
+        # if account_address is not None:
+        #     device_info["suggested_area"] = account_address
 
         return device_info
 

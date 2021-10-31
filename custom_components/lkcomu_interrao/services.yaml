@@ -20,14 +20,6 @@ push_indications:
       example: 'false'
       selector:
         boolean:
-    notification:
-      description: 'Показывать уведомление при успешной передаче'
-      required: false
-      advanced: false
-      default: false
-      example: 'true'
-      selector:
-        boolean:
     ignore_period:
       description: 'Игнорировать ограничения по периоду'
       required: false
@@ -65,14 +57,6 @@ calculate_indications:
       advanced: false
       default: false
       example: 'false'
-      selector:
-        boolean:
-    notification:
-      description: 'Показывать уведомление при успешной передаче'
-      required: false
-      advanced: false
-      default: false
-      example: 'true'
       selector:
         boolean:
     ignore_period:

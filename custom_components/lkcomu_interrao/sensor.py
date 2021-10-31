@@ -18,9 +18,7 @@ from typing import (
     Union,
 )
 
-import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components import persistent_notification
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -31,6 +29,7 @@ from homeassistant.const import (
     STATE_PROBLEM,
     STATE_UNKNOWN,
 )
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import slugify
 
@@ -66,7 +65,6 @@ from custom_components.lkcomu_interrao.const import (
     ATTR_METER_CODE,
     ATTR_METER_MODEL,
     ATTR_MODEL,
-    ATTR_NOTIFICATION,
     ATTR_PAID,
     ATTR_PENALTY,
     ATTR_PERIOD,
@@ -130,23 +128,22 @@ INDICATIONS_SEQUENCE_SCHEMA = vol.All(
     lambda x: dict(map(lambda y: ("t" + str(y[0]), y[1]), enumerate(x, start=1))),
 )
 
-
-CALCULATE_PUSH_INDICATIONS_SCHEMA = {
-    vol.Required(ATTR_INDICATIONS): vol.Any(
-        vol.All(
-            cv.string, lambda x: list(map(str.strip, x.split(","))), INDICATIONS_SEQUENCE_SCHEMA
+CALCULATE_PUSH_INDICATIONS_SCHEMA = vol.All(
+    cv.deprecated("notification"),
+    cv.make_entity_service_schema({
+        vol.Required(ATTR_INDICATIONS): vol.Any(
+            vol.All(
+                cv.string, lambda x: list(map(str.strip, x.split(","))), INDICATIONS_SEQUENCE_SCHEMA
+            ),
+            INDICATIONS_MAPPING_SCHEMA,
+            INDICATIONS_SEQUENCE_SCHEMA,
         ),
-        INDICATIONS_MAPPING_SCHEMA,
-        INDICATIONS_SEQUENCE_SCHEMA,
-    ),
-    vol.Optional(ATTR_IGNORE_PERIOD, default=False): cv.boolean,
-    vol.Optional(ATTR_IGNORE_INDICATIONS, default=False): cv.boolean,
-    vol.Optional(ATTR_INCREMENTAL, default=False): cv.boolean,
-    vol.Optional(ATTR_NOTIFICATION, default=False): vol.Any(
-        cv.boolean,
-        persistent_notification.SCHEMA_SERVICE_CREATE,
-    ),
-}
+        vol.Optional(ATTR_IGNORE_PERIOD, default=False): cv.boolean,
+        vol.Optional(ATTR_IGNORE_INDICATIONS, default=False): cv.boolean,
+        vol.Optional(ATTR_INCREMENTAL, default=False): cv.boolean,
+        vol.Optional("notification", default=None): lambda x: x,
+    })
+)
 
 SERVICE_PUSH_INDICATIONS: Final = "push_indications"
 SERVICE_PUSH_INDICATIONS_SCHEMA: Final = CALCULATE_PUSH_INDICATIONS_SCHEMA
@@ -256,7 +253,7 @@ class LkcomuAccount(LkcomuInterRAOEntity[Account]):
 
     @property
     def icon(self) -> str:
-        return "mdi:flash-circle"
+        return "mdi:lightning-bolt-circle"
 
     @property
     def unit_of_measurement(self) -> Optional[str]:
@@ -556,7 +553,7 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
             "push_indications": SERVICE_PUSH_INDICATIONS_SCHEMA,
         },
         (AbstractCalculatableMeter, FEATURE_CALCULATE_INDICATIONS): {
-            "calculate_indications": SERVICE_PUSH_INDICATIONS_SCHEMA,
+            "calculate_indications": SERVICE_CALCULATE_INDICATIONS_SCHEMA,
         },
     }
 
@@ -643,8 +640,8 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
     def supported_features(self) -> int:
         meter = self._meter
         return (
-            isinstance(meter, AbstractSubmittableMeter) * FEATURE_PUSH_INDICATIONS
-            | isinstance(meter, AbstractCalculatableMeter) * FEATURE_CALCULATE_INDICATIONS
+                isinstance(meter, AbstractSubmittableMeter) * FEATURE_PUSH_INDICATIONS
+                | isinstance(meter, AbstractCalculatableMeter) * FEATURE_CALCULATE_INDICATIONS
         )
 
     @property
@@ -771,27 +768,6 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
 
         hass.bus.async_fire(event_type=event_id, event_data=event_data)
 
-        notification_content: Union[bool, Mapping[str, str]] = call_data[ATTR_NOTIFICATION]
-
-        if notification_content is not False:
-            payload = {
-                persistent_notification.ATTR_TITLE: title + " - №" + meter_code,
-                persistent_notification.ATTR_NOTIFICATION_ID: event_id + "_" + meter_code,
-                persistent_notification.ATTR_MESSAGE: message,
-            }
-
-            if isinstance(notification_content, Mapping):
-                for key, value in notification_content.items():
-                    payload[key] = str(value).format_map(event_data)
-
-            hass.async_create_task(
-                hass.services.async_call(
-                    persistent_notification.DOMAIN,
-                    persistent_notification.SERVICE_CREATE,
-                    payload,
-                )
-            )
-
     def _get_real_indications(self, call_data: Mapping) -> Mapping[str, Union[int, float]]:
         indications: Mapping[str, Union[int, float]] = call_data[ATTR_INDICATIONS]
         meter_zones = self._meter.zones
@@ -803,12 +779,12 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
         if call_data[ATTR_INCREMENTAL]:
             return {
                 zone_id: (
-                    (
-                        meter_zones[zone_id].today_indication
-                        or meter_zones[zone_id].last_indication
-                        or 0
-                    )
-                    + new_value
+                        (
+                                meter_zones[zone_id].today_indication
+                                or meter_zones[zone_id].last_indication
+                                or 0
+                        )
+                        + new_value
                 )
                 for zone_id, new_value in indications.items()
             }

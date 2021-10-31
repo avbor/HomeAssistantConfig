@@ -20,7 +20,7 @@ from homeassistant import config_entries
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR_DOMAIN
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.const import CONF_PASSWORD, CONF_TYPE, CONF_USERNAME
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
@@ -184,7 +184,9 @@ async def async_setup(hass: HomeAssistantType, config: ConfigType):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entries.ConfigEntry):
+async def async_setup_entry(
+    hass: HomeAssistantType, config_entry: config_entries.ConfigEntry
+) -> bool:
     type_ = config_entry.data[CONF_TYPE]
     username = config_entry.data[CONF_USERNAME]
     unique_key = (type_, username)
@@ -259,34 +261,45 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entrie
         )
         return False
 
+    api_object = api_cls(
+        username=username,
+        password=user_cfg[CONF_PASSWORD],
+        user_agent=user_cfg.get(CONF_USER_AGENT),
+    )
+
     try:
-        api_object = api_cls(
-            username=username,
-            password=user_cfg[CONF_PASSWORD],
-            user_agent=user_cfg.get(CONF_USER_AGENT),
-        )
+        try:
+            await api_object.async_authenticate()
 
-        await api_object.async_authenticate()
+            # Fetch all accounts
+            accounts: Mapping[AccountID, "Account"] = await api_object.async_update_accounts(
+                with_related=True
+            )
 
-        # Fetch all accounts
-        accounts: Mapping[AccountID, "Account"] = await api_object.async_update_accounts(
-            with_related=True
-        )
+        except EnergosbytException as e:
+            err_cls = ConfigEntryNotReady
+            err_txt = "Ошибка при авторизации" if IS_IN_RUSSIA else "Error during authentication"
 
-    except EnergosbytException as e:
-        _LOGGER.error(
-            log_prefix
-            + ("Невозможно выполнить авторизацию" if IS_IN_RUSSIA else "Error authenticating")
-            + ": "
-            + repr(e)
-        )
-        raise ConfigEntryNotReady
+            if len(e.args) == 3:
+                error_code = e.args[1]
+                if error_code in (131, 127, 114):
+                    err_cls = ConfigEntryAuthFailed
+                    err_txt = "Ошибка авторизации" if IS_IN_RUSSIA else "Error authenticating"
+
+            err_txt += ": " + repr(e)
+            _LOGGER.error(log_prefix + err_txt)
+            raise err_cls(repr(e))
+
+    except BaseException:
+        await api_object.async_close()
+        raise
 
     if not accounts:
         # Cancel setup because no accounts provided
         _LOGGER.warning(
             log_prefix + ("Лицевые счета не найдены" if IS_IN_RUSSIA else "No accounts found")
         )
+        await api_object.async_close()
         return False
 
     _LOGGER.debug(
@@ -311,8 +324,8 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entrie
                     f"идентификатор {existing_config_entry_id})"
                     if IS_IN_RUSSIA
                     else f"Same profiles retrieved by multiple configurations "
-                    f"(foreign username: {existing_api_object.username}, "
-                    f"ID: {existing_config_entry_id})"
+                         f"(foreign username: {existing_api_object.username}, "
+                         f"ID: {existing_config_entry_id})"
                 )
             )
             await hass.config_entries.async_set_disabled_by(config_entry.entry_id, DOMAIN)
@@ -344,21 +357,19 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entrie
 
 
 async def async_reload_entry(
-    hass: HomeAssistantType,
-    config_entry: config_entries.ConfigEntry,
-) -> None:
+    hass: HomeAssistantType, config_entry: config_entries.ConfigEntry,
+) -> bool:
     """Reload Lkcomu InterRAO entry"""
     log_prefix = _make_log_prefix(config_entry, "setup")
     _LOGGER.info(
         log_prefix
         + ("Перезагрузка интеграции" if IS_IN_RUSSIA else "Reloading configuration entry")
     )
-    await hass.config_entries.async_reload(config_entry.entry_id)
+    return await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 async def async_unload_entry(
-    hass: HomeAssistantType,
-    config_entry: config_entries.ConfigEntry,
+    hass: HomeAssistantType, config_entry: config_entries.ConfigEntry,
 ) -> bool:
     """Unload Lkcomu InterRAO entry"""
     log_prefix = _make_log_prefix(config_entry, "setup")
