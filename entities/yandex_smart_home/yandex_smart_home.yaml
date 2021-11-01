@@ -9,23 +9,34 @@ filter:
   include_domains:
     - vacuum
   include_entities:
+    # Квартира
     - sensor.average_temperature_in_flat # Квартира - Температура
+    # Прихожая и коридор
     - light.sonoff_1000f2f14a # Прихожая - Споты
     - light.sonoff_1000f2a500 # Коридор - Споты
+    # Детская
     - light.ikea_e27_detskaia # Детская - Люстра
     - light.detskaia_podsvetka_na_okne # Детская - Подсветка на окне
     - sensor.0x158d0003931aec_temperature # Детская - Температура
+    - climate.daikin_nursery # Детская - Кондиционер
+    # Гостина
     - light.sonoff_1000f30a9e # Гостиная - Споты
     - light.sonoff_1000ab3c28 # Гостиная - Бра
     - light.sonoff_1000f3035d # Гостиная - Люстра
+    - climate.daikin_livingroom # Гостиная - Кондиционер
     - light.gostinaia_podsvetka_na_okne # Гостиная - Подсветка на окне
     - sensor.0x158d0003230618_temperature # Гостиная - Температура
+    # Кухня
     - light.sonoff_1000b72483 # Кухня - Споты
     - light.ikea_e27_kukhnia # Кухня - Люстра
     - light.kukhnia_lenta # Кухня - Подсветка
+    # Кладовая
     - light.sonoff_1000b6831b # Кладовая - Люстра
+    # Спальня
     - light.sonoff_1001053235 # Спальня - Люстра
     - sensor.0x158d0003931b0e_temperature # Спальня - Температура
+    - climate.daikin_bedroom # Спальня - Кондиционер
+    # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
     - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
 entity_config:
@@ -117,3 +128,12 @@ entity_config:
         entity: sensor.country_house_avg_temp_kids_rooms
       - type: humidity
         entity: sensor.country_house_avg_humidity_kids_rooms
+  climate.daikin_nursery:
+    name: Кондиционер
+    room: Детская
+  climate.daikin_livingroom:
+    name: Кондиционер
+    room: Гостиная
+  climate.daikin_bedroom:
+    name: Кондиционер
+    room: Спальня
