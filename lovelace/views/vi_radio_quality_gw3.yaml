@@ -41,7 +41,7 @@ cards:
             modify: x.rx
           - data: zigbee
             name: ZB Err
-            modify: x.oe
+            modify: 'isNaN(parseInt(x.oe, 10)) ? 0 : parseInt(x.oe, 10)'
           - data: bluetooth
             name: BT Tx
             modify: x.tx
@@ -50,7 +50,7 @@ cards:
             modify: x.rx
           - data: bluetooth
             name: BT Err
-            modify: x.oe
+            modify: 'isNaN(parseInt(x.oe, 10)) ? 0 : parseInt(x.oe, 10)'
           - data: rssi
             name: RSSI
             modify: 'isNaN(parseInt(x, 10)) ? "" : (100 + parseInt(x, 10)) * -1'
