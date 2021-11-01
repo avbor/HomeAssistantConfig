@@ -1,0 +1,32 @@
+#################################################
+# Package Kitchen Stove
+#################################################
+
+kitchen_stove_pack:
+
+  # Sensors
+  sensor:
+    - platform: statistics
+      name: Kitchen Stove Temperature Stats
+      entity_id: sensor.lumi_th_kitchen_stove_temperature
+      precision: 1
+      sampling_size: 2000
+      max_age:
+        hours: 6
+
+  # Template Sensors
+  template:
+    - sensor:
+        - name: Kitchen Stove Temperature Median
+          device_class: temperature
+          state: "{{ state_attr('sensor.kitchen_stove_temperature_stats', 'median') }}"
+          unit_of_measurement: °C
+        - name: Kitchen Stove Status Int
+          state: "{{ is_state('sensor.kitchen_stove_status', 'on') | abs }}"
+
+    - binary_sensor:
+        - name: Kitchen Stove Status
+          device_class: heat
+          state: >
+            {{ (states('sensor.lumi_th_kitchen_stove_temperature') | int(0)) > (states('sensor.kitchen_stove_temperature_median') | int(0)) }}
+          icon: mdi:stove

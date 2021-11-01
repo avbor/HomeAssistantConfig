@@ -262,6 +262,48 @@ cards:
                 name: "Газ в воздухе"
               - entity: sensor.0x158d000413b210_gas_density
                 name: "Концентрация"
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: entities
+            state_color: true
+            entities:
+              - entity: binary_sensor.kitchen_stove_status
+                name: 'Плита'
+          - type: 'custom:mini-graph-card'
+            cache: false
+            hours_to_show: 8
+            points_per_hour: 20
+            line_width: 2
+            font_size: 75
+            font_size_header: 12
+            height: 80
+            decimals: 1
+            hour24: true
+            align_state: center
+            entities:
+                - entity: sensor.lumi_th_kitchen_stove_temperature
+                  name: Текущая
+                - entity: sensor.kitchen_stove_temperature_median
+                  name: Медиана
+                  show_state: true
+                  show_fill: false
+                  color: indianred
+                - entity: sensor.kitchen_stove_status_int
+                  y_axis: secondary
+                  aggregate_func: max
+                  smoothing: false
+                  show_legend: false
+                  show_line: false
+                  show_points: false
+                  color: salmon
+            show:
+              name: false
+              icon: false
+              labels: false
+              legend: false
+              labels_secondary: false
+              fill: fade
+
 # --- Свет
   - type: vertical-stack
     cards:
