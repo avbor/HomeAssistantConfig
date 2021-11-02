@@ -7,26 +7,104 @@ kitchen_stove_pack:
   # Sensors
   sensor:
     - platform: statistics
-      name: Kitchen Stove Temperature Stats
+      name: Kitchen Stove Temperature Stats ZB
       entity_id: sensor.lumi_th_kitchen_stove_temperature
       precision: 1
-      sampling_size: 2000
+      sampling_size: 4320
       max_age:
         hours: 6
+    - platform: min_max
+      name: Kitchen Stove Temperature Min Max BT
+      type: last
+      entity_ids:
+        - sensor.a4c138463fc4_temperature
+    - platform: statistics
+      name: Kitchen Stove Temperature Stats BT
+      entity_id: sensor.kitchen_stove_temperature_min_max_bt
+      precision: 1
+      sampling_size: 4320
+      max_age:
+        hours: 6
+
+    - platform: min_max
+      name: Kitchen Stove Temperature Min Max Mean
+      type: mean
+      round_digits: 1
+      entity_ids:
+        - sensor.a4c138463fc4_temperature
+        - sensor.lumi_th_kitchen_stove_temperature
+    - platform: min_max
+      name: Kitchen Stove Temperature Median Min Max Mean
+      type: mean
+      round_digits: 1
+      entity_ids:
+        - sensor.kitchen_stove_temperature_median_bt
+        - sensor.kitchen_stove_temperature_median_zb
+
+
+  # Binary Sensors
+  binary_sensor:
+    - platform: trend
+      sensors:
+        kitchen_stove_temperature_trend_bt:
+          entity_id: sensor.kitchen_stove_temperature_min_max_bt
+          device_class: heat
+          max_samples: 60
+          sample_duration: 180
+        kitchen_stove_temperature_trend_zb:
+          entity_id: sensor.lumi_th_kitchen_stove_temperature
+          device_class: heat
+          max_samples: 60
+          sample_duration: 180
 
   # Template Sensors
   template:
     - sensor:
-        - name: Kitchen Stove Temperature Median
+        - name: Kitchen Stove Temperature Median ZB
           device_class: temperature
-          state: "{{ state_attr('sensor.kitchen_stove_temperature_stats', 'median') }}"
+          state: "{{ state_attr('sensor.kitchen_stove_temperature_stats_zb', 'median') }}"
           unit_of_measurement: °C
+        - name: Kitchen Stove Temperature Median BT
+          device_class: temperature
+          state: "{{ state_attr('sensor.kitchen_stove_temperature_stats_bt', 'median') }}"
+          unit_of_measurement: °C 
+
         - name: Kitchen Stove Status Int
-          state: "{{ is_state('sensor.kitchen_stove_status', 'on') | abs }}"
+          state: "{{ is_state('binary_sensor.kitchen_stove_status', 'on') | abs }}"
 
     - binary_sensor:
+        - name: Kitchen Stove Status BT
+          device_class: heat
+          icon: mdi:bluetooth
+          state: >-
+            {% set curr_temp = (states('sensor.kitchen_stove_temperature_min_max_bt') | float(default=0)) %}
+            {% set median_temp = (states('sensor.kitchen_stove_temperature_median_bt') | float(default=0)) %}
+            {% set gradient = (state_attr('binary_sensor.kitchen_stove_temperature_trend_bt', 'gradient') | float(default=0) | round(3)) %}
+            {% if (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
+            {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 3)) %}false
+            {% elif (median_temp > 0) and (curr_temp >= (median_temp + 2)) %}true
+            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 2)) %}false
+            {% endif %}
+
+        - name: Kitchen Stove Status ZB
+          device_class: heat
+          icon: mdi:zigbee
+          state: >-
+            {% set curr_temp = (states('sensor.lumi_th_kitchen_stove_temperature') | float(default=0)) %}
+            {% set median_temp = (states('sensor.kitchen_stove_temperature_median_zb') | float(default=0)) %}
+            {% set gradient = (state_attr('binary_sensor.kitchen_stove_temperature_trend_zb', 'gradient') | float(default=0) | round(3)) %}
+            {% if (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
+            {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 3)) %}false
+            {% elif (median_temp > 0) and (curr_temp >= (median_temp + 2)) %}true
+            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 2)) %}false
+            {% endif %}
+
         - name: Kitchen Stove Status
           device_class: heat
-          state: >
-            {{ (states('sensor.lumi_th_kitchen_stove_temperature') | int(0)) > (states('sensor.kitchen_stove_temperature_median') | int(0)) }}
+          state: >-
+            {%- if is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','off') -%}true
+            {%- elif is_state('binary_sensor.kitchen_stove_status_bt','off') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}false
+            {%- elif is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}true
+            {%- else -%}false
+            {%- endif -%}
           icon: mdi:stove

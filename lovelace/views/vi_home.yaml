@@ -271,7 +271,7 @@ cards:
                 name: 'Плита'
           - type: 'custom:mini-graph-card'
             cache: false
-            hours_to_show: 8
+            hours_to_show: 6
             points_per_hour: 20
             line_width: 2
             font_size: 75
@@ -281,13 +281,30 @@ cards:
             hour24: true
             align_state: center
             entities:
-                - entity: sensor.lumi_th_kitchen_stove_temperature
+#                - entity: sensor.lumi_th_kitchen_stove_temperature
+                - entity: sensor.kitchen_stove_temperature_min_max_mean
                   name: Текущая
-                - entity: sensor.kitchen_stove_temperature_median
+                  show_state: true
+                  #show_fill: false
+                  color: orange
+#                - entity: sensor.kitchen_stove_temperature_median_zb
+                - entity: sensor.kitchen_stove_temperature_median_min_max_mean
                   name: Медиана
                   show_state: true
                   show_fill: false
-                  color: indianred
+                  color: tomato
+
+#                - entity: sensor.kitchen_stove_temperature_min_max_bt
+#                  name: Текущая BT
+#                  show_state: true
+#                  #show_fill: false
+#                  color: orange
+#                - entity: sensor.kitchen_stove_temperature_median_bt
+#                  name: Медиана BT
+#                  show_state: false
+#                  show_fill: false
+#                  color: tomato
+
                 - entity: sensor.kitchen_stove_status_int
                   y_axis: secondary
                   aggregate_func: max
@@ -303,6 +320,42 @@ cards:
               legend: false
               labels_secondary: false
               fill: fade
+
+#          - type: 'custom:mini-graph-card'
+#            cache: false
+#            hours_to_show: 8
+#            points_per_hour: 20
+#            line_width: 2
+#            font_size: 75
+#            font_size_header: 12
+#            height: 80
+#            decimals: 1
+#            hour24: true
+#            align_state: center
+#            entities:
+#                - entity: sensor.kitchen_stove_temperature_min_max_bt
+#                  name: Текущая
+#                - entity: sensor.kitchen_stove_temperature_median_bt
+#                  name: Медиана
+#                  show_state: true
+#                  show_fill: false
+#                  color: indianred
+#                - entity: sensor.kitchen_stove_status_int
+#                  y_axis: secondary
+#                  aggregate_func: max
+#                  smoothing: false
+#                  show_legend: false
+#                  show_line: false
+#                  show_points: false
+#                  color: salmon
+#            show:
+#              name: false
+#              icon: false
+#              labels: false
+#              legend: false
+#              labels_secondary: false
+#              fill: fade
+
 
 # --- Свет
   - type: vertical-stack
@@ -424,49 +477,3 @@ cards:
               #show_fill: false
         show:
           fill: false
-
-    # --- Солнце\Луна:
-#      - type: entities
-#        show_header_toggle: false
-#        entities:
-#          - sun.sun
-#          - sensor.moon
-
-# --- COVID-19
-#  - type: vertical-stack
-#    cards:
-#      - type: markdown
-#        content: >
-#          ### COVID-19:
-#      - type: horizontal-stack
-#        cards:
-#        - type: sensor
-#          entity: sensor.worldwide_coronavirus_confirmed
-#          name: Всего в мире
-#          icon: mdi:earth
-#          unit: чел.
-#          graph: line
-#          hours_to_show: 72
-#        - type: sensor
-#          entity: sensor.russia_coronavirus_confirmed
-#          name: Всего в России
-#          icon: mdi:flag
-#          unit: чел.
-#          graph: line
-#          hours_to_show: 72
-#      - type: horizontal-stack
-#        cards:
-#        - type: sensor
-#          entity: sensor.worldwide_coronavirus_current
-#          name: Сейчас в мире
-#          icon: mdi:earth
-#          unit: чел.
-#          graph: line
-#          hours_to_show: 72
-#        - type: sensor
-#          entity: sensor.russia_coronavirus_current
-#          name: Сейчас в России
-#          icon: mdi:flag
-#          unit: чел.
-#          graph: line
-#          hours_to_show: 72
