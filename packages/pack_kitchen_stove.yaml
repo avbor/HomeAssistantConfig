@@ -81,9 +81,9 @@ kitchen_stove_pack:
             {% set median_temp = (states('sensor.kitchen_stove_temperature_median_bt') | float(default=0)) %}
             {% set gradient = (state_attr('binary_sensor.kitchen_stove_temperature_trend_bt', 'gradient') | float(default=0) | round(3)) %}
             {% if (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
-            {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 3)) %}false
-            {% elif (median_temp > 0) and (curr_temp >= (median_temp + 2)) %}true
-            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 2)) %}false
+            {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 4)) %}false
+            {% elif (median_temp > 0) and (curr_temp >= (median_temp + 3)) %}true
+            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 3)) %}false
             {% endif %}
 
         - name: Kitchen Stove Status ZB
@@ -94,15 +94,15 @@ kitchen_stove_pack:
             {% set median_temp = (states('sensor.kitchen_stove_temperature_median_zb') | float(default=0)) %}
             {% set gradient = (state_attr('binary_sensor.kitchen_stove_temperature_trend_zb', 'gradient') | float(default=0) | round(3)) %}
             {% if (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
-            {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 3)) %}false
-            {% elif (median_temp > 0) and (curr_temp >= (median_temp + 2)) %}true
-            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 2)) %}false
+            {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 4)) %}false
+            {% elif (median_temp > 0) and (curr_temp >= (median_temp + 3)) %}true
+            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 3)) %}false
             {% endif %}
 
         - name: Kitchen Stove Status
           device_class: heat
           state: >-
-            {%- if is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','off') -%}true
+            {%- if is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','off') -%}false
             {%- elif is_state('binary_sensor.kitchen_stove_status_bt','off') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}false
             {%- elif is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}true
             {%- else -%}false
