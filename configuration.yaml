@@ -65,6 +65,8 @@ http:
 logger:
   default: warn
 #  logs:
+#      homeassistant.components.zha: debug
+#      zigpy: debug
 #    homeassistant.components.shell_command: debug
 #    custom_components.electrolux_remote: debug
 #    homeassistant.components.tuya: debug
@@ -188,6 +190,7 @@ notify:
 zha:
   zigpy_config:
     ota:
+      otau_directory: /config/zigpy_ota
       ikea_provider: true
       ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
 
