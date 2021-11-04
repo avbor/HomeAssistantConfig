@@ -10,9 +10,9 @@ kitchen_stove_pack:
       name: Kitchen Stove Temperature Stats ZB
       entity_id: sensor.lumi_th_kitchen_stove_temperature
       precision: 1
-      sampling_size: 4320
+      sampling_size: 5760
       max_age:
-        hours: 6
+        hours: 8
     - platform: min_max
       name: Kitchen Stove Temperature Min Max BT
       type: last
@@ -22,9 +22,9 @@ kitchen_stove_pack:
       name: Kitchen Stove Temperature Stats BT
       entity_id: sensor.kitchen_stove_temperature_min_max_bt
       precision: 1
-      sampling_size: 4320
+      sampling_size: 5760
       max_age:
-        hours: 6
+        hours: 8
 
     - platform: min_max
       name: Kitchen Stove Temperature Min Max Mean
@@ -80,7 +80,9 @@ kitchen_stove_pack:
             {% set curr_temp = (states('sensor.kitchen_stove_temperature_min_max_bt') | float(default=0)) %}
             {% set median_temp = (states('sensor.kitchen_stove_temperature_median_bt') | float(default=0)) %}
             {% set gradient = (state_attr('binary_sensor.kitchen_stove_temperature_trend_bt', 'gradient') | float(default=0) | round(3)) %}
-            {% if (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
+            {% if gradient >= 0.010 %}true
+            {% elif (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
+            {% elif gradient <= -0.015 %}false
             {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 4)) %}false
             {% elif (median_temp > 0) and (curr_temp >= (median_temp + 3)) %}true
             {% elif (median_temp > 0) and (curr_temp <= (median_temp + 3)) %}false
@@ -93,7 +95,9 @@ kitchen_stove_pack:
             {% set curr_temp = (states('sensor.lumi_th_kitchen_stove_temperature') | float(default=0)) %}
             {% set median_temp = (states('sensor.kitchen_stove_temperature_median_zb') | float(default=0)) %}
             {% set gradient = (state_attr('binary_sensor.kitchen_stove_temperature_trend_zb', 'gradient') | float(default=0) | round(3)) %}
-            {% if (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
+            {% if gradient >= 0.010 %}true
+            {% elif (gradient >= 0.005) and (curr_temp >= (median_temp + 1)) %}true
+            {% elif gradient <= -0.015 %}false
             {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 4)) %}false
             {% elif (median_temp > 0) and (curr_temp >= (median_temp + 3)) %}true
             {% elif (median_temp > 0) and (curr_temp <= (median_temp + 3)) %}false
