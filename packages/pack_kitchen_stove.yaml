@@ -10,9 +10,9 @@ kitchen_stove_pack:
       name: Kitchen Stove Temperature Stats ZB
       entity_id: sensor.lumi_th_kitchen_stove_temperature
       precision: 1
-      sampling_size: 5760
+      sampling_size: 2000
       max_age:
-        hours: 8
+        hours: 3
     - platform: min_max
       name: Kitchen Stove Temperature Min Max BT
       type: last
@@ -22,9 +22,9 @@ kitchen_stove_pack:
       name: Kitchen Stove Temperature Stats BT
       entity_id: sensor.kitchen_stove_temperature_min_max_bt
       precision: 1
-      sampling_size: 5760
+      sampling_size: 2000
       max_age:
-        hours: 8
+        hours: 3
 
     - platform: min_max
       name: Kitchen Stove Temperature Min Max Mean
@@ -85,7 +85,7 @@ kitchen_stove_pack:
             {% elif gradient <= -0.015 %}false
             {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 4)) %}false
             {% elif (median_temp > 0) and (curr_temp >= (median_temp + 3)) %}true
-            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 3)) %}false
+            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 1)) %}false
             {% endif %}
 
         - name: Kitchen Stove Status ZB
@@ -100,15 +100,18 @@ kitchen_stove_pack:
             {% elif gradient <= -0.015 %}false
             {% elif (gradient <= -0.002) and (curr_temp <= (median_temp + 4)) %}false
             {% elif (median_temp > 0) and (curr_temp >= (median_temp + 3)) %}true
-            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 3)) %}false
+            {% elif (median_temp > 0) and (curr_temp <= (median_temp + 1)) %}false
             {% endif %}
 
         - name: Kitchen Stove Status
           device_class: heat
           state: >-
-            {%- if is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','off') -%}false
-            {%- elif is_state('binary_sensor.kitchen_stove_status_bt','off') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}false
-            {%- elif is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}true
+            {%- if is_state('binary_sensor.kitchen_stove_status_bt','on') -%}true
             {%- else -%}false
             {%- endif -%}
+#            {%- if is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','off') -%}false
+#            {%- elif is_state('binary_sensor.kitchen_stove_status_bt','off') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}false
+#            {%- elif is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}true
+#            {%- else -%}false
+#            {%- endif -%}
           icon: mdi:stove

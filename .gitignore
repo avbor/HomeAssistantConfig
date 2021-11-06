@@ -48,6 +48,7 @@
 .cloud
 .storage
 .esphome
+*/**/__pycache__/
 **/.pioenvs/
 **/.piolibdeps/
 **/lib/
