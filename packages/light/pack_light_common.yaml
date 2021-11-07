@@ -1,0 +1,54 @@
+#################################################
+# Package Light - Common
+#################################################
+
+common_light_pack:
+
+  automation:
+
+    - alias: Turn Off All Light When Nobody at Home
+      id: b06cbc8a-6488-412b-8842-e6c72b004ff1
+      trigger:
+        platform: state
+        entity_id: group.family_persons
+        to: "not_home"
+        for:
+          minutes: 5
+      condition:
+        - condition: state
+          entity_id: group.all_lamps
+          state: "on"
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              Дома никого нет, но остался включенным свет:
+              {{ ((expand('group.all_lamps') | selectattr('state', 'eq', 'on') | map(attribute='name') | list)) | replace("'","") | replace(", ", "\n") }}
+            inline_keyboard:
+              - 'Выключить свет:/turn_off_all_lamps'
+
+    - alias: 'Light - Telegram Control - Turn Off All Lamps'
+      id: a395b9eb-6a18-40bd-a7f4-6e3f133049ba
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/turn_off_all_lamps'
+      action:
+        - service: homeassistant.turn_off
+          entity_id: group.all_lamps
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Команда отправлена'
+        - service: telegram_bot.edit_replymarkup
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            inline_keyboard: []
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            message: "Свет выключен."

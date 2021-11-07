@@ -1,0 +1,124 @@
+#################################################
+# Package Light - Livingroom
+#################################################
+
+livingroom_light_pack:
+
+  automation:
+
+    - alias: "Кнопка Xiaomi в Гостиной"
+      id: 20b084dc-0393-44e3-897d-3cec019647a1
+      mode: queued
+      max: 5
+      max_exceeded: silent
+      trigger:
+        - platform: event
+          event_type: zha_event
+          event_data:
+            device_ieee: "00:15:8d:00:03:5a:9b:c5"
+            command: "click"
+          id: "click"
+        - platform: event
+          event_type: zha_event
+          event_data:
+            device_ieee: "00:15:8d:00:03:5a:9b:c5"
+            command: "hold"
+          id: "hold"
+      action:
+        choose:
+          - alias: Action Click
+            conditions:
+              - condition: trigger
+                id: "click"
+            sequence:
+              choose:
+                - alias: Single click
+                  conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
+                  sequence:
+                    - service: light.toggle
+                      data:
+                        entity_id: light.sonoff_1000ab3c28
+                - alias: Double click
+                  conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
+                  sequence:
+                    - service: light.toggle
+                      data:
+                        entity_id: light.sonoff_1000f3035d
+          - alias: Action Hold
+            conditions:
+              - condition: trigger
+                id: "hold"
+            sequence:
+              - service: light.toggle
+                data:
+                  entity_id: light.gostinaia_podsvetka_na_okne
+
+    - alias: "Кубик Aqara в Гостиной"
+      id: 3ac0562a-feca-479d-ba2a-4bf0cc1fe5ce
+      mode: queued
+      max: 5
+      max_exceeded: silent
+      trigger:
+        - platform: event
+          event_type: zha_event
+          event_data:
+            device_ieee: "00:15:8d:00:05:29:2a:d9"
+      action:
+        choose:
+          - alias: Rotate
+            conditions: "{{ trigger.event.data.command in ('rotate_right', 'rotate_left') }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
+                data:
+                  brightness: >-
+                    {{ (state_attr('light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off', 'brightness') | int) +
+                    (trigger.event.data.args.relative_degrees | int) }}
+          - alias: Flip
+            conditions: "{{ trigger.event.data.command in ('flip') }}"
+            sequence:
+              choose:
+                - alias: Flip 90
+                  conditions: "{{ (trigger.event.data.args.flip_degrees | int) == 90 }}"
+                  sequence:
+                    - service: light.toggle
+                      entity_id: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
+                      data:
+                        brightness: 255
+                - alias: Flip 180
+                  conditions: "{{ (trigger.event.data.args.flip_degrees | int) == 180 }}"
+                  sequence:
+                    - service: light.toggle
+                      entity_id: light.sonoff_1000f30a9e
+
+    - alias: "Подсветка на окне в Гостиной"
+      id: 32c18d2f-1d01-4458-b5e2-05048b73a3d7
+      trigger:
+        - platform: numeric_state
+          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
+          below: 1000
+          for: "00:10:00"
+          id: "dark"
+        - platform: numeric_state
+          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
+          above: 1000
+          for: "00:10:00"
+          id: "lightly"
+      action:
+        choose:
+          - alias: Darkens
+            conditions:
+              - condition: trigger
+                id: "dark"
+            sequence:
+              - service: light.turn_on
+                data:
+                  entity_id: light.gostinaia_podsvetka_na_okne
+          - alias: Brightens
+            conditions:
+              - condition: trigger
+                id: "lightly"
+            sequence:
+              - service: light.turn_off
+                data:
+                  entity_id: light.gostinaia_podsvetka_na_okne
