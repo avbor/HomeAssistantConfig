@@ -271,7 +271,7 @@ cards:
                 name: 'Плита'
           - type: 'custom:mini-graph-card'
             cache: false
-            hours_to_show: 6
+            hours_to_show: 3
             points_per_hour: 20
             line_width: 2
             font_size: 75
