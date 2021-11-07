@@ -300,7 +300,6 @@
 
 - alias: Sunrise Lighting (Nursery)
   id: d50bfe78-2e35-4870-a24c-71d0f6ebf969
-  initial_state: true
   trigger:
     - platform: time
       at: input_datetime.sunrise_in_nursery
