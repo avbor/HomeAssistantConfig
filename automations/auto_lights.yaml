@@ -390,40 +390,6 @@
     service: homeassistant.turn_off
     entity_id: light.kukhnia_lenta
 
-### Кладовая
-
-- alias: "Свет в кладовой (сенсор движения - вкл)"
-  id: 58129c01-7211-47c8-83f4-a954a88bea9f
-  initial_state: true
-  trigger:
-    platform: state
-    entity_id: binary_sensor.0x158d0003045123_motion
-    to: "on"
-  condition:
-    condition: state
-    entity_id: light.sonoff_1000b6831b
-    state: "off"
-  action:
-    service: light.turn_on
-    entity_id: light.sonoff_1000b6831b
-
-- alias: "Свет в Кладовой (сенсор движения - выкл)"
-  id: b1d55360-e2e7-41a9-8552-8367bf84d712
-  initial_state: true
-  trigger:
-    platform: state
-    entity_id: binary_sensor.0x158d0003045123_motion
-    to: "off"
-    for:
-      minutes: 3
-  condition:
-    condition: state
-    entity_id: light.sonoff_1000b6831b
-    state: "on"
-  action:
-    service: light.turn_off
-    entity_id: light.sonoff_1000b6831b
-
 # Спальня
 
 - alias: "Кнопки Xiaomi в Спальне single"
