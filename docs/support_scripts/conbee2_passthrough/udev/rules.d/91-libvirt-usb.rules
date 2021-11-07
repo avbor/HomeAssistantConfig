@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_VENDOR_ID}=="1cf1", ENV{ID_MODEL_ID}=="0030", RUN+="/opt/scripts/attach_conbee2_to_ha_vm.sh '%E{DEVNAME}'"
+ACTION=="remove", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1cf1", ENV{ID_MODEL_ID}=="0030", RUN+="/usr/bin/virsh detach-device homeassistant --file /mnt/vm/ha_usb_1cf1_0030.xml"
