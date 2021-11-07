@@ -281,29 +281,29 @@ cards:
             hour24: true
             align_state: center
             entities:
-#                - entity: sensor.lumi_th_kitchen_stove_temperature
-                - entity: sensor.kitchen_stove_temperature_min_max_mean
+                - entity: sensor.lumi_th_kitchen_stove_temperature
+#                - entity: sensor.kitchen_stove_temperature_min_max_mean
                   name: Текущая
-                  show_state: true
-                  #show_fill: false
+                  #show_state: false
+                  show_fill: false
                   color: orange
-#                - entity: sensor.kitchen_stove_temperature_median_zb
-                - entity: sensor.kitchen_stove_temperature_median_min_max_mean
+                - entity: sensor.kitchen_stove_temperature_median_zb
+#                - entity: sensor.kitchen_stove_temperature_median_min_max_mean
                   name: Медиана
-                  show_state: true
+                  #show_state: false
                   show_fill: false
                   color: tomato
 
-#                - entity: sensor.kitchen_stove_temperature_min_max_bt
-#                  name: Текущая BT
-#                  show_state: true
-#                  #show_fill: false
-#                  color: orange
-#                - entity: sensor.kitchen_stove_temperature_median_bt
-#                  name: Медиана BT
-#                  show_state: false
-#                  show_fill: false
-#                  color: tomato
+                - entity: sensor.kitchen_stove_temperature_min_max_bt
+                  name: Текущая BT
+                  #show_state: false
+                  show_fill: false
+                  color: orange
+                - entity: sensor.kitchen_stove_temperature_median_bt
+                  name: Медиана BT
+                  #show_state: false
+                  show_fill: false
+                  color: tomato
 
                 - entity: sensor.kitchen_stove_status_int
                   y_axis: secondary
@@ -320,6 +320,7 @@ cards:
               legend: false
               labels_secondary: false
               fill: fade
+              state: false
 
 #          - type: 'custom:mini-graph-card'
 #            cache: false
