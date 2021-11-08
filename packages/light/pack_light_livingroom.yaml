@@ -96,12 +96,12 @@ livingroom_light_pack:
       trigger:
         - platform: numeric_state
           entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          below: 1000
+          below: 550
           for: "00:10:00"
           id: "dark"
         - platform: numeric_state
           entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          above: 1000
+          above: 550
           for: "00:10:00"
           id: "lightly"
       action:
@@ -111,6 +111,9 @@ livingroom_light_pack:
               - condition: trigger
                 id: "dark"
             sequence:
+              - condition: state
+                entity_id: light.gostinaia_podsvetka_na_okne
+                state: "off"
               - service: light.turn_on
                 data:
                   entity_id: light.gostinaia_podsvetka_na_okne
@@ -119,6 +122,9 @@ livingroom_light_pack:
               - condition: trigger
                 id: "lightly"
             sequence:
+              - condition: state
+                entity_id: light.gostinaia_podsvetka_na_okne
+                state: "on"
               - service: light.turn_off
                 data:
                   entity_id: light.gostinaia_podsvetka_na_okne
