@@ -66,6 +66,13 @@ cards:
       card:
         type: media-control
         entity: media_player.detskaia
+    - type: conditional
+      conditions:
+        - entity: media_player.mini_v_vannoi
+          state_not: "off"
+      card:
+        type: media-control
+        entity: media_player.mini_v_vannoi
 #    - type: conditional
 #      conditions:
 #        - entity: media_player.googlehome9967

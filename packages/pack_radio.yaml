@@ -28,11 +28,11 @@ ha_radio:
     output_device:
       name: 'Где включить:'
       options:
-        - Гостинная (Home Mini)
+        - Ванная (Home Mini)
         - Гостинная (TV)
         - Детская (Home Mini)
         - Детская (TV)
-      initial: Гостинная (Home Mini)
+      initial: Ванная (Home Mini)
       icon: mdi:speaker-wireless
 
   # Input Text
@@ -138,8 +138,8 @@ ha_radio:
             value: >-
               {% if is_state("input_select.output_device", "Гостинная (TV)") -%}
                 media_player.gostinaia
-              {% elif is_state("input_select.output_device", "Гостинная (Home Mini)") -%} 
-                media_player.googlehome9967
+              {% elif is_state("input_select.output_device", "Ванная (Home Mini)") -%} 
+                media_player.mini_v_vannoi
               {% elif is_state("input_select.output_device", "Детская (TV)") -%}
                 media_player.detskaia
               {% elif is_state("input_select.output_device", "Детская (Home Mini)") -%}
