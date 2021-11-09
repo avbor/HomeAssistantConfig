@@ -7,7 +7,7 @@ storeroom_light_pack:
   timer:
 
     hallway_light:
-      duration: "00:01:30"
+      duration: "00:02:00"
 
   automation:
 
@@ -21,7 +21,7 @@ storeroom_light_pack:
           entity_id: binary_sensor.lumi_lumi_sensor_magnet_50659603_on_off
           id: "magnet"
         - platform: state
-          entity_id: binary_sensor.0x158d0003045123_motion
+          entity_id: binary_sensor.lumi_lumi_sensor_motion_aq2_ias_zone
           id: "motion"
         - platform: state
           entity_id: timer.hallway_light
@@ -89,7 +89,7 @@ storeroom_light_pack:
                 conditions: "{{ trigger.to_state.state == 'idle' }}"
                 sequence:
                   - condition: state
-                    entity_id: binary_sensor.0x158d0003045123_motion
+                    entity_id: binary_sensor.lumi_lumi_sensor_motion_aq2_ias_zone
                     state: "off"
                   - service: light.turn_off
                     entity_id: light.sonoff_1000b6831b
