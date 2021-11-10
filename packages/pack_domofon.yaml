@@ -103,6 +103,10 @@ domofon_pack:
       trigger:
         - platform: state
           entity_id: binary_sensor.domofon_status
+      condition:
+        - condition: template
+          value_template: >-
+            {{ states('input_boolean.ha_shutdown') == 'off' }}
       action:
         - service: notify.telegram_group_system
           data:

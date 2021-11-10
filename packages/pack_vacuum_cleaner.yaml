@@ -67,19 +67,19 @@ vacuum_cleaner:
         mirobot_1s_main_brush_left:
           friendly_name: "Main brush hours remaining"
           unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_main_brush_left') | int) / 3600) | round(0) }}"
+          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_main_brush_left') | int(0)) / 3600) | round(0) }}"
         mirobot_1s_side_brush_left:
           friendly_name: "Side brush hours remaining"
           unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_side_brush_left') | int) / 3600) | round(0) }}"
+          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_side_brush_left') | int(0)) / 3600) | round(0) }}"
         mirobot_1s_filter_left:
           friendly_name: "Filter hours remaining"
           unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_filter_left') | int) / 3600) | round(0) }}"
+          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_filter_left') | int(0)) / 3600) | round(0) }}"
         mirobot_1s_sensor_dirty_left:
           friendly_name: "Sensors hours remaining"
           unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_sensor_dirty_left') | int) / 3600) | round(0) }}"
+          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_sensor_dirty_left') | int(0)) / 3600) | round(0) }}"
 
 # Scripts
   script:
