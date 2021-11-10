@@ -215,7 +215,7 @@
         Детская: *{{ states('media_player.yandex_station_lite_detskaia') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
-        Датчик газа: *{{ states('switch.mi_smartplugwifi_02') }}*
+        Датчик газа: *{{ states('switch.blitzwolf_shp13_3ad702fe_on_off') }}*
         Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*
         Transmission Status: *{{ states('sensor.transmission_status') }}*
         Plex Users: *{{ states('sensor.plex_plexonubuntu') }}*

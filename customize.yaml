@@ -78,6 +78,8 @@ switch.gosund_sp111_06_switch:
   friendly_name: Посудомоечная машина
 sensor.gosund_sp111_06_todays_usage:
   friendly_name: Посудомоечная машина
+sensor.blitzwolf_shp13_3ad702fe_smartenergy_metering_summation_delivered:
+  friendly_name: Датчик газа
 switch.gosund_sp111_05_switch:
   friendly_name: Чайник
 sensor.gosund_sp111_05_todays_usage:

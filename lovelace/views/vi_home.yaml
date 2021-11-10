@@ -256,7 +256,7 @@ cards:
         cards:
           - type: entities
             entities:
-              - entity: switch.mi_smartplugwifi_02
+              - entity: switch.blitzwolf_shp13_3ad702fe_on_off
                 name: Питание
               - entity: binary_sensor.0x158d000413b210_gas
                 name: "Газ в воздухе"
