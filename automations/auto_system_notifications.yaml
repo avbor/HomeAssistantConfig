@@ -300,7 +300,8 @@
           '^switch\.gosund_sp111_\d{2}_restart|'
           '^sensor\..*_ble|'
           '^(binary_sensor|switch)\.domofon_|'
-          '^(sensor|switch)\.sonoff_basic_'
+          '^(binary_sensor|sensor|switch|light)\.sonoff_basic_|'
+          '^fan\..*_extractor'
           )
         }}
     - condition: template

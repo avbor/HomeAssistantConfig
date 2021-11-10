@@ -22,7 +22,7 @@ binary_sensor:
       number: GPIO0
       mode: INPUT_PULLUP
       inverted: True
-    name: "Sonoff Basic Button"
+    name: "${board_name}_button_state"
     on_press:
       - switch.toggle: button
 
@@ -35,7 +35,7 @@ switch:
 
   # Template switch for button
   - platform: template
-    name: "Sonoff Basic Relay"
+    name: "${board_name}_switch"
     optimistic: true
     id: button
     turn_on_action:
@@ -54,6 +54,6 @@ output:
 
 light:
   - platform: monochromatic
-    name: "Sonoff Basic Green LED"
+    name: "${board_name}_led"
     output: basic_green_led
     id: led
