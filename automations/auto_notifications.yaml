@@ -103,7 +103,7 @@
       data: '/poweroff_gas_sensor'
   action:
     - service: switch.turn_off
-      entity_id: switch.blitzwolf_shp13_3ad702fe_on_off
+      entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
     - service: telegram_bot.answer_callback_query
       data_template:
         callback_query_id: '{{ trigger.event.data.id }}'
@@ -121,7 +121,7 @@
   id: 3e69fa5f-34f2-4e5e-86e2-467aad2420b6
   trigger:
     platform: state
-    entity_id: switch.blitzwolf_shp13_3ad702fe_on_off
+    entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
     to: 'off'
     for: "00:30:00"
   action:
@@ -143,7 +143,7 @@
       data: '/poweron_gas_sensor'
   action:
     - service: switch.turn_on
-      entity_id: switch.blitzwolf_shp13_3ad702fe_on_off
+      entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
     - service: telegram_bot.answer_callback_query
       data_template:
         callback_query_id: '{{ trigger.event.data.id }}'

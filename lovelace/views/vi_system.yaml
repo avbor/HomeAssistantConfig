@@ -312,7 +312,7 @@ cards:
             name: Розетка TP-Link SmartPlug 01
           - entity: switch.tplink_smartplug_02
             name: Розетка TP-Link SmartPlug 02
-          - entity: switch.blitzwolf_shp13_3ad702fe_on_off
+          - entity: switch.blitzwolf_shp13_02_3ad702fe_on_off
             name: Розетка BlitzWolf SHP13 01
       - type: markdown
         content: >
