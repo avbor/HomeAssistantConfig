@@ -425,7 +425,7 @@
         parse_mode: html
         title: "<b>Внимание!</b>"
         message: |
-          <i>INFO:</i> Ошибка USB устройства ConBee2: 
+          Ошибка USB устройства ConBee2: 
           {{ trigger.event.data.message }}
         inline_keyboard:
           - 'Перезапустить HA:/cb2_ha_restart, Перезагрузить VM:/cb2_vm_reboot'
