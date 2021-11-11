@@ -22,8 +22,8 @@ from homeassistant.components import (
 DOMAIN = 'yandex_smart_home'
 CONFIG = 'config'
 NOTIFIERS = 'notifiers'
+CLOUD_MANAGER = 'cloud_manager'
 
-CONF_DISABLED = 'disabled'
 CONF_SETTINGS = 'settings'
 CONF_PRESSURE_UNIT = 'pressure_unit'
 CONF_BETA = 'beta'
@@ -31,6 +31,13 @@ CONF_NOTIFIER = 'notifier'
 CONF_NOTIFIER_OAUTH_TOKEN = 'oauth_token'
 CONF_NOTIFIER_SKILL_ID = 'skill_id'
 CONF_NOTIFIER_USER_ID = 'user_id'
+CONF_CONNECTION_TYPE = 'connection_type'
+CONF_CLOUD_INSTANCE = 'cloud_instance'
+CONF_CLOUD_INSTANCE_ID = 'id'
+CONF_CLOUD_INSTANCE_PASSWORD = 'password'
+CONF_CLOUD_INSTANCE_CONNECTION_TOKEN = 'token'
+CONF_USER_ID = 'user_id'
+CONF_DEVICES_DISCOVERED = 'devices_discovered'
 CONF_ENTITY_CONFIG = 'entity_config'
 CONF_FILTER = 'filter'
 CONF_NAME = 'name'
@@ -39,7 +46,7 @@ CONF_TYPE = 'type'
 CONF_TURN_ON = 'turn_on'
 CONF_TURN_OFF = 'turn_off'
 CONF_FEATURES = 'features'
-CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID = 'channel_set_via_media_content_id'
+CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID = 'channel_set_via_media_content_id'  # Deprecated
 CONF_ENTITY_PROPERTY_ENTITY = 'entity'
 CONF_ENTITY_PROPERTY_TYPE = 'type'
 CONF_ENTITY_PROPERTY_ATTRIBUTE = 'attribute'
@@ -59,6 +66,13 @@ CONF_ENTITY_CUSTOM_TOGGLE_TURN_ON = 'turn_on'
 CONF_ENTITY_CUSTOM_TOGGLE_TURN_OFF = 'turn_off'
 CONF_ENTITY_CUSTOM_RANGES = 'custom_ranges'
 CONF_ENTITY_CUSTOM_RANGE_SET_VALUE = 'set_value'
+CONF_ENTITY_CUSTOM_RANGE_INCREASE_VALUE = 'increase_value'
+CONF_ENTITY_CUSTOM_RANGE_DECREASE_VALUE = 'decrease_value'
+
+CONNECTION_TYPE_DIRECT = 'direct'
+CONNECTION_TYPE_CLOUD = 'cloud'
+
+EVENT_DEVICE_DISCOVERY = 'yandex_smart_home_device_discovery'
 
 # https://yandex.ru/dev/dialogs/smart-home/doc/concepts/device-types.html
 PREFIX_TYPES = 'devices.types.'
@@ -558,6 +572,3 @@ MEDIA_PLAYER_FEATURES = (
     MEDIA_PLAYER_FEATURE_VOLUME_SET,
     MEDIA_PLAYER_FEATURE_NEXT_PREVIOUS_TRACK
 )
-
-# https://github.com/AlexxIT/YandexStation
-YANDEX_STATION_INTENTS_MEDIA_PLAYER = media_player.DOMAIN + '.yandex_intents'

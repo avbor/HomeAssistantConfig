@@ -7,12 +7,11 @@ from typing import Any
 
 from homeassistant.components import cover, fan, media_player, vacuum
 from homeassistant.const import ATTR_ENTITY_ID, ATTR_SUPPORTED_FEATURES
+from homeassistant.core import HomeAssistant, State
 
 from . import const
 from .capability import PREFIX_CAPABILITIES, AbstractCapability, register_capability
-from .const import ERR_NOT_SUPPORTED_IN_CURRENT_MODE
-from .error import SmartHomeError
-from .helpers import RequestData
+from .helpers import Config, RequestData
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +39,11 @@ class MuteCapability(ToggleCapability):
 
     instance = const.TOGGLE_INSTANCE_MUTE
 
+    def __init__(self, hass: HomeAssistant, config: Config, state: State):
+        super().__init__(hass, config, state)
+
+        self.retrievable = media_player.ATTR_MEDIA_VOLUME_MUTED in self.state.attributes
+
     def supported(self) -> bool:
         """Test if capability is supported."""
         features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
@@ -61,13 +65,6 @@ class MuteCapability(ToggleCapability):
 
     async def set_state(self, data: RequestData, state: dict[str, Any]):
         """Set device state."""
-        muted = self.state.attributes.get(media_player.ATTR_MEDIA_VOLUME_MUTED)
-        if muted is None:
-            raise SmartHomeError(
-                ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
-                f'Device {self.state.entity_id} probably turned off'
-            )
-
         await self.hass.services.async_call(
             media_player.DOMAIN,
             media_player.SERVICE_VOLUME_MUTE, {

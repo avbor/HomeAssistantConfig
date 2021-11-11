@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry, device_registry, entity_registry
 from homeassistant.util.decorator import Registry
 
-from .const import ERR_DEVICE_UNREACHABLE, ERR_INTERNAL_ERROR
+from .const import ERR_DEVICE_UNREACHABLE, ERR_INTERNAL_ERROR, EVENT_DEVICE_DISCOVERY
 from .entity import YandexEntity
 from .error import SmartHomeError
 from .helpers import RequestData
@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_handle_message(hass: HomeAssistant,
                                data: RequestData,
                                action: str,
-                               message: dict[str, Any] | None) -> dict[str, Any]:
+                               message: dict[str, Any]) -> dict[str, Any]:
     """Handle incoming API messages."""
     handler = HANDLERS.get(action)
 
@@ -69,6 +69,8 @@ async def async_devices(hass: HomeAssistant, data: RequestData, message: dict[st
     dev_reg = await device_registry.async_get_registry(hass)
     area_reg = await area_registry.async_get_registry(hass)
 
+    hass.bus.async_fire(EVENT_DEVICE_DISCOVERY, context=data.context)
+
     for state in hass.states.async_all():
         entity = YandexEntity(hass, data.config, state)
         if not entity.should_expose:
@@ -82,7 +84,7 @@ async def async_devices(hass: HomeAssistant, data: RequestData, message: dict[st
         devices.append(serialized)
 
     return {
-        'user_id': data.context.user_id,
+        'user_id': data.request_user_id,
         'devices': devices,
     }
 
@@ -137,6 +139,7 @@ async def async_devices_execute(hass: HomeAssistant, data: RequestData, message:
             continue
 
         entity = YandexEntity(hass, data.config, state)
+
         capabilities_result = []
         for capability in device['capabilities']:
             capability_type = capability['type']

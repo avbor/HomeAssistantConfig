@@ -20,7 +20,6 @@ from . import const
 from .capability import PREFIX_CAPABILITIES, AbstractCapability, register_capability
 from .const import (
     ATTR_TARGET_HUMIDITY,
-    CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID,
     CONF_ENTITY_RANGE,
     CONF_ENTITY_RANGE_MAX,
     CONF_ENTITY_RANGE_MIN,
@@ -94,17 +93,18 @@ class RangeCapability(AbstractCapability, ABC):
             'random_access': False,
         }
 
-    def float_value(self, value: Any) -> float | None:
+    def float_value(self, value: Any, strict: bool = True) -> float | None:
         if str(value).lower() in (STATE_UNAVAILABLE, STATE_UNKNOWN, STATE_NONE):
             return None
 
         try:
             return float(value)
         except (ValueError, TypeError):
-            raise SmartHomeError(
-                ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
-                f'Unsupported value {value!r} for instance {self.instance} of {self.state.entity_id}'
-            )
+            if strict:
+                raise SmartHomeError(
+                    ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
+                    f'Unsupported value {value!r} for instance {self.instance} of {self.state.entity_id}'
+                )
 
     def get_absolute_value(self, relative_value: float) -> float:
         """Return absolute value for relative value."""
@@ -462,17 +462,13 @@ class ChannelCapability(RangeCapability):
         features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
 
         if self.state.domain == media_player.DOMAIN:
-            if features & media_player.SUPPORT_PLAY_MEDIA and \
-                    self.entity_config.get(CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID):
+            if features & media_player.SUPPORT_PLAY_MEDIA:
                 return True
 
             if features & media_player.SUPPORT_PREVIOUS_TRACK and features & media_player.SUPPORT_NEXT_TRACK:
                 return True
 
             if const.MEDIA_PLAYER_FEATURE_NEXT_PREVIOUS_TRACK in self.entity_config.get(const.CONF_FEATURES, []):
-                return True
-
-            if self.state.entity_id == const.YANDEX_STATION_INTENTS_MEDIA_PLAYER:
                 return True
 
         return False
@@ -482,43 +478,45 @@ class ChannelCapability(RangeCapability):
         """Test if capability supports random access."""
         features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
 
-        if features & media_player.SUPPORT_PLAY_MEDIA and self.entity_config.get(CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID):
-            return True
-
-        if self.state.entity_id == const.YANDEX_STATION_INTENTS_MEDIA_PLAYER:
-            return True
-
-        return False
+        return bool(features & media_player.SUPPORT_PLAY_MEDIA)
 
     def get_value(self) -> float | None:
         """Return the state value of this capability for this entity."""
-        if self.support_random_access and self.state.entity_id != const.YANDEX_STATION_INTENTS_MEDIA_PLAYER:
-            return self.float_value(self.state.attributes.get(media_player.ATTR_MEDIA_CONTENT_ID))
+        media_content_type = self.state.attributes.get(media_player.ATTR_MEDIA_CONTENT_TYPE)
+
+        if media_content_type == media_player.const.MEDIA_TYPE_CHANNEL:
+            return self.float_value(self.state.attributes.get(media_player.ATTR_MEDIA_CONTENT_ID), strict=False)
 
     async def set_state(self, data: RequestData, state: dict[str, Any]):
         """Set device state."""
-        if state.get('relative'):
-            if state['value'] >= 0:
-                service = media_player.SERVICE_MEDIA_NEXT_TRACK
-            else:
-                service = media_player.SERVICE_MEDIA_PREVIOUS_TRACK
+        value = state['value']
 
-            await self.hass.services.async_call(
-                media_player.DOMAIN,
-                service, {
-                    ATTR_ENTITY_ID: self.state.entity_id
-                },
-                blocking=True,
-                context=data.context
-            )
-        else:
-            await self.hass.services.async_call(
-                media_player.DOMAIN,
-                media_player.SERVICE_PLAY_MEDIA, {
-                    ATTR_ENTITY_ID: self.state.entity_id,
-                    media_player.ATTR_MEDIA_CONTENT_ID: state['value'],
-                    media_player.ATTR_MEDIA_CONTENT_TYPE: media_player.const.MEDIA_TYPE_CHANNEL
-                },
-                blocking=True,
-                context=data.context
-            )
+        if state.get('relative'):
+            if self.get_value() is not None:
+                value = self.get_absolute_value(state['value'])
+            else:
+                if state['value'] >= 0:
+                    service = media_player.SERVICE_MEDIA_NEXT_TRACK
+                else:
+                    service = media_player.SERVICE_MEDIA_PREVIOUS_TRACK
+
+                await self.hass.services.async_call(
+                    media_player.DOMAIN,
+                    service, {
+                        ATTR_ENTITY_ID: self.state.entity_id
+                    },
+                    blocking=True,
+                    context=data.context
+                )
+                return
+
+        await self.hass.services.async_call(
+            media_player.DOMAIN,
+            media_player.SERVICE_PLAY_MEDIA, {
+                ATTR_ENTITY_ID: self.state.entity_id,
+                media_player.ATTR_MEDIA_CONTENT_ID: value,
+                media_player.ATTR_MEDIA_CONTENT_TYPE: media_player.const.MEDIA_TYPE_CHANNEL
+            },
+            blocking=False,  # some tv's do it too slow
+            context=data.context
+        )

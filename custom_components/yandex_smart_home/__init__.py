@@ -1,15 +1,18 @@
 """Support for Actions on Yandex Smart Home."""
 from __future__ import annotations
 
+import asyncio
 import logging
-from typing import Any
 
-from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
-from homeassistant.const import SERVICE_RELOAD
-from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EVENT_HOMEASSISTANT_STOP, SERVICE_RELOAD
+from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import config_validation as cv, entityfilter
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.entityfilter import BASE_FILTER_SCHEMA, FILTER_SCHEMA
 from homeassistant.helpers.reload import async_integration_yaml_config
+from homeassistant.helpers.typing import ConfigType
 import voluptuous as vol
 
 from . import (  # noqa: F401
@@ -24,10 +27,11 @@ from . import (  # noqa: F401
     prop_event,
     prop_float,
 )
-from .const import CONF_DISABLED, CONFIG, DOMAIN, NOTIFIERS
+from .cloud import CloudManager, delete_cloud_instance
+from .const import CLOUD_MANAGER, CONFIG, DOMAIN, EVENT_DEVICE_DISCOVERY, NOTIFIERS
 from .helpers import Config
 from .http import async_register_http
-from .notifier import async_setup_notifier, async_unload_notifier
+from .notifier import YandexNotifier, async_setup_notifier, async_start_notifier, async_unload_notifier
 from .prop_float import PRESSURE_UNITS_TO_YANDEX_UNITS
 
 _LOGGER = logging.getLogger(__name__)
@@ -130,12 +134,21 @@ def range_instance_validate(instance: str) -> str:
 
 
 ENTITY_CUSTOM_RANGE_SCHEMA = vol.Schema({
-    vol.All(cv.string, range_instance_validate): vol.Schema({
-        vol.Required(const.CONF_ENTITY_CUSTOM_RANGE_SET_VALUE): cv.SERVICE_SCHEMA,
-        vol.Optional(const.CONF_ENTITY_CUSTOM_CAPABILITY_STATE_ENTITY_ID): cv.entity_id,
-        vol.Optional(const.CONF_ENTITY_CUSTOM_CAPABILITY_STATE_ATTRIBUTE): cv.string,
-        vol.Optional(const.CONF_ENTITY_RANGE): ENTITY_RANGE_SCHEMA,
-    })
+    vol.All(cv.string, range_instance_validate): vol.All(
+        cv.has_at_least_one_key(
+            const.CONF_ENTITY_CUSTOM_RANGE_SET_VALUE,
+            const.CONF_ENTITY_CUSTOM_RANGE_INCREASE_VALUE,
+            const.CONF_ENTITY_CUSTOM_RANGE_DECREASE_VALUE,
+        ),
+        vol.Schema({
+            vol.Optional(const.CONF_ENTITY_CUSTOM_RANGE_SET_VALUE): vol.Any(cv.SERVICE_SCHEMA),
+            vol.Optional(const.CONF_ENTITY_CUSTOM_RANGE_INCREASE_VALUE): vol.Any(cv.SERVICE_SCHEMA),
+            vol.Optional(const.CONF_ENTITY_CUSTOM_RANGE_DECREASE_VALUE): vol.Any(cv.SERVICE_SCHEMA),
+            vol.Optional(const.CONF_ENTITY_CUSTOM_CAPABILITY_STATE_ENTITY_ID): cv.entity_id,
+            vol.Optional(const.CONF_ENTITY_CUSTOM_CAPABILITY_STATE_ATTRIBUTE): cv.string,
+            vol.Optional(const.CONF_ENTITY_RANGE): ENTITY_RANGE_SCHEMA,
+        })
+    )
 })
 
 
@@ -169,21 +182,24 @@ def device_type_validate(device_type: str) -> str:
     return device_type
 
 
-ENTITY_SCHEMA = vol.Schema({
-    vol.Optional(const.CONF_NAME): cv.string,
-    vol.Optional(const.CONF_ROOM): cv.string,
-    vol.Optional(const.CONF_TYPE): vol.All(cv.string, device_type_validate),
-    vol.Optional(const.CONF_TURN_ON): cv.SERVICE_SCHEMA,
-    vol.Optional(const.CONF_TURN_OFF): cv.SERVICE_SCHEMA,
-    vol.Optional(const.CONF_FEATURES): vol.All(cv.ensure_list, features_validate),
-    vol.Optional(const.CONF_ENTITY_PROPERTIES, default=[]): [ENTITY_PROPERTY_SCHEMA],
-    vol.Optional(const.CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID): cv.boolean,
-    vol.Optional(const.CONF_ENTITY_RANGE, default={}): ENTITY_RANGE_SCHEMA,
-    vol.Optional(const.CONF_ENTITY_MODE_MAP, default={}): ENTITY_MODE_MAP_SCHEMA,
-    vol.Optional(const.CONF_ENTITY_CUSTOM_MODES, default={}): ENTITY_CUSTOM_MODE_SCHEMA,
-    vol.Optional(const.CONF_ENTITY_CUSTOM_TOGGLES, default={}): ENTITY_CUSTOM_TOGGLE_SCHEMA,
-    vol.Optional(const.CONF_ENTITY_CUSTOM_RANGES, default={}): ENTITY_CUSTOM_RANGE_SCHEMA,
-})
+ENTITY_SCHEMA = vol.All(
+    cv.deprecated(const.CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID),
+    vol.Schema({
+        vol.Optional(const.CONF_NAME): cv.string,
+        vol.Optional(const.CONF_ROOM): cv.string,
+        vol.Optional(const.CONF_TYPE): vol.All(cv.string, device_type_validate),
+        vol.Optional(const.CONF_TURN_ON): cv.SERVICE_SCHEMA,
+        vol.Optional(const.CONF_TURN_OFF): cv.SERVICE_SCHEMA,
+        vol.Optional(const.CONF_FEATURES): vol.All(cv.ensure_list, features_validate),
+        vol.Optional(const.CONF_ENTITY_PROPERTIES, default=[]): [ENTITY_PROPERTY_SCHEMA],
+        vol.Optional(const.CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID): cv.boolean,
+        vol.Optional(const.CONF_ENTITY_RANGE, default={}): ENTITY_RANGE_SCHEMA,
+        vol.Optional(const.CONF_ENTITY_MODE_MAP, default={}): ENTITY_MODE_MAP_SCHEMA,
+        vol.Optional(const.CONF_ENTITY_CUSTOM_MODES, default={}): ENTITY_CUSTOM_MODE_SCHEMA,
+        vol.Optional(const.CONF_ENTITY_CUSTOM_TOGGLES, default={}): ENTITY_CUSTOM_TOGGLE_SCHEMA,
+        vol.Optional(const.CONF_ENTITY_CUSTOM_RANGES, default={}): ENTITY_CUSTOM_RANGE_SCHEMA,
+    })
+)
 
 NOTIFIER_SCHEMA = vol.Schema({
     vol.Required(const.CONF_NOTIFIER_OAUTH_TOKEN): cv.string,
@@ -206,11 +222,20 @@ SETTINGS_SCHEMA = vol.Schema({
     vol.Optional(const.CONF_BETA, default=False): cv.boolean
 })
 
+
+def is_config_filter_empty(yaml_config: ConfigType) -> bool:
+    for entities in yaml_config.get(const.CONF_FILTER, {}).values():
+        if entities:
+            return False
+
+    return True
+
+
 YANDEX_SMART_HOME_SCHEMA = vol.All(
     vol.Schema({
         vol.Optional(const.CONF_NOTIFIER, default=[]): vol.All(cv.ensure_list, [NOTIFIER_SCHEMA]),
         vol.Optional(const.CONF_SETTINGS, default={}): vol.All(lambda value: value or {}, SETTINGS_SCHEMA),
-        vol.Optional(const.CONF_FILTER, default={}): entityfilter.FILTER_SCHEMA,
+        vol.Optional(const.CONF_FILTER, default={}): BASE_FILTER_SCHEMA,
         vol.Optional(const.CONF_ENTITY_CONFIG, default={}): vol.All(
             lambda value: value or {},
             {cv.entity_id: ENTITY_SCHEMA}
@@ -222,73 +247,127 @@ CONFIG_SCHEMA = vol.Schema({
 }, extra=vol.ALLOW_EXTRA)
 
 
-async def _async_update_config_from_yaml(hass: HomeAssistant, config: dict[str, Any]):
-    domain_config = config.get(DOMAIN, {})
-    hass.data[DOMAIN][CONFIG] = Config(
-        hass=hass,
-        settings=domain_config.get(const.CONF_SETTINGS, {}),
-        notifier=domain_config.get(const.CONF_NOTIFIER, []),
-        should_expose=domain_config.get(const.CONF_FILTER, {}),
-        entity_config=domain_config.get(const.CONF_ENTITY_CONFIG)
-    )
-
-
-async def async_setup(hass: HomeAssistant, config: dict[str, Any]):
+async def async_setup(hass: HomeAssistant, _: ConfigType):
     """Activate Yandex Smart Home component."""
-    hass.data[DOMAIN] = {
-        NOTIFIERS: [],
-        CONFIG: None,
-    }
+    hass.data[DOMAIN] = {}
+    hass.data[DOMAIN][NOTIFIERS]: list[YandexNotifier] = []
+    hass.data[DOMAIN][CONFIG]: Config | None = None
+    hass.data[DOMAIN][CLOUD_MANAGER]: CloudManager | None = None
 
     async_register_http(hass)
+    async_setup_notifier(hass)
 
-    # noinspection PyUnusedLocal
-    async def _handle_reload(service):
-        """Handle reload service call."""
-        if not hass.data[DOMAIN][CONFIG]:
-            raise ValueError('Integration is not enabled')
+    def _device_discovery_listener(_: Event):
+        for entry in hass.config_entries.async_entries(DOMAIN):
+            if not entry.data[const.CONF_DEVICES_DISCOVERED]:
+                data = dict(entry.data)
+                data[const.CONF_DEVICES_DISCOVERED] = True
 
-        new_config = await async_integration_yaml_config(hass, DOMAIN)
-        if not new_config or DOMAIN not in new_config:
-            raise ValueError('Configuration is invalid')
+                hass.config_entries.async_update_entry(entry, data=data, options=entry.options)
 
-        await _async_update_config_from_yaml(hass, new_config)
-        await async_setup_notifier(hass, reload=True)
+    hass.bus.async_listen(EVENT_DEVICE_DISCOVERY, _device_discovery_listener)
 
-    hass.helpers.service.async_register_admin_service(
-        DOMAIN,
-        SERVICE_RELOAD,
-        _handle_reload,
-    )
+    async def _handle_reload(*_):
+        current_entries = hass.config_entries.async_entries(DOMAIN)
+        reload_tasks = [
+            hass.config_entries.async_reload(entry.entry_id)
+            for entry in current_entries
+        ]
 
-    if DOMAIN in config:
-        hass.async_create_task(hass.config_entries.flow.async_init(
-            DOMAIN, context={'source': SOURCE_IMPORT}
-        ))
+        await asyncio.gather(*reload_tasks)
+
+    hass.helpers.service.async_register_admin_service(DOMAIN, SERVICE_RELOAD, _handle_reload)
 
     return True
 
 
-# noinspection PyUnusedLocal
-async def async_setup_entry(hass, entry: ConfigEntry):
-    is_reload = hass.data[DOMAIN].get(CONF_DISABLED)
-    config = await async_integration_yaml_config(hass, DOMAIN)
-    if not config or DOMAIN not in config:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    yaml_config = await async_integration_yaml_config(hass, DOMAIN)
+    if yaml_config is None:
         raise ConfigEntryNotReady('Configuration is missing or invalid')
 
-    await _async_update_config_from_yaml(hass, config)
-    await async_setup_notifier(hass, reload=is_reload)
+    _async_update_config_entry_from_yaml(hass, entry, yaml_config)
+    _async_import_options_from_data_if_missing(hass, entry)
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
+
+    yaml_domain_config = yaml_config.get(DOMAIN, {})
+    filters = yaml_domain_config.get(const.CONF_FILTER, {})
+    if is_config_filter_empty(yaml_domain_config) and const.CONF_FILTER in entry.options:
+        filters = entry.options[const.CONF_FILTER]
+
+    config = Config(
+        hass=hass,
+        entry=entry,
+        should_expose=FILTER_SCHEMA(filters),
+        entity_config=yaml_domain_config.get(const.CONF_ENTITY_CONFIG, {})
+    )
+    hass.data[DOMAIN][CONFIG] = config
+
+    if config.is_cloud_connection:
+        cloud_manager = CloudManager(hass, config, async_get_clientsession(hass))
+        hass.data[DOMAIN][CLOUD_MANAGER] = cloud_manager
+
+        hass.loop.create_task(cloud_manager.connect())
+        entry.async_on_unload(
+            hass.bus.async_listen_once(
+                EVENT_HOMEASSISTANT_STOP, cloud_manager.disconnect
+            )
+        )
+
+    await async_start_notifier(hass)
 
     return True
 
 
-# noinspection PyUnusedLocal
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    if not hass.data[DOMAIN][CONFIG]:
-        return True
+async def async_unload_entry(hass: HomeAssistant, _: ConfigEntry):
+    if hass.data[DOMAIN][CLOUD_MANAGER]:
+        hass.async_create_task(hass.data[DOMAIN][CLOUD_MANAGER].disconnect())
 
-    await async_unload_notifier(hass)
-    hass.data[DOMAIN][CONFIG] = None
-    hass.data[DOMAIN][CONF_DISABLED] = True
+    hass.data[DOMAIN][CONFIG]: Config | None = None
+    hass.data[DOMAIN][CLOUD_MANAGER]: CloudManager | None = None
 
+    async_unload_notifier(hass)
     return True
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry):
+    if entry.data[const.CONF_CONNECTION_TYPE] == const.CONNECTION_TYPE_CLOUD:
+        await delete_cloud_instance(hass, entry)
+
+
+async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry):
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
+@callback
+def _async_update_config_entry_from_yaml(hass: HomeAssistant, entry: ConfigEntry, yaml_config: ConfigType):
+    """Update a config entry with the latest yaml."""
+    data = entry.data.copy()
+    data.setdefault(const.CONF_CONNECTION_TYPE, const.CONNECTION_TYPE_DIRECT)
+    data.setdefault(const.CONF_DEVICES_DISCOVERED, False)
+
+    if DOMAIN in yaml_config:
+        data.update(yaml_config[DOMAIN][const.CONF_SETTINGS])
+        data.update({
+            const.CONF_NOTIFIER: yaml_config[DOMAIN][const.CONF_NOTIFIER]
+        })
+    else:
+        data.update(SETTINGS_SCHEMA(data={}))
+
+    hass.config_entries.async_update_entry(entry, data=data)
+
+
+@callback
+def _async_import_options_from_data_if_missing(hass: HomeAssistant, entry: ConfigEntry):
+    options = dict(entry.options)
+    data = dict(entry.data)
+    modified = False
+
+    for option in [const.CONF_FILTER]:
+        if option not in entry.options and option in entry.data:
+            options[option] = entry.data[option]
+            del data[option]
+            modified = True
+
+    if modified:
+        hass.config_entries.async_update_entry(entry, data=data, options=options)
