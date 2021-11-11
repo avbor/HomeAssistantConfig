@@ -104,9 +104,12 @@ livingroom_light_pack:
           above: 550
           for: "00:10:00"
           id: "lightly"
+        - platform: time
+          at: "00:30:00"
+          id: "time"
       action:
         choose:
-          - alias: Darkens
+          - alias: Darkens (Turn On)
             conditions:
               - condition: trigger
                 id: "dark"
@@ -117,10 +120,14 @@ livingroom_light_pack:
               - service: light.turn_on
                 data:
                   entity_id: light.gostinaia_podsvetka_na_okne
-          - alias: Brightens
+          - alias: Brightens (Turn Off)
             conditions:
-              - condition: trigger
-                id: "lightly"
+              - condition: or
+                conditions:
+                  - condition: trigger
+                    id: "lightly"
+                  - condition: trigger
+                    id: "time"
             sequence:
               - condition: state
                 entity_id: light.gostinaia_podsvetka_na_okne
