@@ -42,6 +42,10 @@ light.sonoff_1000f2f14a:
   friendly_name: Прихожая - Споты
 light.sonoff_1000f2a500:
   friendly_name: Коридор - Споты
+light.sonoff_zbmini_03_on_off:
+  friendly_name: Туалет - Споты
+light.sonoff_zbmini_04_on_off:
+  friendly_name: Ванная - Споты
 light.sonoff_1001045426:
   friendly_name: Спальня - Бра - Право
 light.sonoff_01minizb_47ef08fe_on_off:

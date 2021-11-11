@@ -10,7 +10,7 @@ packages:
 
 esphome:
   on_boot:
-    - switch.turn_on: button
+    - switch.turn_off: button
 
 web_server:
   port: 80
@@ -31,7 +31,7 @@ switch:
   - platform: gpio
     id: relay
     pin: GPIO12
-    restore_mode: ALWAYS_ON
+    restore_mode: ALWAYS_OFF
 
   # Template switch for button
   - platform: template

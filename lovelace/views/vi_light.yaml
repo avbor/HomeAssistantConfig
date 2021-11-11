@@ -8,7 +8,7 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### <center>Прихожая и коридор</center>
+          ### <center>Прихожая и Коридор</center>
       - type: horizontal-stack
         cards:
           - type: conditional
@@ -237,6 +237,55 @@ cards:
                   icon: mdi:weather-sunset-up
                 - entity: input_datetime.sunrise_in_bedroom
                   name: "Время включения"
+
+  # Ванная и Туалет
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Ванная и Туалет</center>
+      - type: horizontal-stack
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: conditional
+                conditions:
+                  - entity: light.sonoff_zbmini_03_on_off
+                    state_not: "unavailable"
+                card:
+                  type: light
+                  entity: light.sonoff_zbmini_03_on_off
+                  name: Туалет  
+                  icon: mdi:light-recessed
+              - type: conditional
+                conditions:
+                  - entity: fan.toilet_extractor
+                    state_not: "unavailable"
+                card:
+                  type: entities
+                  entities:
+                    - entity: fan.toilet_extractor
+                      name: []
+          - type: vertical-stack
+            cards:
+              - type: conditional
+                conditions:
+                  - entity: light.sonoff_zbmini_04_on_off
+                    state_not: "unavailable"
+                card:
+                  type: light
+                  entity: light.sonoff_zbmini_04_on_off
+                  name: Ванная
+                  icon: mdi:light-recessed
+              - type: conditional
+                conditions:
+                  - entity: fan.bathroom_extractor
+                    state_not: "unavailable"
+                card:
+                  type: entities
+                  entities: 
+                    - entity: fan.bathroom_extractor
+                      name: []
 
   # Кладовая
   - type: vertical-stack

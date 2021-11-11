@@ -51,7 +51,7 @@
         name: >
           ha_weekly_backup_{{ now().strftime('%Y%m%d') }}
         keep_days: 13
-        download_path: "/mnt/nas/ha_backups/weekly"
+#        download_path: "/mnt/nas/ha_backups/weekly"
 
 - alias: "HA: Create Daily Backup"
   id: acac055e-ea1e-41cd-9f46-62e7a8c006aa
@@ -68,7 +68,7 @@
       data:
         name: "ha_daily_backup_{{ now().strftime('%Y%m%d') }}"
         keep_days: 6
-        download_path: "/mnt/nas/ha_backups/daily"
+#        download_path: "/mnt/nas/ha_backups/daily"
 
 - alias: "HASS: ERRORs in System Log - Counter"
   id: 3b8230a5-49d5-437b-8bd9-d3f72f95425f

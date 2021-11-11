@@ -58,6 +58,8 @@ all_lamps:
     - light.sonoff_01minizb_47ef08fe_on_off
     - light.sonoff_1001045426
     - light.sonoff_1001053235
+    - light.sonoff_zbmini_03_on_off
+    - light.sonoff_zbmini_04_on_off
 
 light_detskaia:
   name: Весь свет в Детской

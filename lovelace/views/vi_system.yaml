@@ -359,19 +359,25 @@ cards:
                 name: Споты на Кухне
                 icon: mdi:light-recessed
               - entity: light.sonoff_1000ab3c28
-                name: Бра в гостиной
+                name: Бра в Гостиной
                 icon: mdi:wall-sconce-flat
               - entity: light.sonoff_1000f3035d
-                name: Люстра в гостиной
+                name: Люстра в Гостиной
                 icon: mdi:ceiling-light
               - entity: light.sonoff_1000f30a9e
-                name: Споты в гостиной
+                name: Споты в Гостиной
                 icon: mdi:light-recessed
               - entity: light.sonoff_1000f2f14a
                 name: Споты в прихожей
                 icon: mdi:light-recessed
               - entity: light.sonoff_1000f2a500
                 name: Споты в коридоре
+                icon: mdi:light-recessed
+              - entity: light.sonoff_zbmini_03_on_off
+                name: Споты в Туалете
+                icon: mdi:light-recessed
+              - entity: light.sonoff_zbmini_04_on_off
+                name: Споты в Ванной
                 icon: mdi:light-recessed
               - entity: light.sonoff_01minizb_47ef08fe_on_off
                 name: Бра в Спальне - Лево
