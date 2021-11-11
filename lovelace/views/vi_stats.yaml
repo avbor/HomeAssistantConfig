@@ -6,7 +6,7 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### <center>Электроэнергия (kWh\W)</center>
+          ### <center>Электроэнергия (kWh, W)</center>
       - type: horizontal-stack
         cards:
           - type: 'custom:mini-graph-card'
