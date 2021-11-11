@@ -30,6 +30,12 @@ filter:
     - light.sonoff_1000b72483 # Кухня - Споты
     - light.ikea_e27_kukhnia # Кухня - Люстра
     - light.kukhnia_lenta # Кухня - Подсветка
+    # Ванная
+    - light.sonoff_zbmini_04_on_off
+    - fan.bathroom_extractor
+    # Туалет
+    - light.sonoff_zbmini_03_on_off
+    - fan.toilet_extractor
     # Кладовая
     - light.sonoff_1000b6831b # Кладовая - Люстра
     # Спальня
@@ -76,6 +82,12 @@ entity_config:
   light.sonoff_1000b6831b:
     name: Люстра
     room: Кладовая
+  light.sonoff_zbmini_04_on_off:
+    name: Споты
+    room: Ванная
+  light.sonoff_zbmini_03_on_off:
+    name: Споты
+    room: Туалет
   light.sonoff_1001053235:
     name: Люстра
     room: Спальня
@@ -137,3 +149,11 @@ entity_config:
   climate.daikin_bedroom:
     name: Кондиционер
     room: Спальня
+  fan.bathroom_extractor:
+    type: devices.types.purifier
+    name: Вытяжка
+    room: Ванная
+  fan.toilet_extractor:
+    type: devices.types.purifier
+    name: Вытяжка
+    room: Туалет
