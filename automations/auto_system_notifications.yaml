@@ -289,6 +289,7 @@
           '^binary_sensor.lamp_status_|'
           '^sensor.lamp_status_|'
           '^sensor.mirobot_1s_|'
+          '^sensor.xiaomi_vacuum_cleaner_|'
           '^switch.smartir_|'
           '.*\.smartmi_humidifier_\d{2}_\w+_|'
           '^weather.nivki_2|'
@@ -356,10 +357,12 @@
       value_template: >-
         {{ (trigger.event.data.new_state.state | int) < (states('input_number.low_battery_alert_threshold') | int) }}
   action:
-    - service: notify.telegram_group_system
-      data_template:
+    - service: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_system
+        parse_mode: html
+        title: "<b>Внимание, низкий заряд батареи!</b>"
         message: |
-          *Внимание, низкий заряд батареи!*
           {{ trigger.event.data.new_state.attributes.friendly_name }}: {{ trigger.event.data.new_state.state }} %!
 
 - alias: New Network Device Notification
