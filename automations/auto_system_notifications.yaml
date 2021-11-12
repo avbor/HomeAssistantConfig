@@ -301,7 +301,8 @@
           '^switch\.gosund_sp111_\d{2}_restart|'
           '^sensor\..*_ble|'
           '^(binary_sensor|switch)\.domofon_|'
-          '^(binary_sensor|sensor|light)\.sonoff_basic_'
+          '^(binary_sensor|sensor|light)\.sonoff_basic_|'
+          '^(binary_sensor|sensor)\.sonoff_mini_r2_01_'
           )
         }}
     - condition: template
