@@ -122,16 +122,3 @@ cards:
 #              icon: mdi:roman-numeral-1
 #            II:
 #              icon: mdi:roman-numeral-2
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Вытяжка</center>
-      - type: entities
-        state_color: true
-        entities:
-          - entity: fan.bathroom_extractor
-            name: Ванная
-          - entity: fan.toilet_extractor
-            name: Туалет
