@@ -1,0 +1,82 @@
+substitutions:
+  board_name: sonoff_mini_r2_01
+  esp_platform: ESP8266
+  esp_board: esp8285
+  room_name: Stairwell
+
+packages:
+  wifi: !include common/wifi.yaml
+  device_base: !include common/device_base.yaml
+
+esphome:
+  on_boot:
+    then:    
+      - switch.turn_off: relay
+
+web_server:
+  port: 80
+
+#######################################
+# Device specific Config Begins Below #
+#######################################
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO00
+    id: reset
+    internal: true
+    filters:
+      - invert:
+      - delayed_off: 10ms
+    on_press:
+      - switch.toggle:
+          id: relay
+
+  - platform: gpio
+    pin: GPIO04
+    id: button
+    internal: true
+    on_press:
+      then:
+        - switch.toggle:
+            id: relay
+    on_release:
+      then:
+        - switch.toggle:
+            id: relay
+
+switch:
+  - platform: gpio
+    internal: true
+    pin: GPIO12
+    id: relay
+    restore_mode: ALWAYS_OFF
+
+  - platform: template
+    name: ${board_name}_doorbell
+    icon: mdi:bell-ring-outline
+    id: doorbell
+    turn_on_action:
+      - switch.turn_on: relay
+      - delay: 800ms
+      - switch.turn_off: doorbell
+    turn_off_action:
+      - switch.turn_off: relay
+
+status_led:
+  pin:
+    number: GPIO13
+    inverted: true
+
+output:
+  - platform: esp8266_pwm
+    id: blue_led
+    pin: GPIO13
+    inverted: True
+
+light:
+  - platform: monochromatic
+    name: ${board_name}_blueled
+    output: blue_led
+    internal: true
+    restore_mode: ALWAYS_OFF
