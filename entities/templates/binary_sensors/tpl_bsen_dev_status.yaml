@@ -35,3 +35,11 @@
   - name: Yandex Station Lite Detskaia Status
     device_class: power
     state: "{{ not states('media_player.yandex_station_lite_detskaia') in ('paused', 'idle') }}"
+
+  - name: Bathroom Extractor Fan
+    device_class: power
+    state: "{{ is_state('fan.bathroom_extractor', 'on') }}"
+
+  - name: Toilet Extractor Fan
+    device_class: power
+    state: "{{ is_state('fan.toilet_extractor', 'on') }}"

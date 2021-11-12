@@ -423,6 +423,15 @@ cards:
             name: "Стиральная машина"
           - entity: binary_sensor.dishwasher_status
             name: "Посудомоечная машина"
+          # Вытяжка
+          - type: section
+            label: Вытяжка
+          - entity: binary_sensor.bathroom_extractor_fan
+            name: Ванная
+            icon: mdi:fan
+          - entity: binary_sensor.toilet_extractor_fan
+            name: Туалет
+            icon: mdi:fan
           # Кондиционеры
           - type: section
             label: Кондиционеры

@@ -173,6 +173,9 @@
         Нептун (кладовая, туалет, ванна, кухня): *{{ states('binary_sensor.neptun_water_leakage') }}*
         Aqara кладовая: *{{ states('binary_sensor.0x158d000400e77d_moisture') }}*
         Aqara под ванной (слева): *{{ states('binary_sensor.0x158d0004030d84_moisture') }}*
+        `-= Вытяжка =-`
+        Ванная: *{{ states('binary_sensor.bathroom_extractor_fan') }}*
+        Туалет: *{{ states('binary_sensor.toilet_extractor_fan') }}*
         `-= Кондиционеры =-`
         Детская: *{{ states('binary_sensor.0x158d00039cf974_contact') }}*
         Гостинная: *{{ states('binary_sensor.0x158d0003d54725_contact') }}*
@@ -195,6 +198,8 @@
         Споты на кухне: *{{ states('light.sonoff_1000b72483') }}*
         Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
         Люстра на кухне: *{{ states('light.ikea_e27_kukhnia') }}*
+        Споты в Ванной: *{{ states('light.sonoff_zbmini_04_on_off') }}*
+        Споты в Туалете: *{{ states('light.sonoff_zbmini_03_on_off') }}*
         Люстра в кладовой: *{{ states('light.sonoff_1000b6831b') }}*
         Люстра в спальне: *{{ states('light.sonoff_1001053235') }}*
         Бра в спальне - лево: *{{ states('light.sonoff_01minizb_47ef08fe_on_off') }}*
@@ -210,6 +215,8 @@
         `-= Chromecast =-`
         Гостинная: *{{ states('media_player.gostinaia') }}*
         Детская: *{{ states('media_player.detskaia') }}*
+        `-= Google Home =-`
+        Мини в Ванной: *{{ states('media_player.mini_v_vannoi') }}*
         `-= Yandex =-`
         Гостинная: *{{ states('media_player.yandex_station_mini2_gostinaia') }}*
         Детская: *{{ states('media_player.yandex_station_lite_detskaia') }}*
