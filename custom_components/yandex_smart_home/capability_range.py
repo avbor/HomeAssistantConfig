@@ -7,6 +7,7 @@ from typing import Any
 
 from homeassistant.components import climate, cover, fan, humidifier, light, media_player, water_heater
 from homeassistant.const import (
+    ATTR_DEVICE_CLASS,
     ATTR_ENTITY_ID,
     ATTR_MODEL,
     ATTR_SUPPORTED_FEATURES,
@@ -462,13 +463,16 @@ class ChannelCapability(RangeCapability):
         features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
 
         if self.state.domain == media_player.DOMAIN:
-            if features & media_player.SUPPORT_PLAY_MEDIA:
-                return True
-
             if features & media_player.SUPPORT_PREVIOUS_TRACK and features & media_player.SUPPORT_NEXT_TRACK:
                 return True
 
             if const.MEDIA_PLAYER_FEATURE_NEXT_PREVIOUS_TRACK in self.entity_config.get(const.CONF_FEATURES, []):
+                return True
+
+            if features & media_player.SUPPORT_PLAY_MEDIA:
+                if self.entity_config.get(const.CONF_SUPPORT_SET_CHANNEL) is False:
+                    return False
+
                 return True
 
         return False
@@ -477,8 +481,12 @@ class ChannelCapability(RangeCapability):
     def support_random_access(self) -> bool:
         """Test if capability supports random access."""
         features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
+        device_class = self.state.attributes.get(ATTR_DEVICE_CLASS)
 
-        return bool(features & media_player.SUPPORT_PLAY_MEDIA)
+        if self.entity_config.get(const.CONF_SUPPORT_SET_CHANNEL) is False:
+            return False
+
+        return bool(features & media_player.SUPPORT_PLAY_MEDIA and device_class == media_player.DEVICE_CLASS_TV)
 
     def get_value(self) -> float | None:
         """Return the state value of this capability for this entity."""
@@ -490,11 +498,10 @@ class ChannelCapability(RangeCapability):
     async def set_state(self, data: RequestData, state: dict[str, Any]):
         """Set device state."""
         value = state['value']
+        features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
 
         if state.get('relative'):
-            if self.get_value() is not None:
-                value = self.get_absolute_value(state['value'])
-            else:
+            if features & media_player.SUPPORT_PREVIOUS_TRACK and features & media_player.SUPPORT_NEXT_TRACK:
                 if state['value'] >= 0:
                     service = media_player.SERVICE_MEDIA_NEXT_TRACK
                 else:
@@ -510,13 +517,29 @@ class ChannelCapability(RangeCapability):
                 )
                 return
 
-        await self.hass.services.async_call(
-            media_player.DOMAIN,
-            media_player.SERVICE_PLAY_MEDIA, {
-                ATTR_ENTITY_ID: self.state.entity_id,
-                media_player.ATTR_MEDIA_CONTENT_ID: value,
-                media_player.ATTR_MEDIA_CONTENT_TYPE: media_player.const.MEDIA_TYPE_CHANNEL
-            },
-            blocking=False,  # some tv's do it too slow
-            context=data.context
-        )
+            if self.get_value() is None:
+                raise SmartHomeError(
+                    ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
+                    f'Failed to set relative value for {self.instance} instance of {self.state.entity_id}.'
+                )
+            else:
+                value = self.get_absolute_value(state['value'])
+
+        try:
+            await self.hass.services.async_call(
+                media_player.DOMAIN,
+                media_player.SERVICE_PLAY_MEDIA, {
+                    ATTR_ENTITY_ID: self.state.entity_id,
+                    media_player.ATTR_MEDIA_CONTENT_ID: int(value),
+                    media_player.ATTR_MEDIA_CONTENT_TYPE: media_player.const.MEDIA_TYPE_CHANNEL
+                },
+                blocking=False,  # some tv's do it too slow
+                context=data.context
+            )
+        except ValueError as e:
+            raise SmartHomeError(
+                ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
+                f'Failed to set channel for {self.state.entity_id}. '
+                f'Please change setting "support_set_channel" to "false" in entity_config '
+                f'if the device does not support channel selection. Error: {e!r}'
+            )

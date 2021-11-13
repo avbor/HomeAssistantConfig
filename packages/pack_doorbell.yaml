@@ -1,0 +1,78 @@
+#################################################
+# Package Domofon
+#################################################
+
+doorbell_pack:
+
+  template:
+
+    - binary_sensor:
+        - name: "Doorbell Ringing"
+          device_class: sound
+          delay_off: "00:02:00"
+          state: >-
+            {{ is_state('binary_sensor.lumi_lumi_sensor_magnet_cd829803_on_off', 'off') }}
+          icon: >-
+            {% if is_state('binary_sensor.lumi_lumi_sensor_magnet_cd829803_on_off', 'off') -%}
+              mdi:bell-ring-outline
+            {% else -%}
+              mdi:bell-outline
+            {% endif %}
+
+  input_boolean:
+
+    doorbell_mute:
+      name: "Disable Doorbell Ringing"
+      icon: mdi:bell-off-outline
+
+  automation:
+
+    - alias: "Doorbell Ringing"
+      id: 420fe43c-f00d-46b6-a787-032b0c58bd47
+      mode: single
+      max_exceeded: silent
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.doorbell_ringing
+          to: "on"
+      action:
+        - choose:
+          - alias: Mute On
+            conditions: "{{ is_state('input_boolean.doorbell_mute', 'on') }}"
+            sequence:
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_flat_1
+                  message: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+              - delay: "00:00:05"
+          - alias: Mute Off
+            conditions: >
+              {{
+                is_state('input_boolean.doorbell_mute', 'off') and
+                is_state('switch.sonoff_mini_r2_01_doorbell','off')
+              }}
+            sequence:
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.sonoff_mini_r2_01_doorbell
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_flat_1
+                  message: "*Внимание*, в дверь звонят!"
+
+    - alias: "Doorbell - Mute and UnMute by Time"
+      id: 325f3e23-39b1-47f5-a415-e5da5e4845e3
+      trigger:
+        - platform: time
+          at: "22:00:00"
+        - platform: time
+          at: "08:00:00"
+      action:
+        - service: >-
+            {% if trigger.now.hour == 22 -%}
+              switch.turn_on
+            {% elif trigger.now.hour == 8 -%}
+              switch.turn_off
+            {% endif %}
+          data:
+            entity_id: input_boolean.doorbell_mute

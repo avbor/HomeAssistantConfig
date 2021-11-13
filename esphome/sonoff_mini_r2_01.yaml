@@ -2,7 +2,7 @@ substitutions:
   board_name: sonoff_mini_r2_01
   esp_platform: ESP8266
   esp_board: esp8285
-  room_name: Stairwell
+  room_name: Hallway
 
 packages:
   wifi: !include common/wifi.yaml
@@ -45,6 +45,11 @@ binary_sensor:
         - switch.toggle:
             id: relay
 
+  - platform: homeassistant
+    entity_id: input_boolean.doorbell_mute
+    id: mute
+    internal: true
+
 switch:
   - platform: gpio
     internal: true
@@ -57,9 +62,13 @@ switch:
     icon: mdi:bell-ring-outline
     id: doorbell
     turn_on_action:
-      - switch.turn_on: relay
-      - delay: 800ms
-      - switch.turn_off: doorbell
+      - if:
+          condition:
+            binary_sensor.is_off: mute
+          then:
+            - switch.turn_on: relay
+            - delay: 800ms
+            - switch.turn_off: doorbell
     turn_off_action:
       - switch.turn_off: relay
 

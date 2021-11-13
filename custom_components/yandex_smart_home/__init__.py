@@ -192,6 +192,7 @@ ENTITY_SCHEMA = vol.All(
         vol.Optional(const.CONF_TURN_OFF): cv.SERVICE_SCHEMA,
         vol.Optional(const.CONF_FEATURES): vol.All(cv.ensure_list, features_validate),
         vol.Optional(const.CONF_ENTITY_PROPERTIES, default=[]): [ENTITY_PROPERTY_SCHEMA],
+        vol.Optional(const.CONF_SUPPORT_SET_CHANNEL): cv.boolean,
         vol.Optional(const.CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID): cv.boolean,
         vol.Optional(const.CONF_ENTITY_RANGE, default={}): ENTITY_RANGE_SCHEMA,
         vol.Optional(const.CONF_ENTITY_MODE_MAP, default={}): ENTITY_MODE_MAP_SCHEMA,
@@ -301,6 +302,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         should_expose=FILTER_SCHEMA(filters),
         entity_config=yaml_domain_config.get(const.CONF_ENTITY_CONFIG, {})
     )
+    await config.async_init()
     hass.data[DOMAIN][CONFIG] = config
 
     if config.is_cloud_connection:
@@ -344,6 +346,8 @@ def _async_update_config_entry_from_yaml(hass: HomeAssistant, entry: ConfigEntry
     """Update a config entry with the latest yaml."""
     data = entry.data.copy()
     data.setdefault(const.CONF_CONNECTION_TYPE, const.CONNECTION_TYPE_DIRECT)
+    if const.CONF_DEVICES_DISCOVERED not in data:  # pre-0.3 migration
+        data.setdefault(const.CONF_DEVICES_DISCOVERED, True)
     data.setdefault(const.CONF_DEVICES_DISCOVERED, False)
 
     if DOMAIN in yaml_config:

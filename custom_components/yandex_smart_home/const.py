@@ -46,6 +46,7 @@ CONF_TYPE = 'type'
 CONF_TURN_ON = 'turn_on'
 CONF_TURN_OFF = 'turn_off'
 CONF_FEATURES = 'features'
+CONF_SUPPORT_SET_CHANNEL = 'support_set_channel'
 CONF_CHANNEL_SET_VIA_MEDIA_CONTENT_ID = 'channel_set_via_media_content_id'  # Deprecated
 CONF_ENTITY_PROPERTY_ENTITY = 'entity'
 CONF_ENTITY_PROPERTY_TYPE = 'type'
@@ -68,6 +69,8 @@ CONF_ENTITY_CUSTOM_RANGES = 'custom_ranges'
 CONF_ENTITY_CUSTOM_RANGE_SET_VALUE = 'set_value'
 CONF_ENTITY_CUSTOM_RANGE_INCREASE_VALUE = 'increase_value'
 CONF_ENTITY_CUSTOM_RANGE_DECREASE_VALUE = 'decrease_value'
+
+STORE_CACHE_ATTRS = 'attrs'
 
 CONNECTION_TYPE_DIRECT = 'direct'
 CONNECTION_TYPE_CLOUD = 'cloud'
@@ -147,6 +150,8 @@ DOMAIN_TO_YANDEX_TYPES = {
 
 DEVICE_CLASS_TO_YANDEX_TYPES = {
     (media_player.DOMAIN, media_player.DEVICE_CLASS_TV): TYPE_MEDIA_DEVICE_TV,
+    (media_player.DOMAIN, media_player.DEVICE_CLASS_RECEIVER): TYPE_MEDIA_DEVICE_RECIEVER,
+    (switch.DOMAIN, switch.DEVICE_CLASS_OUTLET): TYPE_SOCKET,
 }
 
 ON_OFF_INSTANCE_ON = 'on'

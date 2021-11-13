@@ -246,6 +246,15 @@ cards:
                   service_data:
                     entity_id: switch.domofon_reject_call
                 entity: switch.domofon_reject_call
+      - type: markdown
+        content: >
+          ### <center>Дверной звонок</center>
+      - type: entities
+        entities:
+          - entity: binary_sensor.doorbell_ringing
+            name: Звонок
+          - entity: input_boolean.doorbell_mute
+            name: Выключить звук
 # --- Газ
 #  - type: vertical-stack
 #    cards:
