@@ -204,7 +204,7 @@ cards:
                 - sensor.do_doma_sasha
                 - sensor.do_doma_ira
 
-# --- Домофон
+# --- Домофон и дверной звонок
   - type: vertical-stack
     cards:
       - type: markdown
@@ -253,6 +253,7 @@ cards:
         entities:
           - entity: binary_sensor.doorbell_ringing
             name: Звонок
+            state_color: true
           - entity: input_boolean.doorbell_mute
             name: Выключить звук
 # --- Газ
