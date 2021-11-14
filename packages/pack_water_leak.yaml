@@ -75,6 +75,7 @@ water_leak_protection:
           - binary_sensor.neptun_water_leakage
           - binary_sensor.0x158d000400e77d_moisture
           - binary_sensor.0x158d0004030d84_moisture
+          - binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone
         from: 'off'
         to: 'on'
       action:
@@ -178,6 +179,11 @@ water_leak_protection:
           from: "off"
           to: "on"
           id: "aqara_under_bath_on"
+        - platform: state
+          entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone
+          from: "off"
+          to: "on"
+          id: "aqara_03_near_door"
       action:
         - choose:
           - alias: "neptun_on"
@@ -213,7 +219,7 @@ water_leak_protection:
           - alias: "aqara_under_bath_on"
             conditions:
               - condition: trigger
-                id: "aqara_storeroom_on"
+                id: "aqara_under_bath_on"
             sequence:
               - service: telegram_bot.send_message
                 data:
@@ -223,6 +229,21 @@ water_leak_protection:
                     Сработал датчик протечки Aqara в *Ванной*.
                     Водопроводные краны перекрыты!
                     Необходимо проверить наличие воды *слева под ванной*.
+                  inline_keyboard:
+                    - 'Открыть краны:/water_valves_open'
+          - alias: "aqara_03_near_door"
+            conditions:
+              - condition: trigger
+                id: "aqara_03_near_door"
+            sequence:
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_flat_1
+                  title: "*Внимание!*"
+                  message: |
+                    Сработал датчик протечки Aqara в *Ванной*.
+                    Водопроводные краны перекрыты!
+                    Необходимо проверить наличие воды *рядом с ванной, справа*.
                   inline_keyboard:
                     - 'Открыть краны:/water_valves_open'
 

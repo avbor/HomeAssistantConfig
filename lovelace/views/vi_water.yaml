@@ -80,6 +80,11 @@ cards:
         - type: entity
           entity: binary_sensor.0x158d0004030d84_moisture
           name: Под Ванной (слева)
+      - type: horizontal-stack
+        cards:
+        - type: entity
+          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone
+          name: Справа от Ванной
 
   - type: vertical-stack
     cards:
