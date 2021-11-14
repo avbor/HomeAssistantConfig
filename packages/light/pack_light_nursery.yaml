@@ -86,17 +86,17 @@ nursery_light_pack:
                         entity_id: light.ikea_e27_detskaia
                         transition: "0.5"
                         brightness: >
-                          {%- if (state_attr('light.ikea_e27_detskaia', 'brightness') | int) <= 3 %}
+                          {%- if (state_attr('light.ikea_e27_detskaia', 'brightness') | int(0)) <= 3 %}
                             51
-                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int) <= 51 %}
+                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int(0)) <= 51 %}
                             102
-                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int) <= 102 %}
+                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int(0)) <= 102 %}
                             153
-                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int) <= 153 %}
+                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int(0)) <= 153 %}
                             204
-                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int) <= 204 %}
+                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int(0)) <= 204 %}
                             255
-                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int) <= 255 %}
+                          {% elif (state_attr('light.ikea_e27_detskaia', 'brightness') | int(0)) <= 255 %}
                             3
                           {% endif %}
                 - alias: Triple click
