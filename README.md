@@ -114,6 +114,7 @@ _Remote site (country house):_
 
 - Plugs:
   - MiJia Smart Power Plug 2 (ZNCZ02LM, lumi.plug)
+  - BlitzWolf SHP13 (BW-SHP13, TS0121F)
   - BlitzWolf SHP15 (BW-SHP15, TS011F)
 
 - Light:
@@ -191,7 +192,7 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 
 **Server:**
 - Ubuntu Server 20.04 LTS
-- KVM-QEMU + libvirt
+- QEMU + KVM + libvirt
 - Home Assistant (Virtual Machine)
 - NGINX as revers proxy
 
