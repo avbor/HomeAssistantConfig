@@ -9,7 +9,7 @@ doorbell_pack:
     - binary_sensor:
         - name: "Doorbell Ringing"
           device_class: sound
-          delay_off: "00:02:00"
+          delay_off: "00:00:03"
           state: >-
             {{ is_state('binary_sensor.lumi_lumi_sensor_magnet_cd829803_on_off', 'off') }}
           icon: >-
@@ -44,7 +44,6 @@ doorbell_pack:
                 data:
                   target: !secret tlg_group_flat_1
                   message: "*Внимание*, в дверь звонят! _(звонок отключен)_"
-              - delay: "00:00:05"
           - alias: Mute Off
             conditions: >
               {{
@@ -65,14 +64,25 @@ doorbell_pack:
       trigger:
         - platform: time
           at: "22:00:00"
+          id: "turn_on"
         - platform: time
           at: "08:00:00"
+          id: "turn_off"
       action:
-        - service: >-
-            {% if trigger.now.hour == 22 -%}
-              switch.turn_on
-            {% elif trigger.now.hour == 8 -%}
-              switch.turn_off
-            {% endif %}
-          data:
-            entity_id: input_boolean.doorbell_mute
+        choose:
+          - alias: Mute On
+            conditions:
+              - condition: trigger
+                id: "turn_on"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.doorbell_mute
+          - alias: Mute Off
+            conditions:
+              - condition: trigger
+                id: "turn_off"
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.doorbell_mute
