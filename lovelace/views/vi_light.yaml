@@ -308,14 +308,27 @@ cards:
       - type: markdown
         content: >
           ### <center>Разное</center>
-      - type: button
-        entity: group.all_lamps
-        name: Выключить весь свет
-        icon: mdi:lightbulb-group-off
-        icon_height: 64px
-        show_state: false
-        tap_action: 
-          action: call-service
-          service: homeassistant.turn_off
-          service_data:
-            entity_id: group.all_lamps
+      - type: entities
+        state_color: true
+        entities:
+          - type: buttons
+            entities:
+              - entity: group.all_lamps
+                name: Выключить весь свет
+                icon: mdi:lightbulb-group
+                tap_action:
+                  action: call-service
+                  service: light.turn_off
+                  service_data:
+                    entity_id: group.all_lamps
+#      - type: button
+#        entity: group.all_lamps
+#        name: Выключить весь свет
+#        icon: mdi:lightbulb-group-off
+#        icon_height: 64px
+#        show_state: false
+#        tap_action: 
+#          action: call-service
+#          service: homeassistant.turn_off
+#          service_data:
+#            entity_id: group.all_lamps
