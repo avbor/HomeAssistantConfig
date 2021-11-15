@@ -119,6 +119,7 @@ _Remote site (country house):_
 
 - Light:
   - IKEA TRÅDFRI LED Bulb E14 400lm (LED1649C5, ikea.light.led1649c5)
+  - IKEA TRÅDFRI LED Bulb E14 470lm (LED1835C6)
   - IKEA TRÅDFRI LED Bulb E27 806lm (LED1836G9)
   - IKEA TRÅDFRI LED Bulb E27 1000lm (LED1732G11)
 
@@ -126,6 +127,7 @@ _Remote site (country house):_
   - MiJia Wireless Switch (WXKG01LM, lumi.sensor_switch)
   - Aqara Wireless Switch with Gyroscope (WXKG12LM, lumi.sensor_switch.aq3)
   - IKEA TRÅDFRI ON/OFF Switch (E1743)
+  - IKEA TRÅDFRI Remote control (E1524)
 
 - Sensors:
   - MiJia Door & Window Sensor (MCCGQ01LM, lumi.sensor_magnet)

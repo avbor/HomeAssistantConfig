@@ -194,7 +194,7 @@
         Споты в гостиной: *{{ states('light.sonoff_1000f30a9e') }}*
         Бра в гостиной: *{{ states('light.sonoff_1000ab3c28') }}*
         Подсветка онка в гостиной: *{{ states('light.gostinaia_podsvetka_na_okne') }}*
-        Лампа на столе в гостиной: *{{ states('light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off') }}*
+        Лампа на столе в гостиной: *{{ states('light.ikea_e14_level_light_color_on_off') }}*
         Споты на кухне: *{{ states('light.sonoff_1000b72483') }}*
         Подсветка кухни: *{{ states('light.kukhnia_lenta') }}*
         Люстра на кухне: *{{ states('light.ikea_e27_kukhnia') }}*

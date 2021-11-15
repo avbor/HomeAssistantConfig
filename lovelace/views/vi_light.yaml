@@ -114,11 +114,11 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
+              - entity: light.ikea_e14_level_light_color_on_off
                 state_not: "unavailable"
             card:
               type: light
-              entity: light.ikea_of_sweden_tradfri_bulb_e14_w_op_ch_400lm_726b61fe_level_on_off
+              entity: light.ikea_e14_level_light_color_on_off
               name: Рабочий стол
               icon: mdi:desk-lamp
           - type: conditional
