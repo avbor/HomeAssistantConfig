@@ -48,6 +48,9 @@ _Remote site (country house):_
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
   Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)
 
+- Aqara Hub E1 (ZHWG16LM)\
+  Not used for now
+
 - Phoscon ConBee 2 by dresden elektronik\
   Integration "Zigbee Home Automation (ZHA)"
 
