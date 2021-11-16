@@ -187,6 +187,9 @@ notify:
   - name: telegram_group_system
     platform: telegram
     chat_id: !secret tlg_group_system
+  - platform: sms
+    name: sms_alex
+    recipient: !secret sms_phone_alex
 
 zha:
   zigpy_config:

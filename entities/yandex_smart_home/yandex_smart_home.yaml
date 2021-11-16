@@ -30,6 +30,8 @@ filter:
     - light.sonoff_1000b72483 # Кухня - Споты
     - light.ikea_e27_kukhnia # Кухня - Люстра
     - light.kukhnia_lenta # Кухня - Подсветка
+    - cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering # Кухня - Штора Левая
+    - cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering # Кухня - Штора Правая
     # Ванная
     - light.sonoff_zbmini_04_on_off
     - fan.bathroom_extractor
@@ -157,3 +159,9 @@ entity_config:
     type: devices.types.purifier
     name: Вытяжка
     room: Туалет
+  cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering:
+    name: Штора левая
+    room: Кухня
+  cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering:
+    name: Штора правая
+    room: Кухня

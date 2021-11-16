@@ -1,0 +1,48 @@
+#################################################
+# Package Kitchen Covers
+#################################################
+
+kitchen_covers_pack:
+
+  cover:
+
+    - platform: group
+      unique_id: cf3ef6c7-3bf0-4e9f-8a43-57b5ee5b1f25
+      name: Kitchen Covers
+      entities:
+        - cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering
+        - cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering
+
+  automation:
+
+    - alias: "Kitchen Covers Control"
+      id: 24f83b60-8392-4278-8725-6d1a33a0a483
+      trigger:
+        - platform: numeric_state
+          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
+          below: 550
+          for: "00:10:00"
+          id: "dark"
+        - platform: numeric_state
+          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
+          above: 550
+          for: "00:10:00"
+          id: "lightly"
+      action:
+        choose:
+          - alias: Darkens (Close)
+            conditions:
+              - condition: trigger
+                id: "dark"
+            sequence:
+              - service: cover.close_cover
+                target:
+                  entity_id: cover.kitchen_covers
+          - alias: Brightens (Open)
+            conditions:
+              - condition: trigger
+                id: "lightly"
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id: cover.kitchen_covers
