@@ -146,6 +146,7 @@ _Remote site (country house):_
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)
   - IKEA TRÅDFRI Repeater (E1746)
+  - Moes Blinds Drive (AM43, TS0601)
 
 #### Bluetooth Devices:
 - Sensors:
