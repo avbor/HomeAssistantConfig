@@ -92,11 +92,11 @@
       value_template: "{{ is_state('light.sonoff_1000f2a500', 'on') }}"
     lamp_status_toilet:
       device_class: power
-      friendly_name: Споты в Коридоре
+      friendly_name: Споты в Туалете
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
     lamp_status_bathroom:
       device_class: power
-      friendly_name: Споты в Коридоре
+      friendly_name: Споты в Ванной
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
