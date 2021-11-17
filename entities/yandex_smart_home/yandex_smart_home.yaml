@@ -17,14 +17,16 @@ filter:
     # Детская
     - light.ikea_e27_detskaia # Детская - Люстра
     - light.detskaia_podsvetka_na_okne # Детская - Подсветка на окне
+    - light.ikea_e14_level_light_color_on_off # Детская - Лампа на столе
     - sensor.0x158d0003931aec_temperature # Детская - Температура
     - climate.daikin_nursery # Детская - Кондиционер
     # Гостина
     - light.sonoff_1000f30a9e # Гостиная - Споты
     - light.sonoff_1000ab3c28 # Гостиная - Бра
     - light.sonoff_1000f3035d # Гостиная - Люстра
-    - climate.daikin_livingroom # Гостиная - Кондиционер
     - light.gostinaia_podsvetka_na_okne # Гостиная - Подсветка на окне
+    - light.ikea_e27_level_light_color_on_off # Гостиная - Лампа на столе
+    - climate.daikin_livingroom # Гостиная - Кондиционер
     - sensor.0x158d0003230618_temperature # Гостиная - Температура
     # Кухня
     - light.sonoff_1000b72483 # Кухня - Споты
@@ -62,6 +64,9 @@ entity_config:
   light.detskaia_podsvetka_na_okne:
     name: Подсветка
     room: Детская
+  light.ikea_e14_level_light_color_on_off:
+    name: Лампа на столе
+    room: Детская
   light.sonoff_1000f30a9e:
     name: Споты
     room: Гостиная
@@ -73,6 +78,9 @@ entity_config:
     room: Гостиная
   light.gostinaia_podsvetka_na_okne:
     name: Подсветка
+    room: Гостиная
+  light.ikea_e27_level_light_color_on_off:
+    name: Лампа на столе
     room: Гостиная
   light.sonoff_1000b72483:
     name: Споты
