@@ -107,64 +107,129 @@ livingroom_light_pack:
           event_data:
             device_ieee: "d0:cf:5e:ff:fe:33:93:f6"
       action:
-        choose:
-          - alias: toggle
-            conditions: "{{ trigger.event.data.command == 'toggle' }}"
-            sequence:
-              - service: light.toggle
-                target:
-                  entity_id: light.ikea_e27_level_light_color_on_off
-          - alias: step_with_on_off
-            conditions: "{{ trigger.event.data.command == 'step_with_on_off' }}"
-            sequence:
-              - service: light.turn_on
-                data:
-                  brightness_step: 5
-                target:
-                  entity_id: light.ikea_e27_level_light_color_on_off
-          - alias: move_with_on_off
-            conditions: "{{ trigger.event.data.command == 'move_with_on_off' }}"
-            sequence:
-              repeat:
-                until: "{{ wait.trigger is not none }}"
-                sequence:
-                  - service: light.turn_on
-                    data:
-                      brightness_step: 5
-                    target:
-                      entity_id: light.ikea_e27_level_light_color_on_off
-                  - wait_for_trigger:
-                      platform: event
-                      event_type: zha_event
-                      event_data:
-                        device_ieee: "{{ trigger.event.data.device_ieee }}"
-                        command: "stop"
-                    timeout:
-                      milliseconds: 200
-          - alias: step
-            conditions: "{{ trigger.event.data.command == 'step' }}"
-            sequence:
-              - service: light.turn_on
-                data:
-                  brightness_step: -5
-                target:
-                  entity_id: light.ikea_e27_level_light_color_on_off
-          - alias: move
-            conditions: "{{ trigger.event.data.command == 'move' }}"
-            sequence:
-              repeat:
-                until: "{{ wait.trigger is not none }}"
-                sequence:
-                  - service: light.turn_on
-                    data:
-                      brightness_step: -5
-                    target:
-                      entity_id: light.ikea_e27_level_light_color_on_off
-                  - wait_for_trigger:
-                      platform: event
-                      event_type: zha_event
-                      event_data:
-                        device_ieee: "{{ trigger.event.data.device_ieee }}"
-                        command: "stop"
-                    timeout:
-                      milliseconds: 200
+        - alias: Set variables
+          variables:
+            target_lamp: "light.ikea_e27_level_light_color_on_off"
+        - choose:
+            - alias: toggle
+              conditions: "{{ trigger.event.data.command == 'toggle' }}"
+              sequence:
+                - service: light.toggle
+                  target:
+                    entity_id: "{{ target_lamp }}"
+            - alias: step_with_on_off
+              conditions: "{{ trigger.event.data.command == 'step_with_on_off' }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    brightness_step: 8
+                  target:
+                    entity_id: "{{ target_lamp }}"
+            - alias: move_with_on_off
+              conditions: "{{ trigger.event.data.command == 'move_with_on_off' }}"
+              sequence:
+                repeat:
+                  until: "{{ wait.trigger is not none }}"
+                  sequence:
+                    - service: light.turn_on
+                      data:
+                        brightness_step: 8
+                      target:
+                        entity_id: "{{ target_lamp }}"
+                    - wait_for_trigger:
+                        platform: event
+                        event_type: zha_event
+                        event_data:
+                          device_ieee: "{{ trigger.event.data.device_ieee }}"
+                          command: "stop"
+                      timeout:
+                        milliseconds: 200
+            - alias: step
+              conditions: "{{ trigger.event.data.command == 'step' }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    brightness_step: -8
+                  target:
+                    entity_id: "{{ target_lamp }}"
+            - alias: move
+              conditions: "{{ trigger.event.data.command == 'move' }}"
+              sequence:
+                repeat:
+                  until: "{{ wait.trigger is not none }}"
+                  sequence:
+                    - service: light.turn_on
+                      data:
+                        brightness_step: -8
+                      target:
+                        entity_id: "{{ target_lamp }}"
+                    - wait_for_trigger:
+                        platform: event
+                        event_type: zha_event
+                        event_data:
+                          device_ieee: "{{ trigger.event.data.device_ieee }}"
+                          command: "stop"
+                      timeout:
+                        milliseconds: 200
+            - alias: press
+              conditions: "{{ trigger.event.data.command == 'press' }}"
+              sequence:
+                choose:
+                  - alias: left button
+                    conditions: "{{ (trigger.event.data.args[0] | int(0)) == 257 }}"
+                    sequence:
+                      - service: light.turn_on
+                        data:
+                          color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) - 10 }}"
+                        target:
+                          entity_id: "{{ target_lamp }}"
+                  - alias: right button
+                    conditions: "{{ (trigger.event.data.args[0] | int(0)) == 256 }}"
+                    sequence:
+                      - service: light.turn_on
+                        data:
+                          color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) + 10 }}"
+                        target:
+                          entity_id: "{{ target_lamp }}"
+            - alias: hold
+              conditions: "{{ trigger.event.data.command == 'hold' }}"
+              sequence:
+                choose:
+                  - alias: left button
+                    conditions: "{{ (trigger.event.data.args[0] | int(0)) == 3329 }}"
+                    sequence:
+                      repeat:
+                        until: "{{ wait.trigger is not none }}"
+                        sequence:
+                          - service: light.turn_on
+                            data:
+                              color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) - 10 }}"
+                            target:
+                              entity_id: "{{ target_lamp }}"
+                          - wait_for_trigger:
+                              platform: event
+                              event_type: zha_event
+                              event_data:
+                                device_ieee: "{{ trigger.event.data.device_ieee }}"
+                                command: "release"
+                            timeout:
+                              milliseconds: 200
+                  - alias: right button
+                    conditions: "{{ (trigger.event.data.args[0] | int(0)) == 3328 }}"
+                    sequence:
+                      repeat:
+                        until: "{{ wait.trigger is not none }}"
+                        sequence:
+                          - service: light.turn_on
+                            data:
+                              color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) + 10 }}"
+                            target:
+                              entity_id: "{{ target_lamp }}"
+                          - wait_for_trigger:
+                              platform: event
+                              event_type: zha_event
+                              event_data:
+                                device_ieee: "{{ trigger.event.data.device_ieee }}"
+                                command: "release"
+                            timeout:
+                              milliseconds: 200
