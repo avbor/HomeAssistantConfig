@@ -174,6 +174,7 @@ domofon_pack:
 
     - alias: Domofon - Open Once at Enter to Home Zone
       id: 40d4a1f6-576c-438a-b20f-ba161d9bd3ee
+      max_exceeded: silent
       trigger: 
         - platform: zone
           entity_id:
