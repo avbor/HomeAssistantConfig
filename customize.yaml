@@ -24,13 +24,15 @@ light.detskaia:
   friendly_name: Детская - Люстра
 light.ikea_e27_detskaia:
   friendly_name: Детская - Люстра
+light.ikea_e14_level_light_color_on_off:
+  friendly_name: Детская - Настольная лампа
 light.sonoff_1000b6831b:
   friendly_name: Кладовая - Люстра
 light.sonoff_1000b72483:
   friendly_name: Кухня - Споты
 light.ikea_e27_kukhnia:
   friendly_name: Кухня - Люстра
-light.ikea_e14_level_light_color_on_off:
+light.ikea_e27_level_light_color_on_off:
   friendly_name: Гостиная - Настольная лампа
 light.sonoff_1000ab3c28:
   friendly_name: Гостиная - Бра

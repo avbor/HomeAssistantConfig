@@ -159,3 +159,41 @@ nursery_light_pack:
         - service: notify.telegram_group_flat_1
           data:
             message: _{{ now().strftime("%d.%m.%Y %H:%M:%S") }}_ автоматически выключен свет в детской.
+
+    - alias: "Кубик Aqara в Детской"
+      id: 3ac0562a-feca-479d-ba2a-4bf0cc1fe5ce
+      mode: queued
+      max: 5
+      max_exceeded: silent
+      trigger:
+        - platform: event
+          event_type: zha_event
+          event_data:
+            device_ieee: "00:15:8d:00:05:29:2a:d9"
+      action:
+        choose:
+          - alias: Rotate
+            conditions: "{{ trigger.event.data.command in ('rotate_right', 'rotate_left') }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.ikea_e14_level_light_color_on_off
+                data:
+                  brightness: >-
+                    {{ (state_attr('light.ikea_e14_level_light_color_on_off', 'brightness') | int(0)) +
+                    (trigger.event.data.args.relative_degrees | int) }}
+          - alias: Flip
+            conditions: "{{ trigger.event.data.command in ('flip') }}"
+            sequence:
+              choose:
+                - alias: Flip 90
+                  conditions: "{{ (trigger.event.data.args.flip_degrees | int) == 90 }}"
+                  sequence:
+                    - service: light.toggle
+                      entity_id: light.ikea_e14_level_light_color_on_off
+                      data:
+                        brightness: 255
+#                - alias: Flip 180
+#                  conditions: "{{ (trigger.event.data.args.flip_degrees | int) == 180 }}"
+#                  sequence:
+#                    - service: light.toggle
+#                      entity_id: light.sonoff_1000f30a9e

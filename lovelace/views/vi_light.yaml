@@ -38,17 +38,26 @@ cards:
           ### <center>Детская</center>
       - type: vertical-stack
         cards:
+          - type: conditional
+            conditions:
+              - entity: light.ikea_e27_detskaia
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.ikea_e27_detskaia
+              name: Люстра
+              icon: mdi:ceiling-light
           - type: horizontal-stack
             cards:
               - type: conditional
                 conditions:
-                  - entity: light.ikea_e27_detskaia
+                  - entity: light.ikea_e14_level_light_color_on_off
                     state_not: "unavailable"
                 card:
                   type: light
-                  entity: light.ikea_e27_detskaia
-                  name: Люстра
-                  icon: mdi:ceiling-light
+                  entity: light.ikea_e14_level_light_color_on_off
+                  name: Рабочий стол
+                  icon: mdi:desk-lamp
               - type: conditional
                 conditions:
                   - entity: light.detskaia_podsvetka_na_okne
@@ -114,11 +123,11 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.ikea_e14_level_light_color_on_off
+              - entity: light.ikea_e27_level_light_color_on_off
                 state_not: "unavailable"
             card:
               type: light
-              entity: light.ikea_e14_level_light_color_on_off
+              entity: light.ikea_e27_level_light_color_on_off
               name: Рабочий стол
               icon: mdi:desk-lamp
           - type: conditional

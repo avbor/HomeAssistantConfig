@@ -353,6 +353,8 @@ cards:
                 name: Люстра в Кладовой
                 icon: mdi:vanity-light
               - entity: light.ikea_e14_level_light_color_on_off
+                name: Лампа на столе в Детской
+              - entity: light.ikea_e27_level_light_color_on_off
                 name: Лампа на столе в Гостиной
                 icon: mdi:desk-lamp
               - entity: light.sonoff_1000b72483
