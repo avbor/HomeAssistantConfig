@@ -43,6 +43,8 @@ filter:
     # Спальня
     - light.sonoff_1001053235 # Спальня - Люстра
     - sensor.0x158d0003931b0e_temperature # Спальня - Температура
+    - light.sonoff_01minizb_47ef08fe_on_off # Спальня - Бра слева
+    - light.sonoff_1001045426 # Спальня - Бра справа
     - climate.daikin_bedroom # Спальня - Кондиционер
     # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
@@ -92,6 +94,12 @@ entity_config:
     room: Туалет
   light.sonoff_1001053235:
     name: Люстра
+    room: Спальня
+  light.sonoff_01minizb_47ef08fe_on_off:
+    name: Бра левое
+    room: Спальня
+  light.sonoff_1001045426:
+    name: Бра правое
     room: Спальня
   sensor.average_temperature_in_flat:
     name: Климат в квартире
