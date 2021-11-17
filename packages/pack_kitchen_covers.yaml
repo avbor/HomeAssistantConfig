@@ -15,7 +15,7 @@ kitchen_covers_pack:
 
   automation:
 
-    - alias: "Kitchen Covers Control"
+    - alias: "Kitchen Covers Control by Light"
       id: 24f83b60-8392-4278-8725-6d1a33a0a483
       trigger:
         - platform: numeric_state
@@ -44,5 +44,37 @@ kitchen_covers_pack:
                 id: "lightly"
             sequence:
               - service: cover.open_cover
+                target:
+                  entity_id: cover.kitchen_covers
+  
+    - alias: "Kitchen Covers Control by IKEA Switch"
+      id: def20597-6652-43e3-836c-6a1e191967d3
+      mode: queued
+      max: 5
+      max_exceeded: silent
+      trigger:
+        - platform: event
+          event_type: zha_event
+          event_data:
+            device_ieee: "50:32:5f:ff:fe:70:d7:69"
+          id: "ikea_sw_5"
+      action:
+        choose:
+          - alias: "command: on or move_with_on_off"
+            conditions: "{{ trigger.event.data.command in ('on', 'move_with_on_off') }}"
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id: cover.kitchen_covers
+          - alias: "command: off or move"
+            conditions: "{{ trigger.event.data.command in ('off', 'move') }}"
+            sequence:
+              - service: cover.close_cover
+                target:
+                  entity_id: cover.kitchen_covers
+          - alias: "command: stop"
+            conditions: "{{ trigger.event.data.command == 'stop' }}"
+            sequence:
+              - service: cover.stop_cover
                 target:
                   entity_id: cover.kitchen_covers

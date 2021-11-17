@@ -21,7 +21,7 @@ bedroom_light_pack:
           id: "ikea_sw_2"
       action:
         choose:
-          - alias: 'command: on'
+          - alias: "command: on"
             conditions:
               - condition: template
                 value_template: "{{ trigger.event.data.command == 'on' }}"
