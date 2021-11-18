@@ -25,7 +25,7 @@ kitchen_covers_pack:
           id: "dark"
         - platform: numeric_state
           entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          above: 550
+          above: 400
           for: "00:10:00"
           id: "lightly"
       action:
