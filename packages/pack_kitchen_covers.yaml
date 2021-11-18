@@ -20,7 +20,7 @@ kitchen_covers_pack:
       trigger:
         - platform: numeric_state
           entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          below: 550
+          below: 500
           for: "00:10:00"
           id: "dark"
         - platform: numeric_state
