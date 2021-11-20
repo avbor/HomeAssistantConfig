@@ -173,6 +173,7 @@
         Нептун (кладовая, туалет, ванна, кухня): *{{ states('binary_sensor.neptun_water_leakage') }}*
         Aqara кладовая: *{{ states('binary_sensor.0x158d000400e77d_moisture') }}*
         Aqara под ванной (слева): *{{ states('binary_sensor.0x158d0004030d84_moisture') }}*
+        Aqara справа от ванной: *{{ states('binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone') }}*
         `-= Вытяжка =-`
         Ванная: *{{ states('binary_sensor.bathroom_extractor_fan') }}*
         Туалет: *{{ states('binary_sensor.toilet_extractor_fan') }}*
@@ -190,7 +191,7 @@
         Споты в коридоре: *{{ states('light.sonoff_1000f2a500') }}*
         Люстра в детской: *{{ states('light.ikea_e27_detskaia') }}*
         Подсветка окна в детской: *{{ states('light.detskaia_podsvetka_na_okne') }}*
-        Лампа на столе в гостиной: *{{ states('light.ikea_e14_level_light_color_on_off') }}*
+        Лампа на столе в детской: *{{ states('light.ikea_e14_level_light_color_on_off') }}*
         Люстра в гостиной: *{{ states('light.sonoff_1000f3035d') }}*
         Споты в гостиной: *{{ states('light.sonoff_1000f30a9e') }}*
         Бра в гостиной: *{{ states('light.sonoff_1000ab3c28') }}*
@@ -206,6 +207,9 @@
         Бра в спальне - лево: *{{ states('light.sonoff_01minizb_47ef08fe_on_off') }}*
         Бра в спальне - право: *{{ states('light.sonoff_1001045426') }}*
         Лампа на столе в спальне: *{{ states('light.spalnia_stol') }}*
+        `-= Шторы =-`
+        Кухня - левая: *{{ states('cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering') }}*
+        Кухня - правая: *{{ states('cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering') }}*
         `-= Розетки =-`
         Розетка Xiaomi WiFi Plug 01: *{{ states('switch.mi_smartplugwifi_01') }}*
         `-= ТВ =-`
@@ -223,7 +227,8 @@
         Детская: *{{ states('media_player.yandex_station_lite_detskaia') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
-        Датчик газа: *{{ states('switch.blitzwolf_shp13_02_3ad702fe_on_off') }}*
+        Датчик газа: *{{ states('binary_sensor.0x158d000413b210_gas') }}*
+        Датчик газа (питание): *{{ states('switch.blitzwolf_shp13_02_3ad702fe_on_off') }}*
         Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*
         Transmission Status: *{{ states('sensor.transmission_status') }}*
         Plex Users: *{{ states('sensor.plex_plexonubuntu') }}*
