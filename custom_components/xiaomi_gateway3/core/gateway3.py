@@ -202,7 +202,7 @@ class GatewayStats(GatewayMesh):
 
     @property
     def stats_enable(self):
-        return self.options.get('stats')
+        return self.options.get('stats', False)
 
     async def process_gw_stats(self, payload: dict = None):
         # empty payload - update available state
@@ -254,7 +254,6 @@ class GatewayStats(GatewayMesh):
             {'commandcli': "plugin concentrator print-table"},
             {'commandcli': "debugprint all_off"},
         ]}
-        payload = json.dumps(payload, separators=(',', ':'))
         await self.mqtt.publish(self.gw_topic + 'commands', payload)
 
     async def process_parent_scan(self):
@@ -1008,15 +1007,13 @@ class GatewayEntry(GatewayNetwork):
 
             # https://github.com/Koenkk/zigbee2mqtt/issues/798
             # https://www.maero.dk/aqara-temperature-humidity-pressure-sensor-teardown/
-            if (prop == 'temperature' and
-                    device['model'] != 'lumi.airmonitor.acn01'):
+            if prop == 'temperature' and device['lumi_spec']:
                 if -4000 < param['value'] < 12500:
                     payload[prop] = param['value'] / 100.0
-            elif (prop == 'humidity' and
-                  device['model'] != 'lumi.airmonitor.acn01'):
+            elif prop == 'humidity' and device['lumi_spec']:
                 if 0 <= param['value'] <= 10000:
                     payload[prop] = param['value'] / 100.0
-            elif prop == 'pressure':
+            elif prop == 'pressure' and device['lumi_spec']:
                 payload[prop] = param['value'] / 100.0
             elif prop == 'battery':
                 # I do not know if the formula is correct, so battery is more
@@ -1163,6 +1160,10 @@ class GatewayEntry(GatewayNetwork):
         self.debug(f"{device['did']} {device['model']} => {payload}")
         await self.mqtt.publish('zigbee/recv', payload)
 
+    async def send_zigbee_cli(self, commands: list):
+        payload = {"commands": [{"commandcli": c} for c in commands]}
+        await self.mqtt.publish(self.gw_topic + 'commands', payload)
+
     async def read_zigbee_alive(self, device: dict):
         did = device['did'] if device['did'] != self.did else 'lumi.0'
         params = [{'res_name': '8.0.2102'}]
@@ -1173,21 +1174,28 @@ class GatewayEntry(GatewayNetwork):
 
     async def send_telnet(self, *args: str):
         sh = shell.TelnetShell()
-        if not await sh.connect(self.host):
-            return
+        try:
+            if not await sh.connect(self.host):
+                self.debug("Can't connect to gateway")
+                return
 
-        for command in args:
-            if command == 'ftp':
-                sh.run_ftp()
-            elif command == 'dump':
-                raw = await sh.tar_data()
-                filename = Path().absolute() / f"{self.host}.tar.gz"
-                with open(filename, 'wb') as f:
-                    f.write(raw)
-            else:
-                await sh.exec(command)
+            for command in args:
+                if command == 'ftp':
+                    await sh.run_ftp()
+                elif command == 'dump':
+                    raw = await sh.tar_data()
+                    filename = Path().absolute() / f"{self.host}.tar.gz"
+                    with open(filename, 'wb') as f:
+                        f.write(raw)
+                elif command == 'reboot':
+                    await sh.reboot()
+                else:
+                    await sh.exec(command)
 
-        await sh.close()
+        except Exception as e:
+            self.debug(f"Can't run telnet command: {args}")
+        finally:
+            await sh.close()
 
     async def send_mqtt(self, cmd: str):
         if cmd == 'publishstate':

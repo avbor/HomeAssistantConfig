@@ -35,6 +35,7 @@ MD5_BT = {
     '1.4.7_0160': '9290241cd9f1892d2ba84074f07391d4',
     '1.5.0_0026': '9290241cd9f1892d2ba84074f07391d4',
     '1.5.0_0102': '9290241cd9f1892d2ba84074f07391d4',
+    '1.5.1_0032': '9290241cd9f1892d2ba84074f07391d4',
 }
 MD5_BUSYBOX = '099137899ece96f311ac5ab554ea6fec'
 # MD5_GW3 = 'c81b91816d4b9ad9bb271a5567e36ce9'  # alpha
@@ -264,9 +265,15 @@ class TelnetShell:
             command = LOCK_FIRMWARE if enable else UNLOCK_FIRMWARE
             await self.exec(command)
 
-    def run_ftp(self):
-        if self.check_bin('busybox', MD5_BUSYBOX, 'bin/busybox'):
-            self.exec(RUN_FTP)
+    async def run_ftp(self):
+        if await self.check_bin('busybox', MD5_BUSYBOX, 'bin/busybox'):
+            await self.exec(RUN_FTP)
+
+    async def reboot(self):
+        # should not wait for response
+        self.writer.write(b"reboot\n")
+        await self.writer.drain()
+        await asyncio.sleep(1)
 
     async def check_bt(self) -> bool:
         md5 = MD5_BT.get(self.ver)
