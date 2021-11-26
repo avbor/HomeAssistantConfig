@@ -9,7 +9,7 @@ substitutions:
   voltage_div: "767"
 
 packages:
-  wifi: !include common/wifi_ch.yaml
+  wifi: !include common/wifi.yaml
   device_base: !include common/device_base.yaml
 
 esphome:
