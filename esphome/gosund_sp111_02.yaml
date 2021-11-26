@@ -12,6 +12,9 @@ packages:
   wifi: !include common/wifi_ch.yaml
   device_base: !include common/device_base.yaml
 
+wifi:
+  use_address: 192.168.10.108
+
 web_server:
   port: 80
 
