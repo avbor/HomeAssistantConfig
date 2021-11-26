@@ -25,9 +25,11 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 
 _Main site (city apartment):_
 
-- Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga)) as Router and Wireguard VPN Server\
+- Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga)) as Router, WiFi Mesh Controller and Wireguard VPN Server\
   2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
+
+- Keenetic Speedster ([KN-3010](https://keenetic.ru/ru/keenetic-speedster)) as Access Points in WiFi Mesh Network
 
 - Xiaomi Mi WiFi 3G (v1) as Access Point. Flashed to [OpenWRT](http://openwrt.org/)\
 ~40-45 wireless clients, generally 2.4Ghz - IoT, 5Ghz - mobile clients
