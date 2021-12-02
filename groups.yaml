@@ -27,8 +27,7 @@ all_chromecasts:
     - media_player.detskaia
     - media_player.gostinaia
     - media_player.mini_v_vannoi
-#    - media_player.googlehome9967
-#    - media_player.googlehome3792
+    - media_player.kukhnia
 
 all_yandex_stations:
   name: Все Яндекс станции
