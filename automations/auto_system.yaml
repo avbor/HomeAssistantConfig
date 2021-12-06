@@ -127,3 +127,22 @@
 #        message: |
 #          {{ trigger.to_state.attributes.package }}
 #          {{ trigger.to_state.state }}
+
+- alias: Fix for reload automations
+  id: 4c7a9752-b7d2-4c41-acf6-7d175f6b9d39
+  trigger:
+    - platform: event
+      event_type: call_service
+      event_data:
+        domain: automation
+        service: reload
+    - platform: event
+      event_type: automation_reloaded
+  action:
+    - service: >-
+        {% if trigger.event.event_type == 'call_service' -%}
+            automation.turn_off
+        {% else -%}
+            automation.turn_on
+        {% endif -%}
+      entity_id: automation.device_needs_attention_notify_to_group_system

@@ -4,6 +4,8 @@
 
 - alias: "HASS: Login Failed [notify to group system]"
   id: 142e502b-3e63-49e3-b790-9150f155dc6d
+  mode: queued
+  max: 5
   trigger:
     - platform: state
       entity_id: persistent_notification.http_login
@@ -26,6 +28,8 @@
 
 - alias: "HASS: IP Banned [notify to group system]"
   id: ba2318c5-5c2e-4575-aa13-02f53063793d
+  mode: queued
+  max: 5
   trigger:
     - platform: state
       entity_id: persistent_notification.ip_ban
@@ -321,25 +325,6 @@
         disable_notification: true
         message: |
           <i>INFO</i>: Объект {{ trigger.event.data.entity_id }} сменил статус на {{ trigger.event.data.new_state.state }}.
-
-- alias: Fix for reload automations
-  id: 4c7a9752-b7d2-4c41-acf6-7d175f6b9d39
-  trigger:
-    - platform: event
-      event_type: call_service
-      event_data:
-        domain: automation
-        service: reload
-    - platform: event
-      event_type: automation_reloaded
-  action:
-    - service: >-
-        {% if trigger.event.event_type == 'call_service' -%}
-            automation.turn_off
-        {% else -%}
-            automation.turn_on
-        {% endif -%}
-      entity_id: automation.device_needs_attention_notify_to_group_system
 
 - alias: "Low Battery Alert [notify to group system]"
   id: 6d87e0a2-8a6b-4b20-bd28-900af1620584
