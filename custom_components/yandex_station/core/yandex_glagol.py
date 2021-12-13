@@ -8,9 +8,9 @@ from asyncio import Future, Task
 from typing import Callable, Optional, Dict
 
 from aiohttp import ClientWebSocketResponse, WSMsgType, ClientConnectorError
-from zeroconf import ServiceBrowser, Zeroconf, ServiceStateChange
 
 from custom_components.yandex_station.core.yandex_session import YandexSession
+from zeroconf import ServiceBrowser, Zeroconf, ServiceStateChange
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class YandexGlagol:
     ws: Optional[ClientWebSocketResponse] = None
 
     next_ping_ts = 0
-    keep_task: Task = None
+    # keep_task: Task = None
     update_handler: Callable = None
 
     waiters: Dict[str, Future] = {}
@@ -91,8 +91,8 @@ class YandexGlagol:
             if not self.ws.closed:
                 fails = 0
 
-            if not self.keep_task or self.keep_task.done():
-                self.keep_task = self.loop.create_task(self._keep_connection())
+            # if not self.keep_task or self.keep_task.done():
+            #     self.keep_task = self.loop.create_task(self._keep_connection())
 
             async for msg in self.ws:
                 if msg.type == WSMsgType.TEXT:
@@ -124,7 +124,7 @@ class YandexGlagol:
                     if request_id in self.waiters:
                         self.waiters[request_id].set_result(response)
 
-                    await self.update_handler(data)
+                    self.update_handler(data)
 
             # TODO: find better place
             self.device_token = None
@@ -148,7 +148,7 @@ class YandexGlagol:
             fails += 1
 
         # возвращаемся в облачный режим
-        await self.update_handler(None)
+        self.update_handler(None)
 
         # останавливаем попытки
         if not self.url:
@@ -162,12 +162,12 @@ class YandexGlagol:
 
         asyncio.create_task(self._connect(fails))
 
-    async def _keep_connection(self):
-        _LOGGER.debug("Start keep connection task")
-        while not self.ws.closed:
-            await asyncio.sleep(1)
-            if time.time() > self.next_ping_ts:
-                await self.ping()
+    # async def _keep_connection(self):
+    #     _LOGGER.debug("Start keep connection task")
+    #     while not self.ws.closed:
+    #         await asyncio.sleep(1)
+    #         if time.time() > self.next_ping_ts:
+    #             await self.ping()
 
     async def ping(self):
         # _LOGGER.debug("ping")

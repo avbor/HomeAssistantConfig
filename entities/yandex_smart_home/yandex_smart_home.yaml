@@ -168,11 +168,9 @@ entity_config:
     name: Кондиционер
     room: Спальня
   fan.bathroom_extractor:
-    type: devices.types.purifier
     name: Вытяжка
     room: Ванная
   fan.toilet_extractor:
-    type: devices.types.purifier
     name: Вытяжка
     room: Туалет
   cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering:
