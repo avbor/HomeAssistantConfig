@@ -21,7 +21,7 @@ IOT_TYPES = {
     'brightness': 'devices.capabilities.range',
     'color': 'devices.capabilities.color_setting',
     'work_speed': 'devices.capabilities.mode',
-    'humidity': 'devices.capabilities.range', 
+    'humidity': 'devices.capabilities.range',
     'ionization': 'devices.capabilities.toggle',
     'backlight': 'devices.capabilities.toggle',
     # don't work
@@ -79,10 +79,14 @@ class YandexQuasar:
     @property
     def speakers(self):
         return [
-            device for device in self.devices
-            if device['type'].startswith('devices.types.smart_speaker') or
-               device['type'].endswith('yandex.module')
+            d for d in self.devices
+            if d['type'].startswith("devices.types.smart_speaker")
         ]
+
+    @property
+    def modules(self):
+        # modules don't have cloud scenarios
+        return [d for d in self.devices if ".yandex.module" in d["type"]]
 
     async def load_speakers(self) -> list:
         speakers = self.speakers
@@ -193,13 +197,14 @@ class YandexQuasar:
         assert resp['status'] == 'ok', resp
 
     async def send(self, device: dict, text: str, is_tts: bool = False):
-        """Запускает сценарий на выполнение команды или TTS.
-        """
-        device_id = device['id']
+        """Запускает сценарий на выполнение команды или TTS."""
+        # skip send for yandex modules
+        if "scenario_id" not in device:
+            return
         _LOGGER.debug(f"{device['name']} => cloud | {text}")
 
         action = 'phrase_action' if is_tts else 'text_action'
-        name = encode(device_id)
+        name = encode(device['id'])
         payload = {
             'name': name,
             'icon': 'home',
@@ -209,7 +214,7 @@ class YandexQuasar:
             }],
             'requested_speaker_capabilities': [],
             'devices': [{
-                'id': device_id,
+                'id': device['id'],
                 'capabilities': [{
                     'type': 'devices.capabilities.quasar.server_action',
                     'state': {
@@ -316,12 +321,12 @@ class YandexQuasar:
             self.online_updated.set()
 
         for speaker in resp['items']:
-            device = next(
-                p for p in self.devices
-                if 'quasar_info' in p and
-                p['quasar_info']['device_id'] == speaker['id']
-            )
-            device['online'] = speaker['online']
+            for device in self.devices:
+                if 'quasar_info' not in device or \
+                        device['quasar_info']['device_id'] != speaker['id']:
+                    continue
+                device["online"] = speaker["online"]
+                break
 
     async def _updates_connection(self, handler):
         r = await self.session.get(
