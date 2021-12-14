@@ -1,0 +1,113 @@
+substitutions:
+  board_name: gosund_sp111_09
+  esp_platform: ESP8266
+  esp_board: esp8285
+  room_name: Storeroom
+  # Higher value gives lower watt readout
+  current_res: "0.00116"
+  # Lower value gives lower voltage readout
+  voltage_div: "794"
+
+packages:
+  wifi: !include common/wifi.yaml
+  device_base: !include common/device_base.yaml
+
+esphome:
+  on_boot:
+    - switch.turn_on: button_switch
+
+web_server:
+  port: 80
+
+sensor:
+#  - platform: adc
+#    pin: VCC
+#    name: "${board_name} - VCC Volt"
+#    icon: mdi:flash-outline
+
+  - platform: hlw8012
+    sel_pin:
+      number: GPIO12
+      inverted: True
+    cf_pin: GPIO05
+    cf1_pin: GPIO04
+    current_resistor: ${current_res}
+    voltage_divider: ${voltage_div}
+
+    change_mode_every: 4
+    update_interval: 10s
+
+    current:
+      name: "${board_name} - Ampere"
+      unit_of_measurement: A
+      state_class: measurement
+      device_class: current
+      accuracy_decimals: 3
+      icon: mdi:current-ac
+
+    voltage:
+      name: "${board_name} - Volt"
+      unit_of_measurement: V
+      state_class: measurement
+      device_class: voltage
+      accuracy_decimals: 1
+      icon: mdi:flash-outline
+
+    power:
+      name: "${board_name} - Watt"
+      unit_of_measurement: W
+      id: "power_wattage"
+      state_class: measurement
+      device_class: power
+      icon: mdi:gauge
+      filters:
+      - multiply: 0.5
+
+  - platform: total_daily_energy
+    name: "${board_name} - Todays Usage"
+    power_id: "power_wattage"
+    filters:
+      # Multiplication factor from W to kW is 0.001
+      - multiply: 0.001
+    unit_of_measurement: kWh
+    state_class: total_increasing
+    device_class: energy
+    icon: mdi:calendar-clock
+
+binary_sensor:
+  - platform: gpio
+    id: "${board_name}_button_state"
+    pin:
+      number: GPIO13
+      mode: INPUT_PULLUP
+      inverted: True
+    on_press:
+      - switch.toggle: button_switch
+
+switch:
+  - platform: gpio
+    pin: GPIO15
+    id: relay
+    restore_mode: ALWAYS_ON
+
+  - platform: template
+    name: "${board_name} - Switch"
+    icon: mdi:power
+    optimistic: true
+    id: button_switch
+    turn_on_action:
+      - switch.turn_on: relay
+    turn_off_action:
+      - switch.turn_off: relay
+
+status_led:
+  pin:
+    number: GPIO02
+    inverted: True
+  id: led_blue
+
+output:
+  - platform: gpio
+    pin: GPIO00
+    inverted: true
+    id: led_red

@@ -76,6 +76,10 @@ switch.tplink_smartplug_02:
   friendly_name: Стиральная машина
 sensor.tplink_smartplug_02_today_s_consumption:
   friendly_name: Стиральная машина
+switch.gosund_sp111_09_switch:
+  friendly_name: Сушильная машина
+sensor.gosund_sp111_09_todays_usage:
+  friendly_name: Сушильная машина
 switch.tplink_smartplug_01:
   friendly_name: Бойлер
 sensor.tplink_smartplug_01_today_s_consumption:

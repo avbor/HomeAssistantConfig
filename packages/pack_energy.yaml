@@ -93,9 +93,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((states('sensor.switch_main_energy_monthly_peak') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((states('sensor.switch_main_energy_monthly_halfpeak') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((states('sensor.switch_main_energy_monthly_night') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((states('sensor.switch_main_energy_monthly_peak') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((states('sensor.switch_main_energy_monthly_halfpeak') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((states('sensor.switch_main_energy_monthly_night') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_main_monthly_prev:
           device_class: monetary
@@ -103,9 +103,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.switch_main_energy_monthly_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.switch_main_energy_monthly_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.switch_main_energy_monthly_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.switch_main_energy_monthly_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.switch_main_energy_monthly_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.switch_main_energy_monthly_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_main_daily_avg:
           device_class: monetary
@@ -118,16 +118,16 @@ energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_main_monthly_prev') | float) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_main_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_main_daily_prev:
           device_class: monetary
           unit_of_measurement: 'RUB'
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.switch_main_energy_daily_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.switch_main_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.switch_main_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.switch_main_energy_daily_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.switch_main_energy_daily_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.switch_main_energy_daily_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
 
         # Server room
@@ -137,9 +137,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((states('sensor.socket_server_room_energy_monthly_peak') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((states('sensor.socket_server_room_energy_monthly_halfpeak') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((states('sensor.socket_server_room_energy_monthly_night') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((states('sensor.socket_server_room_energy_monthly_peak') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((states('sensor.socket_server_room_energy_monthly_halfpeak') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((states('sensor.socket_server_room_energy_monthly_night') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_server_room_monthly_prev:
           device_class: monetary
@@ -147,9 +147,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_server_room_energy_monthly_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_server_room_energy_monthly_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_server_room_energy_monthly_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_server_room_energy_monthly_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_server_room_energy_monthly_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_server_room_energy_monthly_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_server_room_daily_avg:
           device_class: monetary
@@ -162,16 +162,16 @@ energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_server_room_monthly_prev') | float) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_server_room_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_server_room_daily_prev:
           device_class: monetary
           unit_of_measurement: 'RUB'
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_server_room_energy_daily_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_server_room_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_server_room_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_server_room_energy_daily_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_server_room_energy_daily_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_server_room_energy_daily_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
 
         # Washing machine
@@ -181,9 +181,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((states('sensor.socket_washmachine_energy_monthly_peak') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((states('sensor.socket_washmachine_energy_monthly_halfpeak') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((states('sensor.socket_washmachine_energy_monthly_night') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((states('sensor.socket_washmachine_energy_monthly_peak') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((states('sensor.socket_washmachine_energy_monthly_halfpeak') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((states('sensor.socket_washmachine_energy_monthly_night') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_washmachine_monthly_prev:
           device_class: monetary
@@ -191,9 +191,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_washmachine_energy_monthly_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_washmachine_energy_monthly_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_washmachine_energy_monthly_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_washmachine_energy_monthly_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_washmachine_energy_monthly_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_washmachine_energy_monthly_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_washmachine_daily_avg:
           device_class: monetary
@@ -206,16 +206,60 @@ energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_washmachine_monthly_prev') | float) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_washmachine_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_washmachine_daily_prev:
           device_class: monetary
           unit_of_measurement: 'RUB'
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_washmachine_energy_daily_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_washmachine_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_washmachine_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_washmachine_energy_daily_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_washmachine_energy_daily_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_washmachine_energy_daily_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
+            }}
+
+        # Dryer machine
+        energy_cost_dryer_monthly:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              (((states('sensor.socket_dryer_energy_monthly_peak') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((states('sensor.socket_dryer_energy_monthly_halfpeak') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((states('sensor.socket_dryer_energy_monthly_night') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
+            }}
+        energy_cost_dryer_monthly_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              (((state_attr('sensor.socket_dryer_energy_monthly_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_dryer_energy_monthly_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_dryer_energy_monthly_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
+            }}
+        energy_cost_dryer_daily_avg:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_dryer_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+        energy_cost_dryer_daily_prev:
+          device_class: monetary
+          unit_of_measurement: 'RUB'
+          icon_template: mdi:cash
+          value_template: >
+            {{
+              (((state_attr('sensor.socket_dryer_energy_daily_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_dryer_energy_daily_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_dryer_energy_daily_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
 
         # Dishwasher
@@ -225,9 +269,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((states('sensor.socket_kitchen_dishwasher_energy_monthly_peak') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((states('sensor.socket_kitchen_dishwasher_energy_monthly_halfpeak') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((states('sensor.socket_kitchen_dishwasher_energy_monthly_night') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((states('sensor.socket_kitchen_dishwasher_energy_monthly_peak') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((states('sensor.socket_kitchen_dishwasher_energy_monthly_halfpeak') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((states('sensor.socket_kitchen_dishwasher_energy_monthly_night') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_dishwasher_monthly_prev:
           device_class: monetary
@@ -235,9 +279,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_kitchen_dishwasher_energy_monthly_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_kitchen_dishwasher_energy_monthly_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_kitchen_dishwasher_energy_monthly_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_kitchen_dishwasher_energy_monthly_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_dishwasher_energy_monthly_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_dishwasher_energy_monthly_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_dishwasher_daily_avg:
           device_class: monetary
@@ -250,16 +294,16 @@ energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_dishwasher_monthly_prev') | float) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_dishwasher_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_dishwasher_daily_prev:
           device_class: monetary
           unit_of_measurement: 'RUB'
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_kitchen_dishwasher_energy_daily_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_kitchen_dishwasher_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_kitchen_dishwasher_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_kitchen_dishwasher_energy_daily_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_dishwasher_energy_daily_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_dishwasher_energy_daily_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
 
         # Water boiler
@@ -269,9 +313,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((states('sensor.socket_water_boiler_energy_monthly_peak') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((states('sensor.socket_water_boiler_energy_monthly_halfpeak') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((states('sensor.socket_water_boiler_energy_monthly_night') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((states('sensor.socket_water_boiler_energy_monthly_peak') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((states('sensor.socket_water_boiler_energy_monthly_halfpeak') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((states('sensor.socket_water_boiler_energy_monthly_night') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_water_boiler_monthly_prev:
           device_class: monetary
@@ -279,9 +323,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_water_boiler_energy_monthly_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_water_boiler_energy_monthly_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_water_boiler_energy_monthly_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_water_boiler_energy_monthly_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_water_boiler_energy_monthly_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_water_boiler_energy_monthly_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_water_boiler_daily_avg:
           device_class: monetary
@@ -294,16 +338,16 @@ energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_water_boiler_monthly_prev') | float) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_water_boiler_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_water_boiler_daily_prev:
           device_class: monetary
           unit_of_measurement: 'RUB'
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_water_boiler_energy_daily_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_water_boiler_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_water_boiler_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_water_boiler_energy_daily_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_water_boiler_energy_daily_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_water_boiler_energy_daily_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
 
         # Fridge
@@ -313,9 +357,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((states('sensor.socket_kitchen_fridge_energy_monthly_peak') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((states('sensor.socket_kitchen_fridge_energy_monthly_halfpeak') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((states('sensor.socket_kitchen_fridge_energy_monthly_night') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((states('sensor.socket_kitchen_fridge_energy_monthly_peak') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((states('sensor.socket_kitchen_fridge_energy_monthly_halfpeak') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((states('sensor.socket_kitchen_fridge_energy_monthly_night') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_fridge_monthly_prev:
           device_class: monetary
@@ -323,9 +367,9 @@ energy_pack:
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_kitchen_fridge_energy_monthly_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_kitchen_fridge_energy_monthly_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_kitchen_fridge_energy_monthly_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_kitchen_fridge_energy_monthly_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_fridge_energy_monthly_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_fridge_energy_monthly_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
         energy_cost_fridge_daily_avg:
           device_class: monetary
@@ -338,16 +382,16 @@ energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_fridge_monthly_prev') | float) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_fridge_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_fridge_daily_prev:
           device_class: monetary
           unit_of_measurement: 'RUB'
           icon_template: mdi:cash
           value_template: >
             {{
-              (((state_attr('sensor.socket_kitchen_fridge_energy_daily_peak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_peak') | float))+
-              ((state_attr('sensor.socket_kitchen_fridge_energy_daily_halfpeak', 'last_period') | float) * (states('sensor.apartment_enegry_cost_halfpeak') | float))+
-              ((state_attr('sensor.socket_kitchen_fridge_energy_daily_night', 'last_period') | float) * (states('sensor.apartment_enegry_cost_night') | float))) | round(2)
+              (((state_attr('sensor.socket_kitchen_fridge_energy_daily_peak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_peak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_fridge_energy_daily_halfpeak', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_halfpeak') | float(0)))+
+              ((state_attr('sensor.socket_kitchen_fridge_energy_daily_night', 'last_period') | float(0)) * (states('sensor.apartment_enegry_cost_night') | float(0)))) | round(2)
             }}
 
     # kWh from W
@@ -509,6 +553,30 @@ energy_pack:
       tariffs:
         - total
 
+    # For Dryer Machine
+    socket_dryer_energy_daily:
+      name: Dryer Machine Daily Energy
+      source: sensor.gosund_sp111_09_todays_usage
+      cycle: daily
+      tariffs:
+        - peak
+        - halfpeak
+        - night
+    socket_dryer_energy_monthly:
+      name: Dryer Machine Monthly Energy
+      source: sensor.gosund_sp111_09_todays_usage
+      cycle: monthly
+      tariffs:
+        - peak
+        - halfpeak
+        - night
+    socket_dryer_energy_monthly_sum:
+      name: Dryer Machine Monthly Energy Total
+      source: sensor.gosund_sp111_09_todays_usage
+      cycle: monthly
+      tariffs:
+        - total
+
     # For Water Boiler
     socket_water_boiler_energy_daily:
       name: Water Boiler Daily Energy
@@ -548,6 +616,8 @@ energy_pack:
       - utility_meter.socket_kitchen_dishwasher_energy_monthly
       - utility_meter.socket_washmachine_energy_daily
       - utility_meter.socket_washmachine_energy_monthly
+      - utility_meter.socket_dryer_energy_daily
+      - utility_meter.socket_dryer_energy_monthly
       - utility_meter.socket_water_boiler_energy_daily
       - utility_meter.socket_water_boiler_energy_monthly
 
@@ -631,7 +701,7 @@ energy_pack:
                 target:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
-                  value: "{{ states('sensor.apartment_enegry_cost_peak') | float }}"
+                  value: "{{ states('sensor.apartment_enegry_cost_peak') | float(0) }}"
               - service: utility_meter.select_tariff
                 entity_id: group.all_energy_utility_meters
                 data:
@@ -646,7 +716,7 @@ energy_pack:
                 target:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
-                  value: "{{ states('sensor.apartment_enegry_cost_halfpeak') | float }}"
+                  value: "{{ states('sensor.apartment_enegry_cost_halfpeak') | float(0) }}"
               - service: utility_meter.select_tariff
                 entity_id: group.all_energy_utility_meters
                 data:
@@ -661,7 +731,7 @@ energy_pack:
                 target:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
-                  value: "{{ states('sensor.apartment_enegry_cost_night') | float }}"
+                  value: "{{ states('sensor.apartment_enegry_cost_night') | float(0) }}"
               - service: utility_meter.select_tariff
                 entity_id: group.all_energy_utility_meters
                 data:

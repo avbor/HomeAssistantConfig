@@ -184,6 +184,7 @@
         `-= Крупная бытовая техника =-`
         Водонагреватель: *{{ states('binary_sensor.boiler_status') }}* ({{ states('sensor.tplink_smartplug_01_current_consumption') }} W)
         Стиральная машина: *{{ states('binary_sensor.washer_status') }}* ({{ states('sensor.tplink_smartplug_02_current_consumption') }} W)
+        Сушильная машина: *{{ states('binary_sensor.dryer_status') }}* ({{ states('sensor.gosund_sp111_09_watt') }} W)
         Посудомоечная машина: *{{ states('binary_sensor.dishwasher_status') }}* ({{ states('sensor.gosund_sp111_06_watt') }} W)
         Холодильник: *{{ states('binary_sensor.fridge_status') }}* ({{ states('sensor.gosund_sp111_04_watt') }} W)
         `-= Свет =-`

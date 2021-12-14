@@ -145,6 +145,29 @@ cards:
                   fixed_value: true
 
           - type: 'custom:mini-graph-card'
+            name: Сушильная машина
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 65
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.gosund_sp111_09_todays_usage
+                - entity: sensor.gosund_sp111_09_watt
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
+      - type: horizontal-stack
+        cards:
+          - type: 'custom:mini-graph-card'
             name: Посудомоечная машина
             show:
               icon: false
@@ -164,6 +187,8 @@ cards:
                   show_state: true
                   show_graph: false
                   fixed_value: true
+          - type: entities
+            entities: []
 
   - type: vertical-stack
     cards:
@@ -446,6 +471,57 @@ cards:
             state_header: в среднем
             entities:
               - entity: sensor.energy_cost_washmachine_daily_prev
+                name: вчера
+                unit: "₽"
+          - type: section
+            label: Сушильная машина
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.socket_dryer_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_dryer_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.socket_dryer_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_dryer_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_dryer_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_dryer_daily_prev
                 name: вчера
                 unit: "₽"
           - type: section

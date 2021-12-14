@@ -431,6 +431,8 @@ cards:
             name: "Холодильник"
           - entity: binary_sensor.washer_status
             name: "Стиральная машина"
+          - entity: binary_sensor.dryer_status
+            name: "Сушильная машина"
           - entity: binary_sensor.dishwasher_status
             name: "Посудомоечная машина"
           # Вытяжка
