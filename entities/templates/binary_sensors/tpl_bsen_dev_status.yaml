@@ -26,6 +26,8 @@
   - name: Washer Status
     device_class: power
     state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float) > 5 }}"
+    delay_off:
+      minutes: 1
     icon: mdi:washing-machine
 
   - name: Dryer Status
