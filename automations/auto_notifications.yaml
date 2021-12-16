@@ -223,6 +223,19 @@
         title: "Стиральная машина:"
         message: Стирка *закончена*, не забудьте достать белье.
 
+- alias: Dryer Machine - Drying Finished Notification
+  id: e572fd6c-06d2-4c34-a218-4b709734c6e0
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.dryer_status
+      from: "on"
+      to: "off"
+  action:
+    - service: notify.telegram_group_flat_1
+      data:
+        title: "Сушильная машина:"
+        message: Сушка *закончена*, не забудьте достать белье.
+
 - alias: Dishwasher - Dishwashing Finished Notification
   id: 9ef4d500-e688-4b70-b565-43ebb754bfe2
   trigger:
