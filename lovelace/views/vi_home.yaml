@@ -379,7 +379,7 @@ cards:
           - entity: group.all_lamps
             state: "on"
         card:
-          type: vertical-stack
+          type: custom:vertical-stack-in-card
           cards:
             - type: "custom:auto-entities"
               filter:
@@ -392,16 +392,16 @@ cards:
             - type: entities
               state_color: true
               entities:
-                - type: buttons
-                  entities:
-                    - entity: group.all_lamps
-                      name: Выключить свет
-                      icon: mdi:lightbulb-group
-                      tap_action:
-                        action: call-service
-                        service: light.turn_off
-                        service_data:
-                          entity_id: group.all_lamps
+                - type: button
+                  entity: group.all_lamps
+                  name: []
+                  action_name: Выключить свет
+                  icon: []
+                  tap_action:
+                    action: call-service
+                    service: light.turn_off
+                    service_data:
+                      entity_id: group.all_lamps
       - type: conditional
         conditions:
           - entity: group.all_lamps
