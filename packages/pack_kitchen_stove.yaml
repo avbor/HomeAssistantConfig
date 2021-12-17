@@ -7,9 +7,9 @@ kitchen_stove_pack:
   # Sensors
   sensor:
     - platform: statistics
-      name: Kitchen Stove Temperature Stats ZB
+      name: Kitchen Stove Temperature Median ZB
       entity_id: sensor.lumi_th_kitchen_stove_temperature
-      state_characteristic: mean
+      state_characteristic: median
       precision: 1
       sampling_size: 2000
       max_age:
@@ -20,9 +20,9 @@ kitchen_stove_pack:
       entity_ids:
         - sensor.a4c138463fc4_temperature
     - platform: statistics
-      name: Kitchen Stove Temperature Stats BT
+      name: Kitchen Stove Temperature Median BT
       entity_id: sensor.kitchen_stove_temperature_min_max_bt
-      state_characteristic: mean
+      state_characteristic: median
       precision: 1
       sampling_size: 2000
       max_age:
@@ -62,15 +62,6 @@ kitchen_stove_pack:
   # Template Sensors
   template:
     - sensor:
-        - name: Kitchen Stove Temperature Median ZB
-          device_class: temperature
-          state: "{{ state_attr('sensor.kitchen_stove_temperature_stats_zb', 'median') }}"
-          unit_of_measurement: °C
-        - name: Kitchen Stove Temperature Median BT
-          device_class: temperature
-          state: "{{ state_attr('sensor.kitchen_stove_temperature_stats_bt', 'median') }}"
-          unit_of_measurement: °C 
-
         - name: Kitchen Stove Status Int
           state: "{{ is_state('binary_sensor.kitchen_stove_status', 'on') | abs }}"
 
@@ -115,3 +106,13 @@ kitchen_stove_pack:
             {%- else -%}false
             {%- endif -%}
           icon: mdi:stove
+
+  # Customizations
+  homeassistant:
+    customize:
+      sensor.kitchen_stove_temperature_median_bt:
+        device_class: temperature
+        unit_of_measurement: °C
+      sensor.kitchen_stove_temperature_median_zb:
+        device_class: temperature
+        unit_of_measurement: °C
