@@ -9,6 +9,7 @@ kitchen_stove_pack:
     - platform: statistics
       name: Kitchen Stove Temperature Stats ZB
       entity_id: sensor.lumi_th_kitchen_stove_temperature
+      state_characteristic: mean
       precision: 1
       sampling_size: 2000
       max_age:
@@ -21,6 +22,7 @@ kitchen_stove_pack:
     - platform: statistics
       name: Kitchen Stove Temperature Stats BT
       entity_id: sensor.kitchen_stove_temperature_min_max_bt
+      state_characteristic: mean
       precision: 1
       sampling_size: 2000
       max_age:
