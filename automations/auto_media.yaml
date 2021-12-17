@@ -43,33 +43,35 @@
     entity_id: binary_sensor.workday_sensor
     state: "on"
   action:
-    - service: media_player.volume_set
-      entity_id: media_player.yandex_station_lite_detskaia
+    - service: media_player.volume_mute
+      target:
+        entity_id: media_player.yandex_station_lite_detskaia
       data:
-        volume_level: "0.0"
+        is_volume_muted: "true"
     - delay: "00:00:01"
     - service: yandex_station.send_command
       data:
         entity_id: media_player.yandex_station_lite_detskaia
         command: sendText
         text: Включи детское радио
-    - alias: Increase volume by 10%
+    - delay: "00:00:10"
+    - service: media_player.volume_set
+      target:
+        entity_id: media_player.yandex_station_lite_detskaia
+      data:
+        volume_level: "0.1"
+    - alias: Volume Up 4 times
       repeat:
         while:
           - condition: template
-            value_template: "{{ repeat.index <= 5 }}"
+            value_template: "{{ repeat.index <= 4 }}"
         sequence:
           - delay: "00:03:00"
-          - service: media_player.volume_set
-            entity_id: media_player.yandex_station_lite_detskaia
-            data_template:
-              volume_level: >
-                {% set level = (state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') | float) + (0.1 | float) %}
-                {% if level < 1 %} {{ level }}
-                {% else %} 1
-                {% endif %}
+          - service: media_player.volume_up
+            target:
+              entity_id: media_player.yandex_station_lite_detskaia
     - service: yandex_station.send_command
       data:
         entity_id: media_player.yandex_station_lite_detskaia
         command: sendText
-        text: Повтори за мной 'Доброе утро, пора вставать!'
+        text: Повтори за мной 'Доброе утро дети, пора вставать!'
