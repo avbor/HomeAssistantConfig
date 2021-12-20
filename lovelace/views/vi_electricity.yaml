@@ -1,0 +1,606 @@
+title: Electricity
+path: electricity
+icon: mdi:home-lightning-bolt-outline
+cards:
+  # Напряжение в сети
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Напряжение (V)</center>
+      - type: gauge
+        entity: sensor.average_voltage_in_flat
+        name: ""
+        #unit: V
+        needle: true
+        min: 205
+        max: 245
+        severity:
+          yellow: 0
+          green: 215
+          red: 235
+      - type: statistics-graph
+        entities:
+          - entity: sensor.average_voltage_in_flat
+            name: []
+        days_to_show: 7
+        chart_type: line
+        stat_types:
+          - min
+          - mean
+          - max
+
+  # Графики потребления
+#  - type: vertical-stack
+#    cards:
+      - type: markdown
+        content: >
+          ### <center>Потребление (kWh, W)</center>
+      - type: horizontal-stack
+        cards:
+          - type: 'custom:mini-graph-card'
+            name: Квартира
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 80
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.switch_main_energy_daily_sum_total
+          - type: 'custom:mini-graph-card'
+            name: Квартира
+            show:
+              icon: false
+              labels: false
+            font_size_header: 12
+            font_size: 80
+            line_color: '#00b4d8'
+            hours_to_show: 24
+            points_per_hour: 12
+            decimals: 0
+            hour24: true
+            aggregate_func: max
+            align_state: right
+            entities:
+                - entity: sensor.energy_flat_main_power
+
+      - type: horizontal-stack
+        cards:
+          - type: 'custom:mini-graph-card'
+            name: Серверная
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 80
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.gosund_sp111_03_todays_usage
+#          - type: 'custom:mini-graph-card'
+#            name: Серверная
+#            show:
+#              icon: false
+#              labels: false
+#            font_size_header: 12
+#            font_size: 80
+#            line_color: '#00b4d8'
+#            hours_to_show: 24
+#            points_per_hour: 12
+#            decimals: 0
+#            hour24: true
+#            aggregate_func: max
+#            align_state: right
+#            entities:
+#                - entity: sensor.gosund_sp111_03_watt
+          - type: 'custom:mini-graph-card'
+            name: Холодильник
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 65
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.gosund_sp111_04_todays_usage
+                - entity: sensor.gosund_sp111_04_watt
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
+      - type: horizontal-stack
+        cards:
+          - type: 'custom:mini-graph-card'
+            name: Посудомоечная машина
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 65
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.gosund_sp111_06_todays_usage
+                - entity: sensor.gosund_sp111_06_watt
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+          - type: 'custom:mini-graph-card'
+            name: Бойлер
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 65
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.tplink_smartplug_01_today_s_consumption
+                - entity: sensor.tplink_smartplug_01_current_consumption
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
+      - type: horizontal-stack
+        cards:
+          - type: 'custom:mini-graph-card'
+            name: Стиральная машина
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 65
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.tplink_smartplug_02_today_s_consumption
+                - entity: sensor.tplink_smartplug_02_current_consumption
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
+          - type: 'custom:mini-graph-card'
+            name: Сушильная машина
+            show:
+              icon: false
+              graph: bar
+              labels: false
+            font_size_header: 12
+            font_size: 65
+            line_color: '#f6bd60'
+            hours_to_show: 168
+            hour24: true
+            group_by: date
+            aggregate_func: max
+            bar_spacing: 8
+            entities:
+                - entity: sensor.gosund_sp111_09_todays_usage
+                - entity: sensor.gosund_sp111_09_watt
+                  show_state: true
+                  show_graph: false
+                  fixed_value: true
+
+#      - type: horizontal-stack
+#        cards:
+#          - type: entities
+#            entities: []
+
+  # Потребление в деньгах
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Стоимость (₽)</center>
+      - type: entities
+        entities:
+          - entity: sensor.apartment_enegry_cost_night
+            type: custom:multiple-entity-row
+            name: Стоимость кВт⋅ч
+            state_header: ночь
+            unit: "₽"
+            icon: mdi:cash-multiple
+            entities:
+              - entity: sensor.apartment_enegry_cost_peak
+                name: пик
+                unit: "₽"
+              - entity: sensor.apartment_enegry_cost_halfpeak
+                name: полупик
+                unit: "₽"
+          - entity: input_number.apartment_enegry_cost_current
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: Текущая
+            unit: "₽"
+            styles:
+              font-weight: bold
+          - type: section
+            label: Квартира
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.switch_main_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_main_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.switch_main_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_main_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_main_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_main_daily_prev
+                name: вчера
+                unit: "₽"
+          - type: section
+            label: Серверная
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.socket_server_room_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_server_room_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.socket_server_room_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_server_room_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_server_room_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_server_room_daily_prev
+                name: вчера
+                unit: "₽"
+          - type: section
+            label: Холодильник
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.socket_kitchen_fridge_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_fridge_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.socket_kitchen_fridge_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_fridge_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_fridge_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_fridge_daily_prev
+                name: вчера
+                unit: "₽"
+          - type: section
+            label: Посудомоечная машина
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.socket_kitchen_dishwasher_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_dishwasher_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.socket_kitchen_dishwasher_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_dishwasher_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_dishwasher_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_dishwasher_daily_prev
+                name: вчера
+                unit: "₽"
+          - type: section
+            label: Бойлер
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.socket_water_boiler_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_water_boiler_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.socket_water_boiler_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_water_boiler_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_water_boiler_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_water_boiler_daily_prev
+                name: вчера
+                unit: "₽"
+          - type: section
+            label: Стиральная машина
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.socket_washmachine_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_washmachine_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.socket_washmachine_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_washmachine_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_washmachine_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_washmachine_daily_prev
+                name: вчера
+                unit: "₽"
+          - type: section
+            label: Сушильная машина
+          - entity: sensor.date_current_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_current_month
+              name: false
+            entities:
+              - entity: sensor.socket_dryer_energy_monthly_sum_total
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_dryer_monthly
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - entity: sensor.date_previous_month
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            show_state: false
+            secondary_info:
+              entity: sensor.date_previous_month
+              name: false
+            entities:
+              - entity: sensor.socket_dryer_energy_monthly_sum_total
+                attribute: last_period
+                name: false
+                unit: "кВт⋅ч"
+                format: precision2
+              - entity: sensor.energy_cost_dryer_monthly_prev
+                name: false
+                unit: "₽"
+                styles:
+                  font-weight: bold
+          - type: divider
+          - entity: sensor.energy_cost_dryer_daily_avg
+            type: custom:multiple-entity-row
+            name: []
+            icon: []
+            secondary_info: День
+            unit: "₽"
+            state_header: в среднем
+            entities:
+              - entity: sensor.energy_cost_dryer_daily_prev
+                name: вчера
+                unit: "₽"
