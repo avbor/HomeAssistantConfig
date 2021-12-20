@@ -366,7 +366,8 @@ def get_media_players(hass: HomeAssistant) -> dict:
 
         ec: EntityComponent = hass.data["entity_components"]["media_player"]
         return {
-            entity.name: entity.entity_id
+            (entity.registry_entry and entity.registry_entry.name) or
+            entity.name or entity.entity_id: entity.entity_id
             for entity in ec.entities
             if entity.platform.platform_name != DOMAIN
                and entity.supported_features & SUPPORT_PLAY_MEDIA
@@ -408,13 +409,15 @@ class StreamingView(HomeAssistantView):
             return web.HTTPNotFound()
 
         try:
-            r = await self.session.get(url)
+            headers = {k: v for k, v in request.headers.items() if k == "Range"}
+            r = await self.session.get(url, headers=headers)
 
             response = web.StreamResponse()
             response.headers.update(r.headers)
             await response.prepare(request)
 
-            async for chunk in r.content.iter_chunked(8192):
+            # same chunks as default web.FileResponse
+            async for chunk in r.content.iter_chunked(256 * 1024):
                 await response.write(chunk)
         except:
             pass

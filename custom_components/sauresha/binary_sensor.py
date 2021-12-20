@@ -162,7 +162,7 @@ class SauresBinarySensor(Entity):
         return 'mdi:alarm-check'
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return self._attributes
 
     def fetch_state(self):

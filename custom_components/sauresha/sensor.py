@@ -182,7 +182,7 @@ class SauresSensor(Entity):
         return 'mdi:counter'
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return self._attributes
 
     def fetch_state(self):
@@ -287,7 +287,7 @@ class SauresControllerSensor(Entity):
         return 'mdi:xbox-controller-view'
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return self._attributes
 
     def set_scan_interval(self, hass: object, scan_interval: timedelta):

@@ -5,7 +5,6 @@ import logging
 import random
 import socket
 import time
-import traceback
 from asyncio import DatagramProtocol, Future
 from asyncio.protocols import BaseProtocol
 from asyncio.transports import DatagramTransport
@@ -149,8 +148,8 @@ class SyncMiIO(BasemiIO):
 
             except socket.timeout:
                 _LOGGER.debug(f"{self.addr[0]} | timeout {times}")
-            except:
-                _LOGGER.debug(f"{self.addr[0]} | {traceback.format_exc(1)}")
+            except Exception as e:
+                _LOGGER.debug(f"{self.addr[0]}", exc_info=e)
 
             # init ping again
             self.delta_ts = None
@@ -225,12 +224,21 @@ class AsyncSocket(DatagramProtocol):
         self.transport.sendto(data)
 
     def close(self):
-        self.transport.close()
+        if not self.transport:
+            return
+        try:
+            self.transport.close()
+        except:
+            _LOGGER.exception("Error when closing async socket")
 
     async def connect(self, addr: tuple):
-        await asyncio.get_event_loop().create_datagram_endpoint(
+        coro = asyncio.get_event_loop().create_datagram_endpoint(
             lambda: self, remote_addr=addr
         )
+        if self.timeout:
+            await asyncio.wait_for(coro, self.timeout)
+        else:
+            await coro
 
     async def recv(self, *args):
         self.response = asyncio.get_event_loop().create_future()
@@ -303,11 +311,11 @@ class AsyncMiIO(BasemiIO, BaseProtocol):
 
                 return data
 
-            except asyncio.TimeoutError:
-                # _LOGGER.debug(f"{self.addr[0]} | timeout {times}")
+            except (asyncio.TimeoutError, OSError):
+                # OSError: [Errno 101] Network unreachable
                 pass
-            except:
-                _LOGGER.debug(f"{self.addr[0]} | {traceback.format_exc(1)}")
+            except Exception as e:
+                _LOGGER.debug(f"{self.addr[0]} | {method}", exc_info=e)
             finally:
                 sock.close()
 
