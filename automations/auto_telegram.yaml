@@ -113,13 +113,13 @@
     - service: telegram_bot.send_photo
       data_template:
         target: '{{ trigger.event.data.user_id }}'
-        file: '/config/www/weather_icons/{{ states("weather.moskva_danilovskii") }}.webp'
+        file: '/config/www/weather_icons/{{ states("weather.openweathermap_moskva_danilovskii") }}.webp'
         caption: |
-          Температура {{ state_attr('weather.moskva_danilovskii', 'temperature') }}°C
-          Ощущается как {{ states('sensor.moskva_danilovskii_temperature_feels_like') }}°C
-          Влажность {{ state_attr('weather.moskva_danilovskii', 'humidity') }}%
-          Давление {{ state_attr('weather.moskva_danilovskii', 'pressure') }} hPa ({{ states('sensor.moskva_danilovskii_pressure_mmhg') }} mmHg)
-          Облачность {{ states('sensor.moskva_danilovskii_cloud_coverage') }}%
+          Температура {{ states('sensor.openweathermap_moskva_danilovskii_temperature') }}°C
+          Ощущается как {{ states('sensor.openweathermap_moskva_danilovskii_feels_like_temperature') }}°C
+          Влажность {{ states('sensor.openweathermap_moskva_danilovskii_humidity') }}%
+          Давление {{ states('sensor.openweathermap_moskva_danilovskii_pressure') }} hPa ({{ states('sensor.openweathermap_moskva_danilovskii_pressure_mmhg') }} mmHg)
+          Облачность {{ states('sensor.openweathermap_moskva_danilovskii_forecast_cloud_coverage') }}%
 # ---- /weather_ch
 - alias: 'Telegram Bot - Weather Country House'
   id: c5ac3f4b-80b8-479f-96bf-45274aeba2ec
@@ -136,13 +136,13 @@
     - service: telegram_bot.send_photo
       data_template:
         target: '{{ trigger.event.data.user_id }}'
-        file: '/config/www/weather_icons/{{ states("weather.nivki_2") }}.webp'
+        file: '/config/www/weather_icons/{{ states("weather.openweathermap_stupino_nivki_2") }}.webp'
         caption: |
-          Температура {{ state_attr('weather.nivki_2', 'temperature') }}°C
-          Ощущается как {{ states('sensor.nivki_2_temperature_feels_like') }}°C
-          Влажность {{ state_attr('weather.nivki_2', 'humidity') }}%
-          Давление {{ state_attr('weather.nivki_2', 'pressure') }} hPa ({{ states('sensor.nivki_2_pressure_mmhg') }} mmHg)
-          Облачность {{ states('sensor.nivki_2_cloud_coverage') }}%
+          Температура {{ states('sensor.openweathermap_stupino_nivki_2_temperature') }}°C
+          Ощущается как {{ states('sensor.openweathermap_stupino_nivki_2_feels_like_temperature') }}°C
+          Влажность {{ states('sensor.openweathermap_stupino_nivki_2_humidity') }}%
+          Давление {{ states('sensor.openweathermap_stupino_nivki_2_pressure') }} hPa ({{ states('sensor.openweathermap_stupino_nivki_2_pressure_mmhg') }} mmHg)
+          Облачность {{ states('sensor.openweathermap_stupino_nivki_2_forecast_cloud_coverage') }}%
 # ---- /status
 - alias: 'Telegram Bot - Status'
   id: 51572bf5-4960-4034-b09a-17d202c07c18

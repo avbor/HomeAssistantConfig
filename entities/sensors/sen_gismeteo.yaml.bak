@@ -2,17 +2,17 @@
 # Gismeteo sensors
 #################################################
 
-- platform: gismeteo
-  forecast: true
-  monitored_conditions:
-    - condition
-    - temperature
-    - temperature_feels_like
-    - pressure
-    - rain
-    - snow
-    - storm
-    - geomagnetic
+#- platform: gismeteo
+#  forecast: true
+#  monitored_conditions:
+#    - condition
+#    - temperature
+#    - temperature_feels_like
+#    - pressure
+#    - rain
+#    - snow
+#    - storm
+#    - geomagnetic
 #- platform: template
 #  sensors:
 #    gismeteo_temperature:

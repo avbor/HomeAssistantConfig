@@ -75,12 +75,6 @@ logger:
   filters:
     zeroconf:
       - "Received invalid packet from .* at offset .* while unpacking .*"
-    homeassistant.config_entries:
-      - "Error setting up entry .* for gismeteo"
-    custom_components.gismeteo:
-      - "Timeout fetching gismeteo data"
-      - "Error fetching gismeteo data: Can't update weather data! Invalid server response"
-      - "Config entry .* for gismeteo integration not ready yet.*"
 
 system_log:
   max_entries: 50

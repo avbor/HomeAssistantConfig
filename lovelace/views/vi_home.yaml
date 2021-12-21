@@ -468,7 +468,7 @@ cards:
         content: >
           ### <center>Погода</center>
       - type: weather-forecast
-        entity: weather.moskva_danilovskii
+        entity: weather.openweathermap_moskva_danilovskii
         name: Москва
       - type: 'custom:mini-graph-card'
         name: Атмосферное давление
@@ -482,8 +482,8 @@ cards:
         entities:
             - entity: sensor.local_pressure_mmhg
               name: Aqara (Гостиная)
-            - entity: sensor.moskva_danilovskii_pressure_mmhg
-              name: Gismeteo
+            - entity: sensor.openweathermap_moskva_danilovskii_pressure_mmhg
+              name: OpenWeatherMap
               #show_fill: false
         show:
           fill: false
