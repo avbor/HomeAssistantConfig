@@ -59,16 +59,32 @@ cards:
             name: Дом -> Дача
           - entity: sensor.do_doma_ot_dachi
             name: Дача -> Дом
-  - type: gauge
-    entity: sensor.average_voltage_in_country_house
-    name: "Напряжение в сети"
-    needle: true
-    min: 205
-    max: 245
-    severity:
-      yellow: 0
-      green: 215
-      red: 235
+  # Напряжение в сети
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Напряжение (V)</center>
+      - type: gauge
+        entity: sensor.average_voltage_in_country_house
+        name: ""
+        needle: true
+        min: 205
+        max: 245
+        severity:
+          yellow: 0
+          green: 215
+          red: 235
+      - type: statistics-graph
+        entities:
+          - entity: sensor.average_voltage_in_country_house
+            name: []
+        days_to_show: 7
+        chart_type: line
+        stat_types:
+          - min
+          - mean
+          - max
   - type: vertical-stack
     cards:
       - type: markdown
