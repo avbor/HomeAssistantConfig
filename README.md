@@ -31,9 +31,6 @@ _Main site (city apartment):_
 
 - Keenetic Speedster ([KN-3010](https://keenetic.ru/ru/keenetic-speedster)) as Access Points in WiFi Mesh Network
 
-- Xiaomi Mi WiFi 3G (v1) as Access Point. Flashed to [OpenWRT](http://openwrt.org/)\
-~40-45 wireless clients, generally 2.4Ghz - IoT, 5Ghz - mobile clients
-
 - Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
 
 _Remote site (country house):_
@@ -45,7 +42,7 @@ _Remote site (country house):_
 
 **ZigBee/BT Gateways:**
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
-  Integration "Xiaomi Gateway (Aqara)"
+  Integration "Xiaomi Gateway (Aqara)", not used for now.
 
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
   Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)
@@ -53,7 +50,7 @@ _Remote site (country house):_
 - Aqara Hub E1 (ZHWG16LM)\
   Not used for now
 
-- Phoscon ConBee 2 by dresden elektronik\
+- Phoscon ConBee 2 by Dresden Elektronik\
   Integration "Zigbee Home Automation (ZHA)"
 
 #### WiFi Devices:
@@ -136,6 +133,7 @@ _Remote site (country house):_
 
 - Sensors:
   - MiJia Door & Window Sensor (MCCGQ01LM, lumi.sensor_magnet)
+  - Aqara Door & Window Sensor (MCCGQ11LM)
   - MiJia Occupancy Sensor (RTCGQ01LM, lumi.sensor_motion)
   - Aqara Occupancy Sensor (RTCGQ11LM, lumi.sensor_motion.aq2)
   - MiJia Humidity & Temperature Sensor (WSDCGQ01LM, lumi.sensor_ht)
@@ -193,8 +191,7 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 - AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series\
   Via Tuya SmartIR flashed to ESPHome, IRremoteESP8266 lib and Xiaomi Magnet Sensors
 
-- Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WF-01](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/modul_syemnyy_upravlyayushchiy_electrolux_ech_wf_01_smart_wi_fi/) module\
-  Integration "Electrolux Remote" by [Ailme](https://github.com/Ailme/home_assistant_electrolux_remote)
+- Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WFN-02](https://home-comfort.ru/catalog/obogrevateli_elektricheskie/konvektory/aksessuary/modul_syemnyy_upravlyayushchiy_electrolux_ech_wfn_02_smart_wi_fi/) module\
 
 ### Software
 
