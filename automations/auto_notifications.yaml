@@ -264,3 +264,23 @@
         message: |
           Star {{ trigger.json.action }}!
           https://github.com/avbor/HomeAssistantConfig/stargazers
+
+- alias: Yandex Station SW Updated
+  id: 3f22e8f0-6f31-49c1-bca1-ce19184c5184
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.yandex_station_lite_detskaia_sw_version
+        - sensor.yandex_station_mini2_gostinaia_sw_version
+  condition: "{{ trigger.to_state.state != trigger.from_state.state }}"
+  action:
+    - service: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_system
+        message: |
+          _Yandex Station:_ Изменилась версия прошивки в
+          {%- if 'detskaia' in trigger.entity_id %} *Детской*.
+          {%- elif 'gostinaia' in trigger.entity_id %} *Гостиной*.
+          {%- endif %}
+          Было: {{ trigger.from_state.state }}
+          Стало: {{ trigger.to_state.state }}

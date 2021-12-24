@@ -50,3 +50,11 @@
       {% else %}
       {{ states('sensor.openweathermap_stupino_nivki_2_pressure_mmhg') }}
       {% endif %}
+
+  - name: Yandex Station Lite Detskaia - SW Version
+    state: >
+      {{ device_attr('eace692c1150612126c4bb63e37b8285', 'sw_version') }}
+
+  - name: Yandex Station Mini2 Gostinaia - SW Version
+    state: >
+      {{ device_attr('05f6870adef060905d93448e7f386f0d', 'sw_version') }}
