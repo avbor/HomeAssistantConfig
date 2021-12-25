@@ -62,7 +62,10 @@ vacuum_cleaner:
           friendly_name: "Xiaomi Vacuum Cleaner 1S"
           device_class: battery
           unit_of_measurement: '%'
-          icon_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') }}"
+          icon_template: >
+            {% if not 'mdi:' in state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}mdi:battery-unknown
+            {% else %}{{state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon')}}
+            {% endif %}
           value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_level') }}"
         mirobot_1s_main_brush_left:
           friendly_name: "Main brush hours remaining"
