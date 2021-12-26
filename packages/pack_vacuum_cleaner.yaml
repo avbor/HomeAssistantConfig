@@ -63,7 +63,7 @@ vacuum_cleaner:
           device_class: battery
           unit_of_measurement: '%'
           icon_template: >
-            {% if not 'mdi:' in state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}mdi:battery-unknown
+            {% if not state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}mdi:battery-unknown
             {% else %}{{state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon')}}
             {% endif %}
           value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_level') }}"
