@@ -1,0 +1,43 @@
+title: New Year
+path: new-year
+icon: mdi:pine-tree
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: "### <center>Гирлянды</center>"
+      - type: entities
+        entities:
+          - entity: switch.mi_smartplugwifi_02
+            name: Ёлка в Гостиной
+            icon: mdi:string-lights
+          - entity: switch.broadlink_smartplug_01_switch
+            name: Ёлка в Детской
+            icon: mdi:string-lights
+
+      - type: markdown
+        content: "### <center>Автоматизации</center>"
+      - type: entities
+        entities:
+          - entity: automation.new_year_light_on_scheduled
+            name: Включение подсветки
+            icon: mdi:string-lights
+          - type: conditional
+            conditions:
+              - entity: automation.new_year_light_on_scheduled
+                state: "on"
+            row:
+              entity: input_datetime.new_year_illumination_on
+              name: Время включения
+              icon: mdi:clock-time-seven-outline
+          - entity: automation.new_year_light_off_scheduled
+            name: Выключение подсветки
+            icon: mdi:string-lights-off
+          - type: conditional
+            conditions:
+              - entity: automation.new_year_light_off_scheduled
+                state: "on"
+            row:
+              entity: input_datetime.new_year_illumination_off
+              name: Время выключения
+              icon: mdi:clock-time-one-outline

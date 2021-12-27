@@ -9,3 +9,4 @@ views:
   - !include lovelace/views/vi_water.yaml
   - !include lovelace/views/vi_electricity.yaml
   - !include lovelace/views/vi_stats.yaml
+  - !include lovelace/views/vi_new_year.yaml
