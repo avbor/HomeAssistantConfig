@@ -72,8 +72,13 @@ cards:
                 label: Контроль влажности
               - entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
                 name: "Автоматичеки"
-              - entity: input_number.target_humidity_01_detskaia
-                name: "Поддерживать"
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
+                    state: "on"
+                row:
+                  entity: input_number.target_humidity_01_detskaia
+                  name: "Поддерживать"
   # Гостинная
   - type: vertical-stack
     cards:
@@ -186,8 +191,13 @@ cards:
                 label: Контроль влажности
               - entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
                 name: "Автоматически"
-              - entity: input_number.target_humidity_02_spalnia
-                name: "Поддерживать"
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
+                    state: "on"
+                row:
+                  entity: input_number.target_humidity_02_spalnia
+                  name: "Поддерживать"
 
   # Кладовая
   - type: vertical-stack

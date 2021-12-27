@@ -72,13 +72,23 @@ cards:
               - entity: automation.sunrise_lighting_nursery
                 name: "Включать свет (рабочие дни)"
                 icon: mdi:weather-sunset-up
-              - entity: input_datetime.sunrise_in_nursery
-                name: "Время включения"
+              - type: conditional
+                conditions:
+                  - entity: automation.sunrise_lighting_nursery
+                    state: "on"
+                row:
+                  entity: input_datetime.sunrise_in_nursery
+                  name: "Время включения"
               - entity: automation.wakeup_radio_childrens
                 name: "Включать радио (рабочие дни)"
                 icon: mdi:radio
-              - entity: input_datetime.wakeup_radio_in_nursery
-                name: "Время включения радио"
+              - type: conditional
+                conditions:
+                  - entity: automation.wakeup_radio_childrens
+                    state: "on"
+                row:
+                  entity: input_datetime.wakeup_radio_in_nursery
+                  name: "Время включения радио"
 
   # Гостиная
   - type: vertical-stack
@@ -246,8 +256,13 @@ cards:
                 - entity: automation.sunrise_lighting_bedroom
                   name: "Включать свет (рабочие дни)"
                   icon: mdi:weather-sunset-up
-                - entity: input_datetime.sunrise_in_bedroom
-                  name: "Время включения"
+                - type: conditional
+                  conditions:
+                    - entity: automation.sunrise_lighting_bedroom
+                      state: "on"
+                  row:
+                    entity: input_datetime.sunrise_in_bedroom
+                    name: "Время включения"
 
   # Ванная и Туалет
   - type: vertical-stack
