@@ -20,6 +20,7 @@ filter:
     - light.ikea_e14_level_light_color_on_off # Детская - Лампа на столе
     - sensor.0x158d0003931aec_temperature # Детская - Температура
     - climate.daikin_nursery # Детская - Кондиционер
+    - switch.broadlink_smartplug_01_switch # Детская - Ёлка
     # Гостина
     - light.sonoff_1000f30a9e # Гостиная - Споты
     - light.sonoff_1000ab3c28 # Гостиная - Бра
@@ -28,6 +29,7 @@ filter:
     - light.ikea_e27_level_light_color_on_off # Гостиная - Лампа на столе
     - climate.daikin_livingroom # Гостиная - Кондиционер
     - sensor.0x158d0003230618_temperature # Гостиная - Температура
+    - switch.mi_smartplugwifi_02 # Гостиная - Ёлка
     # Кухня
     - light.sonoff_1000b72483 # Кухня - Споты
     - light.ikea_e27_kukhnia # Кухня - Люстра
@@ -179,3 +181,9 @@ entity_config:
   cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering:
     name: Штора правая
     room: Кухня
+  switch.mi_smartplugwifi_02:
+    name: Ёлка
+    room: Гостиная
+  switch.broadlink_smartplug_01_switch:
+    name: Ёлка
+    room: Детская
