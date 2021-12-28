@@ -295,6 +295,7 @@
           '^sensor.mirobot_1s_|'
           '^sensor.xiaomi_vacuum_cleaner_|'
           '^switch.smartir_|'
+          '^sensor.openweathermap_|'
           '.*\.smartmi_humidifier_\d{2}_\w+_|'
           '^sensor\.tplink_smartplug_01_|'
           '^sensor\.gosund_sp111_\d{2}_|'
