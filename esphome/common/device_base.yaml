@@ -24,15 +24,15 @@ time:
 
 sensor:
   - platform: wifi_signal
-    name: ${board_name}_wifi_rssi
+    name: ${board_name} RSSI
     update_interval: 60s
     internal: false
 
 binary_sensor:
   - platform: status
-    name: ${board_name}_status
+    name: ${board_name} Status
     internal: false
 
-switch:
+button:
   - platform: restart
-    name: ${board_name}_restart
+    name: ${board_name} Restart

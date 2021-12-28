@@ -23,6 +23,11 @@
     state: "{{ (states('sensor.gosund_sp111_06_watt') | float) > 1 }}"
     icon: mdi:dishwasher
 
+  - name: Oven Status
+    device_class: heat
+    state: "{{ (states('sensor.gosund_sp111_10_watt') | float) > 5 }}"
+    icon: mdi:stove
+
   - name: Washer Status
     device_class: power
     state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float) > 5 }}"

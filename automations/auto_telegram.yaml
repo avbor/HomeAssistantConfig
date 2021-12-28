@@ -187,6 +187,7 @@
         Сушильная машина: *{{ states('binary_sensor.dryer_status') }}* ({{ states('sensor.gosund_sp111_09_watt') }} W)
         Посудомоечная машина: *{{ states('binary_sensor.dishwasher_status') }}* ({{ states('sensor.gosund_sp111_06_watt') }} W)
         Холодильник: *{{ states('binary_sensor.fridge_status') }}* ({{ states('sensor.gosund_sp111_04_watt') }} W)
+        Духовой шкаф: *{{ states('binary_sensor.oven_status') }}* ({{ states('sensor.gosund_sp111_10_watt') }} W)
         `-= Свет =-`
         Споты в прихожей: *{{ states('light.sonoff_1000f2f14a') }}*
         Споты в коридоре: *{{ states('light.sonoff_1000f2a500') }}*

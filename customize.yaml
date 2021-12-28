@@ -104,6 +104,10 @@ switch.gosund_sp111_04_switch:
   friendly_name: Холодильник
 sensor.gosund_sp111_04_todays_usage:
   friendly_name: Холодильник
+switch.gosund_sp111_10_switch:
+  friendly_name: Духовка
+sensor.gosund_sp111_10_todays_usage:
+  friendly_name: Духовка
 switch.gosund_sp111_03_switch:
   friendly_name: Серверная
 sensor.gosund_sp111_03_todays_usage:

@@ -417,6 +417,8 @@ cards:
             name: "Бойлер"
           - entity: binary_sensor.fridge_status
             name: "Холодильник"
+          - entity: binary_sensor.oven_status
+            name: "Духовой шкаф"
           - entity: binary_sensor.washer_status
             name: "Стиральная машина"
           - entity: binary_sensor.dryer_status
