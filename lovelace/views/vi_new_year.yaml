@@ -19,8 +19,11 @@ cards:
         content: "### <center>Автоматизации</center>"
       - type: entities
         entities:
+          - entity: automation.new_year_light_on_home_presence
+            name: Включение подсветки по присутсвию
+            icon: mdi:string-lights
           - entity: automation.new_year_light_on_scheduled
-            name: Включение подсветки
+            name: Включение подсветки по времени
             icon: mdi:string-lights
           - type: conditional
             conditions:
@@ -30,8 +33,11 @@ cards:
               entity: input_datetime.new_year_illumination_on
               name: Время включения
               icon: mdi:clock-time-seven-outline
+          - entity: automation.new_year_light_off_home_presence
+            name: Выключение подсветки по присутсвию
+            icon: mdi:string-lights-off
           - entity: automation.new_year_light_off_scheduled
-            name: Выключение подсветки
+            name: Выключение подсветки по времени
             icon: mdi:string-lights-off
           - type: conditional
             conditions:
