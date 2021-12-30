@@ -205,6 +205,7 @@
       entity_id: binary_sensor.kettle_status
       from: "on"
       to: "off"
+  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   action:
     - service: notify.telegram_group_flat_1
       data:
@@ -217,6 +218,7 @@
       entity_id: binary_sensor.washer_status
       from: "on"
       to: "off"
+  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   action:
     - service: notify.telegram_group_flat_1
       data:
@@ -230,6 +232,7 @@
       entity_id: binary_sensor.dryer_status
       from: "on"
       to: "off"
+  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   action:
     - service: notify.telegram_group_flat_1
       data:
@@ -243,6 +246,7 @@
     entity_id: binary_sensor.dishwasher_status
     from: "on"
     to: "off"
+  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   action:
     - service: notify.telegram_group_flat_1
       data:
