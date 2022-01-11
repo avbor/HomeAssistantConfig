@@ -107,7 +107,7 @@ class SauresHA:
 
     def get_meter(self, flat_id, serial_number):
         meters = self.get_meters(flat_id)
-        return next((Meter(METER) for METER in meters if METER['sn'] == serial_number), Meter(dict()))
+        return next((Meter(METER) for METER in meters if str(METER['sn']) == serial_number), Meter(dict()))
 
     def get_controller(self, flat_id, sn):
         controllers = self.get_controllers(flat_id)
