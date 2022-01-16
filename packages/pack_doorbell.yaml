@@ -44,6 +44,14 @@ doorbell_pack:
                 data:
                   target: !secret tlg_group_flat_1
                   message: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+              - service: media_player.play_media
+                entity_id: media_player.yandex_station_mini2_gostinaia
+                data:
+                  media_content_id: "Внимание, в дверь звонят!"
+                  media_content_type: text
+                  extra:
+                    volume_level: "{% set time = now().hour %}{% if time >= 21 or time < 9 %}0.5{% else %}0.7{% endif %}"
+
           - alias: Mute Off
             conditions: >
               {{
