@@ -299,7 +299,7 @@
           '.*\.smartmi_humidifier_\d{2}_\w+_|'
           '^sensor\.tplink_smartplug_01_|'
           '^sensor\.gosund_sp111_\d{2}_|'
-          '^switch\.gosund_sp111_\d{2}_restart|'
+          '^(switch|button)\.gosund_sp111_\d{2}_restart|'
           '^sensor\..*_ble|'
           '^(binary_sensor|switch)\.domofon_|'
           '^(binary_sensor|sensor|light)\.sonoff_basic_|'
