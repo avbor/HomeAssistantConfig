@@ -83,3 +83,21 @@ cards:
         entities:
           - entity: sensor.sauresha_5555_09_104476
           - entity: sensor.sauresha_5555_13193152
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Отопление</center>
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - entity: sensor.lumi_lumi_weather_824e9807_temperature
+            name: Детская
+          - entity: sensor.lumi_lumi_weather_bf387507_temperature
+            name: Гостиная
+          - entity: sensor.lumi_lumi_weather_4dad5507_temperature
+            name: Кухня
+          - entity: sensor.lumi_lumi_weather_temperature
+            name: Спальня

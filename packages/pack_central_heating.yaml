@@ -1,0 +1,66 @@
+#################################################
+# Package Central Heating
+#################################################
+
+central_heating_pack:
+  template:
+    - binary_sensor:
+        - name: Central Heating - Nursery
+          state: >
+            {{ states('sensor.lumi_lumi_weather_824e9807_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+        - name: Central Heating - Livingroom
+          state: >
+            {{ states('sensor.lumi_lumi_weather_bf387507_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+        - name: Central Heating - Kitchen
+          state: >
+            {{ states('sensor.lumi_lumi_weather_4dad5507_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+        - name: Central Heating - Bedroom
+          state: >
+            {{ states('sensor.lumi_lumi_weather_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+  automation:
+    - alias: Central Heating State Notification
+      id: a50dc6a0-b2d1-45d9-bab8-7fc62e43fb05
+      mode: queued
+      max: 10
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.central_heating_nursery
+          id: nursery
+        - platform: state
+          entity_id: binary_sensor.central_heating_livingroom
+          id: livingroom
+        - platform: state
+          entity_id: binary_sensor.central_heating_kitchen
+          id: kitchen
+        - platform: state
+          entity_id: binary_sensor.central_heating_bedroom
+          id: bedroom
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              {%- if trigger.id == "nursery" %}{% set room = "детской" %}{% set temp = states('sensor.lumi_lumi_weather_824e9807_temperature') %}
+              {%- elif trigger.id == "livingroom" %}{% set room = "гостиной" %}{% set temp = states('sensor.lumi_lumi_weather_bf387507_temperature') %}
+              {%- elif trigger.id == "kitchen" %}{% set room = "кухне" %}{% set temp = states('sensor.lumi_lumi_weather_4dad5507_temperature') %}
+              {%- elif trigger.id == "bedroom" %}{% set room = "спальне" %}{% set temp = states('sensor.lumi_lumi_weather_temperature') %}
+              {%- endif %}
+              Отопление в {{ room }} {% if trigger.to_state.state == 'on' %}*включено*{%else%}*выключено*{%endif%}.
+              Температура в районе трубы отопления {{ temp }}°C.

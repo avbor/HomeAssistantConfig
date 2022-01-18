@@ -127,3 +127,19 @@ cards:
 #              icon: mdi:roman-numeral-1
 #            II:
 #              icon: mdi:roman-numeral-2
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Отопление</center>
+      - type: entities
+        entities:
+          - entity: sensor.lumi_lumi_weather_824e9807_temperature
+            name: Детская
+          - entity: sensor.lumi_lumi_weather_bf387507_temperature
+            name: Гостиная
+          - entity: sensor.lumi_lumi_weather_4dad5507_temperature
+            name: Кухня
+          - entity: sensor.lumi_lumi_weather_temperature
+            name:  Спальня
