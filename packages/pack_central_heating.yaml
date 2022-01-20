@@ -51,6 +51,7 @@ central_heating_pack:
         - platform: state
           entity_id: binary_sensor.central_heating_bedroom
           id: bedroom
+      condition: "{{ states('sensor.ha_uptime') != '0' }}"
       action:
         - service: telegram_bot.send_message
           data:
