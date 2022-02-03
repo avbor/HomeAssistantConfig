@@ -59,11 +59,11 @@
     - 'date'
     - 'date_time_iso'
 - platform: moon
-- platform: version
-  source: local
-- platform: version
-  source: hassio
-  image: qemux86-64
+#- platform: version
+#  source: local
+#- platform: version
+#  source: hassio
+#  image: qemux86-64
 - platform: command_line
   name: Supervisor updates
   command: 'curl -s http://supervisor/supervisor/info -H "Authorization: Bearer $(printenv SUPERVISOR_TOKEN)" | jq ''{"newest_version":.data.version_latest,"current_version":.data.version,"addons":[.data.addons[] | select(.version != .version_latest)]}'''
