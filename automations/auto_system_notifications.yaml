@@ -57,15 +57,15 @@
       target:
         entity_id: sensor.errors_in_system_log_command_line
     - wait_for_trigger:
-      - platform: state
-        entity_id: sensor.errors_in_system_log_command_line
+        - platform: state
+          entity_id: sensor.errors_in_system_log_command_line
       timeout: "00:00:01"
     - service: homeassistant.update_entity
       target:
         entity_id: sensor.warnings_in_system_log_command_line
     - wait_for_trigger:
-      - platform: state
-        entity_id: sensor.warnings_in_system_log_command_line
+        - platform: state
+          entity_id: sensor.warnings_in_system_log_command_line
       timeout: "00:00:01"
     - service: notify.telegram_group_system
       data:
@@ -169,8 +169,8 @@
           trigger.event.data.message | regex_search('Error while executing automation') or
           trigger.event.data.message | regex_search('Error executing script')
         }}
-#    - condition: template
-#      value_template: "{{ not 'automation.system_automation_error' in trigger.event.data.message }}"
+  #    - condition: template
+  #      value_template: "{{ not 'automation.system_automation_error' in trigger.event.data.message }}"
   action:
     - service: telegram_bot.send_message
       data:
@@ -303,7 +303,8 @@
           '^sensor\..*_ble|'
           '^(binary_sensor|switch)\.domofon_|'
           '^(binary_sensor|sensor|light)\.sonoff_basic_|'
-          '^(binary_sensor|sensor)\.sonoff_mini_r2_01_'
+          '^(binary_sensor|sensor)\.sonoff_mini_r2_01_|'
+          '^button\..*_identify'
           )
         }}
     - condition: template
@@ -413,42 +414,42 @@
           Ошибка USB устройства ConBee2: 
           {{ trigger.event.data.message }}
         inline_keyboard:
-          - 'Перезапустить HA:/cb2_ha_restart, Перезагрузить VM:/cb2_vm_reboot'
+          - "Перезапустить HA:/cb2_ha_restart, Перезагрузить VM:/cb2_vm_reboot"
 
-- alias: 'ConBee2 - Restart HA'
+- alias: "ConBee2 - Restart HA"
   id: 7ab7e3b6-5674-4ece-a28b-80a96d0239eb
   trigger:
     platform: event
     event_type: telegram_callback
     event_data:
-      data: '/cb2_ha_restart'
+      data: "/cb2_ha_restart"
   action:
     - service: telegram_bot.answer_callback_query
       data_template:
-        callback_query_id: '{{ trigger.event.data.id }}'
-        message: 'Команда отправлена'
+        callback_query_id: "{{ trigger.event.data.id }}"
+        message: "Команда отправлена"
     - service: telegram_bot.edit_replymarkup
       data:
-        message_id: '{{ trigger.event.data.message.message_id }}'
-        chat_id: '{{ trigger.event.data.chat_id }}'
+        message_id: "{{ trigger.event.data.message.message_id }}"
+        chat_id: "{{ trigger.event.data.chat_id }}"
         inline_keyboard: []
     - service: homeassistant.restart
 
-- alias: 'ConBee2 - Reboot VM'
+- alias: "ConBee2 - Reboot VM"
   id: 402ef2b9-e133-4eff-ba96-39a69f046be5
   trigger:
     platform: event
     event_type: telegram_callback
     event_data:
-      data: '/cb2_vm_reboot'
+      data: "/cb2_vm_reboot"
   action:
     - service: telegram_bot.answer_callback_query
       data_template:
-        callback_query_id: '{{ trigger.event.data.id }}'
-        message: 'Команда отправлена'
+        callback_query_id: "{{ trigger.event.data.id }}"
+        message: "Команда отправлена"
     - service: telegram_bot.edit_replymarkup
       data:
-        message_id: '{{ trigger.event.data.message.message_id }}'
-        chat_id: '{{ trigger.event.data.chat_id }}'
+        message_id: "{{ trigger.event.data.message.message_id }}"
+        chat_id: "{{ trigger.event.data.chat_id }}"
         inline_keyboard: []
     - service: hassio.host_reboot
