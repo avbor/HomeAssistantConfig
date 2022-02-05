@@ -1,19 +1,19 @@
 #################################################
 # Sensors from Thermal Comfort integration
 #################################################
-- platform: thermal_comfort
-  sensors:
-    ch_livingroom:
-      friendly_name: Country House - Living Room
+
+- sensor:
+    - name: Country House - Living Room
       temperature_sensor: sensor.a4c138d358e9_temperature
       humidity_sensor: sensor.a4c138d358e9_humidity
+      unique_id: fd7b8b7d-053a-4fb6-9db3-ea62ef94a1fe
       sensor_types:
         - dewpoint
         - perception
-    ch_kidsroom:
-      friendly_name: Country House - Kids Room
+    - name: Country House - Kids Room
       temperature_sensor: sensor.country_house_avg_temp_kids_rooms
       humidity_sensor: sensor.country_house_avg_humidity_kids_rooms
+      unique_id: 8767d5c9-0f9c-4356-a57c-5caea32693df
       sensor_types:
         - dewpoint
         - perception

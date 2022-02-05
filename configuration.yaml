@@ -231,3 +231,4 @@ shell_command: !include_dir_merge_named entities/shell_commands
 rest_command: !include_dir_merge_named entities/rest_command
 yeelight: !include entities/yeelight/yeelight.yaml
 sonoff: !include entities/sonofflan/sonofflan.yaml
+thermal_comfort: !include entities/thermal_comfort/thermal_comfort.yaml
