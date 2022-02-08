@@ -42,6 +42,8 @@
 !www/community/**
 !www/weather_icons/
 !www/weather_icons/*
+!zigpy_ota/
+!zigpy_ota/*
 #################################
 # Don't include this
 #################################
