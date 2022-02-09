@@ -47,13 +47,13 @@ cards:
       - type: conditional
         conditions:
           - entity: media_player.gostinaia
-            state: "idle"
+            state: "off"
           - entity: media_player.detskaia
-            state: "idle"
+            state: "off"
           - entity: media_player.mini_v_vannoi
-            state: "idle"
+            state: "off"
           - entity: media_player.kukhnia
-            state: "idle"
+            state: "off"
         card:
           type: markdown
           content: >
@@ -61,28 +61,28 @@ cards:
       - type: conditional
         conditions:
           - entity: media_player.gostinaia
-            state_not: "idle"
+            state_not: "off"
         card:
           type: media-control
           entity: media_player.gostinaia
       - type: conditional
         conditions:
           - entity: media_player.detskaia
-            state_not: "idle"
+            state_not: "off"
         card:
           type: media-control
           entity: media_player.detskaia
       - type: conditional
         conditions:
           - entity: media_player.mini_v_vannoi
-            state_not: "idle"
+            state_not: "off"
         card:
           type: media-control
           entity: media_player.mini_v_vannoi
       - type: conditional
         conditions:
           - entity: media_player.kukhnia
-            state_not: "idle"
+            state_not: "off"
         card:
           type: media-control
           entity: media_player.kukhnia
