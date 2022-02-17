@@ -24,7 +24,8 @@ _LOGGER = logging.getLogger(__name__)
 
 MAIN_DOMAINS = ['media_player', 'select']
 SUB_DOMAINS = [
-    'climate', 'light', 'remote', 'switch', 'vacuum', 'humidifier', 'sensor'
+    'climate', 'light', 'remote', 'switch', 'vacuum', 'humidifier', 'sensor',
+    'water_heater'
 ]
 
 CONF_TTS_NAME = 'tts_service_name'
@@ -61,10 +62,13 @@ CONFIG_SCHEMA = vol.Schema({
 
 async def async_setup(hass: HomeAssistant, hass_config: dict):
     """Main setup of component."""
+    config: dict = hass_config.get(DOMAIN) or {}
     hass.data[DOMAIN] = {
-        DATA_CONFIG: hass_config.get(DOMAIN) or {},
+        DATA_CONFIG: config,
         DATA_SPEAKERS: {}
     }
+
+    YandexSession.proxy = config.get(CONF_PROXY)
 
     await _init_local_discovery(hass)
     await _init_services(hass)
@@ -82,9 +86,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     session = async_create_clientsession(hass)
     yandex = YandexSession(session, **entry.data)
     yandex.add_update_listener(update_cookie_and_token)
-
-    config = hass.data[DOMAIN][DATA_CONFIG]
-    yandex.proxy = config.get(CONF_PROXY)
 
     try:
         ok = await yandex.refresh_cookies()
