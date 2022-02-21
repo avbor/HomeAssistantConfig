@@ -125,12 +125,25 @@ cards:
         card:
           type: media-control
           entity: media_player.yandex_station_mini2_gostinaia
-      # --- XBOX
+      # --- Microsoft
       - type: markdown
         content: >
-          ### <center>XBOX</center>
-      - type: media-control
-        entity: media_player.xbox_v_gostinoi
+          ### <center>Microsoft</center>
+      - type: conditional
+        conditions:
+          - entity: media_player.xbox_v_gostinoi
+            state: "off"
+        card:
+          type: markdown
+          content: >
+            *Нет включенных устройств...*
+      - type: conditional
+        conditions:
+          - entity: media_player.xbox_v_gostinoi
+            state_not: "off"
+        card:
+          type: media-control
+          entity: media_player.xbox_v_gostinoi
 
   # --- Television
   - type: vertical-stack
