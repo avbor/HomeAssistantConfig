@@ -35,6 +35,11 @@ all_yandex_stations:
     - media_player.yandex_station_lite_detskaia
     - media_player.yandex_station_mini2_gostinaia
 
+all_xbox:
+    name: Все XBOX'ы
+    entities:
+      - media_player.xbox_v_gostinoi
+
 all_lamps:
   name: Все лампы
   entities:

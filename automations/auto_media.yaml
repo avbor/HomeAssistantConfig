@@ -23,6 +23,9 @@
       - condition: state
         entity_id: media_player.yandex_station_lite_detskaia
         state: "playing"
+      - condition: state
+        entity_id: group.all_xbox
+        state: "on"
   action:
     - service: homeassistant.turn_off
       data:
@@ -32,6 +35,7 @@
         entity_id:
           - group.all_chromecasts
           - group.all_yandex_stations
+          - group.all_xbox
 
 - alias: "Wakeup Radio - Childrens"
   id: 75d1f4fc-c40b-433a-b6bc-ed480b53365e

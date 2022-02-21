@@ -125,8 +125,12 @@ cards:
         card:
           type: media-control
           entity: media_player.yandex_station_mini2_gostinaia
-
-  #media_player.yandex_station_mini2_gostinaia
+      # --- XBOX
+      - type: markdown
+        content: >
+          ### <center>XBOX</center>
+      - type: media-control
+        entity: media_player.xbox_v_gostinoi
 
   # --- Television
   - type: vertical-stack

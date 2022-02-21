@@ -57,21 +57,21 @@ usb:
 http:
   #base_url: !secret external_url
   use_x_forwarded_for: true
-  trusted_proxies: 
+  trusted_proxies:
     - 172.16.16.253
   ip_ban_enabled: true
   login_attempts_threshold: 3
 
 logger:
   default: warn
-#  logs:
-#      homeassistant.components.zha: debug
-#      zigpy: debug
-#    homeassistant.components.shell_command: debug
-#    custom_components.electrolux_remote: debug
-#    homeassistant.components.tuya: debug
-#    homeassistant.components.http.ban: warning
-#    homeassistant.components.device_tracker: debug
+  #  logs:
+  #      homeassistant.components.zha: debug
+  #      zigpy: debug
+  #    homeassistant.components.shell_command: debug
+  #    custom_components.electrolux_remote: debug
+  #    homeassistant.components.tuya: debug
+  #    homeassistant.components.http.ban: warning
+  #    homeassistant.components.device_tracker: debug
   filters:
     zeroconf:
       - "Received invalid packet from .* at offset .* while unpacking .*"
@@ -150,7 +150,7 @@ influxdb:
 
 tts:
   - platform: google_translate
-    language: 'ru'
+    language: "ru"
 
 discovery:
   ignore:
@@ -158,10 +158,10 @@ discovery:
 
 telegram_bot:
   - platform: webhooks # or "polling"
-#    url: !secret tlg_webhook_proxy_url
+    #    url: !secret tlg_webhook_proxy_url
     api_key: !secret telegram_bot_token
-#    trusted_networks:
-#      - !secret tlg_webhook_proxy_ip
+    #    trusted_networks:
+    #      - !secret tlg_webhook_proxy_ip
     allowed_chat_ids:
       - !secret tlg_stall_id
       - !secret tlg_iborisochka_id
@@ -191,6 +191,10 @@ zha:
       otau_directory: /config/zigpy_ota
       ikea_provider: true
       ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
+
+xbox:
+  client_id: !secret xbox_client_id
+  client_secret: !secret xbox_client_secret
 
 #zabbix:
 #  host: home.intra
