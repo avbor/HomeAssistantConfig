@@ -134,6 +134,9 @@ domofon_pack:
               {{ trigger.to_state.state | regex_search('Курьер забрал заказ и везёт его к вам') }}
           - condition: template
             value_template: >-
+              {{ trigger.to_state.state | regex_search('Везёт заказ из Маркет Express') }}
+          - condition: template
+            value_template: >-
               {{ trigger.to_state.state | regex_search('Уже спешит к вам') }}
           - condition: template
             value_template: >-
