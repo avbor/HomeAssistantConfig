@@ -11,7 +11,7 @@ devices_to_map:
   all: true
   entities:
     - device_tracker.kb2003
-    - device_tracker.mi_8
+    - device_tracker.2109119dg
 
 all_tv:
   name: Все телевизоры

@@ -7,34 +7,34 @@
   stream_source: !secret dafangcam_01_rtsp_stream_url
   still_image_url: !secret dafangcam_01_snapshot_url
   verify_ssl: false
-- platform: mjpeg
-  name: DafangCam-01-MJPEG
-  mjpeg_url: !secret dafangcam_01_mjpeg_image_url
-  username: !secret dafangcam_01_username
-  password: !secret dafangcam_01_password
-  verify_ssl: false
+#- platform: mjpeg
+#  name: DafangCam-01-MJPEG
+#  mjpeg_url: !secret dafangcam_01_mjpeg_image_url
+#  username: !secret dafangcam_01_username
+#  password: !secret dafangcam_01_password
+#  verify_ssl: false
 - platform: generic
   name: DafangCam-02-RTSP
   stream_source: !secret dafangcam_02_rtsp_stream_url
   still_image_url: !secret dafangcam_02_snapshot_url
   verify_ssl: false
-- platform: mjpeg
-  name: DafangCam-02-MJPEG
-  mjpeg_url: !secret dafangcam_02_mjpeg_image_url
-  username: !secret dafangcam_02_username
-  password: !secret dafangcam_02_password
-  verify_ssl: false
+#- platform: mjpeg
+#  name: DafangCam-02-MJPEG
+#  mjpeg_url: !secret dafangcam_02_mjpeg_image_url
+#  username: !secret dafangcam_02_username
+#  password: !secret dafangcam_02_password
+#  verify_ssl: false
 - platform: generic
   name: DafangCam-03-RTSP
   stream_source: !secret dafangcam_03_rtsp_stream_url
   still_image_url: !secret dafangcam_03_snapshot_url
   verify_ssl: false
-- platform: mjpeg
-  name: DafangCam-03-MJPEG
-  mjpeg_url: !secret dafangcam_03_mjpeg_image_url
-  username: !secret dafangcam_03_username
-  password: !secret dafangcam_03_password
-  verify_ssl: false
+#- platform: mjpeg
+#  name: DafangCam-03-MJPEG
+#  mjpeg_url: !secret dafangcam_03_mjpeg_image_url
+#  username: !secret dafangcam_03_username
+#  password: !secret dafangcam_03_password
+#  verify_ssl: false
 #- platform: mjpeg
 #  name: CloudCam01
 #  mjpeg_url: 'http://a0d7b954-motioneye:8081'

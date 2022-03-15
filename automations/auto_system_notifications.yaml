@@ -304,7 +304,8 @@
           '^(binary_sensor|switch)\.domofon_|'
           '^(binary_sensor|sensor|light)\.sonoff_basic_|'
           '^(binary_sensor|sensor)\.sonoff_mini_r2_01_|'
-          '^button\..*_identify'
+          '^button\..*_identify|'
+          '^media_player\.plex_.*'
           )
         }}
     - condition: template
