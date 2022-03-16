@@ -50,6 +50,8 @@ filter:
     - light.sonoff_01minizb_47ef08fe_on_off # Спальня - Бра слева
     - light.sonoff_1001045426 # Спальня - Бра справа
     - climate.daikin_bedroom # Спальня - Кондиционер
+    - media_player.samsungtv_ue43ru7470 # Спальня - Телевизор
+    - light.spalnia_stol # Спальня  -  Ламка на столе
     # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
     - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
@@ -187,3 +189,9 @@ entity_config:
   switch.broadlink_smartplug_01_switch:
     name: Ёлка
     room: Детская
+  media_player.samsungtv_ue43ru7470:
+    name: Телевизор
+    room: Спальня
+  light.spalnia_stol:
+    name: Ламна на столе
+    room: Спальня

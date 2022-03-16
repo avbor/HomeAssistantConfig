@@ -92,7 +92,7 @@
           Сработал датчик *газа* на кухне.
           Откройте окна и перекройте подачу газа (за холодильником).
         inline_keyboard:
-          - 'Отключить датчик:/poweroff_gas_sensor'
+          - "Отключить датчик:/poweroff_gas_sensor"
 
 - alias: Gas Alert - Telegram control - poweroff_gas_sensor
   id: 3254a184-a04f-4b31-bbe9-1a00e403f134
@@ -100,18 +100,18 @@
     platform: event
     event_type: telegram_callback
     event_data:
-      data: '/poweroff_gas_sensor'
+      data: "/poweroff_gas_sensor"
   action:
     - service: switch.turn_off
       entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
     - service: telegram_bot.answer_callback_query
       data_template:
-        callback_query_id: '{{ trigger.event.data.id }}'
-        message: 'Команда отправлена'
+        callback_query_id: "{{ trigger.event.data.id }}"
+        message: "Команда отправлена"
     - service: telegram_bot.edit_message
       data:
-        message_id: '{{ trigger.event.data.message.message_id }}'
-        chat_id: '{{ trigger.event.data.chat_id }}'
+        message_id: "{{ trigger.event.data.message.message_id }}"
+        chat_id: "{{ trigger.event.data.chat_id }}"
         title: "*Внимание!*"
         message: |
           Сработал датчик *газа* на кухне.
@@ -122,7 +122,7 @@
   trigger:
     platform: state
     entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
-    to: 'off'
+    to: "off"
     for: "00:30:00"
   action:
     - service: telegram_bot.send_message
@@ -132,7 +132,7 @@
         message: |
           Питание датчика *газа* отключено более 30 минут!
         inline_keyboard:
-          - 'Включить датчик:/poweron_gas_sensor'
+          - "Включить датчик:/poweron_gas_sensor"
 
 - alias: Gas Alert - Telegram control - poweroff_gas_sensor
   id: 50892fe7-741c-4b4d-a71c-a498be52d6b7
@@ -140,18 +140,18 @@
     platform: event
     event_type: telegram_callback
     event_data:
-      data: '/poweron_gas_sensor'
+      data: "/poweron_gas_sensor"
   action:
     - service: switch.turn_on
       entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
     - service: telegram_bot.answer_callback_query
       data_template:
-        callback_query_id: '{{ trigger.event.data.id }}'
-        message: 'Команда отправлена'
+        callback_query_id: "{{ trigger.event.data.id }}"
+        message: "Команда отправлена"
     - service: telegram_bot.edit_message
       data:
-        message_id: '{{ trigger.event.data.message.message_id }}'
-        chat_id: '{{ trigger.event.data.chat_id }}'
+        message_id: "{{ trigger.event.data.message.message_id }}"
+        chat_id: "{{ trigger.event.data.chat_id }}"
         title: "*Внимание!*"
         message: |
           Питание датчика *газа* отключено более 30 минут!
@@ -242,10 +242,10 @@
 - alias: Dishwasher - Dishwashing Finished Notification
   id: 9ef4d500-e688-4b70-b565-43ebb754bfe2
   trigger:
-  - platform: state
-    entity_id: binary_sensor.dishwasher_status
-    from: "on"
-    to: "off"
+    - platform: state
+      entity_id: binary_sensor.dishwasher_status
+      from: "on"
+      to: "off"
   condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   action:
     - service: notify.telegram_group_flat_1
@@ -276,7 +276,8 @@
       entity_id:
         - sensor.yandex_station_lite_detskaia_sw_version
         - sensor.yandex_station_mini2_gostinaia_sw_version
-  condition: "{{ trigger.to_state.state != trigger.from_state.state }}"
+        - sensor.yandex_station_mini2_spalnia_sw_version
+  #condition: "{{ trigger.to_state.state != trigger.from_state.state }}"
   action:
     - service: telegram_bot.send_message
       data:
@@ -285,6 +286,7 @@
           _Yandex Station:_ Изменилась версия прошивки в
           {%- if 'detskaia' in trigger.entity_id %} *Детской*.
           {%- elif 'gostinaia' in trigger.entity_id %} *Гостиной*.
+          {%- elif 'spalnia' in trigger.entity_id %} *Спальне*.
           {%- endif %}
           Было: {{ trigger.from_state.state }}
           Стало: {{ trigger.to_state.state }}

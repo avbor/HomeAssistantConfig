@@ -34,6 +34,7 @@ all_yandex_stations:
   entities:
     - media_player.yandex_station_lite_detskaia
     - media_player.yandex_station_mini2_gostinaia
+    - media_player.yandex_station_mini2_spalnia
 
 all_xbox:
     name: Все XBOX'ы

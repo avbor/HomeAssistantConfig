@@ -225,8 +225,9 @@
         `-= Google Home =-`
         Мини в Ванной: *{{ states('media_player.mini_v_vannoi') }}*
         `-= Yandex =-`
-        Гостинная: *{{ states('media_player.yandex_station_mini2_gostinaia') }}*
         Детская: *{{ states('media_player.yandex_station_lite_detskaia') }}*
+        Гостинная: *{{ states('media_player.yandex_station_mini2_gostinaia') }}*
+        Спалья: *{{ states('media_player.yandex_station_mini2_spalnia') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
         Датчик газа: *{{ states('binary_sensor.0x158d000413b210_gas') }}*

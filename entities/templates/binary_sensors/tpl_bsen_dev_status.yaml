@@ -42,6 +42,10 @@
       seconds: 15
     icon: mdi:tumble-dryer
 
+  - name: Yandex Station Mini2 Spalnia Status
+    device_class: power
+    state: "{{ not states('media_player.yandex_station_mini2_spalnia') in ('paused', 'idle') }}"
+
   - name: Yandex Station Mini2 Gostinaia Status
     device_class: power
     state: "{{ not states('media_player.yandex_station_mini2_gostinaia') in ('paused', 'idle') }}"
