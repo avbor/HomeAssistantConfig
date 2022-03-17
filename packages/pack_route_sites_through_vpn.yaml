@@ -1,0 +1,18 @@
+#################################################
+# Package Route Site Through VPN
+#################################################
+
+vpn_route_pack:
+
+  shell_command:
+    route_site_through_vpn: >-
+      ssh -i /config/.ssh/id_ecdsa
+      -o 'StrictHostKeyChecking=no'
+      ha@srv01.home.intra
+      /opt/scripts/add_route_to_blocked_resource.sh
+      {{ states("input_text.site_to_vpn") }}
+
+  input_text:
+    site_to_vpn:
+      name: DNS Name
+      pattern: '^((?!\/).)*$'

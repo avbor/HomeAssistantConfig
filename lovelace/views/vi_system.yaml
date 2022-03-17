@@ -4,248 +4,248 @@ icon: mdi:cog-outline
 cards:
   - type: vertical-stack
     cards:
-    - type: markdown
-      content: >
-        ### <center>System information</center>
-    - type: custom:vertical-stack-in-card
-      cards:
-        - type: markdown
-          content: >
-            #### Memory usage
-        - type: statistics-graph
-          entities:
-            - entity: sensor.memory_use_percent
-              name: []
-          days_to_show: 7
-          chart_type: line
-          stat_types:
-            - min
-            - mean
-            - max
-#            - sum
-    - type: custom:vertical-stack-in-card
-      cards:
-        - type: markdown
-          content: >
-            #### Component's versions
-        - type: entities
-          show_header_toggle: false
-          entities:
-            - entity: sensor.home_assistant_operating_system_newest_version
-              type: custom:multiple-entity-row
-              name: "OS"
-              state_header: "latest"
-              icon: mdi:linux
-              entities:
-                - entity: sensor.home_assistant_operating_system_version
-                  name: "current"
-            - type: section
-            - entity: sensor.ha_supervisor_latest_version
-              type: custom:multiple-entity-row
-              name: "Supervisor"
-              state_header: "latest"
-              icon: mdi:home-assistant
-              entities:
-                - entity: sensor.ha_supervisor_current_version
-                  name: "current"
-            - type: section
-            - entity: sensor.latest_version
-              type: custom:multiple-entity-row
-              name: "Core"
-              state_header: "latest"
-              entities:
-                - entity: sensor.current_version
-                  name: "current"
-            - type: section
-            - entity: sensor.supervisor_updates
-              name: "Обновления Add-ons"
-              icon: mdi:view-module
-            - entity: sensor.hacs
-              name: "Обновления HACS"
-    - type: custom:vertical-stack-in-card
-      cards:
-        - type: markdown
-          content: >
-            #### Database sizes
-        - type: entities
-          show_header_toggle: false
-          entities:
-            - entity: sensor.hass_db_size
-              type: custom:multiple-entity-row
-              name: "MariaDB"
-              icon: mdi:database
-              styles:
-                font-weight: bold
-            - entity: sensor.hass_db_total_rows_count
-              type: custom:multiple-entity-row
-              name: []
-              icon: []
-              unit: []
-              state_header: total
-              secondary_info: Строк
-              entities:
-                - entity: sensor.hass_db_events_rows_count
-                  name: events
-                  unit: []
-                - entity: sensor.hass_db_states_rows_count
-                  name: states
-                  unit: []
-                - entity: sensor.hass_db_statistics_rows_count
-                  name: statistics
-                  unit: []
-            - entity: sensor.influxdb_database_size
-              type: custom:multiple-entity-row
-              name: "InfluxDB"
-              icon: mdi:database
-              styles:
-                font-weight: bold
-#        - type: history-graph
-#          hours_to_show: 168
-#          entities:
-#            - entity: sensor.hass_db_size
-#              name: "MariaDB"
-#            - entity: sensor.influxdb_database_size
-#              name: "InfluxDB"
-    - type: entities
-      entities:
-        - entity: sensor.yaml_code_lines_count
-          name: "Строк YAML:"
-          icon: mdi:text
-        - entity: sensor.start_time
-          name: "Время загрузки:"
-          icon: mdi:progress-clock
-      footer:
-        type: graph
-        entity: sensor.start_time
-        hours_to_show: 48
-        detail: 2
+      - type: markdown
+        content: >
+          ### <center>System information</center>
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Memory usage
+          - type: statistics-graph
+            entities:
+              - entity: sensor.memory_use_percent
+                name: []
+            days_to_show: 7
+            chart_type: line
+            stat_types:
+              - min
+              - mean
+              - max
+      #            - sum
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Component's versions
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.home_assistant_operating_system_newest_version
+                type: custom:multiple-entity-row
+                name: "OS"
+                state_header: "latest"
+                icon: mdi:linux
+                entities:
+                  - entity: sensor.home_assistant_operating_system_version
+                    name: "current"
+              - type: section
+              - entity: sensor.ha_supervisor_latest_version
+                type: custom:multiple-entity-row
+                name: "Supervisor"
+                state_header: "latest"
+                icon: mdi:home-assistant
+                entities:
+                  - entity: sensor.ha_supervisor_current_version
+                    name: "current"
+              - type: section
+              - entity: sensor.latest_version
+                type: custom:multiple-entity-row
+                name: "Core"
+                state_header: "latest"
+                entities:
+                  - entity: sensor.current_version
+                    name: "current"
+              - type: section
+              - entity: sensor.supervisor_updates
+                name: "Обновления Add-ons"
+                icon: mdi:view-module
+              - entity: sensor.hacs
+                name: "Обновления HACS"
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Database sizes
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.hass_db_size
+                type: custom:multiple-entity-row
+                name: "MariaDB"
+                icon: mdi:database
+                styles:
+                  font-weight: bold
+              - entity: sensor.hass_db_total_rows_count
+                type: custom:multiple-entity-row
+                name: []
+                icon: []
+                unit: []
+                state_header: total
+                secondary_info: Строк
+                entities:
+                  - entity: sensor.hass_db_events_rows_count
+                    name: events
+                    unit: []
+                  - entity: sensor.hass_db_states_rows_count
+                    name: states
+                    unit: []
+                  - entity: sensor.hass_db_statistics_rows_count
+                    name: statistics
+                    unit: []
+              - entity: sensor.influxdb_database_size
+                type: custom:multiple-entity-row
+                name: "InfluxDB"
+                icon: mdi:database
+                styles:
+                  font-weight: bold
+      #        - type: history-graph
+      #          hours_to_show: 168
+      #          entities:
+      #            - entity: sensor.hass_db_size
+      #              name: "MariaDB"
+      #            - entity: sensor.influxdb_database_size
+      #              name: "InfluxDB"
+      - type: entities
+        entities:
+          - entity: sensor.yaml_code_lines_count
+            name: "Строк YAML:"
+            icon: mdi:text
+          - entity: sensor.start_time
+            name: "Время загрузки:"
+            icon: mdi:progress-clock
+        footer:
+          type: graph
+          entity: sensor.start_time
+          hours_to_show: 48
+          detail: 2
 
   - type: vertical-stack
     cards:
-    - type: markdown
-      content: >
-        ### <center>HA Control</center>
-    - type: horizontal-stack
-      cards:
-        - type: button
-          name: "HA: Check Config"
-          icon: mdi:text-box-check-outline
-          icon_height: 64px
-          tap_action:
-            action: call-service
-            service: script.turn_on
-            service_data:
-              entity_id: script.hass_check_config
-          entity: script.hass_check_config
-        - type: button
-          name: "HA: Restart"
-          icon: mdi:restart
-          icon_height: 64px
-          tap_action:
-            action: call-service
-            confirmation:
-              text: Перезагрузить Home Assistant?
-            service: script.turn_on
-            service_data:
-              entity_id: script.hass_restart
-          entity: script.hass_restart
+      - type: markdown
+        content: >
+          ### <center>HA Control</center>
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: "HA: Check Config"
+            icon: mdi:text-box-check-outline
+            icon_height: 64px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.hass_check_config
+            entity: script.hass_check_config
+          - type: button
+            name: "HA: Restart"
+            icon: mdi:restart
+            icon_height: 64px
+            tap_action:
+              action: call-service
+              confirmation:
+                text: Перезагрузить Home Assistant?
+              service: script.turn_on
+              service_data:
+                entity_id: script.hass_restart
+            entity: script.hass_restart
 
-    - type: custom:vertical-stack-in-card
-      cards:
-        - type: markdown
-          content: >
-            #### Errors during startup, leading to automatic restart
-        - type: entities
-          entities:
-            - entity: input_number.auto_reboot_error_threshold
-              name: "Errors count:"
-        - type: markdown
-          content: >
-            #### SysLog counters
-        - type: entities
-          entities:
-            - entity: counter.syslog_warnings
-              name: "Warnings:"
-            - entity: counter.syslog_errors
-              name: "Errors:"
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Errors during startup, leading to automatic restart
+          - type: entities
+            entities:
+              - entity: input_number.auto_reboot_error_threshold
+                name: "Errors count:"
+          - type: markdown
+            content: >
+              #### SysLog counters
+          - type: entities
+            entities:
+              - entity: counter.syslog_warnings
+                name: "Warnings:"
+              - entity: counter.syslog_errors
+                name: "Errors:"
 
-    - type: custom:vertical-stack-in-card
-      cards:
-        - type: markdown
-          content: >
-            #### Alert at remaining battery percentage
-        - type: entities
-          entities:
-            - entity: input_number.low_battery_alert_threshold
-              name: "Send notification at:"
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Alert at remaining battery percentage
+          - type: entities
+            entities:
+              - entity: input_number.low_battery_alert_threshold
+                name: "Send notification at:"
 
-    - type: markdown
-      content: >
-        ### <center>Xiaomi Gateway 3 Control</center>
-    - type: entities
-      entities:
+      - type: markdown
+        content: >
+          ### <center>Xiaomi Gateway 3 Control</center>
+      - type: entities
+        entities:
           - input_select.xiaomi_gateway3_name
-    - type: horizontal-stack
-      cards:
-        - type: button
-          name: "Reboot"
-          icon: mdi:restart
-          icon_height: 64px
-          tap_action:
-            action: call-service
-            confirmation:
-              text: Перезагрузить Xiaomi Gateway?
-            service: script.turn_on
-            service_data:
-              entity_id: script.mi_gw3_reboot
-          entity: script.mi_gw3_reboot
-        - type: button
-          name: "Enable FTP"
-          icon: mdi:file-tree
-          icon_height: 64px
-          tap_action:
-            action: call-service
-            service: script.turn_on
-            service_data:
-              entity_id: script.mi_gw3_enable_ftp
-          entity: script.mi_gw3_enable_ftp
-        - type: button
-          name: "ZB Pair On"
-          icon: mdi:leak
-          icon_height: 64px
-          tap_action:
-            action: call-service
-            service: script.turn_on
-            service_data:
-              entity_id: script.mi_gw3_pair_on
-            entity: script.mi_gw3_pair_on
-        - type: button
-          name: "ZB Pair Off"
-          icon: mdi:leak-off
-          icon_height: 64px
-          tap_action:
-            action: call-service
-            service: script.turn_on
-            service_data:
-              entity_id: script.mi_gw3_pair_off
-            entity: script.mi_gw3_pair_off
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: "Reboot"
+            icon: mdi:restart
+            icon_height: 64px
+            tap_action:
+              action: call-service
+              confirmation:
+                text: Перезагрузить Xiaomi Gateway?
+              service: script.turn_on
+              service_data:
+                entity_id: script.mi_gw3_reboot
+            entity: script.mi_gw3_reboot
+          - type: button
+            name: "Enable FTP"
+            icon: mdi:file-tree
+            icon_height: 64px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.mi_gw3_enable_ftp
+            entity: script.mi_gw3_enable_ftp
+          - type: button
+            name: "ZB Pair On"
+            icon: mdi:leak
+            icon_height: 64px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.mi_gw3_pair_on
+              entity: script.mi_gw3_pair_on
+          - type: button
+            name: "ZB Pair Off"
+            icon: mdi:leak-off
+            icon_height: 64px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.mi_gw3_pair_off
+              entity: script.mi_gw3_pair_off
 
-    - type: markdown
-      content: >
-        ### <center>Scripts</center>
-    - type: horizontal-stack
-      cards:
-      - type: button
-        entity: script.start_vacuum_hallway_by_door_sensor
-        name: Отмена уборки прихожей
-        icon: mdi:stop-circle-outline
-        icon_height: 64px
-        show_state: true
-        tap_action: 
-          action: call-service
-          service: script.turn_off
-          service_data:
-            entity_id: script.start_vacuum_hallway_by_door_sensor
+      - type: markdown
+        content: >
+          ### <center>Scripts</center>
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: script.start_vacuum_hallway_by_door_sensor
+            name: Отмена уборки прихожей
+            icon: mdi:stop-circle-outline
+            icon_height: 64px
+            show_state: true
+            tap_action:
+              action: call-service
+              service: script.turn_off
+              service_data:
+                entity_id: script.start_vacuum_hallway_by_door_sensor
 
   - type: vertical-stack
     cards:
@@ -258,13 +258,13 @@ cards:
           - entity: automation.hass_warnings_in_system_log_notify_to_group_system
             name: Warnings в Telegram
           - entity: automation.hass_errors_in_system_log_notify_to_group_system
-            name: Errors в Telegram 
+            name: Errors в Telegram
           - type: section
             label: Общее
           - entity: automation.poweroff_all_media_when_nobody_at_home
             name: Выключать ТВ когда никого нет дома
-#          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
-#            name: Выкл подсветку кухни [сенсор] (23:30 - 06:30)
+          #          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
+          #            name: Выкл подсветку кухни [сенсор] (23:30 - 06:30)
           - type: section
             label: Уборка
           - entity: automation.opoveshchenie_o_zabytom_pylesose_notify_to_group_flat
@@ -306,8 +306,8 @@ cards:
             name: Розетка Xiaomi ZigBee Plug 02
           - entity: switch.mi_smartplugwifi_01
             name: Розетка Xiaomi WiFi Plig 01
-#          - entity: switch.mi_smartplugwifi_02
-#            name: Розетка Xiaomi WiFi Plig 02
+          #          - entity: switch.mi_smartplugwifi_02
+          #            name: Розетка Xiaomi WiFi Plig 02
           - entity: switch.tplink_smartplug_01
             name: Розетка TP-Link SmartPlug 01
           - entity: switch.tplink_smartplug_02
@@ -392,3 +392,24 @@ cards:
                 icon: mdi:ceiling-light
             state_filter:
               - unavailable
+
+      - type: vertical-stack
+        cards:
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: markdown
+                content: >
+                  #### Разблокировать сайт
+              - type: entities
+                show_header_toggle: false
+                entities:
+                  - entity: input_text.site_to_vpn
+                    name: "Домен"
+                    icon: mdi:web-cancel
+                  - type: button
+                    name: Добавить маршрут через VPN
+                    action_name: Выполнить
+                    icon: mdi:web-check
+                    tap_action:
+                      action: call-service
+                      service: shell_command.route_site_through_vpn
