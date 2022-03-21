@@ -34,6 +34,9 @@ class YandexKettle(WaterHeaterEntity):
         self._attr_unique_id = device['id'].replace('-', '')
 
     async def init_params(self, capabilities: list):
+        self._attr_operation_list = ["on", "off"]
+        self._attr_supported_features |= SUPPORT_OPERATION_MODE
+
         for cap in capabilities:
             # there is no instance for 'on' capability, but this capability
             # doesn't have useful init params
@@ -48,12 +51,10 @@ class YandexKettle(WaterHeaterEntity):
                 self._attr_precision = cap['parameters']['range']['precision']
                 self._attr_supported_features |= SUPPORT_TARGET_TEMPERATURE
             elif inst == 'tea_mode':
-                self._attr_operation_list = [
+                self._attr_operation_list += [
                     mode['value'] for mode in
                     cap['parameters']['modes']
                 ]
-                self._attr_operation_list += ["on", "off"]
-                self._attr_supported_features |= SUPPORT_OPERATION_MODE
             elif inst == 'mute':
                 pass
             elif inst == 'keep_warm':
@@ -65,6 +66,8 @@ class YandexKettle(WaterHeaterEntity):
         try:
             if self._attr_current_operation is None:
                 await self.init_params(data['capabilities'])
+
+            self._attr_available = data['state'] == 'online'
 
             for cap in data['capabilities']:
                 if not cap['retrievable']:
@@ -89,7 +92,8 @@ class YandexKettle(WaterHeaterEntity):
                     continue
 
                 if prop['parameters']['instance'] == 'temperature':
-                    self._attr_current_temperature = prop['state']['value']
+                    value = prop['state']['value'] if prop['state'] else None
+                    self._attr_current_temperature = value
 
         except:
             _LOGGER.exception(data)
