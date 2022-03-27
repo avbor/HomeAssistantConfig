@@ -1,0 +1,29 @@
+title: Auxiliary tools
+path: aux-tools
+icon: mdi:lifebuoy
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: "### <center> Разблокировать сайт </center>"
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: input_text.site_to_vpn
+            name: "Домен"
+            icon: mdi:web-cancel
+      #          - type: button
+      #            entity: shell_command.route_site_through_vpn
+      #            name: Добавить маршрут через VPN
+      #            action_name: Выполнить
+      #            icon: mdi:web-check
+      #            tap_action:
+      #              action: call-service
+      #              service: shell_command.route_site_through_vpn
+      - type: button
+        show_name: false
+        icon: mdi:web-check
+        icon_height: 32px
+        tap_action:
+          action: call-service
+          service: shell_command.route_site_through_vpn

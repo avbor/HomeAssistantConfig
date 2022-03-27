@@ -18,6 +18,8 @@ resources:
     type: module
   - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
     type: module
+  - url: /hacsfiles/ha-yandex-icons/yandex-icons.js
+    type: module
 dashboards:
   dash-chouse:
     mode: yaml

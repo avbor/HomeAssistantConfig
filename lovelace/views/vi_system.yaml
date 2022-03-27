@@ -392,24 +392,3 @@ cards:
                 icon: mdi:ceiling-light
             state_filter:
               - unavailable
-
-      - type: vertical-stack
-        cards:
-          - type: custom:vertical-stack-in-card
-            cards:
-              - type: markdown
-                content: >
-                  #### Разблокировать сайт
-              - type: entities
-                show_header_toggle: false
-                entities:
-                  - entity: input_text.site_to_vpn
-                    name: "Домен"
-                    icon: mdi:web-cancel
-                  - type: button
-                    name: Добавить маршрут через VPN
-                    action_name: Выполнить
-                    icon: mdi:web-check
-                    tap_action:
-                      action: call-service
-                      service: shell_command.route_site_through_vpn

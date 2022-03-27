@@ -38,65 +38,32 @@ cards:
                     entity_id: script.radio_stop
                 entity: script.radio_stop
 
-  # --- Google
+      # --- Yandex
   - type: vertical-stack
     cards:
       - type: markdown
         content: >
-          ### <center>Google</center>
-      - type: conditional
-        conditions:
-          - entity: media_player.gostinaia
-            state: "off"
-          - entity: media_player.detskaia
-            state: "off"
-          - entity: media_player.mini_v_vannoi
-            state: "off"
-          - entity: media_player.kukhnia
-            state: "off"
-        card:
-          type: markdown
-          content: >
-            *Нет включенных устройств...*
-      - type: conditional
-        conditions:
-          - entity: media_player.gostinaia
-            state_not: "off"
-        card:
-          type: media-control
-          entity: media_player.gostinaia
-      - type: conditional
-        conditions:
-          - entity: media_player.detskaia
-            state_not: "off"
-        card:
-          type: media-control
-          entity: media_player.detskaia
-      - type: conditional
-        conditions:
-          - entity: media_player.mini_v_vannoi
-            state_not: "off"
-        card:
-          type: media-control
-          entity: media_player.mini_v_vannoi
-      - type: conditional
-        conditions:
-          - entity: media_player.kukhnia
-            state_not: "off"
-        card:
-          type: media-control
-          entity: media_player.kukhnia
-      #    - type: conditional
-      #      conditions:
-      #        - entity: media_player.googlehome3792
-      #          state_not: "off"
-      #      card:
-      #        type: media-control
-      #        entity: media_player.googlehome3792
-      # --- Yandex
-      - type: markdown
-        content: >
           ### <center>Yandex</center>
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Произнести текс Алисой
+          - type: entities
+            entities:
+              - input_select.yandex_station_target_name
+              - input_text.yandex_station_tts_to
+              - input_number.yandex_tation_tts_to_volume
+      - type: button
+        show_name: false
+        icon: mdi:account-voice
+        icon_height: 32px
+        tap_action:
+          action: call-service
+          service: script.turn_on
+          service_data:
+            entity_id: script.yanedx_station_tts_to
+        entity: script.yanedx_station_tts_to
       - type: conditional
         conditions:
           - entity: binary_sensor.yandex_station_lite_detskaia_status
@@ -106,7 +73,7 @@ cards:
         card:
           type: markdown
           content: >
-            *Нет включенных устройств...*
+            *Все устройства бездействуют...*
       - type: conditional
         conditions:
           - entity: media_player.yandex_station_lite_detskaia
@@ -134,25 +101,6 @@ cards:
         card:
           type: media-control
           entity: media_player.yandex_station_mini2_spalnia
-      # --- Microsoft
-      - type: markdown
-        content: >
-          ### <center>Microsoft</center>
-      - type: conditional
-        conditions:
-          - entity: media_player.xbox_v_gostinoi
-            state: "off"
-        card:
-          type: markdown
-          content: >
-            *Нет включенных устройств...*
-      - type: conditional
-        conditions:
-          - entity: media_player.xbox_v_gostinoi
-            state_not: "off"
-        card:
-          type: media-control
-          entity: media_player.xbox_v_gostinoi
 
   # --- Television
   - type: vertical-stack
@@ -247,6 +195,28 @@ cards:
               - entity: input_boolean.tv_remote_show_nursery
                 state: "on"
             card: !include samsung_tv_remote_c.yaml
+
+      # --- Microsoft
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Microsoft</center>
+      - type: conditional
+        conditions:
+          - entity: media_player.xbox_v_gostinoi
+            state: "off"
+        card:
+          type: markdown
+          content: >
+            *Нет включенных устройств...*
+      - type: conditional
+        conditions:
+          - entity: media_player.xbox_v_gostinoi
+            state_not: "off"
+        card:
+          type: media-control
+          entity: media_player.xbox_v_gostinoi
 
   # --- Plex
   - type: vertical-stack
@@ -348,3 +318,59 @@ cards:
         card:
           type: media-control
           entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+
+  # --- Google
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Google</center>
+      - type: conditional
+        conditions:
+          - entity: media_player.gostinaia
+            state: "off"
+          - entity: media_player.detskaia
+            state: "off"
+          - entity: media_player.mini_v_vannoi
+            state: "off"
+          - entity: media_player.kukhnia
+            state: "off"
+        card:
+          type: markdown
+          content: >
+            *Все устройства бездействуют...*
+      - type: conditional
+        conditions:
+          - entity: media_player.gostinaia
+            state_not: "off"
+        card:
+          type: media-control
+          entity: media_player.gostinaia
+      - type: conditional
+        conditions:
+          - entity: media_player.detskaia
+            state_not: "off"
+        card:
+          type: media-control
+          entity: media_player.detskaia
+      - type: conditional
+        conditions:
+          - entity: media_player.mini_v_vannoi
+            state_not: "off"
+        card:
+          type: media-control
+          entity: media_player.mini_v_vannoi
+      - type: conditional
+        conditions:
+          - entity: media_player.kukhnia
+            state_not: "off"
+        card:
+          type: media-control
+          entity: media_player.kukhnia
+      #    - type: conditional
+      #      conditions:
+      #        - entity: media_player.googlehome3792
+      #          state_not: "off"
+      #      card:
+      #        type: media-control
+      #        entity: media_player.googlehome3792

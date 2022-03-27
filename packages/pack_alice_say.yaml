@@ -1,0 +1,70 @@
+#################################################
+# Package for TTS through Yanedx Stations
+#################################################
+
+alice_say_pack:
+  # Input Select
+  input_select:
+    yandex_station_target_name:
+      name: "Где произнести?"
+      options:
+        - Детская
+        - Гостиная
+        - Спальня
+      initial: Детская
+      icon: yandex:alisa
+
+  # Input Text
+  input_text:
+    yandex_station_target_id:
+      name: "Yandex Station selected ID"
+      initial: media_player.yandex_station_lite_detskaia
+      icon: yandex:alisa
+    yandex_station_tts_to:
+      name: "Что произнести?"
+      initial: ""
+      max: 100
+      icon: mdi:form-textbox
+
+  # Input Number
+  input_number:
+    yandex_tation_tts_to_volume:
+      name: Громкость
+      icon: mdi:volume-high
+      initial: 0.60
+      min: 0
+      max: 1
+      step: 0.1
+
+  # Automations
+  automation:
+    - alias: "Mirror Yandex Station input_select Name to ID"
+      id: 1ec5424e-f770-486c-b4cf-ed29e65dcb36
+      trigger:
+        platform: state
+        entity_id: input_select.yandex_station_target_name
+      action:
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.yandex_station_target_id
+            value: >
+              {% if trigger.to_state.state == 'Детская' %}
+                media_player.yandex_station_lite_detskaia
+              {% elif trigger.to_state.state == 'Гостиная' %}
+                media_player.yandex_station_mini2_gostinaia
+              {% elif trigger.to_state.state == 'Спальня' %}
+                media_player.yandex_station_mini2_spalnia
+              {% endif %}
+
+  # Scripts
+  script:
+    yanedx_station_tts_to:
+      sequence:
+        - service: media_player.play_media
+          target:
+            entity_id: "{{ states('input_text.yandex_station_target_id') }}"
+          data:
+            media_content_id: "{{ states('input_text.yandex_station_tts_to') }}"
+            media_content_type: text
+            extra:
+              volume_level: "{{ states('input_number.yandex_tation_tts_to_volume') }}"
