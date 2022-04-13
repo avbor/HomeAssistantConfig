@@ -64,14 +64,19 @@ http:
 
 logger:
   default: warn
-  #  logs:
-  #      homeassistant.components.zha: debug
-  #      zigpy: debug
-  #    homeassistant.components.shell_command: debug
-  #    custom_components.electrolux_remote: debug
-  #    homeassistant.components.tuya: debug
-  #    homeassistant.components.http.ban: warning
-  #    homeassistant.components.device_tracker: debug
+  #logs:
+    #      homeassistant.components.zha: debug
+    #      zigpy: debug
+    #    homeassistant.components.shell_command: debug
+    #    custom_components.electrolux_remote: debug
+    #    homeassistant.components.tuya: debug
+    #    homeassistant.components.http.ban: warning
+    #    homeassistant.components.device_tracker: debug
+  #  homeassistant.components.dlna_dms: debug
+  #  homeassistant.components.dlna_dms.config_flow: info
+  #  async_upnp_client: info
+  #  async_upnp_client.profiles.profile: debug
+  #  async_upnp_client.profiles.dlna: debug
   filters:
     zeroconf:
       - "Received invalid packet from .* at offset .* while unpacking .*"

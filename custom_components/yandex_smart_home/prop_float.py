@@ -5,7 +5,7 @@ from abc import ABC
 import logging
 from typing import Any
 
-from homeassistant.components import air_quality, climate, fan, humidifier, light, sensor, switch
+from homeassistant.components import air_quality, climate, fan, humidifier, light, sensor, switch, water_heater
 from homeassistant.const import (
     ATTR_BATTERY_LEVEL,
     ATTR_DEVICE_CLASS,
@@ -152,8 +152,10 @@ class FloatProperty(AbstractProperty, ABC):
             )
         elif self.instance == const.FLOAT_INSTANCE_TVOC:
             return round(float_value * TVOC_CONCENTRATION_TO_MCG_M3.get(from_unit, 1), 2)
+        elif self.instance == const.FLOAT_INSTANCE_AMPERAGE and from_unit == const.ELECTRIC_CURRENT_MILLIAMPERE:
+            return float_value / 1000
 
-        return value
+        return float_value
 
 
 @register_property
@@ -165,7 +167,7 @@ class TemperatureProperty(FloatProperty):
             return self.state.attributes.get(ATTR_DEVICE_CLASS) == DEVICE_CLASS_TEMPERATURE
         elif self.state.domain == air_quality.DOMAIN:
             return self.state.attributes.get(climate.ATTR_TEMPERATURE) is not None
-        elif self.state.domain in (climate.DOMAIN, fan.DOMAIN, humidifier.DOMAIN):
+        elif self.state.domain in (climate.DOMAIN, fan.DOMAIN, humidifier.DOMAIN, water_heater.DOMAIN):
             return self.state.attributes.get(climate.ATTR_CURRENT_TEMPERATURE) is not None
 
         return False
@@ -175,7 +177,7 @@ class TemperatureProperty(FloatProperty):
             return self.float_value(self.state.state)
         elif self.state.domain == air_quality.DOMAIN:
             return self.float_value(self.state.attributes.get(climate.ATTR_TEMPERATURE))
-        elif self.state.domain in (climate.DOMAIN, fan.DOMAIN, humidifier.DOMAIN):
+        elif self.state.domain in (climate.DOMAIN, fan.DOMAIN, humidifier.DOMAIN, water_heater.DOMAIN):
             return self.float_value(self.state.attributes.get(climate.ATTR_CURRENT_TEMPERATURE))
 
 
@@ -373,9 +375,11 @@ class CurrentProperty(FloatProperty):
 
     def get_value(self) -> float | None:
         if self.state.domain == sensor.DOMAIN:
-            return self.float_value(self.state.state)
+            value = self.state.state
+        else:
+            value = self.state.attributes.get(const.ATTR_CURRENT)
 
-        return self.float_value(self.state.attributes.get(const.ATTR_CURRENT))
+        return self.convert_value(value, self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT))
 
 
 @register_property
@@ -386,7 +390,9 @@ class PowerProperty(FloatProperty):
         if self.state.domain == sensor.DOMAIN:
             return self.state.attributes.get(ATTR_DEVICE_CLASS) == DEVICE_CLASS_POWER
         elif self.state.domain == switch.DOMAIN:
-            return const.ATTR_POWER in self.state.attributes or const.ATTR_LOAD_POWER in self.state.attributes
+            for attribute in [const.ATTR_POWER, const.ATTR_LOAD_POWER, const.ATTR_CURRENT_CONSUMPTION]:
+                if attribute in self.state.attributes:
+                    return True
 
         return False
 
@@ -395,10 +401,9 @@ class PowerProperty(FloatProperty):
         if self.state.domain == sensor.DOMAIN:
             value = self.state.state
         elif self.state.domain == switch.DOMAIN:
-            if const.ATTR_POWER in self.state.attributes:
-                value = self.state.attributes.get(const.ATTR_POWER)
-            elif const.ATTR_LOAD_POWER in self.state.attributes:
-                value = self.state.attributes.get(const.ATTR_LOAD_POWER)
+            for attribute in [const.ATTR_POWER, const.ATTR_LOAD_POWER, const.ATTR_CURRENT_CONSUMPTION]:
+                if attribute in self.state.attributes:
+                    value = self.state.attributes[attribute]
 
         return self.float_value(value)
 

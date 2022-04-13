@@ -76,6 +76,7 @@ def require_beta(method):
 
 class EventProperty(AbstractProperty, ABC):
     type = PROPERTY_EVENT
+    report_immediately = True
 
     def __init__(self, hass: HomeAssistant, config: Config, state: State):
         super().__init__(hass, config, state)
@@ -248,12 +249,15 @@ class WaterLeakProperty(EventProperty):
 
 
 @register_property
-class ButtonBinarySensorProperty(EventProperty):
+class ButtonProperty(EventProperty):
     instance = const.EVENT_INSTANCE_BUTTON
     retrievable = False
 
     @require_beta
     def supported(self) -> bool:
+        if self.state.attributes.get(ATTR_DEVICE_CLASS) == const.DEVICE_CLASS_BUTTON:
+            return True
+
         if self.state.domain == binary_sensor.DOMAIN:
             return self.state.attributes.get('last_action') in [
                 'single', 'click', 'double', 'double_click',
@@ -262,19 +266,6 @@ class ButtonBinarySensorProperty(EventProperty):
                 'triple', 'quadruple', 'many'
             ]
 
-        return False
-
-    def get_value(self) -> str | None:
-        return self.event_value(self.state.attributes.get('last_action'))
-
-
-@register_property
-class ButtonSensorProperty(EventProperty):
-    instance = const.EVENT_INSTANCE_BUTTON
-    retrievable = False
-
-    @require_beta
-    def supported(self) -> bool:
         if self.state.domain == sensor.DOMAIN:
             return self.state.attributes.get('action') in [
                 'single', 'click', 'double', 'double_click',
@@ -286,7 +277,11 @@ class ButtonSensorProperty(EventProperty):
         return False
 
     def get_value(self) -> str | None:
-        return self.event_value(self.state.attributes.get('action'))
+        for value in [self.state.attributes.get('last_action'), self.state.attributes.get('action'), self.state.state]:
+            event_value = self.event_value(value)
+
+            if event_value:
+                return event_value
 
 
 @register_property

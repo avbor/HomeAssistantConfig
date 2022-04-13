@@ -24,6 +24,8 @@ from homeassistant.components import (
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_SUPPORTED_FEATURES,
+    MAJOR_VERSION,
+    MINOR_VERSION,
     SERVICE_CLOSE_COVER,
     SERVICE_LOCK,
     SERVICE_OPEN_COVER,
@@ -34,10 +36,13 @@ from homeassistant.const import (
     STATE_ON,
 )
 from homeassistant.core import DOMAIN as HA_DOMAIN, HomeAssistant, State
+from homeassistant.exceptions import ServiceNotFound
 from homeassistant.helpers.service import async_call_from_config
 
 from . import const
 from .capability import PREFIX_CAPABILITIES, AbstractCapability, register_capability
+from .const import ERR_NOT_SUPPORTED_IN_CURRENT_MODE
+from .error import SmartHomeError
 from .helpers import Config, RequestData
 
 _LOGGER = logging.getLogger(__name__)
@@ -141,6 +146,53 @@ class OnOffCapabilityScript(OnOffCapability):
         )
 
 
+if MAJOR_VERSION >= 2022 or (MAJOR_VERSION == 2021 and MINOR_VERSION == 12):
+    from homeassistant.components import button
+
+    @register_capability
+    class OnOffCapabilityButton(OnOffCapability):
+        retrievable = False
+
+        def get_value(self) -> bool | None:
+            return None
+
+        def supported(self) -> bool:
+            return self.state.domain == button.DOMAIN
+
+        async def _set_state(self, data: RequestData, state: dict[str, Any]):
+            await self.hass.services.async_call(
+                self.state.domain,
+                button.SERVICE_PRESS, {
+                    ATTR_ENTITY_ID: self.state.entity_id
+                },
+                blocking=True,
+                context=data.context
+            )
+
+if MAJOR_VERSION >= 2022:
+    from homeassistant.components import input_button
+
+    @register_capability
+    class OnOffCapabilityInputButton(OnOffCapability):
+        retrievable = False
+
+        def get_value(self) -> bool | None:
+            return None
+
+        def supported(self) -> bool:
+            return self.state.domain == input_button.DOMAIN
+
+        async def _set_state(self, data: RequestData, state: dict[str, Any]):
+            await self.hass.services.async_call(
+                self.state.domain,
+                input_button.SERVICE_PRESS, {
+                    ATTR_ENTITY_ID: self.state.entity_id
+                },
+                blocking=True,
+                context=data.context
+            )
+
+
 @register_capability
 class OnOffCapabilityLock(OnOffCapability):
     def get_value(self) -> bool:
@@ -203,6 +255,12 @@ class OnOffCapabilityCover(OnOffCapability):
 
 @register_capability
 class OnOffCapabilityMediaPlayer(OnOffCapability):
+    def __init__(self, hass: HomeAssistant, config: Config, state: State):
+        super().__init__(hass, config, state)
+
+        if self.entity_config.get(const.CONF_STATE_UNKNOWN):
+            self.retrievable = False
+
     def supported(self) -> bool:
         if self.state.domain == media_player.DOMAIN:
             features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
@@ -217,17 +275,6 @@ class OnOffCapabilityMediaPlayer(OnOffCapability):
     def parameters(self) -> dict[str, Any] | None:
         if not self.retrievable:
             return {'split': True}
-
-    @property
-    def retrievable(self) -> bool:
-        features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
-        support_turn_on = const.CONF_TURN_ON in self.entity_config or features & media_player.SUPPORT_TURN_ON
-        support_turn_off = const.CONF_TURN_OFF in self.entity_config or features & media_player.SUPPORT_TURN_OFF
-
-        if support_turn_on and support_turn_off:
-            return True
-
-        return False
 
     async def _set_state(self, data: RequestData, state: dict[str, Any]):
         if state['value']:
@@ -339,9 +386,7 @@ class OnOffCapabilityWaterHeater(OnOffCapability):
     }
 
     def get_value(self) -> bool | None:
-        operation_mode = self.state.attributes.get(water_heater.ATTR_OPERATION_MODE)
-        operation_list = self.state.attributes.get(water_heater.ATTR_OPERATION_LIST)
-        return operation_mode != self.get_water_heater_operation(STATE_OFF, operation_list)
+        return self.state.state.lower() != water_heater.STATE_OFF
 
     def get_water_heater_operation(self, required_mode: str, operations_list: list[str]) -> str | None:
         for operation in self.water_heater_operations[required_mode]:
@@ -351,30 +396,42 @@ class OnOffCapabilityWaterHeater(OnOffCapability):
         return None
 
     def supported(self) -> bool:
-        if self.state.domain != water_heater.DOMAIN:
-            return False
-
-        features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
-
-        if features & water_heater.SUPPORT_OPERATION_MODE:
-            operation_list = self.state.attributes.get(water_heater.ATTR_OPERATION_LIST)
-            if self.get_water_heater_operation(STATE_ON, operation_list) is None:
-                return False
-
-            if self.get_water_heater_operation(STATE_OFF, operation_list) is None:
-                return False
-
-            return True
-
-        return False
+        return self.state.domain == water_heater.DOMAIN
 
     async def _set_state(self, data: RequestData, state: dict[str, Any]):
+        if state['value']:
+            service = water_heater.SERVICE_TURN_ON
+        else:
+            service = water_heater.SERVICE_TURN_OFF
+
+        try:
+            await self.hass.services.async_call(
+                water_heater.DOMAIN,
+                service, {
+                    ATTR_ENTITY_ID: self.state.entity_id,
+                },
+                blocking=True,
+                context=data.context
+            )
+
+            return
+        except (AttributeError, ServiceNotFound):
+            # turn_on/turn_off is not supported
+            pass
+
         operation_list = self.state.attributes.get(water_heater.ATTR_OPERATION_LIST)
 
         if state['value']:
             mode = self.get_water_heater_operation(STATE_ON, operation_list)
         else:
             mode = self.get_water_heater_operation(STATE_OFF, operation_list)
+
+        if not mode:
+            target_state_text = 'on' if state['value'] else 'off'
+            raise SmartHomeError(
+                ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
+                f'Unable to determine operation mode for {target_state_text} state'
+            )
 
         await self.hass.services.async_call(
             water_heater.DOMAIN,

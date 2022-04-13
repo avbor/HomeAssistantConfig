@@ -18,14 +18,14 @@ from aiohttp import (
     WSMsgType,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HassJob, HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.util import dt
 
 from . import const
-from .const import CONFIG, DOMAIN
+from .const import CLOUD_BASE_URL, CONFIG, DOMAIN
 from .helpers import Config, RequestData
 from .smart_home import async_handle_message
 
@@ -35,7 +35,7 @@ DEFAULT_RECONNECTION_DELAY = 2
 MAX_RECONNECTION_DELAY = 180
 FAST_RECONNECTION_TIME = timedelta(seconds=6)
 FAST_RECONNECTION_THRESHOLD = 5
-BASE_API_URL = 'https://yaha-cloud.ru/api/home_assistant/v1'
+BASE_API_URL = f'{CLOUD_BASE_URL}/api/home_assistant/v1'
 
 
 @dataclass
@@ -54,7 +54,8 @@ class CloudRequest:
     @classmethod
     def from_dict(cls, data: dict[str, Any]):
         if 'message' in data:
-            data['message'] = json.loads(data['message'])
+            if isinstance(data['message'], str):
+                data['message'] = json.loads(data['message'])
         else:
             data['message'] = {}
 
@@ -141,7 +142,7 @@ class CloudManager:
             _LOGGER.warning(f'Reconnecting too fast, next reconnection in {self._ws_reconnect_delay} seconds')
 
         _LOGGER.debug(f'Trying to reconnect in {self._ws_reconnect_delay} seconds')
-        async_call_later(self._hass, self._ws_reconnect_delay, self.connect)
+        async_call_later(self._hass, self._ws_reconnect_delay, HassJob(self.connect))
 
 
 async def register_cloud_instance(hass: HomeAssistant) -> CloudInstanceData:

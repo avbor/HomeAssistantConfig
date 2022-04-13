@@ -6,17 +6,17 @@ from typing import Any
 
 from aiohttp import ClientConnectorError, ClientResponseError
 from homeassistant import data_entry_flow
+from homeassistant.auth.const import GROUP_ID_READ_ONLY
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
-from homeassistant.const import ATTR_FRIENDLY_NAME, CONF_DOMAINS, CONF_ENTITIES
+from homeassistant.const import ATTR_FRIENDLY_NAME, CONF_DOMAINS, CONF_ENTITIES, MAJOR_VERSION, MINOR_VERSION
 from homeassistant.core import HomeAssistant, callback, split_entity_id
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entityfilter import CONF_EXCLUDE_ENTITIES, CONF_INCLUDE_DOMAINS, CONF_INCLUDE_ENTITIES
-from homeassistant.helpers.reload import async_integration_yaml_config
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.loader import async_get_integration
 import voluptuous as vol
 
-from . import DOMAIN, const, is_config_filter_empty
+from . import DOMAIN, YAML_CONFIG, _get_config_entry_data_from_yaml, const, is_config_filter_empty
 from .cloud import register_cloud_instance
 
 _LOGGER = logging.getLogger(__name__)
@@ -28,11 +28,13 @@ MODE_EXCLUDE = 'exclude'
 
 SUPPORTED_DOMAINS = [
     'binary_sensor',
+    'camera',
     'climate',
     'cover',
     'fan',
     'humidifier',
     'input_boolean',
+    'input_text',
     'light',
     'lock',
     'media_player',
@@ -43,6 +45,8 @@ SUPPORTED_DOMAINS = [
     'vacuum',
     'water_heater',
 ]
+if MAJOR_VERSION >= 2022 or (MAJOR_VERSION == 2021 and MINOR_VERSION == 12):
+    SUPPORTED_DOMAINS.insert(1, 'button')
 
 DEFAULT_DOMAINS = [
     'climate',
@@ -76,6 +80,7 @@ INCLUDE_EXCLUDE_MODES = {
 
 class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
+        self._yaml_config: ConfigType | None = None
         self._data: dict[str, Any] = {
             const.CONF_DEVICES_DISCOVERED: False
         }
@@ -84,11 +89,14 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         if self._async_current_entries():
             return self.async_abort(reason='single_instance_allowed')
 
+        if DOMAIN in self.hass.data:
+            self._yaml_config = self.hass.data[DOMAIN][YAML_CONFIG]
+            self._data.update(_get_config_entry_data_from_yaml(self._data, self._yaml_config))
+
         return await self.async_step_include_domains()
 
     async def async_step_include_domains(self, user_input: ConfigType | None = None) -> data_entry_flow.FlowResult:
-        yaml_config = await async_integration_yaml_config(self.hass, DOMAIN)
-        if DOMAIN in yaml_config and not is_config_filter_empty(yaml_config[DOMAIN]):
+        if self._yaml_config and not is_config_filter_empty(self._yaml_config.get(const.CONF_FILTER, {})):
             return await self.async_step_connection_type()
 
         if user_input is not None:
@@ -146,7 +154,7 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         })
 
     async def async_step_done(self) -> data_entry_flow.FlowResult:
-        return self.async_create_entry(title='Yandex Smart Home', data=self._data)
+        return self.async_create_entry(title=const.CONFIG_ENTRY_TITLE, data=self._data)
 
     @staticmethod
     @callback
@@ -164,8 +172,9 @@ class OptionsFlowHandler(OptionsFlow):
         return await self.async_step_include_domains()
 
     async def async_step_include_domains(self, user_input: ConfigType | None = None) -> data_entry_flow.FlowResult:
-        yaml_config = await async_integration_yaml_config(self.hass, DOMAIN)
-        if DOMAIN in yaml_config and not is_config_filter_empty(yaml_config[DOMAIN]):
+        yaml_config = self.hass.data[DOMAIN][YAML_CONFIG]
+
+        if yaml_config and not is_config_filter_empty(yaml_config.get(const.CONF_FILTER, {})):
             return await self.async_step_include_domains_yaml()
 
         if user_input is not None:
@@ -251,9 +260,9 @@ class OptionsFlowHandler(OptionsFlow):
             return await self.async_step_cloud_info()
 
         return self.async_show_form(step_id='cloud_settings', data_schema=vol.Schema({
-            vol.Required(const.CONF_USER_ID, default=self._options.get(const.CONF_USER_ID)): vol.In({
-                u.id: u.name for u in await self.hass.auth.async_get_users()
-            })
+            vol.Required(const.CONF_USER_ID, default=self._options.get(const.CONF_USER_ID)): vol.In(
+                await _async_get_users(self.hass)
+            )
         }))
 
     async def async_step_cloud_info(self, user_input: ConfigType | None = None) -> data_entry_flow.FlowResult:
@@ -288,6 +297,17 @@ def _async_get_matching_entities(hass: HomeAssistant, domains: list[str] | None 
             key=lambda item: item.entity_id,
         )
     }
+
+
+async def _async_get_users(hass: HomeAssistant) -> dict[str, str]:
+    rv = {}
+    for user in await hass.auth.async_get_users():
+        if any(gr.id == GROUP_ID_READ_ONLY for gr in user.groups):
+            continue
+
+        rv[user.id] = user.name
+
+    return rv
 
 
 async def _async_name_to_type_map(hass: HomeAssistant) -> dict[str, str]:
