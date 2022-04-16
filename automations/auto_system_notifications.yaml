@@ -327,6 +327,8 @@
 
 - alias: "Low Battery Alert [notify to group system]"
   id: 6d87e0a2-8a6b-4b20-bd28-900af1620584
+  mode: queued
+  max: 30
   trigger:
     - platform: event
       event_type: state_changed

@@ -128,13 +128,13 @@ cards:
             card: !include samsung_tv_remote_ue.yaml
       - type: conditional
         conditions:
-          - entity: media_player.samsungtv_ue43ru7470
+          - entity: media_player.ue43ru7470
             state_not: "off"
-          - entity: media_player.samsungtv_ue43ru7470
+          - entity: media_player.ue43ru7470
             state_not: "unavailable"
         card:
           type: media-control
-          entity: media_player.samsungtv_ue43ru7470
+          entity: media_player.ue43ru7470
       # --- Гостиная
       - type: conditional
         conditions:

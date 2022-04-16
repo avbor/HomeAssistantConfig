@@ -1,30 +1,26 @@
 """Config flow for Auto Backup integration."""
 import logging
-import os
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.core import callback
+from homeassistant.components.hassio import is_hassio
+from homeassistant.core import callback, HomeAssistant
 
-from . import CONF_AUTO_PURGE, CONF_BACKUP_TIMEOUT
-from .const import DOMAIN, DEFAULT_BACKUP_TIMEOUT
+from . import is_backup
+from .const import DOMAIN, DEFAULT_BACKUP_TIMEOUT, CONF_AUTO_PURGE, CONF_BACKUP_TIMEOUT
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def validate_input():
+def validate_input(hass: HomeAssistant):
     """Validate existence of Hass.io."""
-    for env in ("HASSIO", "HASSIO_TOKEN"):
-        if not os.environ.get(env):
-            return False
-    return True
+    return is_hassio(hass) or is_backup(hass)
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Auto Backup."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
@@ -34,19 +30,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if self._async_current_entries():
             return self.async_abort(reason="single_instance")
 
-        if not validate_input():
-            return self.async_abort(reason="missing_hassio")
+        if not validate_input(self.hass):
+            return self.async_abort(reason="missing_service")
 
         return self.async_create_entry(title="Auto Backup", data=user_input)
-
-    async def async_step_import(self, user_input=None):
-        """Import a config entry from configuration.yaml."""
-        _LOGGER.info("Importing config entry from configuration.yaml")
-        backup_timeout = user_input.get(CONF_BACKUP_TIMEOUT)
-        if backup_timeout:
-            user_input[CONF_BACKUP_TIMEOUT] = backup_timeout / 60
-
-        return await self.async_step_user(user_input)
 
     @staticmethod
     @callback

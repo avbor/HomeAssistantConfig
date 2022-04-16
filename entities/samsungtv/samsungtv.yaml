@@ -1,0 +1,18 @@
+#################################################
+# Samsung TVs
+#################################################
+- host: 172.16.16.205
+  turn_on_action:
+    - service: wake_on_lan.send_magic_packet
+      data:
+        mac: 8c:79:f5:51:2f:d1
+- host: 172.16.16.207
+  turn_on_action:
+    - service: shell_command.chromecast_tv_on
+      data:
+        ip_addr: "172.16.16.194"
+- host: 172.16.16.208
+  turn_on_action:
+    - service: shell_command.chromecast_tv_on
+      data:
+        ip_addr: "172.16.16.211"

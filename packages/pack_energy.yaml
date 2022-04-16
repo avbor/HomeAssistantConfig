@@ -3,19 +3,18 @@
 #################################################
 
 energy_pack:
-
-# Input Numbers
+  # Input Numbers
   input_number:
     apartment_enegry_cost_current:
       name: Стоимость кВт⋅ч текущая
       icon: mdi:cash
-      unit_of_measurement: 'RUB/kWh'
+      unit_of_measurement: "RUB/kWh"
       min: 0.01
       max: 100
       step: 0.01
       mode: box
 
-# Input Datetimes
+  # Input Datetimes
   input_datetime:
     apartment_enegry_start_time_peak_1:
       name: Начало тарифа пик 1
@@ -43,32 +42,31 @@ energy_pack:
       has_date: false
       has_time: true
 
-# Sensors
+  # Sensors
   sensor:
     - platform: template
       sensors:
-
-      # RUB per kWh
+        # RUB per kWh
         apartment_enegry_cost_peak:
           friendly_name: "Стоимость кВт⋅ч пик ({{ state_attr('sensor.mes_07762_153_47_account','zone_t1_description') }})"
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: "{{ state_attr('sensor.mes_07762_153_47_account', 'zone_t1_tariff') }}"
         apartment_enegry_cost_halfpeak:
           friendly_name: "Стоимость кВт⋅ч полупик ({{ state_attr('sensor.mes_07762_153_47_account','zone_t3_description') }})"
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: "{{ state_attr('sensor.mes_07762_153_47_account', 'zone_t3_tariff') }}"
         apartment_enegry_cost_night:
           friendly_name: "Стоимость кВт⋅ч ночь ({{ state_attr('sensor.mes_07762_153_47_account','zone_t2_description') }})"
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: "{{ state_attr('sensor.mes_07762_153_47_account', 'zone_t2_tariff') }}"
 
-      # Main Power Meter
+        # Main Power Meter
         energy_flat_main_power:
           device_class: power
           unit_of_measurement: "W"
@@ -85,11 +83,11 @@ energy_pack:
           icon_template: mdi:sine-wave
           value_template: "{{ state_attr('switch.sonoff_1001322978','voltage') }}"
 
-      # Individual monthly\daily costs
+        # Individual monthly\daily costs
         # Main
         energy_cost_main_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -99,7 +97,7 @@ energy_pack:
             }}
         energy_cost_main_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -109,7 +107,7 @@ energy_pack:
             }}
         energy_cost_main_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -121,7 +119,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_main_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_main_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -133,7 +131,7 @@ energy_pack:
         # Server room
         energy_cost_server_room_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -143,7 +141,7 @@ energy_pack:
             }}
         energy_cost_server_room_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -153,7 +151,7 @@ energy_pack:
             }}
         energy_cost_server_room_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -165,7 +163,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_server_room_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_server_room_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -177,7 +175,7 @@ energy_pack:
         # Washing machine
         energy_cost_washmachine_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -187,7 +185,7 @@ energy_pack:
             }}
         energy_cost_washmachine_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -197,7 +195,7 @@ energy_pack:
             }}
         energy_cost_washmachine_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -209,7 +207,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_washmachine_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_washmachine_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -221,7 +219,7 @@ energy_pack:
         # Dryer machine
         energy_cost_dryer_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -231,7 +229,7 @@ energy_pack:
             }}
         energy_cost_dryer_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -241,7 +239,7 @@ energy_pack:
             }}
         energy_cost_dryer_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -253,7 +251,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_dryer_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_dryer_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -265,7 +263,7 @@ energy_pack:
         # Dishwasher
         energy_cost_dishwasher_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -275,7 +273,7 @@ energy_pack:
             }}
         energy_cost_dishwasher_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -285,7 +283,7 @@ energy_pack:
             }}
         energy_cost_dishwasher_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -297,7 +295,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_dishwasher_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_dishwasher_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -309,7 +307,7 @@ energy_pack:
         # Water boiler
         energy_cost_water_boiler_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -319,7 +317,7 @@ energy_pack:
             }}
         energy_cost_water_boiler_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -329,7 +327,7 @@ energy_pack:
             }}
         energy_cost_water_boiler_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -341,7 +339,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_water_boiler_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_water_boiler_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -353,7 +351,7 @@ energy_pack:
         # Fridge
         energy_cost_fridge_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -363,7 +361,7 @@ energy_pack:
             }}
         energy_cost_fridge_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -373,7 +371,7 @@ energy_pack:
             }}
         energy_cost_fridge_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -385,7 +383,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_fridge_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_fridge_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -397,7 +395,7 @@ energy_pack:
         # Oven
         energy_cost_oven_monthly:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -407,7 +405,7 @@ energy_pack:
             }}
         energy_cost_oven_monthly_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -417,7 +415,7 @@ energy_pack:
             }}
         energy_cost_oven_daily_avg:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {% 
@@ -429,7 +427,7 @@ energy_pack:
             {{ ((states('sensor.energy_cost_oven_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
         energy_cost_oven_daily_prev:
           device_class: monetary
-          unit_of_measurement: 'RUB'
+          unit_of_measurement: "RUB"
           icon_template: mdi:cash
           value_template: >
             {{
@@ -445,7 +443,7 @@ energy_pack:
       unit_prefix: k
       round: 2
 
-# Utility Meters
+  # Utility Meters
   utility_meter:
     # For Main
     switch_main_energy_daily:
@@ -669,31 +667,31 @@ energy_pack:
       tariffs:
         - total
 
-# Groups
+  # Groups
   group:
     all_energy_utility_meters:
-      - utility_meter.switch_main_energy_daily
-      - utility_meter.switch_main_energy_monthly
-      - utility_meter.socket_server_room_energy_daily
-      - utility_meter.socket_server_room_energy_monthly
-      - utility_meter.socket_kitchen_fridge_energy_daily
-      - utility_meter.socket_kitchen_fridge_energy_monthly
-      - utility_meter.socket_kitchen_oven_energy_daily
-      - utility_meter.socket_kitchen_oven_energy_monthly
-      - utility_meter.socket_kitchen_kettle_energy_daily
-      - utility_meter.socket_kitchen_kettle_energy_monthly
-      - utility_meter.socket_kitchen_dishwasher_energy_daily
-      - utility_meter.socket_kitchen_dishwasher_energy_monthly
-      - utility_meter.socket_washmachine_energy_daily
-      - utility_meter.socket_washmachine_energy_monthly
-      - utility_meter.socket_dryer_energy_daily
-      - utility_meter.socket_dryer_energy_monthly
-      - utility_meter.socket_water_boiler_energy_daily
-      - utility_meter.socket_water_boiler_energy_monthly
+      - select.switch_main_energy_daily
+      - select.switch_main_energy_monthly
+      - select.socket_server_room_energy_daily
+      - select.socket_server_room_energy_monthly
+      - select.socket_kitchen_fridge_energy_daily
+      - select.socket_kitchen_fridge_energy_monthly
+      - select.socket_kitchen_oven_energy_daily
+      - select.socket_kitchen_oven_energy_monthly
+      - select.socket_kitchen_kettle_energy_daily
+      - select.socket_kitchen_kettle_energy_monthly
+      - select.socket_kitchen_dishwasher_energy_daily
+      - select.socket_kitchen_dishwasher_energy_monthly
+      - select.socket_washmachine_energy_daily
+      - select.socket_washmachine_energy_monthly
+      - select.socket_dryer_energy_daily
+      - select.socket_dryer_energy_monthly
+      - select.socket_water_boiler_energy_daily
+      - select.socket_water_boiler_energy_monthly
 
-# Automations
+  # Automations
   automation:
-  # --- Set energy tariffs start time ---
+    # --- Set energy tariffs start time ---
     - alias: Energy - Apartment - Set Start Time of Tariffs
       id: 7dc9e636-2951-407e-b50f-31d6b0b22961
       trigger:
@@ -740,19 +738,19 @@ energy_pack:
               {% set time = (state_attr('sensor.mes_07762_153_47_account', 'zone_t2_description') | regex_findall_index('^(\d+-\d+)')).replace('-',':') -%}
               {% if (time.split(':')[0] | int) < 10 %}0{{ time }}:00{% else %}{{ time }}:00{% endif %}
 
-  # --- --- --- --- --- --- --- --- --- -
+    # --- --- --- --- --- --- --- --- --- -
 
-  # --- Set current energy tariff ---
+    # --- Set current energy tariff ---
     - alias: Energy - Apartment - Set Current Tariff
       id: 0266f51b-5a79-4c13-b925-f50952cc49ed
       trigger:
         - platform: time
-          at: 
+          at:
             - input_datetime.apartment_enegry_start_time_peak_1
             - input_datetime.apartment_enegry_start_time_peak_2
           id: "peak"
         - platform: time
-          at: 
+          at:
             - input_datetime.apartment_enegry_start_time_halfpeak_1
             - input_datetime.apartment_enegry_start_time_halfpeak_2
           id: "halfpeak"
@@ -772,10 +770,15 @@ energy_pack:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_peak') | float(0) }}"
-              - service: utility_meter.select_tariff
-                entity_id: group.all_energy_utility_meters
+              #- service: utility_meter.select_tariff
+              #  entity_id: group.all_energy_utility_meters
+              #  data:
+              #    tariff: peak
+              - service: select.select_option
+                target:
+                  entity_id: group.all_energy_utility_meters
                 data:
-                  tariff: peak
+                  option: peak
           # Set Halfpeak Tariff
           - alias: Set Halfpeak Tariff
             conditions:
@@ -787,10 +790,15 @@ energy_pack:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_halfpeak') | float(0) }}"
-              - service: utility_meter.select_tariff
-                entity_id: group.all_energy_utility_meters
+              #- service: utility_meter.select_tariff
+              #  entity_id: group.all_energy_utility_meters
+              #  data:
+              #    tariff: halfpeak
+              - service: select.select_option
+                target:
+                  entity_id: group.all_energy_utility_meters
                 data:
-                  tariff: halfpeak
+                  option: halfpeak
           # Set Night Tariff
           - alias: Set Night Tariff
             conditions:
@@ -802,7 +810,12 @@ energy_pack:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_night') | float(0) }}"
-              - service: utility_meter.select_tariff
-                entity_id: group.all_energy_utility_meters
+              #- service: utility_meter.select_tariff
+              #  entity_id: group.all_energy_utility_meters
+              #  data:
+              #    tariff: night
+              - service: select.select_option
+                target:
+                  entity_id: group.all_energy_utility_meters
                 data:
-                  tariff: night
+                  option: night
