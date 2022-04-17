@@ -30,12 +30,14 @@ filter:
     - climate.daikin_livingroom # Гостиная - Кондиционер
     - sensor.0x158d0003230618_temperature # Гостиная - Температура
     - switch.mi_smartplugwifi_02 # Гостиная - Ёлка
+    - media_player.ue46es5507 # Гостиная - Телевизор
     # Кухня
     - light.sonoff_1000b72483 # Кухня - Споты
     - light.ikea_e27_kukhnia # Кухня - Люстра
     - light.kukhnia_lenta # Кухня - Подсветка
     - cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering # Кухня - Штора Левая
     - cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering # Кухня - Штора Правая
+    - media_player.ue32es5500 # кухня - Телевизор
     # Ванная
     - light.sonoff_zbmini_04_on_off
     - fan.bathroom_extractor
@@ -50,7 +52,7 @@ filter:
     - light.sonoff_01minizb_47ef08fe_on_off # Спальня - Бра слева
     - light.sonoff_1001045426 # Спальня - Бра справа
     - climate.daikin_bedroom # Спальня - Кондиционер
-    - media_player.samsungtv_ue43ru7470 # Спальня - Телевизор
+    - media_player.ue43ru7470 # Спальня - Телевизор
     - light.spalnia_stol # Спальня  -  Ламка на столе
     # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
@@ -189,9 +191,15 @@ entity_config:
   switch.broadlink_smartplug_01_switch:
     name: Ёлка
     room: Детская
-  media_player.samsungtv_ue43ru7470:
-    name: Телевизор
-    room: Спальня
   light.spalnia_stol:
     name: Ламна на столе
     room: Спальня
+  media_player.ue43ru7470:
+    name: Телевизор
+    room: Спальня
+  media_player.ue32es5500:
+    name: Телевизор
+    room: Кухня
+  media_player.ue46es5507:
+    name: Телевизор
+    room: Гостиная
