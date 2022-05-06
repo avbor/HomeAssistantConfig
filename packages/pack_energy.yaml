@@ -71,17 +71,17 @@ energy_pack:
           device_class: power
           unit_of_measurement: "W"
           icon_template: mdi:flash
-          value_template: "{{ state_attr('switch.sonoff_1001322978','power') }}"
+          value_template: "{{ states('sensor.sonoff_1001322978_power') }}"
         energy_flat_main_current:
           device_class: current
           unit_of_measurement: "A"
           icon_template: mdi:current-ac
-          value_template: "{{ state_attr('switch.sonoff_1001322978','current') }}"
+          value_template: "{{ states('sensor.sonoff_1001322978_current') }}"
         energy_flat_main_voltage:
           device_class: voltage
           unit_of_measurement: "V"
           icon_template: mdi:sine-wave
-          value_template: "{{ state_attr('switch.sonoff_1001322978','voltage') }}"
+          value_template: "{{ states('sensor.sonoff_1001322978_voltage') }}"
 
         # Individual monthly\daily costs
         # Main

@@ -176,7 +176,7 @@ _Remote site (country house):_
   Integration "Samsung Smart TV"
 
   - Samsung TV Series 7 (RU, 2019 model year)\
-  Integration "SamsungTV Tizen" by [jaruba](https://github.com/jaruba/ha-samsungtv-tizen)
+  Integration "Samsung Smart TV"
 
   - Plex Media Server\
   Integration "Plex Media Server"
@@ -191,7 +191,7 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 - AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series\
   Via Tuya SmartIR flashed to ESPHome, IRremoteESP8266 lib and Xiaomi Magnet Sensors
 
-- Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WFN-02](https://home-comfort.ru/catalog/obogrevateli_elektricheskie/konvektory/aksessuary/modul_syemnyy_upravlyayushchiy_electrolux_ech_wfn_02_smart_wi_fi/) module\
+- Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WFN-02](https://home-comfort.ru/catalog/obogrevateli_elektricheskie/konvektory/aksessuary/modul_syemnyy_upravlyayushchiy_electrolux_ech_wfn_02_smart_wi_fi/) module
 
 ### Software
 

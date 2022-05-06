@@ -45,13 +45,7 @@ from homeassistant.helpers.template import Template
 from homeassistant.loader import async_get_custom_components
 import voluptuous as vol
 
-from .const import (
-    CONF_HUMIDITY_SENSOR,
-    CONF_POLL,
-    CONF_TEMPERATURE_SENSOR,
-    DEFAULT_NAME,
-    DOMAIN,
-)
+from .const import DEFAULT_NAME, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -62,6 +56,9 @@ CONF_SENSOR_TYPES = "sensor_types"
 CONF_CUSTOM_ICONS = "custom_icons"
 CONF_SCAN_INTERVAL = "scan_interval"
 
+CONF_TEMPERATURE_SENSOR = "temperature_sensor"
+CONF_HUMIDITY_SENSOR = "humidity_sensor"
+CONF_POLL = "poll"
 # Default values
 POLL_DEFAULT = False
 SCAN_INTERVAL_DEFAULT = 30
@@ -181,19 +178,18 @@ DEFAULT_SENSOR_TYPES = list(SENSOR_TYPES.keys())
 
 PLATFORM_OPTIONS_SCHEMA = vol.Schema(
     {
-        vol.Optional(CONF_POLL, default=POLL_DEFAULT): cv.boolean,
-        vol.Optional(
-            CONF_SCAN_INTERVAL, default=timedelta(seconds=SCAN_INTERVAL_DEFAULT)
-        ): cv.time_period,
-        vol.Optional(CONF_CUSTOM_ICONS, default=False): cv.boolean,
-    }
+        vol.Optional(CONF_POLL): cv.boolean,
+        vol.Optional(CONF_SCAN_INTERVAL): cv.time_period,
+        vol.Optional(CONF_CUSTOM_ICONS): cv.boolean,
+        vol.Optional(CONF_SENSOR_TYPES): cv.ensure_list,
+    },
+    extra=vol.REMOVE_EXTRA,
 )
 
 LEGACY_SENSOR_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_TEMPERATURE_SENSOR): cv.entity_id,
         vol.Required(CONF_HUMIDITY_SENSOR): cv.entity_id,
-        vol.Optional(CONF_SENSOR_TYPES, default=DEFAULT_SENSOR_TYPES): cv.ensure_list,
         vol.Optional(CONF_ICON_TEMPLATE): cv.template,
         vol.Optional(CONF_ENTITY_PICTURE_TEMPLATE): cv.template,
         vol.Optional(CONF_FRIENDLY_NAME): cv.string,
@@ -274,20 +270,25 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             dict(device_config, **{CONF_NAME: device_name})
             for (device_name, device_config) in config[CONF_SENSORS].items()
         ]
+        options = {}
     else:
         devices = discovery_info["devices"]
+        options = discovery_info["options"]
 
     sensors = []
 
     for device_config in devices:
+        device_config = options | device_config
         compute_device = DeviceThermalComfort(
             hass=hass,
             name=device_config.get(CONF_NAME),
             unique_id=device_config.get(CONF_UNIQUE_ID),
             temperature_entity=device_config.get(CONF_TEMPERATURE_SENSOR),
             humidity_entity=device_config.get(CONF_HUMIDITY_SENSOR),
-            should_poll=device_config.get(CONF_POLL),
-            scan_interval=device_config.get(CONF_SCAN_INTERVAL),
+            should_poll=device_config.get(CONF_POLL, POLL_DEFAULT),
+            scan_interval=device_config.get(
+                CONF_SCAN_INTERVAL, timedelta(seconds=SCAN_INTERVAL_DEFAULT)
+            ),
         )
 
         sensors += [
@@ -300,9 +301,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                 entity_picture_template=device_config.get(CONF_ENTITY_PICTURE_TEMPLATE),
                 sensor_type=SensorType.from_string(sensor_type),
                 friendly_name=device_config.get(CONF_FRIENDLY_NAME),
-                custom_icons=device_config.get(CONF_CUSTOM_ICONS),
+                custom_icons=device_config.get(CONF_CUSTOM_ICONS, False),
             )
-            for sensor_type in device_config.get(CONF_SENSOR_TYPES)
+            for sensor_type in device_config.get(
+                CONF_SENSOR_TYPES, DEFAULT_SENSOR_TYPES
+            )
         ]
 
     async_add_entities(sensors)
@@ -333,7 +336,9 @@ async def async_setup_entry(
         temperature_entity=data[CONF_TEMPERATURE_SENSOR],
         humidity_entity=data[CONF_HUMIDITY_SENSOR],
         should_poll=data[CONF_POLL],
-        scan_interval=timedelta(seconds=data[CONF_SCAN_INTERVAL]),
+        scan_interval=timedelta(
+            seconds=data.get(CONF_SCAN_INTERVAL, SCAN_INTERVAL_DEFAULT)
+        ),
     )
 
     entities: list[SensorThermalComfort] = [
@@ -552,11 +557,11 @@ class DeviceThermalComfort:
         if _is_valid_state(state):
             unit = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
             temp = util.convert(state.state, float)
+            self.extra_state_attributes[ATTR_TEMPERATURE] = temp
             # convert to celsius if necessary
             if unit == TEMP_FAHRENHEIT:
                 temp = util.temperature.fahrenheit_to_celsius(temp)
             self._temperature = temp
-            self.extra_state_attributes[ATTR_TEMPERATURE] = self._temperature
             await self.async_update()
 
     async def humidity_state_listener(self, event):

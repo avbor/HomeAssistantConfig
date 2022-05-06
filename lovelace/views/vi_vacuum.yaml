@@ -10,10 +10,10 @@ cards:
       - type: entities
         entities:
           - entity: vacuum.xiaomi_vacuum_cleaner
-            name: 'Статус:'
+            name: "Статус:"
             secondary_info: last-changed
           - entity: sensor.mirobot_1s_current_fan_speed
-            name: 'Текущий режим:'
+            name: "Текущий режим:"
             icon: mdi:speedometer
           - entity: sensor.mirobot_1s_battery
             name: "Заряд батареи:"
@@ -73,81 +73,80 @@ cards:
 
   - type: vertical-stack
     cards:
-    - type: markdown
-      content: >
-        ### <center>Расходные материалы</center>
-    - type: entities
-      entities:
-        - entity: sensor.mirobot_1s_main_brush_left
-          name: "Основная щетка:"
-          icon: mdi:robot-vacuum
-        - entity: sensor.mirobot_1s_side_brush_left
-          name: "Боковая щетка:"
-          icon: mdi:robot-vacuum
-        - entity: sensor.mirobot_1s_filter_left
-          name: "Фильтр:"
-          icon: mdi:air-filter
-        - entity: sensor.mirobot_1s_sensor_dirty_left
-          name: "Сенсоры:"
-          icon: mdi:leak
-    - type: markdown
-      content: >
-        #### Сброс счетчиков
-    - type: horizontal-stack
-      cards:
-        - type: button
-          entity: script.reset_sensor_dirty_time
-          name: Сенсоры
-          icon: mdi:leak
-          icon_height: 32px
-          show_state: false
-          tap_action: 
-            action: call-service
-            confirmation:
-              text: Вы уверены?
-            service: script.turn_on
-            service_data:
-              entity_id: script.reset_sensor_dirty_time
-        - type: button
-          entity: script.reset_filter_work_time
-          name: Фильтр
-          icon: mdi:air-filter
-          icon_height: 32px
-          show_state: false
-          tap_action: 
-            action: call-service
-            confirmation:
-              text: Вы уверены?
-            service: script.turn_on
-            service_data:
-              entity_id: script.reset_filter_work_time
-        - type: button
-          entity: script.reset_side_brush_work_time
-          name: Бок. щетка
-          icon: mdi:robot-vacuum
-          icon_height: 32px
-          show_state: false
-          tap_action: 
-            action: call-service
-            confirmation:
-              text: Вы уверены?
-            service: script.turn_on
-            service_data:
-              entity_id: script.reset_side_brush_work_time
-        - type: button
-          entity: script.reset_main_brush_left
-          name: Осн. щетка
-          icon: mdi:robot-vacuum
-          icon_height: 32px
-          show_state: false
-          tap_action: 
-            action: call-service
-            confirmation:
-              text: Вы уверены?
-            service: script.turn_on
-            service_data:
-              entity_id: script.reset_main_brush_left
-
+      - type: markdown
+        content: >
+          ### <center>Расходные материалы</center>
+      - type: entities
+        entities:
+          - entity: sensor.mirobot_1s_main_brush_left
+            name: "Основная щетка:"
+            icon: mdi:robot-vacuum
+          - entity: sensor.mirobot_1s_side_brush_left
+            name: "Боковая щетка:"
+            icon: mdi:robot-vacuum
+          - entity: sensor.mirobot_1s_filter_left
+            name: "Фильтр:"
+            icon: mdi:air-filter
+          - entity: sensor.mirobot_1s_sensor_dirty_left
+            name: "Сенсоры:"
+            icon: mdi:leak
+      - type: markdown
+        content: >
+          #### Сброс счетчиков
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: script.reset_sensor_dirty_time
+            name: Сенсоры
+            icon: mdi:leak
+            icon_height: 32px
+            show_state: false
+            tap_action:
+              action: call-service
+              confirmation:
+                text: Вы уверены?
+              service: script.turn_on
+              service_data:
+                entity_id: script.reset_sensor_dirty_time
+          - type: button
+            entity: script.reset_filter_work_time
+            name: Фильтр
+            icon: mdi:air-filter
+            icon_height: 32px
+            show_state: false
+            tap_action:
+              action: call-service
+              confirmation:
+                text: Вы уверены?
+              service: script.turn_on
+              service_data:
+                entity_id: script.reset_filter_work_time
+          - type: button
+            entity: script.reset_side_brush_work_time
+            name: Бок. щетка
+            icon: mdi:robot-vacuum
+            icon_height: 32px
+            show_state: false
+            tap_action:
+              action: call-service
+              confirmation:
+                text: Вы уверены?
+              service: script.turn_on
+              service_data:
+                entity_id: script.reset_side_brush_work_time
+          - type: button
+            entity: script.reset_main_brush_left
+            name: Осн. щетка
+            icon: mdi:robot-vacuum
+            icon_height: 32px
+            show_state: false
+            tap_action:
+              action: call-service
+              confirmation:
+                text: Вы уверены?
+              service: script.turn_on
+              service_data:
+                entity_id: script.reset_main_brush_left
   - type: vertical-stack
     cards:
     - type: markdown
