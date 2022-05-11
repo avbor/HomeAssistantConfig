@@ -5,8 +5,8 @@
   "documentation": "https://github.com/AlexxIT/YandexStation",
   "issue_tracker": "https://github.com/AlexxIT/YandexStation/issues",
   "codeowners": ["@AlexxIT"],
-  "dependencies": ["http", "tts", "zeroconf"],
+  "dependencies": ["http", "zeroconf"],
   "requirements": [],
-  "version": "3.9.1",
+  "version": "3.10.0",
   "iot_class": "local_push"
 }
