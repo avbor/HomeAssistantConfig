@@ -52,19 +52,37 @@ energy_pack:
           device_class: monetary
           unit_of_measurement: "RUB"
           icon_template: mdi:cash
-          value_template: "{{ state_attr('sensor.mes_07762_153_47_account', 'zone_t1_tariff') }}"
+          value_template: >
+            {% set t1_tariff = state_attr('sensor.mes_07762_153_47_account', 'zone_t1_tariff') | float(default=-1) %}
+            {% if t1_tariff != -1 %}
+              {{ t1_tariff }}
+            {% else %}
+              {{ 7.1 }}
+            {% endif %}
         apartment_enegry_cost_halfpeak:
           friendly_name: "Стоимость кВт⋅ч полупик ({{ state_attr('sensor.mes_07762_153_47_account','zone_t3_description') }})"
           device_class: monetary
           unit_of_measurement: "RUB"
           icon_template: mdi:cash
-          value_template: "{{ state_attr('sensor.mes_07762_153_47_account', 'zone_t3_tariff') }}"
+          value_template: >
+            {% set t3_tariff = state_attr('sensor.mes_07762_153_47_account', 'zone_t3_tariff') | float(default=-1) %}
+            {% if t3_tariff != -1 %}
+              {{ t3_tariff }}
+            {% else %}
+              {{ 5.92 }}
+            {% endif %}
         apartment_enegry_cost_night:
           friendly_name: "Стоимость кВт⋅ч ночь ({{ state_attr('sensor.mes_07762_153_47_account','zone_t2_description') }})"
           device_class: monetary
           unit_of_measurement: "RUB"
           icon_template: mdi:cash
-          value_template: "{{ state_attr('sensor.mes_07762_153_47_account', 'zone_t2_tariff') }}"
+          value_template: >
+            {% set t2_tariff = state_attr('sensor.mes_07762_153_47_account', 'zone_t2_tariff') | float(default=-1) %}
+            {% if t2_tariff != -1 %}
+              {{ t2_tariff }}
+            {% else %}
+              {{ 2.48 }}
+            {% endif %}
 
         # Main Power Meter
         energy_flat_main_power:
@@ -698,6 +716,7 @@ energy_pack:
         - platform: time_pattern
           hours: "/1"
           minutes: "15"
+      condition: "{{ not states('sensor.mes_07762_153_47_account') in ('unavailable') }}"
       action:
         # Set Peak Time
         - service: input_datetime.set_datetime
@@ -770,10 +789,6 @@ energy_pack:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_peak') | float(0) }}"
-              #- service: utility_meter.select_tariff
-              #  entity_id: group.all_energy_utility_meters
-              #  data:
-              #    tariff: peak
               - service: select.select_option
                 target:
                   entity_id: group.all_energy_utility_meters
@@ -790,10 +805,6 @@ energy_pack:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_halfpeak') | float(0) }}"
-              #- service: utility_meter.select_tariff
-              #  entity_id: group.all_energy_utility_meters
-              #  data:
-              #    tariff: halfpeak
               - service: select.select_option
                 target:
                   entity_id: group.all_energy_utility_meters
@@ -810,10 +821,6 @@ energy_pack:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_night') | float(0) }}"
-              #- service: utility_meter.select_tariff
-              #  entity_id: group.all_energy_utility_meters
-              #  data:
-              #    tariff: night
               - service: select.select_option
                 target:
                   entity_id: group.all_energy_utility_meters
