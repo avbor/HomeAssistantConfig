@@ -258,7 +258,6 @@
 
 - alias: "HACS: New Component Version Available [notify to group system]"
   id: 4bc5609a-1e8b-4e66-944a-e613bcaad6d2
-  initial_state: true
   trigger:
     platform: state
     entity_id: sensor.hacs
