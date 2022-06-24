@@ -1,6 +1,6 @@
 title: Home
 path: ch-home
-icon: 'hass:home-assistant'
+icon: "hass:home-assistant"
 cards:
   - type: markdown
     content: >
@@ -59,6 +59,17 @@ cards:
             name: Дом -> Дача
           - entity: sensor.do_doma_ot_dachi
             name: Дача -> Дом
+  # Свет
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Свет</center>
+      - type: entities
+        entities:
+          - entity: light.dacha_dvor
+            name: Освещение двора
+            icon: mdi:light-flood-down
   # Напряжение в сети
   - type: vertical-stack
     cards:

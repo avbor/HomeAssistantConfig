@@ -201,9 +201,9 @@ zha:
       ikea_provider: true
       ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
 
-xbox:
-  client_id: !secret xbox_client_id
-  client_secret: !secret xbox_client_secret
+#xbox:
+#  client_id: !secret xbox_client_id
+#  client_secret: !secret xbox_client_secret
 
 #zabbix:
 #  host: home.intra

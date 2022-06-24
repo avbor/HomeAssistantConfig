@@ -126,15 +126,15 @@
       friendly_name: "Electrolux Centurio IQ Status"
       value_template: >
         {% if (states('sensor.tplink_smartplug_01_current') | float) > 4 %}On{% else %}Off{% endif %}
-    boiler_water_temp:
-      unit_of_measurement: °C
-      device_class: temperature
-      value_template: >
-        {% if state_attr('climate.centurio_iq_194340', 'current_temperature') %}
-          {{ state_attr('climate.centurio_iq_194340', 'current_temperature') }}
-        {% else %}
-          0
-        {% endif %}
+#    boiler_water_temp:
+#      unit_of_measurement: °C
+#      device_class: temperature
+#      value_template: >
+#        {% if state_attr('climate.centurio_iq_194340', 'current_temperature') %}
+#          {{ state_attr('climate.centurio_iq_194340', 'current_temperature') }}
+#        {% else %}
+#          0
+#        {% endif %}
     ha_uptime:
       friendly_name: HA Uptime
       icon_template: mdi:clock
