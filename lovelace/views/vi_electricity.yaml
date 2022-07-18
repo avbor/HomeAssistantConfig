@@ -13,12 +13,25 @@ cards:
         name: ""
         #unit: V
         needle: true
-        min: 205
-        max: 245
-        severity:
-          yellow: 0
-          green: 215
-          red: 235
+#        min: 205
+#        max: 245
+#        severity:
+#          yellow: 0
+#          green: 215
+#          red: 235
+        min: 170
+        max: 280
+        segments:
+          - from: 0
+            color: red
+          - from: 195
+            color: yellow
+          - from: 210
+            color: green
+          - from: 240
+            color: yellow
+          - from: 255
+            color: red
       - type: statistics-graph
         entities:
           - entity: sensor.average_voltage_in_flat
