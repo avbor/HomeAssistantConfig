@@ -97,40 +97,45 @@ cards:
           - entity: switch.tplink_smartplug_01
             name: Питание
             icon: mdi:water-boiler
-      - type: "custom:simple-thermostat"
-        entity: climate.vodonagrevatel
-        header: false
-        #header:
-        #  name: Centurio IQ 2.0
-        #  icon: false
-        #  name: false
-        #  icon: mdi:water-boiler
-        #  toggle:
-        #    entity: switch.tplink_smartplug_01
-        #    name: Питание
-        #    faults:
-        #      - entity: switch.tplink_smartplug_01
-        decimals: 0
-        step_size: 1
-        layout:
-          step: row
-          mode:
-            names: false
-        label:
-          temperature: Температура воды
-        hide:
-          state: true
-        control:
-          hvac:
-            _name: "Режим"
-          preset:
-            _name: "Мощность"
-            low:
-              icon: mdi:roman-numeral-1
-            normal:
-              icon: mdi:roman-numeral-2
-            turbo:
-              icon: mdi:roman-numeral-3
+      - type: conditional
+        conditions:
+          - entity: switch.tplink_smartplug_01
+            state_not: "off"
+        card:
+          type: "custom:simple-thermostat"
+          entity: climate.vodonagrevatel
+          header: false
+          #header:
+          #  name: Centurio IQ 2.0
+          #  icon: false
+          #  name: false
+          #  icon: mdi:water-boiler
+          #  toggle:
+          #    entity: switch.tplink_smartplug_01
+          #    name: Питание
+          #    faults:
+          #      - entity: switch.tplink_smartplug_01
+          decimals: 0
+          step_size: 1
+          layout:
+            step: row
+            mode:
+              names: false
+          label:
+            temperature: Температура воды
+          hide:
+            state: true
+          control:
+            hvac:
+              _name: "Режим"
+            preset:
+              _name: "Мощность"
+              low:
+                icon: mdi:roman-numeral-1
+              normal:
+                icon: mdi:roman-numeral-2
+              turbo:
+                icon: mdi:roman-numeral-3
 
   - type: vertical-stack
     cards:
