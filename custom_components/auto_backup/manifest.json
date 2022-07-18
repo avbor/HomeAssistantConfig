@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.1.1",
   "domain": "auto_backup",
   "name": "Auto Backup",
   "documentation": "https://github.com/jcwillox/hass-auto-backup",

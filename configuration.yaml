@@ -210,6 +210,10 @@ zha:
 #  username: !secret zbx_user
 #  password: !secret zbx_pass
 
+yandex_station:
+  include:
+  - Водонагреватель
+
 start_time:
 
 samsungtv: !include entities/samsungtv/samsungtv.yaml

@@ -1,10 +1,9 @@
 """Component to create and automatically remove Home Assistant backups."""
-import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 from os import getenv
 from os.path import join, isfile
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
@@ -15,14 +14,14 @@ from homeassistant.components.hassio import (
     ATTR_PASSWORD,
     is_hassio,
 )
-from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_NAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.helpers.storage import Store
-from homeassistant.helpers.typing import ConfigType, HomeAssistantType, ServiceCallType
+from homeassistant.helpers.typing import HomeAssistantType, ServiceCallType
 from homeassistant.loader import bind_hass
 from homeassistant.util import dt as dt_util
 from slugify import slugify
@@ -75,8 +74,8 @@ SCHEMA_BACKUP_BASE = vol.Schema(
     {
         vol.Optional(ATTR_NAME): cv.string,
         vol.Optional(ATTR_PASSWORD): cv.string,
-        vol.Optional(ATTR_KEEP_DAYS): vol.Coerce(float),
-        vol.Optional(ATTR_DOWNLOAD_PATH): cv.isdir,
+        vol.Optional(ATTR_KEEP_DAYS): vol.Any(None, vol.Coerce(float)),
+        vol.Optional(ATTR_DOWNLOAD_PATH): vol.All(cv.ensure_list, [cv.isdir]),
     }
 )
 
@@ -131,20 +130,6 @@ def is_backup(hass: HomeAssistant) -> bool:
     return DOMAIN_BACKUP in hass.config.components
 
 
-async def async_setup(hass: HomeAssistantType, config: ConfigType):
-    """Set up the Auto Backup component."""
-    hass.data.setdefault(DOMAIN, {})
-    if DOMAIN in config:
-        hass.async_create_task(
-            hass.config_entries.flow.async_init(
-                DOMAIN,
-                context={"source": SOURCE_IMPORT},
-                data=config[DOMAIN],
-            )
-        )
-    return True
-
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Auto Backup from a config entry."""
     _LOGGER.info("Setting up Auto Backup config entry %s", entry.entry_id)
@@ -156,10 +141,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
         return False
 
-    options = entry.data or entry.options
     options = {
-        CONF_AUTO_PURGE: options.get(CONF_AUTO_PURGE, True),
-        CONF_BACKUP_TIMEOUT: options.get(CONF_BACKUP_TIMEOUT, DEFAULT_BACKUP_TIMEOUT),
+        CONF_AUTO_PURGE: entry.options.get(CONF_AUTO_PURGE, True),
+        CONF_BACKUP_TIMEOUT: entry.options.get(
+            CONF_BACKUP_TIMEOUT, DEFAULT_BACKUP_TIMEOUT
+        ),
     }
 
     if is_hassio(hass):
@@ -168,10 +154,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         handler = BackupHandler(hass.data[DOMAIN_BACKUP])
 
     auto_backup = AutoBackup(hass, options, handler)
-    hass.data[DOMAIN][DATA_AUTO_BACKUP] = auto_backup
-    hass.data[DOMAIN][UNSUB_LISTENER] = entry.add_update_listener(
-        auto_backup.update_listener
-    )
+    hass.data.setdefault(DOMAIN, {})[DATA_AUTO_BACKUP] = auto_backup
+    entry.async_on_unload(entry.add_update_listener(auto_backup.update_listener))
 
     await auto_backup.load_snapshots_expiry()
 
@@ -204,32 +188,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     for service, schema in MAP_SERVICES.items():
         hass.services.async_register(DOMAIN, service, async_service_handler, schema)
 
-    # load the auto backup sensor.
-    for component in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, component)
-        )
-
+    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in PLATFORMS
-            ]
-        )
-    )
-
-    hass.data[DOMAIN][UNSUB_LISTENER]()
-
     for service in MAP_SERVICES.keys():
         hass.services.async_remove(DOMAIN, service)
 
-    return unload_ok
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
 class AutoBackup:
@@ -294,6 +262,7 @@ class AutoBackup:
                 if addon == installed_addon["slug"]:
                     return addon
             _LOGGER.warning("Addon '%s' does not exist", addon)
+            return addon
 
         return [match_addon(addon) for addon in addons]
 
@@ -342,7 +311,7 @@ class AutoBackup:
             # must be a full backup
             await self._async_create_backup(data)
         else:
-            installed_addons = await self._handler.get_installed_addons()
+            installed_addons = await self._handler.get_addons()
 
             addons = installed_addons
             folders = set(DEFAULT_BACKUP_FOLDERS.values())
@@ -374,7 +343,7 @@ class AutoBackup:
     async def _async_create_backup(self, data: Dict, partial: bool = False):
         """Create backup, update state, fire events, download backup and purge old backups"""
         keep_days = data.pop(ATTR_KEEP_DAYS, None)
-        download_path = data.pop(ATTR_DOWNLOAD_PATH, None)
+        download_paths: Optional[List[str]] = data.pop(ATTR_DOWNLOAD_PATH, None)
 
         ### LOG DEBUG INFO ###
         # ensure password is scrubbed from logs
@@ -429,10 +398,11 @@ class AutoBackup:
                 await self._store.async_save(self._snapshots)
 
             # download backup to location if specified
-            if download_path:
-                self._hass.async_create_task(
-                    self.async_download_backup(name, slug, download_path)
-                )
+            if download_paths:
+                for download_path in download_paths:
+                    self._hass.async_create_task(
+                        self.async_download_backup(name, slug, download_path)
+                    )
 
         except Exception as err:
             _LOGGER.error("Error during backup. %s", err)

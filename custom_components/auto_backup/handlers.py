@@ -7,8 +7,8 @@ from typing import Dict, List, Optional
 
 import aiohttp
 import async_timeout
+from aiohttp.hdrs import AUTHORIZATION
 from homeassistant.components.backup import BackupManager
-from homeassistant.components.hassio.const import X_HASSIO
 
 from . import DEFAULT_BACKUP_TIMEOUT_SECONDS
 
@@ -35,7 +35,7 @@ def api_data(funct):
 
 
 class HandlerBase:
-    async def get_installed_addons(self) -> List[Dict]:
+    async def get_addons(self) -> List[Dict]:
         """Returns a list of the installed addons."""
         raise NotImplementedError
 
@@ -69,7 +69,7 @@ class SupervisorHandler(HandlerBase):
         """Initialize Hass.io API."""
         self._ip = ip
         self._session = session
-        self._headers = {X_HASSIO: getenv("SUPERVISOR_TOKEN")}
+        self._headers = {AUTHORIZATION: f"Bearer {getenv('SUPERVISOR_TOKEN')}"}
 
     async def send_command(self, command, method="post", payload=None, timeout=10):
         """Send API command to Hass.io.
@@ -101,17 +101,15 @@ class SupervisorHandler(HandlerBase):
 
         raise HassioAPIError("Failed to call %s" % command)
 
-    async def get_installed_addons(self) -> List[Dict]:
-        addons = await self._get_addons()
-        return [addon for addon in addons if addon.get("installed")]
-
     @api_data
     def _get_addons_repositories(self):
         return self.send_command("/addons", method="get")
 
-    async def _get_addons(self) -> List[Dict]:
+    async def get_addons(self) -> List[Dict]:
         result = await self._get_addons_repositories()
-        return result.get("addons", [])
+        return [
+            addon for addon in result.get("addons", []) if addon.get("installed", True)
+        ]
 
     @api_data
     def create_backup(
@@ -171,7 +169,7 @@ class BackupHandler(HandlerBase):
     def __init__(self, manager: BackupManager):
         self._manager = manager
 
-    async def get_installed_addons(self):
+    async def get_addons(self):
         raise NotImplementedError("This should be unreachable")
 
     async def create_backup(
