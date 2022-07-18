@@ -31,14 +31,14 @@
   username: !secret influxdb_user
   password: !secret influxdb_pass
   queries:
-      - name: InfluxDB Database Size
-        unit_of_measurement: MB
-        value_template: '{{ (value | float / 1024 /1024) | round(1) }}'
-        group_function: sum
-        measurement: '"monitor"."shard"'
-        database: _internal
-        where: 'time > now() - 10s'
-        field: diskBytes
+    - name: InfluxDB Database Size
+      unit_of_measurement: MB
+      value_template: "{{ (value | float / 1024 /1024) | round(1) }}"
+      group_function: sum
+      measurement: '"monitor"."shard"'
+      database: _internal
+      where: "time > now() - 10s"
+      field: diskBytes
 - platform: sauresha
   email: !secret saures_user
   password: !secret saures_pass
@@ -55,9 +55,9 @@
     minutes: 90
 - platform: time_date
   display_options:
-    - 'time'
-    - 'date'
-    - 'date_time_iso'
+    - "time"
+    - "date"
+    - "date_time_iso"
 - platform: moon
 #- platform: version
 #  source: local
@@ -94,7 +94,7 @@
 - platform: template
   sensors:
     date_formatted:
-      friendly_name: 'Date (DD.MM.YYYY)'
+      friendly_name: "Date (DD.MM.YYYY)"
       value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%d.%m.%Y') }}"
       icon_template: mdi:calendar
       attribute_templates:
@@ -126,15 +126,15 @@
       friendly_name: "Electrolux Centurio IQ Status"
       value_template: >
         {% if (states('sensor.tplink_smartplug_01_current') | float) > 4 %}On{% else %}Off{% endif %}
-#    boiler_water_temp:
-#      unit_of_measurement: °C
-#      device_class: temperature
-#      value_template: >
-#        {% if state_attr('climate.centurio_iq_194340', 'current_temperature') %}
-#          {{ state_attr('climate.centurio_iq_194340', 'current_temperature') }}
-#        {% else %}
-#          0
-#        {% endif %}
+    boiler_water_temp:
+      unit_of_measurement: °C
+      device_class: temperature
+      value_template: >
+        {% if state_attr('climate.vodonagrevatel', 'current_temperature') %}
+          {{ state_attr('climate.vodonagrevatel', 'current_temperature') }}
+        {% else %}
+          0
+        {% endif %}
     ha_uptime:
       friendly_name: HA Uptime
       icon_template: mdi:clock

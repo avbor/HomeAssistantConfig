@@ -15,7 +15,7 @@ cards:
             icon: mdi:water-remove-outline
             icon_height: 64px
             show_state: true
-            tap_action: 
+            tap_action:
               action: call-service
               confirmation:
                 text: |
@@ -33,7 +33,7 @@ cards:
             icon: mdi:water-check-outline
             icon_height: 64px
             show_state: true
-            tap_action: 
+            tap_action:
               action: call-service
               confirmation:
                 text: |
@@ -53,38 +53,38 @@ cards:
           #### Neptun
       - type: horizontal-stack
         cards:
-        - type: entity
-          entity: binary_sensor.neptun_water_leakage
-          name: Состояние
-        - type: entity
-          entity: switch.sonoff_1000b68886
-          name: Питание
-        - type: button
-          entity: script.neptun_state_reset
-          name: Сброс состояния
-          icon: mdi:reload
-          icon_height: 64px
-          tap_action:
-            action: call-service
-            service: script.turn_on
-            service_data:
-              entity_id: script.neptun_state_reset
+          - type: entity
+            entity: binary_sensor.neptun_water_leakage
+            name: Состояние
+          - type: entity
+            entity: switch.sonoff_1000b68886
+            name: Питание
+          - type: button
+            entity: script.neptun_state_reset
+            name: Сброс состояния
+            icon: mdi:reload
+            icon_height: 64px
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.neptun_state_reset
       - type: markdown
         content: >
           #### Aqara
       - type: horizontal-stack
         cards:
-        - type: entity
-          entity: binary_sensor.0x158d000400e77d_moisture
-          name: Кладовая
-        - type: entity
-          entity: binary_sensor.0x158d0004030d84_moisture
-          name: Под Ванной (слева)
+          - type: entity
+            entity: binary_sensor.0x158d000400e77d_moisture
+            name: Кладовая
+          - type: entity
+            entity: binary_sensor.0x158d0004030d84_moisture
+            name: Под Ванной (слева)
       - type: horizontal-stack
         cards:
-        - type: entity
-          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone
-          name: Справа от Ванной
+          - type: entity
+            entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone
+            name: Справа от Ванной
 
   - type: vertical-stack
     cards:
@@ -97,36 +97,40 @@ cards:
           - entity: switch.tplink_smartplug_01
             name: Питание
             icon: mdi:water-boiler
-#      - type: "custom:simple-thermostat"
-#        entity: climate.centurio_iq_194340
-#        header: false
-##        header:
-##          name: Centurio IQ 2.0
-##          icon: false
-##          name: false
-##          icon: mdi:water-boiler
-##          toggle:
-##            entity: switch.tplink_smartplug_01
-##            name: Питание
-##            faults:
-##              - entity: switch.tplink_smartplug_01
-#        decimals: 0
-#        step_size: 1
-#        layout:
-#          step: row
-#          mode:
-#            names: false
-#        label:
-#          temperature: Температура воды
-#        hide:
-#          state: true
-#        control:
-#          preset:
-#            _name: Режим
-#            I:
-#              icon: mdi:roman-numeral-1
-#            II:
-#              icon: mdi:roman-numeral-2
+      - type: "custom:simple-thermostat"
+        entity: climate.vodonagrevatel
+        header: false
+        #header:
+        #  name: Centurio IQ 2.0
+        #  icon: false
+        #  name: false
+        #  icon: mdi:water-boiler
+        #  toggle:
+        #    entity: switch.tplink_smartplug_01
+        #    name: Питание
+        #    faults:
+        #      - entity: switch.tplink_smartplug_01
+        decimals: 0
+        step_size: 1
+        layout:
+          step: row
+          mode:
+            names: false
+        label:
+          temperature: Температура воды
+        hide:
+          state: true
+        control:
+          hvac:
+            _name: "Режим"
+          preset:
+            _name: "Мощность"
+            low:
+              icon: mdi:roman-numeral-1
+            normal:
+              icon: mdi:roman-numeral-2
+            turbo:
+              icon: mdi:roman-numeral-3
 
   - type: vertical-stack
     cards:
@@ -142,4 +146,4 @@ cards:
           - entity: sensor.lumi_lumi_weather_4dad5507_temperature
             name: Кухня
           - entity: sensor.lumi_lumi_weather_temperature
-            name:  Спальня
+            name: Спальня
