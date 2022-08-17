@@ -1,3 +1,4 @@
+import base64
 import binascii
 import json
 import re
@@ -24,6 +25,7 @@ from homeassistant.util import dt
 from . import DOMAIN, DATA_CONFIG, CONF_INCLUDE, CONF_INTENTS
 from .core import utils
 from .core.yandex_glagol import YandexGlagol
+from .core.yandex_music import get_mp3
 from .core.yandex_quasar import YandexQuasar
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,7 +40,7 @@ RE_SHOPPING = re.compile(r'^\d+\) (.+)\.$', re.MULTILINE)
 BASE_FEATURES = (
         SUPPORT_TURN_OFF | SUPPORT_VOLUME_SET | SUPPORT_VOLUME_STEP |
         SUPPORT_VOLUME_MUTE | SUPPORT_PLAY_MEDIA | SUPPORT_TURN_ON |
-        SUPPORT_BROWSE_MEDIA
+        SUPPORT_SELECT_SOUND_MODE | SUPPORT_BROWSE_MEDIA
 )
 
 CLOUD_FEATURES = (
@@ -48,6 +50,9 @@ CLOUD_FEATURES = (
 LOCAL_FEATURES = (
         BASE_FEATURES | SUPPORT_PLAY | SUPPORT_PAUSE | SUPPORT_SELECT_SOURCE
 )
+
+SOUND_MODE1 = "Произнеси текст"
+SOUND_MODE2 = "Выполни команду"
 
 MEDIA_DEFAULT = [{
     "title": "Произнеси текст", "media_content_type": "text",
@@ -203,6 +208,8 @@ class YandexStation(MediaBrowser):
         self._attr_name = device['name']
         self._attr_should_poll = True
         self._attr_state = STATE_IDLE
+        self._attr_sound_mode_list = [SOUND_MODE1, SOUND_MODE2]
+        self._attr_sound_mode = SOUND_MODE1
         self._attr_supported_features = CLOUD_FEATURES
         self._attr_volume_level = 0.5
         self._attr_unique_id = device['quasar_info']['device_id']
@@ -346,6 +353,11 @@ class YandexStation(MediaBrowser):
             _LOGGER.exception(f"Недопустимое значение яркости: {value}")
             return
 
+        if 'led' not in device_config:
+            device_config['led'] = {
+                'brightness': {'auto': True, 'value': 0.5}
+            }
+
         if 0 <= value <= 1:
             device_config['led']['brightness']['auto'] = False
             device_config['led']['brightness']['value'] = value
@@ -422,6 +434,28 @@ class YandexStation(MediaBrowser):
             for name in alice_list
         ]
         await self.hass.async_add_executor_job(data.save)
+
+    async def _sync_play_media(self, player_state: dict):
+        self.debug(f"Sync state: play_media")
+
+        url = await get_mp3(self.quasar.session, player_state)
+        if not url:
+            return
+
+        await self.async_media_seek(0)
+
+        source = self.sync_sources[self._attr_source]
+        data = {
+            "media_content_id": utils.StreamingView.get_url(
+                self.hass, self._attr_unique_id, url
+            ),
+            "media_content_type": source.get("media_content_type", "music"),
+            "entity_id": source["entity_id"],
+        }
+
+        await self.hass.services.async_call(
+            "media_player", "play_media", data
+        )
 
     def _check_set_alice_volume(self, volume: int):
         # если уже есть активная громкость, или громкость голоса равна текущей
@@ -598,7 +632,8 @@ class YandexStation(MediaBrowser):
             try:
                 if pstate['extra'].get('stateType') in ('music', 'radio'):
                     url = pstate['extra']['coverURI']
-                    miur = 'https://' + url.replace('%%', '400x400')
+                    if url:
+                        miur = 'https://' + url.replace('%%', '400x400')
                 elif extra_item:
                     miur = extra_item['thumbnail_url_16x9']
             except:
@@ -624,10 +659,9 @@ class YandexStation(MediaBrowser):
                     if stat == STATE_PLAYING:
                         if self.sync_id != pstate["id"]:
                             # запускаем новую песню, если ID изменился
-                            if extra_stream:
-                                self.async_sync_state(
-                                    "play_media", url=extra_stream["url"],
-                                )
+                            self.hass.create_task(
+                                self._sync_play_media(pstate)
+                            )
                             self.sync_id = pstate["id"]
                         else:
                             # продолжаем играть, если ID не изменился
@@ -835,9 +869,12 @@ class YandexStation(MediaBrowser):
             _LOGGER.warning(f"Получено пустое media_id")
             return
 
-        # tts for backward compatibility
+        # tts for backward compatibility and mini-media-player support
         if media_type == "tts":
-            media_type = "text"
+            if self._attr_sound_mode == SOUND_MODE1:
+                media_type = "text"
+            else:
+                media_type = "command"
         elif media_type == 'brightness':
             await self._set_brightness(media_id)
             return

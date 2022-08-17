@@ -1,6 +1,7 @@
 """Component to create and automatically remove Home Assistant backups."""
 import logging
 from datetime import datetime, timedelta, timezone
+from fnmatch import fnmatchcase
 from os import getenv
 from os.path import join, isfile
 from typing import List, Dict, Tuple, Optional
@@ -15,7 +16,7 @@ from homeassistant.components.hassio import (
     is_hassio,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_NAME
+from homeassistant.const import ATTR_NAME, __version__
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -38,6 +39,7 @@ from .const import (
     CONF_AUTO_PURGE,
     CONF_BACKUP_TIMEOUT,
     DEFAULT_BACKUP_TIMEOUT,
+    PATCH_NAME,
 )
 from .handlers import SupervisorHandler, HassioAPIError, BackupHandler, HandlerBase
 
@@ -72,8 +74,8 @@ SERVICE_BACKUP_PARTIAL = "backup_partial"
 
 SCHEMA_BACKUP_BASE = vol.Schema(
     {
-        vol.Optional(ATTR_NAME): cv.string,
-        vol.Optional(ATTR_PASSWORD): cv.string,
+        vol.Optional(ATTR_NAME): vol.Any(None, cv.string),
+        vol.Optional(ATTR_PASSWORD): vol.Any(None, cv.string),
         vol.Optional(ATTR_KEEP_DAYS): vol.Any(None, vol.Coerce(float)),
         vol.Optional(ATTR_DOWNLOAD_PATH): vol.All(cv.ensure_list, [cv.isdir]),
     }
@@ -108,7 +110,6 @@ SCHEMA_BACKUP = vol.Any(
         }
     ),
 )
-
 
 MAP_SERVICES = {
     SERVICE_BACKUP: SCHEMA_BACKUP,
@@ -239,35 +240,39 @@ class AutoBackup:
         return self._state
 
     @classmethod
-    def ensure_slugs(cls, inclusion, installed_addons) -> Tuple[List, List]:
+    def ensure_slugs(
+        cls, inclusion: Dict[str, List[str]], installed_addons: List[Dict]
+    ) -> Tuple[List[str], List[str]]:
         """Helper method to slugify both the addon and folder sections"""
         addons = inclusion[ATTR_ADDONS]
         folders = inclusion[ATTR_FOLDERS]
         return (
-            cls.ensure_addon_slugs(addons, installed_addons),
+            list(cls.ensure_addon_slugs(addons, installed_addons)),
             cls.ensure_folder_slugs(folders),
         )
 
     @staticmethod
-    def ensure_addon_slugs(addons, installed_addons) -> List[str]:
-        """Replace addon names with their appropriate slugs."""
+    def ensure_addon_slugs(addons: List[str], installed_addons: List[Dict]):
+        """Expand wildcards and replace addon names with their appropriate slugs."""
         if not addons:
             return []
 
-        def match_addon(addon):
+        for addon in addons:
+            matched = False
             for installed_addon in installed_addons:
                 # perform case-insensitive match.
                 if addon.casefold() == installed_addon["name"].casefold():
-                    return installed_addon["slug"]
-                if addon == installed_addon["slug"]:
-                    return addon
-            _LOGGER.warning("Addon '%s' does not exist", addon)
-            return addon
-
-        return [match_addon(addon) for addon in addons]
+                    yield installed_addon["slug"]
+                    matched = True
+                if fnmatchcase(installed_addon["slug"], addon):
+                    yield installed_addon["slug"]
+                    matched = True
+            if not matched:
+                _LOGGER.warning("Addon '%s' does not exist", addon)
+                yield addon
 
     @staticmethod
-    def ensure_folder_slugs(folders) -> List[str]:
+    def ensure_folder_slugs(folders: List[str]) -> List[str]:
         """Convert folder name to lower case and replace friendly folder names."""
         if not folders:
             return []
@@ -280,27 +285,43 @@ class AutoBackup:
 
     def generate_backup_name(self) -> str:
         if not self._supervised:
-            return "Unknown"
+            return f"Core {__version__}"
         time_zone = dt_util.get_time_zone(self._hass.config.time_zone)
         return datetime.now(time_zone).strftime("%A, %b %d, %Y")
 
-    async def async_create_backup(self, data: Dict):
-        """Identify actual type of backup to create and handle include/exclude options"""
+    def validate_backup_config(self, config: Dict):
+        """Validate the backup config."""
         if not self._supervised:
-            disallowed_options = [ATTR_NAME, ATTR_PASSWORD]
+            disallowed_options = [ATTR_PASSWORD]
             for option in disallowed_options:
-                if option in data:
+                if config.get(option):
                     raise HomeAssistantError(
                         f"The '{option}' option is not supported on non-supervised installations."
                     )
 
-            if ATTR_INCLUDE in data or ATTR_EXCLUDE in data:
+            # allow `include` if it only contains the configuration
+            if ATTR_INCLUDE in config and not config.get(ATTR_EXCLUDE):
+                # ensure no addons were included
+                if not config[ATTR_INCLUDE][ATTR_ADDONS]:
+                    folders = config[ATTR_INCLUDE][ATTR_FOLDERS]
+                    folders = self.ensure_folder_slugs(folders)
+                    if folders == ["homeassistant"]:
+                        del config[ATTR_INCLUDE]
+
+            if ATTR_INCLUDE in config or ATTR_EXCLUDE in config:
                 raise HomeAssistantError(
                     f"Partial backups (e.g. include/exclude) are not supported on non-supervised installations."
                 )
 
-        if ATTR_NAME not in data:
-            data[ATTR_NAME] = self.generate_backup_name()
+            if config.get(ATTR_NAME):
+                config[PATCH_NAME] = True
+
+        if not config.get(ATTR_NAME):
+            config[ATTR_NAME] = self.generate_backup_name()
+
+    async def async_create_backup(self, data: Dict):
+        """Identify actual type of backup to create and handle include/exclude options"""
+        self.validate_backup_config(data)
 
         _LOGGER.debug("Creating backup '%s'", data[ATTR_NAME])
 
@@ -313,24 +334,35 @@ class AutoBackup:
         else:
             installed_addons = await self._handler.get_addons()
 
-            addons = installed_addons
-            folders = set(DEFAULT_BACKUP_FOLDERS.values())
+            _LOGGER.debug("Installed addons: %s", installed_addons)
+
+            # default to include all addons and folders
+            addons: List[str] = [addon["slug"] for addon in installed_addons]
+            folders: List[str] = list(set(DEFAULT_BACKUP_FOLDERS.values()))
 
             if include:
                 addons, folders = self.ensure_slugs(include, installed_addons)
+
+                _LOGGER.debug("Including; addons: %s, folders: %s", addons, folders)
 
             if exclude:
                 excluded_addons, excluded_folders = self.ensure_slugs(
                     exclude, installed_addons
                 )
-                addons = [
-                    addon["slug"]
-                    for addon in addons
-                    if addon["slug"] not in excluded_addons
-                ]
+
+                addons = [addon for addon in addons if addon not in excluded_addons]
                 folders = [
                     folder for folder in folders if folder not in excluded_folders
                 ]
+
+                _LOGGER.debug(
+                    "Excluding; addons: %s, folders: %s",
+                    excluded_addons,
+                    excluded_folders,
+                )
+                _LOGGER.debug(
+                    "Including (excluded); addons: %s, folders: %s", addons, folders
+                )
 
             data[ATTR_ADDONS] = addons
             data[ATTR_FOLDERS] = folders
