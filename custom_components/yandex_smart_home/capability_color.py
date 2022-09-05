@@ -3,17 +3,19 @@ from __future__ import annotations
 
 from abc import ABC
 import logging
+from math import sqrt
 from typing import Any
 
 from homeassistant.components import light
 from homeassistant.const import ATTR_ENTITY_ID, ATTR_SUPPORTED_FEATURES
-from homeassistant.util import color as color_util
+from homeassistant.core import HomeAssistant, State
+from homeassistant.util.color import RGBColor, color_hs_to_RGB, color_temperature_mired_to_kelvin, color_xy_to_RGB
 
 from . import const
 from .capability import PREFIX_CAPABILITIES, AbstractCapability, register_capability
 from .const import CONF_ENTITY_MODE_MAP, ERR_NOT_SUPPORTED_IN_CURRENT_MODE
 from .error import SmartHomeError
-from .helpers import RequestData
+from .helpers import Config, RequestData
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,8 +23,26 @@ CAPABILITIES_COLOR_SETTING = PREFIX_CAPABILITIES + 'color_setting'
 COLOR_MODES_TEMP_TO_WHITE = (
     light.ColorMode.RGBW,
     light.ColorMode.RGB,
-    light.ColorMode.HS
+    light.ColorMode.HS,
+    light.ColorMode.XY
 )
+COLOR_PROFILES: dict[str, dict[str]: tuple[int, int, int]] = {
+    'natural': {
+        const.COLOR_NAME_RED: 16711680,
+        const.COLOR_NAME_YELLOW: 16760576,
+        const.COLOR_NAME_GREEN: 65280,
+        const.COLOR_NAME_EMERALD: 2424612,
+        const.COLOR_NAME_TURQUOISE: 65471,
+        const.COLOR_NAME_CYAN: 65535,
+        const.COLOR_NAME_BLUE: 255,
+        const.COLOR_NAME_MOONLIGHT: 16763025,
+        const.COLOR_NAME_LAVENDER: 4129023,
+        const.COLOR_NAME_VIOLET: 8323327,
+        const.COLOR_NAME_PURPLE: 12517631,
+        const.COLOR_NAME_ORCHID: 16711765,
+        const.COLOR_NAME_RASPBERRY: 16713260
+    }
+}
 
 
 class ColorSettingCapability(AbstractCapability, ABC):
@@ -55,6 +75,13 @@ class ColorSettingCapability(AbstractCapability, ABC):
     default_white_temperature_k = 4500
     cold_white_temperature_k = 6500
 
+    def __init__(self, hass: HomeAssistant, config: Config, state: State):
+        super().__init__(hass, config, state)
+
+        if self.state.domain == light.DOMAIN:
+            self._color_profiles = COLOR_PROFILES.copy()
+            self._color_profiles.update(config.color_profiles)
+
     def parameters(self) -> dict[str, Any]:
         """Return parameters for a devices request."""
         result = {}
@@ -66,11 +93,10 @@ class ColorSettingCapability(AbstractCapability, ABC):
             result['color_model'] = 'rgb'
 
         if features & light.SUPPORT_COLOR_TEMP or light.color_temp_supported(supported_color_modes):
-            min_temp = self.state.attributes.get(light.ATTR_MAX_MIREDS, 153)
-            max_temp = self.state.attributes.get(light.ATTR_MIN_MIREDS, 500)
+            min_temp, max_temp = self._temperature_converter.supported_temperature_range
             result['temperature_k'] = {
-                'min': color_util.color_temperature_mired_to_kelvin(min_temp),
-                'max': color_util.color_temperature_mired_to_kelvin(max_temp)
+                'min': min_temp,
+                'max': max_temp
             }
         else:
             min_temp = self.default_white_temperature_k
@@ -113,7 +139,8 @@ class ColorSettingCapability(AbstractCapability, ABC):
             return True
 
         for color_mode in supported_color_modes:
-            if color_mode in [light.ColorMode.RGB, light.ColorMode.RGBW, light.ColorMode.RGBWW, light.ColorMode.HS]:
+            if color_mode in [light.ColorMode.RGB, light.ColorMode.RGBW, light.ColorMode.RGBWW,
+                              light.ColorMode.HS, light.ColorMode.XY]:
                 return True
 
         return False
@@ -165,6 +192,22 @@ class ColorSettingCapability(AbstractCapability, ABC):
                 if str(am) == ha_effect:
                     return ha_effect
 
+    @property
+    def _temperature_converter(self) -> TemperatureConverter:
+        color_profile = None
+        color_profile_name = self.entity_config.get(const.CONF_COLOR_PROFILE)
+        if color_profile_name:
+            try:
+                color_profile = self._color_profiles[color_profile_name]
+            except KeyError:
+                raise SmartHomeError(
+                    ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
+                    f'Color profile {color_profile_name!r} not found for instance {self.instance} '
+                    f'of {self.state.entity_id}'
+                )
+
+        return TemperatureConverter(color_profile, self.state)
+
 
 @register_capability
 class RgbCapability(ColorSettingCapability):
@@ -178,37 +221,50 @@ class RgbCapability(ColorSettingCapability):
 
     def get_value(self) -> float | None:
         """Return the state value of this capability for this entity."""
+        if self.state.attributes.get(light.ATTR_COLOR_MODE) == light.COLOR_MODE_COLOR_TEMP:
+            return None
+
         rgb_color = self.state.attributes.get(light.ATTR_RGB_COLOR)
         if rgb_color is None:
             hs_color = self.state.attributes.get(light.ATTR_HS_COLOR)
             if hs_color is not None:
-                rgb_color = color_util.color_hs_to_RGB(*hs_color)
+                rgb_color = color_hs_to_RGB(*hs_color)
+
+            xy_color = self.state.attributes.get(light.ATTR_XY_COLOR)
+            if xy_color is not None:
+                rgb_color = color_xy_to_RGB(*xy_color)
 
         if rgb_color is not None:
             if rgb_color == (255, 255, 255):
                 return None
 
-            value = rgb_color[0]
-            value = (value << 8) + rgb_color[1]
-            value = (value << 8) + rgb_color[2]
-
-            return value
+            return self._color_converter.get_yandex_color(RGBColor(*rgb_color))
 
     async def set_state(self, data: RequestData, state: dict[str, Any]):
-        """Set device state."""
-        red = (state['value'] >> 16) & 0xFF
-        green = (state['value'] >> 8) & 0xFF
-        blue = state['value'] & 0xFF
-
         await self.hass.services.async_call(
             light.DOMAIN,
             light.SERVICE_TURN_ON, {
                 ATTR_ENTITY_ID: self.state.entity_id,
-                light.ATTR_RGB_COLOR: (red, green, blue)
+                light.ATTR_RGB_COLOR: self._color_converter.get_ha_rgb_color(int(state['value']))
             },
             blocking=True,
             context=data.context
         )
+
+    @property
+    def _color_converter(self) -> ColorConverter:
+        color_profile_name = self.entity_config.get(const.CONF_COLOR_PROFILE)
+        if color_profile_name:
+            try:
+                return ColorConverter(self._color_profiles[color_profile_name])
+            except KeyError:
+                raise SmartHomeError(
+                    ERR_NOT_SUPPORTED_IN_CURRENT_MODE,
+                    f'Color profile {color_profile_name!r} not found for instance {self.instance} '
+                    f'of {self.state.entity_id}'
+                )
+
+        return ColorConverter()
 
 
 @register_capability
@@ -239,7 +295,7 @@ class TemperatureKCapability(ColorSettingCapability):
         color_mode = self.state.attributes.get(light.ATTR_COLOR_MODE)
 
         if temperature_mired is not None:
-            return color_util.color_temperature_mired_to_kelvin(temperature_mired)
+            return self._temperature_converter.get_yandex_temperature(temperature_mired)
 
         if color_mode == light.ColorMode.WHITE:
             return self.default_white_temperature_k
@@ -254,7 +310,7 @@ class TemperatureKCapability(ColorSettingCapability):
 
             return None
 
-        if color_mode in [light.ColorMode.RGB, light.ColorMode.HS]:
+        if color_mode in [light.ColorMode.RGB, light.ColorMode.HS, light.ColorMode.XY]:
             rgb_color = self.state.attributes.get(light.ATTR_RGB_COLOR)
             if rgb_color is not None and rgb_color == (255, 255, 255):
                 if light.ColorMode.WHITE in supported_color_modes:
@@ -273,7 +329,7 @@ class TemperatureKCapability(ColorSettingCapability):
 
         if features & light.SUPPORT_COLOR_TEMP or \
                 light.color_temp_supported(self.state.attributes.get(light.ATTR_SUPPORTED_COLOR_MODES, [])):
-            service_data[light.ATTR_KELVIN] = value
+            service_data[light.ATTR_KELVIN] = self._temperature_converter.get_ha_temperature(value)
 
         elif light.ColorMode.WHITE in supported_color_modes and value == self.default_white_temperature_k:
             service_data[light.ATTR_WHITE] = self.state.attributes.get(light.ATTR_BRIGHTNESS, 255)
@@ -284,7 +340,9 @@ class TemperatureKCapability(ColorSettingCapability):
             else:
                 service_data[light.ATTR_RGBW_COLOR] = (255, 255, 255, 0)
 
-        elif light.ColorMode.RGB in supported_color_modes or light.ColorMode.HS in supported_color_modes:
+        elif light.ColorMode.RGB in supported_color_modes or \
+                light.ColorMode.HS in supported_color_modes or \
+                light.ColorMode.XY in supported_color_modes:
             service_data[light.ATTR_RGB_COLOR] = (255, 255, 255)
 
         if service_data:
@@ -336,3 +394,149 @@ class ColorSceneCapability(ColorSettingCapability):
             blocking=True,
             context=data.context
         )
+
+
+class ColorConverter:
+    _palette = {
+        const.COLOR_NAME_RED: 16714250,
+        const.COLOR_NAME_CORAL: 16729907,
+        const.COLOR_NAME_ORANGE: 16727040,
+        const.COLOR_NAME_YELLOW: 16740362,
+        const.COLOR_NAME_LIME: 13303562,
+        const.COLOR_NAME_GREEN: 720711,
+        const.COLOR_NAME_EMERALD: 720813,
+        const.COLOR_NAME_TURQUOISE: 720883,
+        const.COLOR_NAME_CYAN: 710399,
+        const.COLOR_NAME_BLUE: 673791,
+        const.COLOR_NAME_MOONLIGHT: 15067647,
+        const.COLOR_NAME_LAVENDER: 8719103,
+        const.COLOR_NAME_VIOLET: 11340543,
+        const.COLOR_NAME_PURPLE: 16714471,
+        const.COLOR_NAME_ORCHID: 16714393,
+        const.COLOR_NAME_MAUVE: 16722742,
+        const.COLOR_NAME_RASPBERRY: 16711765,
+    }
+
+    def __init__(self, profile: dict[str, int] | None = None):
+        profile = profile or {}
+
+        self._yandex_value_to_ha: dict[int, int] = {}
+        self._ha_value_to_yandex: dict[int, int] = {}
+
+        for name, yandex_value in self._palette.items():
+            ha_value = profile.get(name, yandex_value)
+
+            self._yandex_value_to_ha[yandex_value] = ha_value
+            self._ha_value_to_yandex[ha_value] = yandex_value
+
+    def get_ha_rgb_color(self, yandex_color: int) -> tuple[int, int, int]:
+        return self._int_to_rgb(
+            self._yandex_value_to_ha.get(yandex_color, yandex_color)
+        )
+
+    def get_yandex_color(self, ha_color: RGBColor) -> int:
+        for ha_color_value, yandex_color_value in self._ha_value_to_yandex.items():
+            if self._distance(ha_color, RGBColor(*self._int_to_rgb(ha_color_value))) <= 2:
+                return yandex_color_value
+
+        return self.rgb_to_int(*ha_color)
+
+    @staticmethod
+    def rgb_to_int(r: int, g: int, b: int) -> int:
+        rv = r
+        rv = (rv << 8) + g
+        rv = (rv << 8) + b
+
+        return rv
+
+    @staticmethod
+    def _int_to_rgb(i: int) -> tuple[int, int, int]:
+        return (
+            (i >> 16) & 0xFF,
+            (i >> 8) & 0xFF,
+            i & 0xFF
+        )
+
+    @staticmethod
+    def _distance(a: RGBColor, b: RGBColor) -> float:
+        return abs(sqrt(
+            (a.r - b.r) ** 2 +
+            (a.g - b.g) ** 2 +
+            (a.b - b.b) ** 2
+        ))
+
+
+class TemperatureConverter:
+    _palette = {
+        const.COLOR_TEMPERATURE_NAME_FIERY_WHITE: 1500,
+        const.COLOR_TEMPERATURE_NAME_SOFT_WHITE: 2700,
+        const.COLOR_TEMPERATURE_NAME_WARM_WHITE: 3400,
+        const.COLOR_TEMPERATURE_NAME_WHITE: 4500,
+        const.COLOR_TEMPERATURE_NAME_DAYLIGHT: 5600,
+        const.COLOR_TEMPERATURE_NAME_COLD_WHITE: 6500,
+        const.COLOR_TEMPERATURE_NAME_MISTY_WHITE: 7500,
+        const.COLOR_TEMPERATURE_NAME_HEAVENLY_WHITE: 9000
+    }
+    _temperature_steps = sorted(_palette.values())
+
+    def __init__(self, profile: dict[str, int] | None = None, state: State | None = None):
+        self._yandex_value_to_ha: dict[int, int] = {}
+        self._ha_value_to_yandex: dict[int, int] = {}
+
+        profile = profile or {}
+        range_extend_threshold = 200
+        min_temp = self._color_temperature_mired_to_kelvin(state.attributes.get(light.ATTR_MAX_MIREDS, 500))
+        max_temp = self._color_temperature_mired_to_kelvin(state.attributes.get(light.ATTR_MIN_MIREDS, 153))
+
+        for name, yandex_temperature in self._palette.items():
+            ha_temperature = self._round_kelvin_temperature(profile.get(name, yandex_temperature))
+            if ha_temperature < min_temp or ha_temperature > max_temp:
+                continue
+
+            self._map_values(yandex_temperature, ha_temperature)
+
+        if min_temp + range_extend_threshold < min(self._ha_value_to_yandex):
+            if yandex_temperature := self._first_available_temperature_step:
+                self._map_values(yandex_temperature, min_temp)
+
+        if max_temp - range_extend_threshold > max(self._ha_value_to_yandex):
+            if yandex_temperature := self._last_available_temperature_step:
+                self._map_values(yandex_temperature, max_temp)
+
+    def get_ha_temperature(self, yandex_temperature: int) -> int:
+        return self._yandex_value_to_ha.get(yandex_temperature, yandex_temperature)
+
+    def get_yandex_temperature(self, ha_temperature_mired: int) -> int:
+        ha_temperature_k = self._color_temperature_mired_to_kelvin(ha_temperature_mired)
+        return self._ha_value_to_yandex.get(ha_temperature_k, ha_temperature_k)
+
+    @property
+    def supported_temperature_range(self) -> (int, int):
+        return min(self._yandex_value_to_ha), max(self._yandex_value_to_ha)
+
+    @staticmethod
+    def _round_kelvin_temperature(kelvin_temperature: int) -> int:
+        return round(kelvin_temperature, -2)
+
+    def _color_temperature_mired_to_kelvin(self, mired_temperature: float) -> int:
+        return self._round_kelvin_temperature(color_temperature_mired_to_kelvin(mired_temperature))
+
+    @property
+    def _first_available_temperature_step(self) -> int | None:
+        min_temp = min(self._yandex_value_to_ha)
+        idx = self._temperature_steps.index(min_temp)
+        if idx != 0:
+            return self._temperature_steps[idx - 1]
+
+    @property
+    def _last_available_temperature_step(self) -> int | None:
+        max_temp = max(self._yandex_value_to_ha)
+        idx = self._temperature_steps.index(max_temp)
+        try:
+            return self._temperature_steps[idx + 1]
+        except IndexError:
+            return None
+
+    def _map_values(self, yandex_value: int, ha_value: int):
+        self._yandex_value_to_ha[yandex_value] = ha_value
+        self._ha_value_to_yandex[ha_value] = yandex_value

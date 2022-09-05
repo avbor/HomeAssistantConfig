@@ -73,11 +73,15 @@ class Config:
 
     @property
     def beta(self) -> bool:
-        return self._options[const.CONF_BETA]
+        return self._options[const.CONF_BETA]  # pragma: no cover
 
     @property
     def notifier(self) -> list[ConfigType]:
         return self._data.get(const.CONF_NOTIFIER, [])
+
+    @property
+    def color_profiles(self) -> dict[str, dict[str, int]]:
+        return self._options.get(const.CONF_COLOR_PROFILE, {})
 
     @property
     def devices_discovered(self) -> bool:

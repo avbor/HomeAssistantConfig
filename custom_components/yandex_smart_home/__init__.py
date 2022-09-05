@@ -114,10 +114,12 @@ ENTITY_SCHEMA = vol.All(
         vol.Optional(const.CONF_TYPE): vol.All(cv.string, ycv.device_type),
         vol.Optional(const.CONF_TURN_ON): cv.SERVICE_SCHEMA,
         vol.Optional(const.CONF_TURN_OFF): cv.SERVICE_SCHEMA,
+        vol.Optional(const.CONF_DEVICE_CLASS): vol.In(const.DEVICE_CLASS_BUTTON),
         vol.Optional(const.CONF_FEATURES): vol.All(cv.ensure_list, ycv.entity_features),
         vol.Optional(const.CONF_ENTITY_PROPERTIES, default=[]): [ENTITY_PROPERTY_SCHEMA],
         vol.Optional(const.CONF_SUPPORT_SET_CHANNEL): cv.boolean,
         vol.Optional(const.CONF_STATE_UNKNOWN): cv.boolean,
+        vol.Optional(const.CONF_COLOR_PROFILE): cv.string,
         vol.Optional(const.CONF_ENTITY_RANGE, default={}): ENTITY_RANGE_SCHEMA,
         vol.Optional(const.CONF_ENTITY_MODE_MAP, default={}): ENTITY_MODE_MAP_SCHEMA,
         vol.Optional(const.CONF_ENTITY_CUSTOM_MODES, default={}): ENTITY_CUSTOM_MODE_SCHEMA,
@@ -151,6 +153,9 @@ YANDEX_SMART_HOME_SCHEMA = vol.All(
             lambda value: value or {},
             {cv.entity_id: ENTITY_SCHEMA}
         ),
+        vol.Optional(const.CONF_COLOR_PROFILE, default={}): vol.Schema({
+            cv.string: {vol.In(const.COLOR_NAMES): vol.All(ycv.color_value)}
+        })
     }, extra=vol.PREVENT_EXTRA))
 
 CONFIG_SCHEMA = vol.Schema({
@@ -181,8 +186,10 @@ async def async_setup(hass: HomeAssistant, yaml_config: ConfigType):
     hass.bus.async_listen(EVENT_DEVICE_DISCOVERY, _device_discovery_listener)
 
     async def _handle_reload(*_):
-        hass.data[DOMAIN][YAML_CONFIG] = (await async_integration_yaml_config(hass, DOMAIN)).get(DOMAIN)
-        _update_config_entries(hass)
+        config = await async_integration_yaml_config(hass, DOMAIN)
+        if config:
+            hass.data[DOMAIN][YAML_CONFIG] = config.get(DOMAIN)
+            _update_config_entries(hass)
 
     hass.helpers.service.async_register_admin_service(DOMAIN, SERVICE_RELOAD, _handle_reload)
 
@@ -256,10 +263,17 @@ def get_config_entry_data_from_yaml_config(data: dict, options: dict, yaml_confi
         if v in data:
             del data[v]
 
+    for v in [const.CONF_COLOR_PROFILE]:
+        if v in options:
+            del options[v]
+
     if yaml_config:
         data.update({
             const.CONF_NOTIFIER: yaml_config[const.CONF_NOTIFIER],
             const.YAML_CONFIG_HASH: _yaml_config_checksum(yaml_config)
+        })
+        options.update({
+            const.CONF_COLOR_PROFILE: yaml_config[const.CONF_COLOR_PROFILE],
         })
         options.update(yaml_config[const.CONF_SETTINGS])
     else:

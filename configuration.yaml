@@ -212,7 +212,7 @@ zha:
 
 yandex_station:
   include:
-  - Водонагреватель
+    - Водонагреватель
 
 start_time:
 

@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import logging
 
 import voluptuous as vol
 
 from . import const
+from .capability_color import ColorConverter
 from .prop_float import PRESSURE_UNITS_TO_YANDEX_UNITS
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,7 +21,7 @@ def property_type(value: str) -> str:
 
     if value == const.EVENT_INSTANCE_BUTTON:
         _LOGGER.warning('Property type "button" is not supported. See documentation '
-                        'at https://github.com/dmitry-k/yandex_smart_home/blob/master/docs/sensors.md')
+                        'at https://docs.yaha-cloud.ru/v0.6.x/devices/button/')
 
     return value
 
@@ -98,3 +101,13 @@ def pressure_unit(value):
         raise vol.Invalid(f'Pressure unit {value!r} is not supported')
 
     return value
+
+
+def color_value(value: list | int) -> int:
+    if isinstance(value, (int, str)):
+        return int(value)
+
+    if isinstance(value, list) and len(value) == 3:
+        return ColorConverter.rgb_to_int(*[int(v) for v in value])
+
+    raise vol.Invalid(f'Invalid value: {value!r}')

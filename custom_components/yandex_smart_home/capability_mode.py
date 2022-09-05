@@ -412,8 +412,12 @@ class InputSourceCapability(ModeCapability):
         """Test if capability is supported."""
         features = self.state.attributes.get(ATTR_SUPPORTED_FEATURES, 0)
 
-        if self.state.domain == media_player.DOMAIN and features & media_player.MediaPlayerEntityFeature.SELECT_SOURCE:
-            return super().supported()
+        if self.state.domain == media_player.DOMAIN:
+            if const.MEDIA_PLAYER_FEATURE_SELECT_SOURCE in self.entity_config.get(const.CONF_FEATURES, []):
+                return True
+
+            if features & media_player.MediaPlayerEntityFeature.SELECT_SOURCE:
+                return super().supported()
 
         return False
 
@@ -465,6 +469,7 @@ class FanSpeedCapabilityClimate(FanSpeedCapability):
         const.MODE_INSTANCE_MODE_AUTO: [
             climate.const.FAN_AUTO,
             climate.const.FAN_ON,
+            const.SMARTTHINQ_FAN_PRESET_NATURE,
         ],
         const.MODE_INSTANCE_MODE_QUIET: [
             climate.const.FAN_OFF,
@@ -710,12 +715,13 @@ class CleanupModeCapability(ModeCapability):
     instance = const.MODE_INSTANCE_CLEANUP_MODE
     modes_map_default = {
         const.MODE_INSTANCE_MODE_AUTO: ['auto', 'automatic', '102'],
-        const.MODE_INSTANCE_MODE_TURBO: ['turbo', 'high', 'performance', '104', 'full speed'],
+        const.MODE_INSTANCE_MODE_TURBO: ['turbo', 'high', 'performance', '104', 'full speed', 'max+'],
         const.MODE_INSTANCE_MODE_MIN: ['min', 'mop'],
         const.MODE_INSTANCE_MODE_LOW: ['gentle'],
         const.MODE_INSTANCE_MODE_MAX: ['max', 'strong'],
         const.MODE_INSTANCE_MODE_EXPRESS: ['express', '105'],
-        const.MODE_INSTANCE_MODE_NORMAL: ['normal', 'medium', 'middle', 'standard', 'basic', '103'],
+        const.MODE_INSTANCE_MODE_MEDIUM: ['medium', 'middle'],
+        const.MODE_INSTANCE_MODE_NORMAL: ['normal', 'standard', 'basic', '103'],
         const.MODE_INSTANCE_MODE_QUIET: ['quiet', 'low', 'min', 'silent', 'eco', '101'],
     }
 
