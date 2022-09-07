@@ -57,7 +57,7 @@ energy_pack:
             {% if t1_tariff != -1 %}
               {{ t1_tariff }}
             {% else %}
-              {{ 7.1 }}
+              {{ 7.4 }}
             {% endif %}
         apartment_enegry_cost_halfpeak:
           friendly_name: "Стоимость кВт⋅ч полупик ({{ state_attr('sensor.mes_07762_153_47_account','zone_t3_description') }})"
@@ -69,7 +69,7 @@ energy_pack:
             {% if t3_tariff != -1 %}
               {{ t3_tariff }}
             {% else %}
-              {{ 5.92 }}
+              {{ 6.17 }}
             {% endif %}
         apartment_enegry_cost_night:
           friendly_name: "Стоимость кВт⋅ч ночь ({{ state_attr('sensor.mes_07762_153_47_account','zone_t2_description') }})"
@@ -81,7 +81,7 @@ energy_pack:
             {% if t2_tariff != -1 %}
               {{ t2_tariff }}
             {% else %}
-              {{ 2.48 }}
+              {{ 2.69 }}
             {% endif %}
 
         # Main Power Meter
