@@ -1,7 +1,94 @@
 title: Heating
 path: ch-heating
-icon: 'mdi:radiator'
+icon: "mdi:radiator"
 cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Терраса</center>
+      - type: custom:vertical-stack-in-card
+        cards:
+#          - type: entity
+#            state_color: true
+#            entity: switch.gosund_sp111_02_switch
+#            name: "Инфракрасный обогреватель"
+#            icon: mdi:heat-wave
+          - type: entities
+            entities:
+              - entity: switch.gosund_sp111_02_switch
+                name: "Инфракрасный обогреватель"
+                icon: mdi:heat-wave
+              - entity: sensor.ch_heater_terrace_power
+                name: Режим
+                icon: mdi:tune-variant
+
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: button
+            entity: input_boolean.ch_energy_show_radiator_terrace
+            name: "\U000021E7 Потребление \U000021E9"
+            show_state: false
+            show_icon: false
+            tap_action:
+              action: toggle
+          - type: conditional
+            conditions:
+              - entity: input_boolean.ch_energy_show_radiator_terrace
+                state: "on"
+            card:
+              type: entities
+              entities:
+                - entity: sensor.date_current_month
+                  type: custom:multiple-entity-row
+                  name: []
+                  icon: []
+                  show_state: false
+                  secondary_info:
+                    entity: sensor.date_current_month
+                    name: false
+                  entities:
+                    - entity: sensor.socket_ch_radiator_terrace_energy_monthly_total
+                      name: false
+                      unit: "кВт⋅ч"
+                      format: precision2
+                    - entity: sensor.energy_cost_ch_radiator_terrace_monthly
+                      name: false
+                      unit: "₽"
+                      styles:
+                        font-weight: bold
+                - entity: sensor.date_previous_month
+                  type: custom:multiple-entity-row
+                  name: []
+                  icon: []
+                  show_state: false
+                  secondary_info:
+                    entity: sensor.date_previous_month
+                    name: false
+                  entities:
+                    - entity: sensor.socket_ch_radiator_terrace_energy_monthly_total
+                      attribute: last_period
+                      name: false
+                      unit: "кВт⋅ч"
+                      format: precision2
+                    - entity: sensor.energy_cost_ch_radiator_terrace_monthly_prev
+                      name: false
+                      unit: "₽"
+                      styles:
+                        font-weight: bold
+                - type: divider
+                - entity: sensor.energy_cost_ch_radiator_terrace_daily_avg
+                  type: custom:multiple-entity-row
+                  name: []
+                  icon: []
+                  secondary_info: День
+                  unit: "₽"
+                  state_header: в среднем
+                  entities:
+                    - entity: sensor.energy_cost_ch_radiator_terrace_daily_prev
+                      name: вчера
+                      unit: "₽"
+
   - type: vertical-stack
     cards:
       - type: markdown
@@ -23,7 +110,7 @@ cards:
         hide:
           state: true
           temperature: true
-      - type: 'custom:mini-graph-card'
+      - type: "custom:mini-graph-card"
         name: Температура
         icon: mdi:thermometer
         cache: false
@@ -39,24 +126,24 @@ cards:
         hour24: true
         align_state: center
         entities:
-            - entity: sensor.a4c138d358e9_temperature
-              name: Температура
-            - entity: sensor.a4c138d358e9_humidity
-              name: Влажность
-              show_state: true
-              #show_graph: false
-              y_axis: secondary
-              smoothing: true
-              show_fill: false
-              color: deepskyblue
-            - entity: sensor.ch_heater_living_room_status
-              y_axis: secondary
-              aggregate_func: max
-              smoothing: false
-              show_legend: false
-              show_line: false
-              show_points: false
-              color: salmon
+          - entity: sensor.a4c138d358e9_temperature
+            name: Температура
+          - entity: sensor.a4c138d358e9_humidity
+            name: Влажность
+            show_state: true
+            #show_graph: false
+            y_axis: secondary
+            smoothing: true
+            show_fill: false
+            color: deepskyblue
+          - entity: sensor.ch_heater_living_room_status
+            y_axis: secondary
+            aggregate_func: max
+            smoothing: false
+            show_legend: false
+            show_line: false
+            show_points: false
+            color: salmon
         show:
           name: false
           icon: false
@@ -152,7 +239,7 @@ cards:
         hide:
           state: true
           temperature: true
-      - type: 'custom:mini-graph-card'
+      - type: "custom:mini-graph-card"
         name: Температура
         icon: mdi:thermometer
         cache: false
@@ -168,24 +255,24 @@ cards:
         hour24: true
         align_state: center
         entities:
-            - entity: sensor.country_house_avg_temp_kids_rooms
-              name: Температура
-            - entity: sensor.country_house_avg_humidity_kids_rooms
-              name: Влажность
-              show_state: true
-              #show_graph: false
-              y_axis: secondary
-              smoothing: true
-              show_fill: false
-              color: deepskyblue
-            - entity: sensor.ch_heater_kids_rooms_status
-              y_axis: secondary
-              aggregate_func: max
-              smoothing: false
-              show_legend: false
-              show_line: false
-              show_points: false
-              color: salmon
+          - entity: sensor.country_house_avg_temp_kids_rooms
+            name: Температура
+          - entity: sensor.country_house_avg_humidity_kids_rooms
+            name: Влажность
+            show_state: true
+            #show_graph: false
+            y_axis: secondary
+            smoothing: true
+            show_fill: false
+            color: deepskyblue
+          - entity: sensor.ch_heater_kids_rooms_status
+            y_axis: secondary
+            aggregate_func: max
+            smoothing: false
+            show_legend: false
+            show_line: false
+            show_points: false
+            color: salmon
         show:
           name: false
           icon: false

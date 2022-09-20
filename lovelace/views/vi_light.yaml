@@ -2,13 +2,20 @@ title: Light
 path: light
 icon: mdi:lightbulb-on-outline
 cards:
-
   # Прихожая и коридор
   - type: vertical-stack
     cards:
       - type: markdown
         content: >
           ### <center>Прихожая и Коридор</center>
+      - type: horizontal-stack
+        cards:
+          - type: entities
+            entities:
+              - entity: sensor.0x4cf8cdf3c7d110d_illuminance
+                name: []
+          - type: entities
+            entities: []
       - type: horizontal-stack
         cards:
           - type: conditional
@@ -36,6 +43,10 @@ cards:
       - type: markdown
         content: >
           ### <center>Детская</center>
+      - type: entities
+        entities:
+          - entity: sensor.xiaomi_lumi_sen_ill_mgl01_illuminance
+            name: []
       - type: vertical-stack
         cards:
           - type: conditional
@@ -169,12 +180,12 @@ cards:
         cards:
           - type: conditional
             conditions:
-#              - entity: light.kukhnia_liustra
+              #              - entity: light.kukhnia_liustra
               - entity: light.ikea_e27_kukhnia
                 state_not: "unavailable"
             card:
               type: light
-#              entity: light.kukhnia_liustra
+              #              entity: light.kukhnia_liustra
               entity: light.ikea_e27_kukhnia
               name: Люстра
               icon: mdi:ceiling-light
@@ -202,6 +213,10 @@ cards:
       - type: markdown
         content: >
           ### <center>Спальня</center>
+      - type: entities
+        entities:
+          - entity: sensor.xiaomi_lumi_sen_ill_mgl01_illuminance_2
+            name: []
       - type: horizontal-stack
         cards:
           - type: conditional
@@ -281,7 +296,7 @@ cards:
                 card:
                   type: light
                   entity: light.sonoff_zbmini_03_on_off
-                  name: Туалет  
+                  name: Туалет
                   icon: mdi:light-recessed
               - type: conditional
                 conditions:
@@ -309,7 +324,7 @@ cards:
                     state_not: "unavailable"
                 card:
                   type: entities
-                  entities: 
+                  entities:
                     - entity: fan.bathroom_extractor
                       name: []
 
@@ -353,7 +368,7 @@ cards:
 #        icon: mdi:lightbulb-group-off
 #        icon_height: 64px
 #        show_state: false
-#        tap_action: 
+#        tap_action:
 #          action: call-service
 #          service: homeassistant.turn_off
 #          service_data:

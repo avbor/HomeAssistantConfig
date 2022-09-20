@@ -3,8 +3,7 @@
 #################################################
 
 ch_climate_pack:
-
-# Sensors
+  # Sensors
   sensor:
     - platform: min_max
       name: Country House Avg Temp - Kids Rooms
@@ -24,8 +23,18 @@ ch_climate_pack:
           value_template: "{{ ((state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs) * 100 }}"
         ch_heater_kids_rooms_status:
           value_template: "{{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}"
+        ch_heater_terrace_power:
+          value_template: >-
+            {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int) %}
+            {% if heat_power == 0 %}
+              0
+            {% elif heat_power > 500 and heat_power < 1000 %}
+              1
+            {% elif heat_power > 1000 %}
+              2
+            {% endif %}
 
-# Binary Sensors:
+  # Binary Sensors:
   binary_sensor:
     - platform: template
       sensors:
@@ -48,7 +57,7 @@ ch_climate_pack:
               mdi:radiator-disabled
             {% endif %}
 
-# Climate
+  # Climate
   climate:
     - platform: generic_thermostat
       unique_id: 9b877559-21bf-424b-8edc-0e1efb8c5834

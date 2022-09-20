@@ -1,0 +1,10 @@
+wifi:
+  networks:
+    - ssid: !secret wifi_mesh_ssid
+      password: !secret wifi_mesh_password
+      priority: 10
+  reboot_timeout: 15min
+  fast_connect: true
+  ap:
+    ssid: ${board_name}
+    password: !secret wifi_fallback_ap_pass

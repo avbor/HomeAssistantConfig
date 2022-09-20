@@ -50,6 +50,9 @@ dhcp:
 image:
 energy:
 usb:
+hardware:
+bluetooth:
+homeassistant_alerts:
 #wwlln:
 #cloud:
 #updater:
@@ -201,6 +204,10 @@ zha:
       ikea_provider: true
       ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
 
+conversation:
+  intents:
+    media_player.yandex_station_mini2_gostinaia: [.+]
+
 #xbox:
 #  client_id: !secret xbox_client_id
 #  client_secret: !secret xbox_client_secret
@@ -246,8 +253,10 @@ input_number: !include_dir_merge_named entities/input_number
 input_datetime: !include_dir_merge_named entities/input_datetime
 input_boolean: !include_dir_merge_named entities/input_boolean
 input_text: !include_dir_merge_named entities/input_text
+input_button: !include_dir_merge_named entities/input_button
 shell_command: !include_dir_merge_named entities/shell_commands
 rest_command: !include_dir_merge_named entities/rest_command
+schedule: !include_dir_merge_named entities/schedule
 yeelight: !include entities/yeelight/yeelight.yaml
 sonoff: !include entities/sonofflan/sonofflan.yaml
 thermal_comfort: !include entities/thermal_comfort/thermal_comfort.yaml

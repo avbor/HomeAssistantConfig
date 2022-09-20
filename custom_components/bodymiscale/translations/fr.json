@@ -1,0 +1,48 @@
+{
+  "config": {
+    "error": {
+      "already_configured": "Déjà configuré",
+      "height_limit": "La taille est trop élevée (limite : 220 cm)",
+      "invalid_date": "Date non valide"
+    },
+    "step": {
+      "options": {
+        "data": {
+          "height": "Taille",
+          "impedance": "Capteur d' impédance",
+          "weight": "Capteur de poids"
+        },
+        "data_description": {
+          "impedance": "Si votre balance ne fournit pas l' impédance, laissez ce champ vide."
+        }
+      },
+      "user": {
+        "data": {
+          "birthday": "Date d'anniversaire",
+          "gender": "Genre",
+          "name": "Nom"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "height": "Taille",
+          "impedance": "Capteur d' impédance",
+          "weight": "Capteur de poids"
+        },
+        "data_description": {
+          "impedance": "Si votre balance ne fournit pas l' impédance, laissez ce champ vide."
+        }
+      }
+    }
+  },
+  "state": {
+    "_": {
+      "ok": "OK",
+      "problem": "Problème"
+    }
+  }
+}

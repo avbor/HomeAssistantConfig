@@ -156,6 +156,10 @@ _Remote site (country house):_
   - Xiaomi TH Digital Clock (LYWSD02MMC, miaomiaoche.sensor_ht.t1)\
   Via Xiaomi Gateway 3
 
+- Other:
+  - Mi Body Composition Scale 2 (NUN4048GL)\
+  Integration "ESPHome" (via xiaomi_miscale platform)
+
 #### Media Players:
   - Google Chromecast (Gen 1)\
   Integration "Google Cast"
@@ -183,13 +187,13 @@ _Remote site (country house):_
 
 #### Other:
 - [Neptun Bugatti Base](https://neptun-mcs.ru/catalog/complects/neptun_base/sistema_kontrolya_protechki_vody_neptun_bugatti_base/)\
-  Via modified Xiaomi Magnet Sensors, Aqara 2ch Relay and Sonoff Mini for power control
+Via modified Xiaomi Magnet Sensors, Aqara 2ch Relay and Sonoff Mini for power control
 
 - [SAURES R2 m3](https://www.saures.ru/blog/obzory-tovarov/obzor-modifikatsiy-kontrollera-saures-r2/)\
 Integration "Integration Saures controllers with HA" by [volshebniks](https://github.com/volshebniks/sauresha)
 
 - AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series\
-  Via Tuya SmartIR flashed to ESPHome, IRremoteESP8266 lib and Xiaomi Magnet Sensors
+Via Tuya SmartIR flashed to ESPHome, IRremoteESP8266 lib and Xiaomi Magnet Sensors
 
 - Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WFN-02](https://home-comfort.ru/catalog/obogrevateli_elektricheskie/konvektory/aksessuary/modul_syemnyy_upravlyayushchiy_electrolux_ech_wfn_02_smart_wi_fi/) module
 

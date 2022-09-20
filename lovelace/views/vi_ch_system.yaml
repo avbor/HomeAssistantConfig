@@ -4,20 +4,20 @@ icon: mdi:cog-outline
 cards:
   - type: vertical-stack
     cards:
-    - type: markdown
-      content: >
-        ### <center>Huawei LTE</center>
-    - type: entities
-      show_header_toggle: false
-      entities:
-        - entity: binary_sensor.huawei_e5372_mobile_connection
-          name: "Mobile Connection"
-        - entity: sensor.huawei_e5372_rssi
-          name: "RSSI"
-        - entity: sensor.huawei_e5372_sinr
-          name: "SINR"
-        - entity: sensor.huawei_e5372_sms_unread
-          name: "Unread SMS"
+      - type: markdown
+        content: >
+          ### <center>Huawei LTE</center>
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.huawei_e5372_mobile_connection
+            name: "Mobile Connection"
+          - entity: sensor.huawei_e5372_rssi
+            name: "RSSI"
+          - entity: sensor.huawei_e5372_sinr
+            name: "SINR"
+          - entity: sensor.huawei_e5372_sms_unread
+            name: "Unread SMS"
   - type: vertical-stack
     cards:
       - type: markdown
@@ -50,14 +50,14 @@ cards:
             entities:
               - entity: sensor.gosund_sp111_01_ampere
                 name: false
-#          - type: section
-#          - entity: sensor.gosund_sp111_02_watt
-#            type: custom:multiple-entity-row
-#            name: "Потребление"
-#            icon: []
-#            entities:
-#              - entity: sensor.gosund_sp111_02_ampere
-#                name: false
+          #          - type: section
+          #          - entity: sensor.gosund_sp111_02_watt
+          #            type: custom:multiple-entity-row
+          #            name: "Потребление"
+          #            icon: []
+          #            entities:
+          #              - entity: sensor.gosund_sp111_02_ampere
+          #                name: false
           - type: section
           - entity: switch.gosund_sp111_08_switch
             name: Обогреватель - Дети
@@ -78,6 +78,16 @@ cards:
             icon: []
             entities:
               - entity: sensor.gosund_sp111_07_ampere
+                name: false
+          - entity: switch.gosund_sp111_02_switch
+            name: Обогреватель - Терраса
+            icon: mdi:radiator
+          - entity: sensor.gosund_sp111_02_watt
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.gosund_sp111_02_ampere
                 name: false
   - type: vertical-stack
     cards:

@@ -303,7 +303,12 @@
           '^(binary_sensor|switch)\.domofon_|'
           '^(binary_sensor|sensor|light)\.sonoff_basic_|'
           '^(binary_sensor|sensor)\.sonoff_mini_r2_01_|'
+          '^(switch|button)\.esp32_miscale2_\d{2}_restart|'
+          '^sensor\.xiaomi_mi_scale_2_.*|'
+          '^number\..*_(min|max)_weight|'
           '^button\..*_identify|'
+          '^sensor\..*_weight_current|'
+          '^sensor\..*_impedance_current|'
           '^media_player\.plex_.*'
           )
         }}

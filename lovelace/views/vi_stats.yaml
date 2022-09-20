@@ -2,7 +2,6 @@ title: Stats
 path: stats
 icon: mdi:chart-line
 cards:
-
   - type: vertical-stack
     cards:
       - type: markdown
@@ -101,3 +100,29 @@ cards:
             name: Кухня
           - entity: sensor.lumi_lumi_weather_temperature
             name: Спальня
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Вес</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.aleksandr_weight
+            name: Александр
+            graph: none
+          - type: sensor
+            entity: sensor.irina_weight
+            name: Ирина
+            graph: none
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.egor_weight
+            name: Егор
+            graph: none
+          - type: sensor
+            entity: sensor.kirill_weight
+            name: Кирилл
+            graph: none

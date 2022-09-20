@@ -1,0 +1,270 @@
+substitutions:
+  esp_board: esp32dev
+  board_name: esp32-miscale2-01
+  room_name: Living Room
+
+packages:
+  wifi: !include common/wifi_bt_proxy.yaml
+  device_base: !include common/device_base_esp32.yaml
+
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - sensor.template.publish:
+          id: sens_alexander_weight_current
+          state: !lambda if (id(glob_alexander_weight) > 0.0f) {return id(glob_alexander_weight);} else {return NAN;}
+      - sensor.template.publish:
+          id: sens_alexander_impedance_current
+          state: !lambda if (id(glob_alexander_impedance) > 0.0f) {return id(glob_alexander_impedance);} else {return NAN;}
+
+      - sensor.template.publish:
+          id: sens_irina_weight_current
+          state: !lambda if (id(glob_irina_weight) > 0.0f) {return id(glob_irina_weight);} else {return NAN;}
+      - sensor.template.publish:
+          id: sens_irina_impedance_current
+          state: !lambda if (id(glob_irina_impedance) > 0.0f) {return id(glob_irina_impedance);} else {return NAN;}
+
+      - sensor.template.publish:
+          id: sens_egor_weight_current
+          state: !lambda if (id(glob_egor_weight) > 0.0f) {return id(glob_egor_weight);} else {return NAN;}
+      - sensor.template.publish:
+          id: sens_egor_impedance_current
+          state: !lambda if (id(glob_egor_impedance) > 0.0f) {return id(glob_egor_impedance);} else {return NAN;}
+
+      - sensor.template.publish:
+          id: sens_kirill_weight_current
+          state: !lambda if (id(glob_kirill_weight) > 0.0f) {return id(glob_kirill_weight);} else {return NAN;}
+      - sensor.template.publish:
+          id: sens_kirill_impedance_current
+          state: !lambda if (id(glob_kirill_impedance) > 0.0f) {return id(glob_kirill_impedance);} else {return NAN;}
+
+status_led:
+  pin: GPIO2
+
+web_server:
+  port: 80
+
+esp32_ble_tracker: 
+  scan_parameters:
+    interval: 1100ms
+    window: 1100ms
+    active: true
+
+#bluetooth_proxy:
+
+number:
+  - platform: template
+    id: num_alex_weight_min
+    name: "${board_name} Alexander MIN Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0.0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+  - platform: template
+    id: num_alex_weight_max
+    name: "${board_name} Alexander MAX Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0.0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+
+  - platform: template
+    id: num_irina_weight_min
+    name: "${board_name} Irina MIN Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+  - platform: template
+    id: num_irina_weight_max
+    name: "${board_name} Irina MAX Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+
+  - platform: template
+    id: num_egor_weight_min
+    name: "${board_name} Egor MIN Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+  - platform: template
+    id: num_egor_weight_max
+    name: "${board_name} Egor MAX Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+
+  - platform: template
+    id: num_kirill_weight_min
+    name: "${board_name} Kirill MIN Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+  - platform: template
+    id: num_kirill_weight_max
+    name: "${board_name} Kirill MAX Weight"
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 200.0
+    step: 0.1
+    initial_value: 0.0
+
+globals:
+  - id: glob_alexander_weight
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+  - id: glob_alexander_impedance
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+
+  - id: glob_irina_weight
+    type: float
+    restore_value: true
+  - id: glob_irina_impedance
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+
+  - id: glob_egor_weight
+    type: float
+    restore_value: true
+  - id: glob_egor_impedance
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+
+  - id: glob_kirill_weight
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+  - id: glob_kirill_impedance
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+
+sensor:
+  - platform: xiaomi_miscale
+    mac_address: '5C:CA:D3:55:67:7F'
+    weight:
+      name: "${board_name} Current Weight"
+      id: sens_miscale_weight_current
+      on_value:
+        then:
+          - lambda: |-
+              if (!isnan(x)) {
+                if (id(sens_miscale_weight_current).state >= id(num_alex_weight_min).state && id(sens_miscale_weight_current).state <= id(num_alex_weight_max).state) {
+                  id(glob_alexander_weight) = float(x);
+                  return id(sens_alexander_weight_current).publish_state(x);
+                }
+                else if (id(sens_miscale_weight_current).state >= id(num_irina_weight_min).state && id(sens_miscale_weight_current).state <= id(num_irina_weight_max).state) {
+                  id(glob_irina_weight) = float(x);
+                  return id(sens_irina_weight_current).publish_state(x);
+                }
+                else if (id(sens_miscale_weight_current).state >= id(num_egor_weight_min).state && id(sens_miscale_weight_current).state <= id(num_egor_weight_max).state) {
+                  id(glob_egor_weight) = float(x);
+                  return id(sens_egor_weight_current).publish_state(x);
+                }
+                else if (id(sens_miscale_weight_current).state >= id(num_kirill_weight_min).state && id(sens_miscale_weight_current).state <= id(num_kirill_weight_max).state) {
+                  id(glob_kirill_weight) = float(x);
+                  return id(sens_kirill_weight_current).publish_state(x);
+                }
+              }
+    impedance:
+      name: "${board_name} Current Impedance"
+      id: sens_miscale_impedance_current
+      on_value:
+        then:
+          - lambda: |-
+              if (!isnan(x)) {
+                if (id(sens_miscale_weight_current).state >= id(num_alex_weight_min).state && id(sens_miscale_weight_current).state <= id(num_alex_weight_max).state) {
+                  id(glob_alexander_impedance) = float(x);
+                  return id(sens_alexander_impedance_current).publish_state(x);
+                }
+                else if (id(sens_miscale_weight_current).state >= id(num_irina_weight_min).state && id(sens_miscale_weight_current).state <= id(num_irina_weight_max).state) {
+                  id(glob_irina_impedance) = float(x);
+                  return id(sens_irina_impedance_current).publish_state(x);
+                }
+                else if (id(sens_miscale_weight_current).state >= id(num_egor_weight_min).state && id(sens_miscale_weight_current).state <= id(num_egor_weight_max).state) {
+                  id(glob_egor_impedance) = float(x);
+                  return id(sens_egor_impedance_current).publish_state(x);
+                }
+                else if (id(sens_miscale_weight_current).state >= id(num_kirill_weight_min).state && id(sens_miscale_weight_current).state <= id(num_kirill_weight_max).state) {
+                  id(glob_kirill_impedance) = float(x);
+                  return id(sens_kirill_impedance_current).publish_state(x);
+                }
+              }
+
+  - platform: template
+    name: "${board_name} Alexander Weight Current"
+    id: sens_alexander_weight_current
+    unit_of_measurement: 'kg'
+    icon: mdi:weight-kilogram
+    accuracy_decimals: 2
+  - platform: template
+    name: "${board_name} Alexander Impedance Current"
+    id: sens_alexander_impedance_current
+    unit_of_measurement: 'ohm'
+    icon: mdi:omega
+    accuracy_decimals: 0
+
+  - platform: template
+    name: "${board_name} Irina Weight Current"
+    id: sens_irina_weight_current
+    unit_of_measurement: 'kg'
+    icon: mdi:weight-kilogram
+    accuracy_decimals: 2
+  - platform: template
+    name: "${board_name} Irina Impedance Current"
+    id: sens_irina_impedance_current
+    unit_of_measurement: 'ohm'
+    icon: mdi:omega
+    accuracy_decimals: 0
+
+  - platform: template
+    name: "${board_name} Egor Weight Current"
+    id: sens_egor_weight_current
+    unit_of_measurement: 'kg'
+    icon: mdi:weight-kilogram
+    accuracy_decimals: 2
+  - platform: template
+    name: "${board_name} Egor Impedance Current"
+    id: sens_egor_impedance_current
+    unit_of_measurement: 'ohm'
+    icon: mdi:omega
+    accuracy_decimals: 0
+
+  - platform: template
+    name: "${board_name} Kirill Weight Current"
+    id: sens_kirill_weight_current
+    unit_of_measurement: 'kg'
+    icon: mdi:weight-kilogram
+    accuracy_decimals: 2
+  - platform: template
+    name: "${board_name} Kirill Impedance Current"
+    id: sens_kirill_impedance_current
+    unit_of_measurement: 'ohm'
+    icon: mdi:omega
+    accuracy_decimals: 0

@@ -143,12 +143,54 @@ cards:
         content: >
           ### <center>Отопление</center>
       - type: entities
+        state_color: true
         entities:
-          - entity: sensor.lumi_lumi_weather_824e9807_temperature
-            name: Детская
-          - entity: sensor.lumi_lumi_weather_bf387507_temperature
-            name: Гостиная
-          - entity: sensor.lumi_lumi_weather_4dad5507_temperature
-            name: Кухня
-          - entity: sensor.lumi_lumi_weather_temperature
-            name: Спальня
+          - entity: binary_sensor.central_heating_nursery
+            type: custom:multiple-entity-row
+            state_color: true
+            show_state: false
+            name: "Детская"
+            entities:
+              - entity: binary_sensor.central_heating_nursery
+                name: false
+              - entity: sensor.lumi_lumi_weather_824e9807_temperature
+                name: false
+          - entity: binary_sensor.central_heating_livingroom
+            type: custom:multiple-entity-row
+            state_color: true
+            show_state: false
+            name: "Гостиная"
+            entities:
+              - entity: binary_sensor.central_heating_livingroom
+                name: false
+              - entity: sensor.lumi_lumi_weather_bf387507_temperature
+                name: false
+          - entity: binary_sensor.central_heating_kitchen
+            type: custom:multiple-entity-row
+            state_color: true
+            show_state: false
+            name: "Кухня"
+            entities:
+              - entity: binary_sensor.central_heating_kitchen
+                name: false
+              - entity: sensor.lumi_lumi_weather_4dad5507_temperature
+                name: false
+          - entity: binary_sensor.central_heating_bedroom
+            type: custom:multiple-entity-row
+            state_color: true
+            show_state: false
+            name: "Спальня"
+            entities:
+              - entity: binary_sensor.central_heating_bedroom
+                name: false
+              - entity: sensor.lumi_lumi_weather_temperature
+                name: false
+
+#          - entity: sensor.lumi_lumi_weather_824e9807_temperature
+#            name: Детская
+#          - entity: sensor.lumi_lumi_weather_bf387507_temperature
+#            name: Гостиная
+#          - entity: sensor.lumi_lumi_weather_4dad5507_temperature
+#            name: Кухня
+#          - entity: sensor.lumi_lumi_weather_temperature
+#            name: Спальня
