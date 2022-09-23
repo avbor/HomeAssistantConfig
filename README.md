@@ -21,6 +21,14 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - SD 64 Gb A2 (OS)
   - HDD 500 Gb (Data)
 
+**Storage**
+- Synology [DS1621+](https://www.synology.com/en-us/products/DS1621+)
+  - RAM: 32 Gb [CT16G4SFRA266](https://www.crucial.com/memory/ddr4/ct16g4sfra266) 16 Gb x2
+  - HDD: WD 18 Tb 7200 rpm [HDD WD DC HC550 WUH721818ALE6L4](https://www.westerndigital.com/products/internal-drives/data-center-drives/ultrastar-dc-hc550-hdd#0F38459) x2
+  - HDD: WD 3 Tb 5400 rpm [WD30PURZ-85GU6Y0](https://www.westerndigital.com/products/internal-drives/wd-purple-sata-hdd#WD30PURZ) x2
+  - SSD SATA: WD 500 Gb [WDS500G1R0A](https://www.westerndigital.com/en-us/products/internal-drives/wd-red-sata-2-5-ssd#WDS500G1R0A) x2
+  - SSD NVME: Samsung 500 Gb [MZ-V7S500BW](https://www.samsung.com/uk/memory-storage/nvme-ssd/970-evo-plus-nvme-m-2-ssd-500gb-mz-v7s500bw/) x2
+
 **Network:**
 
 _Main site (city apartment):_
@@ -29,7 +37,7 @@ _Main site (city apartment):_
   2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
-- Keenetic Speedster ([KN-3010](https://keenetic.ru/ru/keenetic-speedster)) as Access Points in WiFi Mesh Network
+- Keenetic Speedster ([KN-3010](https://keenetic.ru/ru/keenetic-speedster)) as Access Points in WiFi Mesh Network x2
 
 - Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
 
@@ -122,6 +130,7 @@ _Remote site (country house):_
 - Light:
   - IKEA TRÅDFRI LED Bulb E14 400lm (LED1649C5, ikea.light.led1649c5)
   - IKEA TRÅDFRI LED Bulb E14 470lm (LED1835C6)
+  - IKEA TRÅDFRI LED Bulb E14 600lm (LED1738G7)
   - IKEA TRÅDFRI LED Bulb E27 806lm (LED1836G9)
   - IKEA TRÅDFRI LED Bulb E27 1000lm (LED1732G11)
 
@@ -130,6 +139,7 @@ _Remote site (country house):_
   - Aqara Wireless Switch with Gyroscope (WXKG12LM, lumi.sensor_switch.aq3)
   - IKEA TRÅDFRI ON/OFF Switch (E1743)
   - IKEA TRÅDFRI Remote control (E1524)
+  - IKEA STYRBAR Remote control (E2002)
 
 - Sensors:
   - MiJia Door & Window Sensor (MCCGQ01LM, lumi.sensor_magnet)
@@ -142,6 +152,7 @@ _Remote site (country house):_
   - MiJia Honeywell Gas Leak Detector (JTQJ-BF-01LM/BW, lumi.sensor_natgas.v1)
   - MiJia Light Sensor (GZCGQ01LM, lumi.sen_ill.mgl01)
   - Trust Motion Sensor (ZPIR-8000)
+  - IKEA TRÅDFRI Motion Sensor (E1745)
 
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)
@@ -195,7 +206,8 @@ Integration "Integration Saures controllers with HA" by [volshebniks](https://gi
 - AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series\
 Via Tuya SmartIR flashed to ESPHome, IRremoteESP8266 lib and Xiaomi Magnet Sensors
 
-- Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WFN-02](https://home-comfort.ru/catalog/obogrevateli_elektricheskie/konvektory/aksessuary/modul_syemnyy_upravlyayushchiy_electrolux_ech_wfn_02_smart_wi_fi/) module
+- Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WFN-02](https://home-comfort.ru/catalog/obogrevateli_elektricheskie/konvektory/aksessuary/modul_syemnyy_upravlyayushchiy_electrolux_ech_wfn_02_smart_wi_fi/) module\
+Via "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 
 ### Software
 

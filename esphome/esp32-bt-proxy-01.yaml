@@ -1,0 +1,22 @@
+substitutions:
+  esp_board: esp32dev
+  board_name: esp32-bt-proxy-01
+  room_name: Living Room
+
+packages:
+  wifi: !include common/wifi_bt_proxy.yaml
+  device_base: !include common/device_base_esp32.yaml
+
+status_led:
+  pin: GPIO2
+
+web_server:
+  port: 80
+
+esp32_ble_tracker: 
+  scan_parameters:
+    interval: 1100ms
+    window: 1100ms
+    active: true
+
+bluetooth_proxy:
