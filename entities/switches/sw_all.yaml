@@ -57,7 +57,7 @@
 - platform: command_line
   switches:
     mount_mnt_nas:
-      command_on: "mkdir -p /mnt/nas; mount -t nfs4 172.16.16.4:/nfs /mnt/nas"
+      command_on: "mkdir -p /mnt/nas; mount -t nfs4 172.16.16.5:/volume1/media-01 /mnt/nas"
       command_off: "umount -f /mnt/nas"
       command_state: "grep -c /mnt/nas /proc/mounts || true"
       value_template: "{{ value == '1' }}"

@@ -26,7 +26,7 @@
 #      data:
 #        notification_id: config_entry_discovery
 
-- alias: "HA: Mount NFS Share from NAS02 [/nmt/nas]"
+- alias: "HA: Mount NFS Share from NAS03 [/nmt/nas]"
   id: eb3ef8ea-e19a-4b1e-b7ff-482089a346b5
   trigger:
     - platform: homeassistant
@@ -59,10 +59,10 @@
   trigger:
     - platform: time
       at: "01:00:00"
-  condition:
-    - condition: state
-      entity_id: binary_sensor.mount_mnt_nas_check
-      state: "on"
+#  condition:
+#    - condition: state
+#      entity_id: binary_sensor.mount_mnt_nas_check
+#      state: "on"
   action:
     - service: auto_backup.backup_full
       data:

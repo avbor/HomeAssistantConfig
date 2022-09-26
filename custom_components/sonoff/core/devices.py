@@ -17,10 +17,10 @@ from ..climate import XClimateTH, XClimateNS, XThermostat
 from ..cover import XCover, XCoverDualR3
 from ..fan import XFan, XDiffuserFan, XToggleFan
 from ..light import *
+from ..number import XPulseWidth
 from ..remote import XRemote
 from ..sensor import *
 from ..switch import *
-from ..number import XPulseWidth
 
 # supported custom device_class
 DEVICE_CLASS = {
@@ -125,7 +125,9 @@ DEVICES = {
     ],
     22: [XLightB1, RSSI],  # Sonoff B1 (only cloud)
     # https://github.com/AlexxIT/SonoffLAN/issues/173
-    25: [XDiffuserFan, XDiffuserLight, XWater, RSSI],  # Diffuser
+    25: [
+        XDiffuserFan, XDiffuserLight, spec(XBinarySensor, param="water"), RSSI,
+    ],  # Diffuser
     28: [XRemote, LED, RSSI],  # Sonoff RF Brigde 433
     29: SPEC_2CH,
     30: SPEC_3CH,
@@ -145,7 +147,7 @@ DEVICES = {
     44: [XLightD1, RSSI],  # Sonoff D1
     57: [XLight57, RSSI],  # Mosquito Killer Lamp
     59: [XLightL1, RSSI],  # Sonoff LED (only cloud)
-    # 66: switch1,  # ZigBee Bridge
+    66: [RSSI],  # ZigBee Bridge
     77: SPEC_1CH,  # Sonoff Micro
     78: SPEC_1CH,  # https://github.com/AlexxIT/SonoffLAN/issues/615
     81: SPEC_1CH,
@@ -175,8 +177,12 @@ DEVICES = {
     # https://github.com/AlexxIT/SonoffLAN/issues/766
     136: [XLightB05B, RSSI],  # Sonoff B05-BL
     137: [XLightL1, RSSI],
+    # https://github.com/AlexxIT/SonoffLAN/issues/808
+    154: [XWiFiDoor, Battery, RSSI],  # DW2-Wi-Fi-L
     162: SPEC_3CH,  # https://github.com/AlexxIT/SonoffLAN/issues/659
     165: [Switch1, Switch2, RSSI],  # DualR3 Lite, without power consumption
+    # https://github.com/AlexxIT/SonoffLAN/issues/857
+    168: [RSSI],  # new ZBBridge-P
     174: [XRemoteButton],  # Sonoff R5 (6-key remote)
     177: [XRemoteButton],  # Sonoff S-Mate
     181: [
@@ -204,7 +210,11 @@ DEVICES = {
         Battery,
     ],  # ZCL_HA_DEVICEID_TEMPERATURE_SENSOR
     2026: [XZigbeeMotion, Battery],  # ZIGBEE_MOBILE_SENSOR
-    3026: [XZigbeeDoor, Battery],  # ZIGBEE_DOOR_AND_WINDOW_SENSOR
+    # ZIGBEE_DOOR_AND_WINDOW_SENSOR
+    3026: [spec(XBinarySensor, param="lock", default_class="door"), Battery],
+    4026: [
+        spec(XBinarySensor, param="water", default_class="moisture"), Battery,
+    ],  # https://github.com/AlexxIT/SonoffLAN/issues/852
     4256: [
         spec(XZigbeeSwitches, channel=0, uid="1"),
         spec(XZigbeeSwitches, channel=1, uid="2"),
@@ -330,6 +340,7 @@ DIY = {
     "rf": [28, "SONOFF", "RFBridge DIY"],
     "fan_light": [34, "SONOFF", "iFan DIY"],
     "light": [44, "SONOFF", "D1 DIY"],
+    "switch_radar": [77, "SONOFF", "Micro DIY"],
     "multifun_switch": [126, "SONOFF", "DualR3 DIY"],
 }
 
