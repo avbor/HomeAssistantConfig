@@ -117,6 +117,9 @@ _Remote site (country house):_
   - Xiaomi Xiao AI Smart Alarm Clock (AI01ZM, zimi.clock.myk01)\
   Not used in HA
 
+  - Reolink [RLC-510A](https://reolink.com/product/rlc-510a/)\
+    Integration "Generic Camera" and "Reolink Dev" by [fwestenberg](https://github.com/fwestenberg/reolink_dev)
+
 #### ZigBee Devices:
 - Relays:
   - Aqara Wireless Relay (LLKZMK11LM, lumi.relay.c2acn01)

@@ -5,6 +5,18 @@ cards:
   - type: vertical-stack
     cards:
       - type: picture-glance
+        title: Подъезд
+        entities:
+          - binary_sensor.reolinkcam_01_motion
+        camera_image: camera.reolinkcam_01_rtsp
+      - type: picture-glance
+        title: Прихожая
+        entities:
+          - light.sonoff_1000f2f14a
+        camera_image: camera.dafangcam_02_rtsp
+  - type: vertical-stack
+    cards:
+      - type: picture-glance
         title: Детская
         entities:
           - light.ikea_e27_detskaia
@@ -20,8 +32,3 @@ cards:
     entities:
       - light.sonoff_1000f30a9e
     camera_image: camera.dafangcam_01_rtsp
-  - type: picture-glance
-    title: Прихожая
-    entities:
-      - light.sonoff_1000f2f14a
-    camera_image: camera.dafangcam_02_rtsp

@@ -309,7 +309,8 @@
           '^button\..*_identify|'
           '^sensor\..*_(weight_current|current_weight)|'
           '^sensor\..*_(impedance_current|current_impedance)|'
-          '^media_player\.plex_.*'
+          '^media_player\.plex_.*|'
+          '^(binary_sensor|switch|button)\.reolinkcam_01_.*'
           )
         }}
     - condition: template

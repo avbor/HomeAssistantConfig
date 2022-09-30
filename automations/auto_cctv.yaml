@@ -8,8 +8,8 @@
   trigger:
     platform: state
     entity_id: binary_sensor.0x158d00044cea8e_motion
-    from: 'off'
-    to: 'on'
+    from: "off"
+    to: "on"
   action:
     - service: notify.telegram_group_flat_1
       data:
@@ -37,7 +37,7 @@
           photo:
             - url: !secret dafangcam_03_snapshot_url
 
-- alias: 'Вкл контроль движения в детской'
+- alias: "Вкл контроль движения в детской"
   id: f46ce78b-11b1-42e9-b217-34ed6eabb7bb
   initial_state: true
   trigger:
@@ -47,7 +47,7 @@
     - service: automation.turn_on
       entity_id: automation.dvizhenie_v_detskoi
 
-- alias: 'Выкл контроль движения в детской'
+- alias: "Выкл контроль движения в детской"
   id: 0ffb0c86-cd64-4990-9571-da1799709488
   initial_state: true
   trigger:
@@ -63,12 +63,12 @@
   trigger:
     platform: state
     entity_id: binary_sensor.0x158d00031c790f_contact
-    from: 'off'
-    to: 'on'
+    from: "off"
+    to: "on"
   condition:
     - condition: state
       entity_id: binary_sensor.0x158d000309920a_motion
-      state: 'off'
+      state: "off"
   action:
     - delay:
         seconds: 3
@@ -103,13 +103,13 @@
           photo:
             - url: !secret dafangcam_02_snapshot_url
 
-- alias: 'DafangCam-02 Turn Off Night Mode by Light'
+- alias: "DafangCam-02 Turn Off Night Mode by Light"
   id: ff6813b7-a4a7-4682-bacb-c28290e43f88
   initial_state: true
   trigger:
     platform: state
     entity_id: light.sonoff_1000f2f14a
-    to: 'on'
+    to: "on"
   action:
     - service: switch.turn_off
       data:
@@ -120,3 +120,19 @@
     - service: switch.turn_off
       data:
         entity_id: switch.dafangcam02_ir_led
+
+- alias: "Staircase - Motion detected"
+  id: 56d572c7-3750-4988-8294-aa241a4f4b31
+  trigger:
+    platform: state
+    entity_id: binary_sensor.reolinkcam_01_motion
+    to: "on"
+  action:
+    - delay:
+        seconds: 2
+    - service: telegram_bot.send_photo
+      data:
+        target: !secret tlg_group_staircase
+        url: !secret reolinkcam_01_snapshot_url
+        verify_ssl: false
+        caption: "Обнаружено движение на лестничной клетке."

@@ -3,9 +3,7 @@
 #################################################
 
 doorbell_pack:
-
   template:
-
     - binary_sensor:
         - name: "Doorbell Ringing"
           device_class: sound
@@ -20,13 +18,14 @@ doorbell_pack:
             {% endif %}
 
   input_boolean:
-
     doorbell_mute:
       name: "Disable Doorbell Ringing"
       icon: mdi:bell-off-outline
 
-  automation:
+  folder_watcher:
+    - folder: /config/video
 
+  automation:
     - alias: "Doorbell Ringing"
       id: 420fe43c-f00d-46b6-a787-032b0c58bd47
       mode: single
@@ -37,35 +36,59 @@ doorbell_pack:
           to: "on"
       action:
         - choose:
-          - alias: Mute On
-            conditions: "{{ is_state('input_boolean.doorbell_mute', 'on') }}"
-            sequence:
-              - service: telegram_bot.send_message
-                data:
-                  target: !secret tlg_group_flat_1
-                  message: "*Внимание*, в дверь звонят! _(звонок отключен)_"
-              - service: media_player.play_media
-                entity_id: media_player.yandex_station_mini2_gostinaia
-                data:
-                  media_content_id: "Внимание, в дверь звонят!"
-                  media_content_type: text
-                  extra:
-                    volume_level: "{% set time = now().hour %}{% if time >= 21 or time < 9 %}0.5{% else %}0.7{% endif %}"
+            - alias: Mute On
+              conditions: "{{ is_state('input_boolean.doorbell_mute', 'on') }}"
+              sequence:
+                #- service: telegram_bot.send_message
+                #  data:
+                #    target: !secret tlg_group_flat_1
+                #    message: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+                - service: telegram_bot.send_photo
+                  data:
+                    target: !secret tlg_group_flat_1
+                    url: !secret reolinkcam_01_snapshot_url
+                    verify_ssl: false
+                    caption: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+                - service: media_player.play_media
+                  entity_id: media_player.yandex_station_mini2_gostinaia
+                  data:
+                    media_content_id: "Внимание, в дверь звонят!"
+                    media_content_type: text
+                    extra:
+                      volume_level: "{% set time = now().hour %}{% if time >= 21 or time < 9 %}0.5{% else %}0.7{% endif %}"
+                - service: camera.record
+                  data:
+                    entity_id: camera.reolinkcam_01
+                    filename: "/config/video/doorbel.mp4"
+                    duration: 10
+                    lookback: 0
 
-          - alias: Mute Off
-            conditions: >
-              {{
-                is_state('input_boolean.doorbell_mute', 'off') and
-                is_state('switch.sonoff_mini_r2_01_doorbell','off')
-              }}
-            sequence:
-              - service: switch.turn_on
-                target:
-                  entity_id: switch.sonoff_mini_r2_01_doorbell
-              - service: telegram_bot.send_message
-                data:
-                  target: !secret tlg_group_flat_1
-                  message: "*Внимание*, в дверь звонят!"
+            - alias: Mute Off
+              conditions: >
+                {{
+                  is_state('input_boolean.doorbell_mute', 'off') and
+                  is_state('switch.sonoff_mini_r2_01_doorbell','off')
+                }}
+              sequence:
+                - service: switch.turn_on
+                  target:
+                    entity_id: switch.sonoff_mini_r2_01_doorbell
+                #- service: telegram_bot.send_message
+                #  data:
+                #    target: !secret tlg_group_flat_1
+                #    message: "*Внимание*, в дверь звонят!"
+                - service: telegram_bot.send_photo
+                  data:
+                    target: !secret tlg_group_flat_1
+                    url: !secret reolinkcam_01_snapshot_url
+                    verify_ssl: false
+                    caption: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+                - service: camera.record
+                  data:
+                    entity_id: camera.reolinkcam_01
+                    filename: "/config/video/doorbel.mp4"
+                    duration: 10
+                    lookback: 0
 
     - alias: "Doorbell - Mute and UnMute by Time"
       id: 325f3e23-39b1-47f5-a415-e5da5e4845e3
@@ -94,3 +117,16 @@ doorbell_pack:
               - service: input_boolean.turn_off
                 target:
                   entity_id: input_boolean.doorbell_mute
+
+    - alias: "Doorbell - Send recorded video"
+      trigger:
+        platform: event
+        event_type: folder_watcher
+        event_data:
+          event_type: moved
+          dest_path: /config/video/doorbel.mp4
+      action:
+        - service: telegram_bot.send_video
+          data:
+            target: !secret tlg_group_flat_1
+            file: /config/video/doorbel.mp4

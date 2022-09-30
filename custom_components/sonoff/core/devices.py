@@ -14,7 +14,7 @@ Developer can change global properties of existing classes via spec function.
 from .ewelink import XDevice
 from ..binary_sensor import *
 from ..climate import XClimateTH, XClimateNS, XThermostat
-from ..cover import XCover, XCoverDualR3
+from ..cover import XCover, XCoverDualR3, XZigbeeCover
 from ..fan import XFan, XDiffuserFan, XToggleFan
 from ..light import *
 from ..number import XPulseWidth
@@ -126,7 +126,8 @@ DEVICES = {
     22: [XLightB1, RSSI],  # Sonoff B1 (only cloud)
     # https://github.com/AlexxIT/SonoffLAN/issues/173
     25: [
-        XDiffuserFan, XDiffuserLight, spec(XBinarySensor, param="water"), RSSI,
+        XDiffuserFan, XDiffuserLight, RSSI,
+        spec(XBinarySensor, param="water", uid=""),
     ],  # Diffuser
     28: [XRemote, LED, RSSI],  # Sonoff RF Brigde 433
     29: SPEC_2CH,
@@ -140,6 +141,7 @@ DEVICES = {
         spec(XEnergySensor, param="hundredDaysKwhData", uid="energy",
              get_params={"hundredDaysKwh": "get"}),
     ],  # Sonoff POWR2
+    33: [XLightL1, RSSI],  # https://github.com/AlexxIT/SonoffLAN/issues/985
     34: [
         XFan, XFanLight, LED, RSSI,
     ],  # Sonoff iFan02 and iFan03
@@ -204,6 +206,8 @@ DEVICES = {
     ],  # Sonoff POWR3
     1000: [XRemoteButton, Battery],  # zigbee_ON_OFF_SWITCH_1000
     1256: [spec(XSwitch, base="light")],  # ZCL_HA_DEVICEID_ON_OFF_LIGHT
+    # https://github.com/AlexxIT/SonoffLAN/issues/972
+    1514: [XZigbeeCover, spec(XSensor, param="battery", multiply=2)],
     1770: [
         spec(XSensor100, param="temperature"),
         spec(XSensor100, param="humidity"),
@@ -211,9 +215,14 @@ DEVICES = {
     ],  # ZCL_HA_DEVICEID_TEMPERATURE_SENSOR
     2026: [XZigbeeMotion, Battery],  # ZIGBEE_MOBILE_SENSOR
     # ZIGBEE_DOOR_AND_WINDOW_SENSOR
-    3026: [spec(XBinarySensor, param="lock", default_class="door"), Battery],
+    3026: [
+        # backward compatibility for unique_id
+        spec(XBinarySensor, param="lock", uid="", default_class="door"),
+        Battery,
+    ],
     4026: [
-        spec(XBinarySensor, param="water", default_class="moisture"), Battery,
+        spec(XBinarySensor, param="water", uid="", default_class="moisture"),
+        Battery,
     ],  # https://github.com/AlexxIT/SonoffLAN/issues/852
     4256: [
         spec(XZigbeeSwitches, channel=0, uid="1"),
@@ -234,6 +243,8 @@ POW_UI_ACTIVE = {
     126: (3600, {"uiActive": {"all": 1, "time": 7200}}),
     130: (3600, {"uiActive": {"all": 1, "time": 7200}}),
     182: (0, {"uiActive": 180}),  # maximum for this model
+    # https://github.com/AlexxIT/SonoffLAN/issues/978
+    190: (0, {"uiActive": 180}),  # haven't check real maximum
 }
 
 
