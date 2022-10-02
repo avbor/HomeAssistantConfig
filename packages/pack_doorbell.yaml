@@ -22,9 +22,6 @@ doorbell_pack:
       name: "Disable Doorbell Ringing"
       icon: mdi:bell-off-outline
 
-  folder_watcher:
-    - folder: /config/video
-
   automation:
     - alias: "Doorbell Ringing"
       id: 420fe43c-f00d-46b6-a787-032b0c58bd47
@@ -119,6 +116,7 @@ doorbell_pack:
                   entity_id: input_boolean.doorbell_mute
 
     - alias: "Doorbell - Send recorded video"
+      id: 0d35b362-6bf4-4741-94c0-c5ec852bd8c5
       trigger:
         platform: event
         event_type: folder_watcher

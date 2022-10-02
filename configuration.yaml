@@ -212,6 +212,9 @@ conversation:
   intents:
     media_player.yandex_station_mini2_gostinaia: [.+]
 
+folder_watcher:
+  - folder: /config/video
+
 #xbox:
 #  client_id: !secret xbox_client_id
 #  client_secret: !secret xbox_client_secret
