@@ -7,21 +7,79 @@ cards:
       - type: markdown
         content: >
           ### <center>Терраса</center>
-      - type: custom:vertical-stack-in-card
-        cards:
+      #- type: custom:vertical-stack-in-card
+      #  cards:
 #          - type: entity
 #            state_color: true
 #            entity: switch.gosund_sp111_02_switch
 #            name: "Инфракрасный обогреватель"
 #            icon: mdi:heat-wave
-          - type: entities
-            entities:
-              - entity: switch.gosund_sp111_02_switch
-                name: "Инфракрасный обогреватель"
-                icon: mdi:heat-wave
-              - entity: sensor.ch_heater_terrace_power
-                name: Режим
-                icon: mdi:tune-variant
+      #    - type: entities
+      #      entities:
+      #        - entity: switch.gosund_sp111_02_switch
+      #          name: "Инфракрасный обогреватель"
+      #          icon: mdi:heat-wave
+      #        - entity: sensor.ch_heater_terrace_power
+      #          name: Режим
+      #          icon: mdi:tune-variant
+
+      - type: custom:simple-thermostat
+        entity: climate.country_house_terrace
+        layout:
+          step: row
+          mode:
+            names: false
+        header: false
+        sensors:
+          - entity: binary_sensor.ch_heater_terrace_status
+            name: Статус
+        control:
+          hvac:
+            _name: "Режим:"
+        hide:
+          state: true
+          temperature: true
+      - type: "custom:mini-graph-card"
+        name: Температура
+        icon: mdi:thermometer
+        cache: false
+        hours_to_show: 24
+        points_per_hour: 12
+        lower_bound_secondary: 0
+        upper_bound_secondary: 100
+        line_width: 2
+        font_size: 75
+        font_size_header: 12
+        height: 80
+        decimals: 1
+        hour24: true
+        align_state: center
+        entities:
+          - entity: sensor.a4c1384e2b64_temperature
+            name: Температура
+          - entity: sensor.a4c1384e2b64_humidity
+            name: Влажность
+            show_state: true
+            #show_graph: false
+            y_axis: secondary
+            smoothing: true
+            show_fill: false
+            color: deepskyblue
+          - entity: sensor.ch_heater_terrace_status
+            y_axis: secondary
+            aggregate_func: max
+            smoothing: false
+            show_legend: false
+            show_line: false
+            show_points: false
+            color: salmon
+        show:
+          name: false
+          icon: false
+          labels: false
+          legend: false
+          labels_secondary: false
+          fill: fade
 
       - type: custom:vertical-stack-in-card
         cards:

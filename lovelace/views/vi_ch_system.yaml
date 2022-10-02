@@ -26,11 +26,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c1384e2b64_temperature
+            entity: sensor.0x158d000802df91_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c1384e2b64_humidity
+            entity: sensor.0x158d000802df91_humidity
             name: Влажность
             graph: line
   - type: vertical-stack
@@ -89,6 +89,9 @@ cards:
             entities:
               - entity: sensor.gosund_sp111_02_ampere
                 name: false
+          - entity: sensor.ch_heater_terrace_power
+            name: Режим
+            icon: []
   - type: vertical-stack
     cards:
       - type: markdown

@@ -23,6 +23,8 @@ ch_climate_pack:
           value_template: "{{ ((state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs) * 100 }}"
         ch_heater_kids_rooms_status:
           value_template: "{{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}"
+        ch_heater_terrace_status:
+          value_template: "{{ ((state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') | abs) * 100 }}"
         ch_heater_terrace_power:
           value_template: >-
             {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int) %}
@@ -56,6 +58,15 @@ ch_climate_pack:
             {% else %}
               mdi:radiator-disabled
             {% endif %}
+        ch_heater_terrace_status:
+          device_class: heat
+          value_template: "{{ (state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') }}"
+          icon_template: >-
+            {% if state_attr('climate.country_house_terrace', 'hvac_action') == 'heating' %}
+              mdi:radiator
+            {% else %}
+              mdi:radiator-disabled
+            {% endif %}
 
   # Climate
   climate:
@@ -77,6 +88,19 @@ ch_climate_pack:
       name: Country House Kids Rooms
       heater: switch.gosund_sp111_08_switch
       target_sensor: sensor.country_house_avg_temp_kids_rooms
+      min_temp: 5
+      max_temp: 30
+      cold_tolerance: 2
+      hot_tolerance: 0.5
+      min_cycle_duration:
+        minutes: 1
+      away_temp: 10
+      precision: 0.1
+    - platform: generic_thermostat
+      unique_id: aad05c78-6dc3-435a-becc-2e1c2a377fda
+      name: Country House Terrace
+      heater: switch.gosund_sp111_02_switch
+      target_sensor: sensor.a4c1384e2b64_temperature
       min_temp: 5
       max_temp: 30
       cold_tolerance: 2
