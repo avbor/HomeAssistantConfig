@@ -128,20 +128,25 @@
     entity_id: binary_sensor.reolinkcam_01_motion
     to: "on"
   action:
-    #- service: telegram_bot.send_photo
-    #  data:
-    #    target: !secret tlg_group_staircase
-    #    url: !secret reolinkcam_01_snapshot_url
-    #    verify_ssl: false
-    #    caption: "Обнаружено движение на лестничной клетке"
-    - service: camera.record
-      data:
-        entity_id: camera.reolinkcam_01_rtsp
-        filename: "/config/video/staircase_movement.mp4"
-        duration: 10
-        lookback: 5
+    - parallel:
+        - sequence:
+            - delay:
+                seconds: 2
+            - service: telegram_bot.send_photo
+              data:
+                target: !secret tlg_group_staircase
+                url: !secret reolinkcam_01_snapshot_url
+                verify_ssl: false
+                caption: "Обнаружено движение на лестничной клетке"
+        - service: camera.record
+          data:
+            entity_id: camera.reolinkcam_01_rtsp
+            filename: "/config/video/staircase_movement.mp4"
+            duration: 7
+            lookback: 2
 
 - alias: "Staircase - Send recorded video"
+  id: 692afba6-c94d-477f-9ac4-d064643898ce
   trigger:
     platform: event
     event_type: folder_watcher
@@ -154,3 +159,4 @@
         target: !secret tlg_group_staircase
         file: /config/video/staircase_movement.mp4
         timeout: 180
+        caption: "Обнаружено движение на лестничной клетке"

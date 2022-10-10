@@ -10,7 +10,7 @@ packages:
 
 esphome:
   on_boot:
-    - switch.turn_off: button
+    - switch.turn_off: btn
 
 web_server:
   port: 80
@@ -24,7 +24,7 @@ binary_sensor:
       inverted: True
     name: "${board_name}_button_state"
     on_press:
-      - switch.toggle: button
+      - switch.toggle: btn
 
 switch:
   # Relay switch
@@ -37,7 +37,7 @@ switch:
   - platform: template
     name: "${board_name}_switch"
     optimistic: true
-    id: button
+    id: btn
     turn_on_action:
     - switch.turn_on: relay
 #    - light.turn_on: led

@@ -35,3 +35,10 @@ dashboards:
     icon: mdi:tools
     show_in_sidebar: true
     require_admin: true
+  dash-cam:
+    mode: yaml
+    filename: lovelace/dash-cam.yaml
+    title: Cameras
+    icon: mdi:cctv
+    show_in_sidebar: false
+    require_admin: true

@@ -275,8 +275,6 @@ cards:
             label: Прихожая
           - entity: automation.reguliarnaia_uborka_prikhozhei
             name: Регулярная уборка прихожей [Датчик двери]
-          - entity: automation.dd_aqara_vkliuchenie_sveta_v_prikhozhei
-            name: Включать свет в прихожей [ДД]
           - type: section
             label: Детская
           - entity: automation.dvizhenie_v_detskoi

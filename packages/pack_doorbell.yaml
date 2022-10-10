@@ -21,6 +21,9 @@ doorbell_pack:
     doorbell_mute:
       name: "Disable Doorbell Ringing"
       icon: mdi:bell-off-outline
+    alice_voiceover:
+      name: "Alice alerts on the doorbell"
+      icon: mdi:account-voice
 
   automation:
     - alias: "Doorbell Ringing"
@@ -45,7 +48,9 @@ doorbell_pack:
                     target: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
-                    caption: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+                    caption: |
+                      *Внимание*, в дверь звонят! _(звонок отключен)_
+                      [Посмотреть в камеру](https://ha.home.mydatabox.ru/dash-cam/cam-staircase)
                 - service: media_player.play_media
                   entity_id: media_player.yandex_station_mini2_gostinaia
                   data:
@@ -53,13 +58,12 @@ doorbell_pack:
                     media_content_type: text
                     extra:
                       volume_level: "{% set time = now().hour %}{% if time >= 21 or time < 9 %}0.5{% else %}0.7{% endif %}"
-                - service: camera.record
-                  data:
-                    entity_id: camera.reolinkcam_01
-                    filename: "/config/video/doorbel.mp4"
-                    duration: 10
-                    lookback: 0
-
+#                - service: camera.record
+#                  data:
+#                    entity_id: camera.reolinkcam_01
+#                    filename: "/config/video/doorbel.mp4"
+#                    duration: 10
+#                    lookback: 0
             - alias: Mute Off
               conditions: >
                 {{
@@ -79,19 +83,21 @@ doorbell_pack:
                     target: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
-                    caption: "*Внимание*, в дверь звонят! _(звонок отключен)_"
-                - service: camera.record
-                  data:
-                    entity_id: camera.reolinkcam_01
-                    filename: "/config/video/doorbel.mp4"
-                    duration: 10
-                    lookback: 0
+                    caption: |
+                      *Внимание*, в дверь звонят!
+                      [Посмотреть в камеру](https://ha.home.mydatabox.ru/dash-cam/cam-staircase)
+    #                - service: camera.record
+    #                  data:
+    #                    entity_id: camera.reolinkcam_01
+    #                    filename: "/config/video/doorbel.mp4"
+    #                    duration: 10
+    #                    lookback: 0
 
     - alias: "Doorbell - Mute and UnMute by Time"
       id: 325f3e23-39b1-47f5-a415-e5da5e4845e3
       trigger:
         - platform: time
-          at: "22:00:00"
+          at: "21:00:00"
           id: "turn_on"
         - platform: time
           at: "08:00:00"
@@ -115,16 +121,16 @@ doorbell_pack:
                 target:
                   entity_id: input_boolean.doorbell_mute
 
-    - alias: "Doorbell - Send recorded video"
-      id: 0d35b362-6bf4-4741-94c0-c5ec852bd8c5
-      trigger:
-        platform: event
-        event_type: folder_watcher
-        event_data:
-          event_type: moved
-          dest_path: /config/video/doorbel.mp4
-      action:
-        - service: telegram_bot.send_video
-          data:
-            target: !secret tlg_group_flat_1
-            file: /config/video/doorbel.mp4
+#    - alias: "Doorbell - Send recorded video"
+#      id: 0d35b362-6bf4-4741-94c0-c5ec852bd8c5
+#      trigger:
+#        platform: event
+#        event_type: folder_watcher
+#        event_data:
+#          event_type: moved
+#          dest_path: /config/video/doorbel.mp4
+#      action:
+#        - service: telegram_bot.send_video
+#          data:
+#            target: !secret tlg_group_flat_1
+#            file: /config/video/doorbel.mp4

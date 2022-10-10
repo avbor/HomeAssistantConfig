@@ -58,7 +58,7 @@
     - "time"
     - "date"
     - "date_time_iso"
-- platform: moon
+#- platform: moon
 #- platform: version
 #  source: local
 #- platform: version
@@ -90,7 +90,7 @@
     grep -c -v -E "^.+ We found a custom integration .+ which has not been tested by Home Assistant.+$" || true
   scan_interval: 3600
   unit_of_measurement: pc
-- platform: uptime
+#- platform: uptime
 - platform: template
   sensors:
     date_formatted:

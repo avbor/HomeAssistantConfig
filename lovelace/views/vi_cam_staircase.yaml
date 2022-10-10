@@ -1,0 +1,10 @@
+title: Camera Staircase
+path: cam-staircase
+icon: mdi:cctv
+panel: true
+cards:
+  - type: picture-glance
+    title: Подъезд
+    entities: []
+    camera_image: camera.reolinkcam_01_rtsp
+    camera_view: live

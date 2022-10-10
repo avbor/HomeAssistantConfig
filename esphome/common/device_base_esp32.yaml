@@ -9,6 +9,7 @@ esp32:
 improv_serial:
 
 logger:
+#  level: VERY_VERBOSE
 
 captive_portal:
 

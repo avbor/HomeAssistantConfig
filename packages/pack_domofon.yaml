@@ -83,14 +83,14 @@ domofon_pack:
       id: 97a74c5f-6a9f-4af6-9f8e-2a7fcd0a5070
       trigger:
         - platform: time
-          at: "23:00:00"
+          at: "21:00:00"
         - platform: time
-          at: "07:00:00"
+          at: "08:00:00"
       action:
         - service: >-
-            {% if trigger.now.hour == 23 -%}
+            {% if trigger.now.hour == 21 -%}
               switch.turn_on
-            {% elif trigger.now.hour == 7 -%}
+            {% elif trigger.now.hour == 8 -%}
               switch.turn_off
             {% endif %}
           data:

@@ -3,13 +3,131 @@
 #################################################
 
 toilet_light_pack:
-
   timer:
-
     toilet_presence:
       duration: "00:03:00"
 
   automation:
+    - alias: "Свет в Туалете"
+      id: 7fa56654-f362-4f13-97ca-9d8e4ff52ccb
+      mode: queued
+      max: 10
+      max_exceeded: silent
+      trigger:
+        - platform: state
+          entity_id: timer.toilet_presence
+          to: "idle"
+          id: "timer_idle"
+        - platform: state
+          entity_id: binary_sensor.lumi_lumi_sensor_magnet_9bef9603_on_off
+          id: "magnet"
+        - platform: state
+          entity_id: binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone
+          to: "on"
+          id: "motion_on"
+      action:
+        choose:
+          - alias: Timer Idle
+            conditions:
+              - condition: trigger
+                id: "timer_idle"
+            sequence:
+              choose:
+                - alias: Motion On
+                  conditions: "{{ states('binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone') == 'on' }}"
+                  sequence:
+                    - service: timer.start
+                      target:
+                        entity_id: timer.toilet_presence
+                - alias: Motion Off
+                  conditions: "{{ states('binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone') == 'off' }}"
+                  sequence:
+                    choose:
+                      - alias: Motion detected > 3 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone.last_changed)) > 180 }}"
+                        sequence:
+                          - parallel:
+                              - sequence:
+                                  - condition: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
+                                  - service: light.turn_off
+                                    target:
+                                      entity_id: light.sonoff_zbmini_03_on_off
+                              - sequence:
+                                  - condition: "{{ is_state('fan.toilet_extractor', 'on') }}"
+                                  - service: fan.turn_off
+                                    target:
+                                      entity_id: fan.toilet_extractor
+                      - alias: Motion detected <= 3 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone.last_changed)) <= 180 }}"
+                        sequence:
+                          - condition: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
+                          - service: light.turn_off
+                            target:
+                              entity_id: light.sonoff_zbmini_03_on_off
+                          - delay:
+                              seconds: 0.3
+                          - service: light.turn_on
+                            target:
+                              entity_id: light.sonoff_zbmini_03_on_off
+                          - wait_template: "{{ is_state('binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone', 'on') }}"
+                            timeout: "00:00:30"
+                          - if:
+                              - "{{ not wait.completed }}"
+                            then:
+                              - parallel:
+                                  - sequence:
+                                      - condition: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
+                                      - service: light.turn_off
+                                        target:
+                                          entity_id: light.sonoff_zbmini_03_on_off
+                                  - sequence:
+                                      - condition: "{{ is_state('fan.toilet_extractor', 'on') }}"
+                                      - service: fan.turn_off
+                                        target:
+                                          entity_id: fan.toilet_extractor
+          - alias: Magnet
+            conditions:
+              - condition: trigger
+                id: "magnet"
+            sequence:
+              choose:
+                - alias: To On
+                  conditions: "{{ trigger.from_state.state == 'off' and trigger.to_state.state == 'on' }}"
+                  sequence:
+                    - condition: "{{ is_state('light.sonoff_zbmini_03_on_off', 'off') }}"
+                    - service: light.turn_on
+                      target:
+                        entity_id: light.sonoff_zbmini_03_on_off
+                    - service: timer.start
+                      target:
+                        entity_id: timer.toilet_presence
+                - alias: To Off
+                  conditions: "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
+                  sequence:
+                    - condition: "{{ is_state('binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone', 'off') }}"
+                    - condition: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
+                    - service: light.turn_off
+                      target:
+                        entity_id: light.sonoff_zbmini_03_on_off
+          - alias: Motion
+            conditions:
+              - condition: trigger
+                id: "motion_on"
+            sequence:
+              - service: timer.start
+                target:
+                  entity_id: timer.toilet_presence
+              - parallel:
+                  - sequence:
+                      - condition: "{{ is_state('fan.toilet_extractor', 'off') }}"
+                      - service: fan.turn_on
+                        target:
+                          entity_id: fan.toilet_extractor
+                  - sequence:
+                      - condition: "{{ is_state('light.sonoff_zbmini_03_on_off', 'off') }}"
+                      - service: light.turn_on
+                        target:
+                          entity_id: light.sonoff_zbmini_03_on_off
 
     - alias: "Кнопка Xiaomi в Туалете"
       id: fd70c07a-4a17-46ca-b91b-aa15c47c8ae4
@@ -23,12 +141,12 @@ toilet_light_pack:
             device_ieee: "00:15:8d:00:03:d1:5d:00"
             command: "click"
           id: "click"
-#        - platform: event
-#          event_type: zha_event
-#          event_data:
-#            device_ieee: "00:15:8d:00:03:d1:5d:00"
-#            command: "hold"
-#          id: "hold"
+      #        - platform: event
+      #          event_type: zha_event
+      #          event_data:
+      #            device_ieee: "00:15:8d:00:03:d1:5d:00"
+      #            command: "hold"
+      #          id: "hold"
       action:
         choose:
           - alias: Action Click
@@ -41,8 +159,11 @@ toilet_light_pack:
                   conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
                   sequence:
                     - service: light.toggle
-                      data:
+                      target:
                         entity_id: light.sonoff_zbmini_03_on_off
+                    - service: fan.toggle
+                      target:
+                        entity_id: fan.toilet_extractor
                 - alias: Double click
                   conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
                   sequence:
@@ -57,82 +178,3 @@ toilet_light_pack:
 #              - service: light.toggle
 #                data:
 #                  entity_id:
-
-    - alias: "ДД Trust в Туалете"
-      id: 203aa3ab-9d3c-40e9-ae3e-e77ebd0c88c2
-      mode: queued
-      max: 5
-      max_exceeded: silent
-      trigger:
-        - platform: state
-          entity_id: binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone
-          id: "motion"
-        - platform: state
-          entity_id: timer.toilet_presence
-          id: "timer"
-      action:
-        choose:
-          - alias: Motion
-            conditions:
-              - condition: trigger
-                id: "motion"
-            sequence:
-              choose:
-                - alias: To On
-                  conditions: "{{ trigger.to_state.state == 'on' }}"
-                  sequence:
-                    - service: timer.start
-                      target:
-                        entity_id: timer.toilet_presence
-                    - service: fan.turn_on
-                      target:
-                        entity_id: fan.toilet_extractor
-#                - alias: To Off
-#                  conditions: "{{ trigger.to_state.state == 'off' }}"
-#                  sequence:
-#                    - service: fan.turn_off
-#                      target:
-#                        entity_id: fan.toilet_extractor
-          - alias: Timer
-            conditions:
-              - condition: trigger
-                id: "timer"
-            sequence:
-              choose:
-                conditions: "{{ trigger.to_state.state == 'idle' }}"
-                sequence:
-                  - condition: state
-                    entity_id: binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone
-                    state: "off"
-                  - service: fan.turn_off
-                    target:
-                      entity_id: fan.toilet_extractor
-
-    - alias: "Геркон в Туалете"
-      id: 0cd5448c-757e-49f8-b9ae-7006dab3d842
-      mode: queued
-      max: 5
-      max_exceeded: silent
-      trigger:
-        - platform: state
-          entity_id: binary_sensor.lumi_lumi_sensor_magnet_9bef9603_on_off
-          id: "magnet"
-      action:
-        choose:
-          - alias: Door Opens
-            conditions: "{{ trigger.from_state.state == 'off' and trigger.to_state.state == 'on' }}"
-            sequence:
-              choose:
-                - alias: Light Off
-                  conditions: "{{ is_state('light.sonoff_zbmini_03_on_off', 'off') }}"
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: light.sonoff_zbmini_03_on_off
-#                - alias: Fan Off
-#                  conditions: "{{ is_state('fan.tolilet_extractor','off') }}"
-#                  sequence:
-#                    - delay: "00:00:02"
-#                    - service: fan.turn_on
-#                      target:
-#                        entity_id: fan.toilet_extractor

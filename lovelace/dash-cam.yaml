@@ -1,0 +1,3 @@
+title: "Камеры"
+views:
+  - !include views/vi_cam_staircase.yaml

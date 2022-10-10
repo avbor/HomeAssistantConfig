@@ -51,8 +51,6 @@ esp32_ble_tracker:
     window: 1100ms
     active: false
 
-#bluetooth_proxy:
-
 number:
   - platform: template
     id: num_alex_weight_min

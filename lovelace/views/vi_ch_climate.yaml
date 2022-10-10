@@ -27,6 +27,19 @@ cards:
           ### <center>Дом</center>
       - type: markdown
         content: >
+          <center>Терраса</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.a4c1384e2b64_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.a4c1384e2b64_humidity
+            name: Влажность
+            graph: line
+      - type: markdown
+        content: >
           <center>Гостиная</center>
       - type: horizontal-stack
         cards:

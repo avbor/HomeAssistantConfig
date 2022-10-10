@@ -1,0 +1,21 @@
+substitutions:
+  esp_board: esp32dev
+  board_name: esp32-bt-proxy-02
+  room_name: Hallway
+
+packages:
+  wifi: !include common/wifi_bt_proxy.yaml
+  device_base: !include common/device_base_esp32.yaml
+  esp32_ble_tracker: !include common/esp32_ble_tracker_bt_proxy.yaml
+
+status_led:
+  pin: GPIO2
+
+web_server:
+  port: 80
+
+bluetooth_proxy:
+  active: true
+
+binary_sensor: 
+  !include common/family_ibeacon_sensors.yaml 

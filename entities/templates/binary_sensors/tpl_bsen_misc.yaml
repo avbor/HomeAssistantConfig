@@ -2,18 +2,25 @@
 # Miscellaneous template binary sensors
 #################################################
 - binary_sensor:
+    - name: updater_supervisor
+      #friendly_name: 'Updater - Supervisor'
+      device_class: problem
+      state: "{{ state_attr('sensor.supervisor_updates', 'current_version') != state_attr('sensor.supervisor_updates', 'newest_version') }}"
+      availability: "{{ (states('sensor.supervisor_updates') | int(-1)) > -1 }}"
 
-  - name: updater_supervisor
-    #friendly_name: 'Updater - Supervisor'
-    device_class: problem
-    state: "{{ state_attr('sensor.supervisor_updates', 'current_version') != state_attr('sensor.supervisor_updates', 'newest_version') }}"
-    availability: "{{ (states('sensor.supervisor_updates') | int(-1)) > -1 }}"
+    - name: updater_addons
+      #friendly_name: 'Updater - Addons'
+      device_class: problem
+      state: "{{ states('sensor.supervisor_updates') | int > 0 }}"
 
-  - name: updater_addons
-    #friendly_name: 'Updater - Addons'
-    device_class: problem
-    state: "{{ states('sensor.supervisor_updates') | int > 0 }}"
+    - name: coutry_house_presence
+      device_class: presence
+      state: "{{ 'Дача' in (expand('group.family_persons') | map(attribute='state') | list) }}"
 
-  - name: coutry_house_presence
-    device_class: presence
-    state: "{{ 'Дача' in (expand('group.family_persons') | map(attribute='state') | list) }}"
+    - name: bathroom_high_humidity
+      device_class: moisture
+      state: "{{ (int(states('sensor.0x158d0003931a55_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
+
+    - name: toilet_high_humidity
+      device_class: moisture
+      state: "{{ (int(states('sensor.a4c138414e9a_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
