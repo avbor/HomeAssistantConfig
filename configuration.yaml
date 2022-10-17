@@ -183,6 +183,7 @@ telegram_bot:
       - !secret tlg_group_flat_1
       - !secret tlg_group_system
       - !secret tlg_group_staircase
+      - !secret tlg_group_country_house
 
 notify:
   - name: telegram_stall

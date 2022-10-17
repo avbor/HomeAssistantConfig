@@ -1,3 +1,4 @@
 title: "Камеры"
 views:
   - !include views/vi_cam_staircase.yaml
+  - !include views/vi_cam_countryhouse.yaml

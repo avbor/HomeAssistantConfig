@@ -6,9 +6,9 @@ cards:
     cards:
       - type: picture-glance
         title: Подъезд
-        entities:
-          - binary_sensor.reolinkcam_01_motion
+        entities: []
         camera_image: camera.reolinkcam_01_rtsp
+#        camera_image: camera.nas03_reolinkcam_01
       - type: picture-glance
         title: Прихожая
         entities:

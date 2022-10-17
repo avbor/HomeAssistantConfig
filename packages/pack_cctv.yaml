@@ -1,0 +1,182 @@
+#################################################
+# Package CCTV
+#################################################
+
+cctv_pack:
+  template:
+    - trigger:
+        - platform: webhook
+          webhook_id: !secret sss_reolinkcam_01_webhook
+      binary_sensor:
+        - name: sss_reolinkcam_01_motion
+          device_class: motion
+          state: "{{ trigger.data.motion }}"
+          auto_off: "00:00:30"
+
+  automation:
+    - alias: Движение в детской
+      id: 6166ef07-c478-44e3-a226-24d7737d6646
+      initial_state: false
+      trigger:
+        platform: state
+        entity_id: binary_sensor.0x158d00044cea8e_motion
+        from: "off"
+        to: "on"
+      action:
+        - service: notify.telegram_group_flat_1
+          data:
+            message: "В *Детской* обнаружено движение:"
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: "Camera Snapshot 1"
+            data:
+              photo:
+                - url: !secret dafangcam_03_snapshot_url
+        - delay:
+            seconds: 1
+        - service: notify.telegram_group_flat_1
+          data:
+            message: "Camera Snapshot 2"
+            data:
+              photo:
+                - url: !secret dafangcam_03_snapshot_url
+        - delay:
+            seconds: 1
+        - service: notify.telegram_group_flat_1
+          data:
+            message: "Camera Snapshot 3"
+            data:
+              photo:
+                - url: !secret dafangcam_03_snapshot_url
+
+    - alias: "Вкл контроль движения в детской"
+      id: f46ce78b-11b1-42e9-b217-34ed6eabb7bb
+      initial_state: true
+      trigger:
+        platform: time
+        at: "23:30:00"
+      action:
+        - service: automation.turn_on
+          entity_id: automation.dvizhenie_v_detskoi
+
+    - alias: "Выкл контроль движения в детской"
+      id: 0ffb0c86-cd64-4990-9571-da1799709488
+      initial_state: true
+      trigger:
+        platform: time
+        at: "07:00:00"
+      action:
+        - service: automation.turn_off
+          entity_id: automation.dvizhenie_v_detskoi
+
+    - alias: Вход в квартиру
+      id: 47a5b56e-5c41-4ae6-a3c2-25984c67b1b5
+      initial_state: true
+      trigger:
+        platform: state
+        entity_id: binary_sensor.0x158d00031c790f_contact
+        from: "off"
+        to: "on"
+      condition:
+        - condition: state
+          entity_id: binary_sensor.0x158d000309920a_motion
+          state: "off"
+      action:
+        - delay:
+            seconds: 3
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: "Camera Snapshot 1"
+            data:
+              photo:
+                - url: !secret dafangcam_02_snapshot_url
+        - delay:
+            seconds: 1
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: "Camera Snapshot 2"
+            data:
+              photo:
+                - url: !secret dafangcam_02_snapshot_url
+        - delay:
+            seconds: 2
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: "Camera Snapshot 3"
+            data:
+              photo:
+                - url: !secret dafangcam_02_snapshot_url
+        - delay:
+            seconds: 3
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: "Camera Snapshot 4"
+            data:
+              photo:
+                - url: !secret dafangcam_02_snapshot_url
+
+    - alias: "DafangCam-02 Turn Off Night Mode by Light"
+      id: ff6813b7-a4a7-4682-bacb-c28290e43f88
+      initial_state: true
+      trigger:
+        platform: state
+        entity_id: light.sonoff_1000f2f14a
+        to: "on"
+      action:
+        - service: switch.turn_off
+          data:
+            entity_id: switch.dafangcam02_night_mode
+        - service: switch.turn_on
+          data:
+            entity_id: switch.dafangcam02_ir_filter
+        - service: switch.turn_off
+          data:
+            entity_id: switch.dafangcam02_ir_led
+
+    - alias: "Staircase - Motion detected"
+      id: 56d572c7-3750-4988-8294-aa241a4f4b31
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.sss_reolinkcam_01_motion
+          from: "off"
+          to: "on"
+      action:
+        - parallel:
+            - sequence:
+                - delay:
+                    seconds: 1
+                - service: telegram_bot.send_photo
+                  data:
+                    target: !secret tlg_group_staircase
+                    url: !secret reolinkcam_01_snapshot_url
+                    verify_ssl: false
+                    caption: "Обнаружено движение на лестничной клетке"
+            - service: shell_command.delete_staircase_movement_record
+            - service: camera.record
+              data:
+                entity_id: camera.reolinkcam_01_rtsp
+                #            entity_id: camera.nas03_reolinkcam_01
+                filename: "/config/video/staircase_movement.mp4"
+                duration: 7
+                lookback: 3
+
+    - alias: "Staircase - Send recorded video"
+      id: 692afba6-c94d-477f-9ac4-d064643898ce
+      trigger:
+        #    platform: event
+        #    event_type: folder_watcher
+        #    event_data:
+        #      event_type: moved
+        #      dest_path: /config/video/staircase_movement.mp4
+        platform: event
+        event_type: folder_watcher
+        event_data:
+          event_type: deleted
+          file: staircase_movement.mp4.tmp
+      action:
+        - service: telegram_bot.send_video
+          data:
+            target: !secret tlg_group_staircase
+            file: /config/video/staircase_movement.mp4
+            timeout: 180
+    #        caption: "Обнаружено движение на лестничной клетке"

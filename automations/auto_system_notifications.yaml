@@ -310,9 +310,12 @@
           '^sensor\..*_(weight_current|current_weight)|'
           '^sensor\..*_(impedance_current|current_impedance)|'
           '^media_player\.plex_.*|'
-          '^(binary_sensor|switch|button)\.reolinkcam_01_.*|'
+          '^(binary_sensor|sensor|switch|button)\.reolinkcam_(01|02)_.*|'
           '.*ed5e33eb_0ca3_4263_a681_a68b1045a5e6.*|'
-          '^binary_sensor\..*_oneplus_8t_presence$'
+          '^binary_sensor\..*_oneplus_8t_presence$|'
+          '^.*\.nas03_.*|'
+          '^vacuum.xiaomi_vacuum_cleaner$|'
+          '^sensor.esp32_bt_proxy_02_rssi$'
           )
         }}
     - condition: template

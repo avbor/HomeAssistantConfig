@@ -3,8 +3,9 @@ path: cam-staircase
 icon: mdi:cctv
 panel: true
 cards:
-  - type: picture-glance
-    title: Подъезд
-    entities: []
+  - type: picture-entity
+    entity: camera.reolinkcam_01_rtsp
     camera_image: camera.reolinkcam_01_rtsp
     camera_view: live
+    show_name: false
+    show_state: false

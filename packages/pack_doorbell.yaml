@@ -48,9 +48,11 @@ doorbell_pack:
                     target: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
-                    caption: |
-                      *Внимание*, в дверь звонят! _(звонок отключен)_
-                      [Посмотреть в камеру](https://ha.home.mydatabox.ru/dash-cam/cam-staircase)
+                    caption: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+                - service: telegram_bot.send_message
+                  data:
+                    target: !secret tlg_group_flat_1
+                    message: !secret look_at_cam_reolinkcam_01
                 - service: media_player.play_media
                   entity_id: media_player.yandex_station_mini2_gostinaia
                   data:
@@ -83,9 +85,11 @@ doorbell_pack:
                     target: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
-                    caption: |
-                      *Внимание*, в дверь звонят!
-                      [Посмотреть в камеру](https://ha.home.mydatabox.ru/dash-cam/cam-staircase)
+                    caption: "*Внимание*, в дверь звонят!"
+                - service: telegram_bot.send_message
+                  data:
+                    target: !secret tlg_group_flat_1
+                    message: !secret look_at_cam_reolinkcam_01
     #                - service: camera.record
     #                  data:
     #                    entity_id: camera.reolinkcam_01
