@@ -62,31 +62,15 @@ ch_cctv_pack:
           entity_id: binary_sensor.coutry_house_presence
           state: "off"
       action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_country_house
+            message: |
+              {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
+              Обнаружено движение на даче:
         - service: telegram_bot.send_photo
           data:
             target: !secret tlg_group_country_house
             url: !secret reolinkcam_02_snapshot_url
             caption: !secret look_at_cam_reolinkcam_02
             timeout: 60
-    #    - delay:
-    #        seconds: 1
-    #    - service: telegram_bot.send_photo
-    #      data:
-    #        target: !secret tlg_group_country_house
-    #        url: !secret reolinkcam_02_snapshot_url
-    #    - delay:
-    #        seconds: 2
-    #    - service: telegram_bot.send_photo
-    #      data:
-    #        target: !secret tlg_group_country_house
-    #        url: !secret reolinkcam_02_snapshot_url
-    #    - delay:
-    #        seconds: 3
-    #    - service: telegram_bot.send_photo
-    #      data:
-    #        target: !secret tlg_group_country_house
-    #        url: !secret reolinkcam_02_snapshot_url
-    #    - service: telegram_bot.send_message
-    #      data:
-    #        target: !secret tlg_group_country_house
-    #        message: !secret look_at_cam_reolinkcam_02
