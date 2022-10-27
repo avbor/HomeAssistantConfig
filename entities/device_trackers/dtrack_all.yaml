@@ -23,3 +23,7 @@
 #  host: 192.168.10.1
 #  username: !secret chouse_gw01_user
 #  password: !secret chouse_gw01_pass
+- platform: bluetooth_le_tracker
+  track_new_devices: false
+  track_battery: true
+  consider_home: 60

@@ -61,3 +61,4 @@ ip_bans.yaml
 known_devices.yaml
 secrets.yaml
 packages/pack_private.yaml
+go2rtc.yaml

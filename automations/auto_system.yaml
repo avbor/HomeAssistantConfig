@@ -146,3 +146,18 @@
             automation.turn_on
         {% endif -%}
       entity_id: automation.device_needs_attention_notify_to_group_system
+
+- alias: Restart go2rtc addon
+  id: 928847e4-3bd6-4d95-ba15-90c5b023b8a4
+  trigger:
+    - platform: time_pattern
+      hours: "/2"
+      minutes: 44
+  action:
+    - service: hassio.addon_restart
+      data:
+        addon: a889bffc_go2rtc
+    - delay: "00:00:10"
+    - service: button.press
+      target:
+        entity_id: button.galaxy_tab_a_8_0_2019_load_start_url

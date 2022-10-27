@@ -39,10 +39,12 @@ doorbell_pack:
             - alias: Mute On
               conditions: "{{ is_state('input_boolean.doorbell_mute', 'on') }}"
               sequence:
-                #- service: telegram_bot.send_message
-                #  data:
-                #    target: !secret tlg_group_flat_1
-                #    message: "*Внимание*, в дверь звонят! _(звонок отключен)_"
+                - service: switch.turn_on
+                  data:
+                    entity_id: switch.galaxy_tab_a_8_0_2019_screen
+                - service: button.press
+                  target:
+                    entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
                 - service: telegram_bot.send_photo
                   data:
                     target: !secret tlg_group_flat_1
@@ -76,10 +78,12 @@ doorbell_pack:
                 - service: switch.turn_on
                   target:
                     entity_id: switch.sonoff_mini_r2_01_doorbell
-                #- service: telegram_bot.send_message
-                #  data:
-                #    target: !secret tlg_group_flat_1
-                #    message: "*Внимание*, в дверь звонят!"
+                - service: switch.turn_on
+                  data:
+                    entity_id: switch.galaxy_tab_a_8_0_2019_screen
+                - service: button.press
+                  target:
+                    entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
                 - service: telegram_bot.send_photo
                   data:
                     target: !secret tlg_group_flat_1

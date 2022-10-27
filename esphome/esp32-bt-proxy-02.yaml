@@ -3,6 +3,9 @@ substitutions:
   board_name: esp32-bt-proxy-02
   room_name: Hallway
 
+external_components: 
+  - source: github://myhomeiot/esphome-components
+
 packages:
   wifi: !include common/wifi_bt_proxy.yaml
   device_base: !include common/device_base_esp32.yaml
@@ -11,11 +14,46 @@ packages:
 status_led:
   pin: GPIO2
 
-web_server:
-  port: 80
+#web_server:
+#  port: 80
 
 bluetooth_proxy:
   active: true
 
 binary_sensor: 
-  !include common/family_ibeacon_sensors.yaml 
+  !include common/family_ibeacon_sensors.yaml
+
+#ble_client:
+#  - mac_address: C0:CC:D7:C2:79:AE
+#    id: holy_iot_green_1_battery_level
+#
+#sensor:
+#  - platform: ble_client
+#    type: characteristic
+#    ble_client_id: holy_iot_green_1_battery_level
+#    name: "Holy-IoT Green-1 Battery Level"
+#    service_uuid: '180f'
+#    characteristic_uuid: '2a19'
+#    icon: 'mdi:battery'
+#    unit_of_measurement: '%'
+
+
+#myhomeiot_ble_host:
+#
+#myhomeiot_ble_client:
+#  - mac_address: C0:CC:D7:C2:79:AE
+#    service_uuid: '180F'
+#    characteristic_uuid: '2A19'
+##    update_interval: 24h
+#    on_value:
+#      then:
+#        lambda: |-
+#          id(holy_iot_green_1_battery_level).publish_state(x[0]);
+#sensor:
+#  - platform: template
+#    id: holy_iot_green_1_battery_level
+#    name: Holy-IoT Green-1 Battery Level
+#    device_class: battery
+#    unit_of_measurement: '%'
+#    state_class: measurement
+#    accuracy_decimals: 0

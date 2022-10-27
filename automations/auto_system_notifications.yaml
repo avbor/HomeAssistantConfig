@@ -302,7 +302,7 @@
           '^sensor\..*_ble|'
           '^(binary_sensor|switch)\.domofon_|'
           '^(binary_sensor|sensor|light)\.sonoff_basic_|'
-          '^(binary_sensor|sensor)\.sonoff_mini_r2_01_|'
+          '^(binary_sensor|sensor)\.sonoff_mini_r2_|'
           '^(switch|button)\.(esp32_miscale2|esp32_bt_proxy)_\d{2}_restart.*|'
           '^sensor\.xiaomi_mi_scale_2_.*|'
           '^number\..*_(min|max)_weight|'
@@ -312,10 +312,14 @@
           '^media_player\.plex_.*|'
           '^(binary_sensor|sensor|switch|button)\.reolinkcam_(01|02)_.*|'
           '.*ed5e33eb_0ca3_4263_a681_a68b1045a5e6.*|'
+          '^sensor\.oneplus_8t_ibeacon_.*|'
           '^binary_sensor\..*_oneplus_8t_presence$|'
+          '^binary_sensor\..*_holy_iot_green_1_presence$|'
+          '^binary_sensor\..*_nut_gray_1_presence$|'
           '^.*\.nas03_.*|'
-          '^vacuum.xiaomi_vacuum_cleaner$|'
-          '^sensor.esp32_bt_proxy_02_rssi$'
+          '^vacuum\.xiaomi_vacuum_cleaner$|'
+          '^sensor\.esp32_bt_proxy_\d{2}_rssi$|'
+          '^sensor\..*_estimated_distance$'
           )
         }}
     - condition: template
@@ -369,11 +373,19 @@
     platform: event
     event_type: device_tracker_new_device
   action:
-    service: notify.telegram_group_system
-    data_template:
-      title: "*Найдено новое устройство в сети!*"
-      message: |
-        MAC: {{ trigger.event.data.mac }}
+#    service: notify.telegram_group_system
+#    data_template:
+#      title: "*Найдено новое устройство в сети!*"
+#      message: |
+#        MAC: {{ trigger.event.data.mac }}
+    - service: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_system
+        parse_mode: html
+        title: 
+          <b>Найдено новое устройство в сети!</b>
+        message: |
+          MAC: {{ trigger.event.data.mac }}
 
 - alias: "Auto Backup Completed [notify to group system]"
   id: fef0c4de-e2ba-419b-b49e-ff39449e6481

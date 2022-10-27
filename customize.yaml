@@ -124,3 +124,5 @@ sensor.energy_flat_main_usage:
   friendly_name: Main Power Meter
 sensor.memory_use_percent:
   state_class: measurement
+switch.sonoff_mini_r2_02_switch:
+  friendly_name: Планшет в прихожей

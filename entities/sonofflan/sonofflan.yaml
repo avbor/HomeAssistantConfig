@@ -29,9 +29,6 @@ devices:
   "1001045426":
     #    devicekey: fcca23e4-233a-48c6-9bb1-2ca8d00162cb
     device_class: light
-  100105887b:
-    #    devicekey: 40fbcf58-4ee7-4189-8eb1-532562247f7c
-    device_class: light
   "1001053235":
     #    devicekey: d993043f-4e91-4e1e-9450-c3111a1bcf22
     device_class: light

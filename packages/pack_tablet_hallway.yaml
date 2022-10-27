@@ -1,0 +1,69 @@
+#################################################
+# Package Tablet in Hallway
+#################################################
+
+tablet_hallway_pack:
+  automation:
+    - alias: 'Планшет в Прихожей - включение экрана'
+      id: d8f01254-9cde-41a8-b35a-f296621d3ac9
+      mode: queued
+      max: 5
+      max_exceeded: silent
+      trigger:
+        - platform: state
+          entity_id: light.sonoff_1000f2f14a
+      action:
+        choose:
+          - alias: To On
+            conditions: "{{ trigger.from_state.state == 'off' and trigger.to_state.state == 'on' }}"
+            sequence:
+              - service: switch.turn_on
+                data:
+                  entity_id: switch.galaxy_tab_a_8_0_2019_screen
+          - alias: To Off
+            conditions: "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
+            sequence:
+              - service: switch.turn_off
+                data:
+                  entity_id: switch.galaxy_tab_a_8_0_2019_screen
+
+    - alias: 'Планшет в Прихожей - поддержание заряда'
+      id: 82fb6789-4385-44cc-b721-90b892063447
+      max_exceeded: silent
+      trigger:
+        - platform: numeric_state
+          entity_id:
+            - sensor.galaxy_tab_a_8_0_2019_battery
+            - sensor.sm_t295_hallway_battery_level
+          below: 30
+          for:
+            minutes: 5
+          id: "low"
+        - platform: numeric_state
+          entity_id:
+            - sensor.galaxy_tab_a_8_0_2019_battery
+            - sensor.sm_t295_hallway_battery_level
+          above: 80
+          for:
+            minutes: 5
+          id: "hight"
+      action:
+        choose:
+          - alias: Battery Low
+            conditions:
+              - condition: trigger
+                id: "low"
+            sequence:
+              - condition: "{{ is_state('switch.sonoff_mini_r2_02_switch', 'off') }}"
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.sonoff_mini_r2_02_switch
+          - alias: Battery Charged
+            conditions:
+              - condition: trigger
+                id: "hight"
+            sequence:
+              - condition: "{{ is_state('switch.sonoff_mini_r2_02_switch', 'on') }}"
+              - service: switch.turn_off
+                target:
+                  entity_id: switch.sonoff_mini_r2_02_switch

@@ -34,7 +34,7 @@ binary_sensor:
 
   - platform: gpio
     pin: GPIO04
-    id: button
+    id: button_sw
     internal: true
     on_press:
       then:

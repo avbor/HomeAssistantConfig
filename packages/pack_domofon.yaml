@@ -123,6 +123,7 @@ domofon_pack:
           entity_id:
             - sensor.kb2003_poslednee_uvedomlenie
             - sensor.mi_8_poslednee_uvedomlenie
+            - sensor.2109119dg_last_notification
       condition:
         condition: or
         conditions:
@@ -141,6 +142,12 @@ domofon_pack:
           - condition: template
             value_template: >-
               {{ trigger.to_state.state | regex_search('Будет через *.') }}
+          - condition: template
+            value_template: >-
+              {{ trigger.to_state.state | regex_search('Скоро заказ будет у вас') }}
+          - condition: template
+            value_template: >-
+              {{ trigger.to_state.state | regex_search('И уже спешит доставить его вам') }}
       action:
         - service: switch.turn_on
           data:
