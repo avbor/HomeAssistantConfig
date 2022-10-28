@@ -158,6 +158,24 @@
       data:
         addon: a889bffc_go2rtc
     - delay: "00:00:10"
-    - service: button.press
-      target:
-        entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
+    - choose:
+        - alias: Screen On
+          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'on') }}"
+          sequence:
+            - service: button.press
+              target:
+                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
+        - alias: Screen Off
+          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'off') }}"
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.galaxy_tab_a_8_0_2019_screen
+            - delay: "00:00:02"
+            - service: button.press
+              target:
+                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
+            - delay: "00:00:10"
+            - service: switch.turn_off
+              target:
+                entity_id: switch.galaxy_tab_a_8_0_2019_screen
