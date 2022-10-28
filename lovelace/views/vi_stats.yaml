@@ -37,6 +37,12 @@ cards:
         entities:
           - entity: sensor.a4c13820bdae_temperature
             name: Морозильная камера
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - entity: sensor.atc_03b4_temperature
+            name: Мини-холодильник
   - type: vertical-stack
     cards:
       - type: markdown
@@ -72,6 +78,12 @@ cards:
         entities:
           - entity: sensor.a4c13820bdae_humidity
             name: Морозильная камера
+      - type: history-graph
+        hours_to_show: 24
+        refresh_interval: 600
+        entities:
+          - entity: sensor.atc_03b4_humidity
+            name: Мини-холодильник
 
   - type: vertical-stack
     cards:

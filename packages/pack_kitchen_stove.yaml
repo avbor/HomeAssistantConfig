@@ -18,7 +18,7 @@ kitchen_stove_pack:
       name: Kitchen Stove Temperature Min Max BT
       type: last
       entity_ids:
-        - sensor.a4c138463fc4_temperature
+        - sensor.atc_3fc4_temperature
     - platform: statistics
       name: Kitchen Stove Temperature Median BT
       entity_id: sensor.kitchen_stove_temperature_min_max_bt
@@ -33,7 +33,7 @@ kitchen_stove_pack:
       type: mean
       round_digits: 1
       entity_ids:
-        - sensor.a4c138463fc4_temperature
+        - sensor.atc_3fc4_temperature
         - sensor.lumi_th_kitchen_stove_temperature
     - platform: min_max
       name: Kitchen Stove Temperature Median Min Max Mean
