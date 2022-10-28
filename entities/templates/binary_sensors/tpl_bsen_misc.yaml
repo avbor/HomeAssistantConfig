@@ -23,4 +23,4 @@
 
     - name: toilet_high_humidity
       device_class: moisture
-      state: "{{ (int(states('sensor.a4c138414e9a_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
+      state: "{{ (int(states('sensor.atc_4e9a_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"

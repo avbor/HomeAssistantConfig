@@ -165,7 +165,7 @@
         Детская: *{{ states('sensor.0x158d0003931aec_temperature') }}°C*, {{ states('sensor.0x158d0003931aec_humidity') }}%
         Спальня: *{{ states('sensor.0x158d0003931b0e_temperature') }}°C*, {{ states('sensor.0x158d0003931b0e_humidity') }}%
         Ванная: *{{ states('sensor.0x158d0003931a55_temperature') }}°C*, {{ states('sensor.0x158d0003931a55_humidity') }}%
-        Туалет: *{{ states('sensor.a4c138414e9a_temperature') }}°C*, {{ states('sensor.a4c138414e9a_humidity') }}%
+        Туалет: *{{ states('sensor.atc_4e9a_temperature') }}°C*, {{ states('sensor.atc_4e9a_humidity') }}%
         Кладовая: *{{ states('sensor.0x158d00039e2ecb_temperature') }}°C*, {{ states('sensor.0x158d00039e2ecb_humidity') }}%
 
         *Статус устройств*

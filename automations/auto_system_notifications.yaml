@@ -319,7 +319,8 @@
           '^.*\.nas03_.*|'
           '^vacuum\.xiaomi_vacuum_cleaner$|'
           '^sensor\.esp32_bt_proxy_\d{2}_rssi$|'
-          '^sensor\..*_estimated_distance$'
+          '^sensor\..*_estimated_distance$|'
+          '^(sensor|number|switch|button|binary_sensor)\.galaxy_tab_a_8_0_2019_.*$'
           )
         }}
     - condition: template

@@ -223,11 +223,11 @@ cards:
         hour24: true
         align_state: center
         entities:
-          - entity: sensor.a4c1381b3d13_temperature
+          - entity: sensor.atc_3d13_temperature
             name: Температура
             show_state: true
             color: orange
-          - entity: sensor.a4c1381b3d13_humidity
+          - entity: sensor.atc_3d13_humidity
             name: Влажность
             show_state: true
             color: blue
@@ -264,11 +264,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c138414e9a_temperature
+            entity: sensor.atc_4e9a_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c138414e9a_humidity
+            entity: sensor.atc_4e9a_humidity
             name: Влажность
             graph: line
       - type: entities

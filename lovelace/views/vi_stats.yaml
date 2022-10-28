@@ -19,7 +19,7 @@ cards:
             name: Спальня
           - entity: sensor.0x158d0003931a55_temperature
             name: Ванная
-          - entity: sensor.a4c138414e9a_temperature
+          - entity: sensor.atc_4e9a_temperature
             name: Туалет
           - entity: sensor.0x158d00039e2ecb_temperature
             name: Кладовая
@@ -27,15 +27,15 @@ cards:
         hours_to_show: 24
         refresh_interval: 600
         entities:
-          - entity: sensor.a4c1387179f4_temperature
+          - entity: sensor.atc_84c8_temperature
             name: Холодильник (верх)
-          - entity: sensor.a4c1384f8716_temperature
+          - entity: sensor.atc_8716_temperature
             name: Холодильник (низ)
       - type: history-graph
         hours_to_show: 24
         refresh_interval: 600
         entities:
-          - entity: sensor.a4c13820bdae_temperature
+          - entity: sensor.atc_bdae_temperature
             name: Морозильная камера
       - type: history-graph
         hours_to_show: 24
@@ -60,7 +60,7 @@ cards:
             name: Спальня
           - entity: sensor.0x158d0003931a55_humidity
             name: Ванная
-          - entity: sensor.a4c138414e9a_humidity
+          - entity: sensor.atc_4e9a_humidity
             name: Туалет
           - entity: sensor.0x158d00039e2ecb_humidity
             name: Кладовая
@@ -68,15 +68,15 @@ cards:
         hours_to_show: 24
         refresh_interval: 600
         entities:
-          - entity: sensor.a4c1387179f4_humidity
+          - entity: sensor.atc_84c8_humidity
             name: Холодильник (верх)
-          - entity: sensor.a4c1384f8716_humidity
+          - entity: sensor.atc_8716_humidity
             name: Холодильник (низ)
       - type: history-graph
         hours_to_show: 24
         refresh_interval: 600
         entities:
-          - entity: sensor.a4c13820bdae_humidity
+          - entity: sensor.atc_bdae_humidity
             name: Морозильная камера
       - type: history-graph
         hours_to_show: 24

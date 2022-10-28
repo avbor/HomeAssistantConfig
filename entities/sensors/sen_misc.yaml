@@ -158,7 +158,7 @@
     - sensor.0x158d0003230618_temperature
     - sensor.0x158d0003931b0e_temperature
     - sensor.0x158d00039e2ecb_temperature
-    - sensor.a4c138414e9a_temperature
+    - sensor.atc_4e9a_temperature
 - platform: min_max
   name: Average Humidity In Flat
   type: median
@@ -167,7 +167,7 @@
     - sensor.0x158d0003230618_humidity
     - sensor.0x158d0003931b0e_humidity
     - sensor.0x158d00039e2ecb_humidity
-    - sensor.a4c138414e9a_humidity
+    - sensor.atc_4e9a_humidity
 - platform: min_max
   name: Average Voltage In Flat
   type: median
