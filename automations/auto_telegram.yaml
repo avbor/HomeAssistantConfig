@@ -225,6 +225,7 @@
         `-= Google Home =-`
         Мини в Ванной: *{{ states('media_player.mini_v_vannoi') }}*
         `-= Yandex =-`
+        Прихожая: *{{ states('media_player.yandex_station_lite_prikhozhaya') }}*
         Детская: *{{ states('media_player.yandex_station_lite_detskaia') }}*
         Гостинная: *{{ states('media_player.yandex_station_mini2_gostinaia') }}*
         Спалья: *{{ states('media_player.yandex_station_mini2_spalnia') }}*

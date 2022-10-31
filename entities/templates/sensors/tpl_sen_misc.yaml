@@ -11,8 +11,8 @@
     state: >
       {{ as_datetime(states('sensor.do_doma_ot_dachi') | int(0) * 60).strftime('%-H ч. %M мин.') }}
 
-  - name: Xiaomi Gas Density
-    state: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
+#  - name: Xiaomi Gas Density
+#    state: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
 
   - name: Entrance Door Status
     state: >
@@ -50,15 +50,3 @@
       {% else %}
       {{ states('sensor.openweathermap_stupino_nivki_2_pressure_mmhg') }}
       {% endif %}
-
-  - name: Yandex Station Lite Detskaia - SW Version
-    state: >
-      {{ device_attr('eace692c1150612126c4bb63e37b8285', 'sw_version') }}
-
-  - name: Yandex Station Mini2 Gostinaia - SW Version
-    state: >
-      {{ device_attr('05f6870adef060905d93448e7f386f0d', 'sw_version') }}
-
-  - name: Yandex Station Mini2 Spalnia - SW Version
-    state: >
-      {{ device_attr('5772d03ba3bdaef053d59d4554654308', 'sw_version') }}

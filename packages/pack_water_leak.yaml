@@ -32,10 +32,10 @@ water_leak_protection:
       alias: "Закрытие водопроводных кранов"
       sequence:
         - service: switch.turn_on
-          entity_id: switch.0x158d000578c1d0_channel_2
+          entity_id: switch.rele_aqara_vodoprovodnye_krany_switch_2
         - delay: '00:00:30'
         - service: switch.turn_off
-          entity_id: switch.0x158d000578c1d0_channel_2
+          entity_id: switch.rele_aqara_vodoprovodnye_krany_switch_2
 
     water_valves_open:
       alias: "Открытие водопроводных кранов"
@@ -49,20 +49,20 @@ water_leak_protection:
               - service: switch.turn_off
                 entity_id: switch.sonoff_1000b68886
               - service: switch.turn_on
-                entity_id: switch.0x158d000578c1d0_channel_1
+                entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
               - delay: '00:00:30'
               - service: switch.turn_off
-                entity_id: switch.0x158d000578c1d0_channel_1
+                entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
               - service: switch.turn_on
                 entity_id: switch.sonoff_1000b68886
               - service: script.turn_on
                 entity_id: script.neptun_state_reset
           default:
             - service: switch.turn_on
-              entity_id: switch.0x158d000578c1d0_channel_1
+              entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
             - delay: '00:00:30'
             - service: switch.turn_off
-              entity_id: switch.0x158d000578c1d0_channel_1
+              entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
 
 # Automations
   automation:
@@ -89,7 +89,7 @@ water_leak_protection:
       mode: queued
       trigger:
         platform: state
-        entity_id: binary_sensor.0x158d00044ee524_contact
+        entity_id: binary_sensor.lumi_lumi_sensor_magnet_opening
         from: 'on'
         to: 'off'
         for: "00:00:05"
@@ -152,8 +152,8 @@ water_leak_protection:
       trigger:
         - platform: state
           entity_id:
-            - switch.0x158d000578c1d0_channel_1
-            - switch.0x158d000578c1d0_channel_2
+            - switch.rele_aqara_vodoprovodnye_krany_switch
+            - switch.rele_aqara_vodoprovodnye_krany_switch_2
           to: 'on'
           for: "00:01:00"
       action:

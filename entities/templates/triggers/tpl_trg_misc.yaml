@@ -1,0 +1,25 @@
+#################################################
+# Miscellaneous template trigger-based sensors
+#################################################
+- trigger:
+
+  - platform: time_pattern
+    hours: "/1"
+    minutes: 7
+
+  sensor:
+    - name: Yandex Station Lite Detskaia - SW Version
+      state: >-
+        {{ device_attr('eace692c1150612126c4bb63e37b8285', 'sw_version') }}
+
+    - name: Yandex Station Lite Prikhozhaya - SW Version
+      state: >-
+        {{ device_attr('4adef171069be4f9526114a7328779e3', 'sw_version') }}
+      
+    - name: Yandex Station Mini2 Gostinaia - SW Version
+      state: >-
+        {{ device_attr('05f6870adef060905d93448e7f386f0d', 'sw_version') }}
+      
+    - name: Yandex Station Mini2 Spalnia - SW Version
+      state: >-
+        {{ device_attr('5772d03ba3bdaef053d59d4554654308', 'sw_version') }}

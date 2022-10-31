@@ -117,9 +117,9 @@ nursery_light_pack:
               - condition: trigger
                 id: "hold"
             sequence:
-              - service: switch.toggle
+              - service: light.toggle
                 data:
-                  entity_id: switch.0x158d00033b702e_switch
+                  entity_id: light.detskaia_podsvetka_na_okne
 
     - alias: "Sunrise Lighting (Nursery)"
       id: d50bfe78-2e35-4870-a24c-71d0f6ebf969

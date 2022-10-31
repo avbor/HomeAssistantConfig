@@ -15,8 +15,14 @@ cards:
             show_header_toggle: false
             entities:
               - entity: sensor.sun_next_rising
-              - entity: sensor.lumi_lumi_sen_ill_mgl01_illuminance
+              - entity: sensor.th_kukhnia_za_oknom_temperature
+                type: custom:multiple-entity-row
                 name: За окном
+                entities:
+                  - entity: sensor.lumi_lumi_sen_ill_mgl01_illuminance
+                    name: false
+                  - entity: sensor.th_kukhnia_za_oknom_humidity
+                    name: false
               - entity: sensor.sun_next_setting
               - entity: sensor.moon
                 name: Луна
@@ -256,10 +262,10 @@ cards:
             entities:
               - entity: switch.blitzwolf_shp13_02_3ad702fe_on_off
                 name: Питание
-              - entity: binary_sensor.0x158d000413b210_gas
+              - entity: binary_sensor.lumi_lumi_sensor_natgas_iaszone
                 name: "Газ в воздухе"
-              - entity: sensor.0x158d000413b210_gas_density
-                name: "Концентрация"
+              #- entity: sensor.0x158d000413b210_gas_density
+              #  name: "Концентрация"
       - type: custom:vertical-stack-in-card
         cards:
           - type: entities

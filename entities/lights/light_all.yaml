@@ -4,8 +4,8 @@
 
 - platform: switch
   name: Детская - подсветка на окне
-  entity_id: switch.0x158d00033b702e_switch
+  entity_id: switch.blitzwolf_shp15_01_switch
 
 - platform: switch
   name: Гостиная - подсветка на окне
-  entity_id: switch.0x158d000391fb00_switch
+  entity_id: switch.tz3000_g5xawfcq_ts0121_switch

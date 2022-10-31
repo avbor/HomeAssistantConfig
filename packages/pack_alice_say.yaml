@@ -11,6 +11,7 @@ alice_say_pack:
         - Детская
         - Гостиная
         - Спальня
+        - Прихожая
       initial: Детская
       icon: yandex:alisa
 
@@ -54,6 +55,8 @@ alice_say_pack:
                 media_player.yandex_station_mini2_gostinaia
               {% elif trigger.to_state.state == 'Спальня' %}
                 media_player.yandex_station_mini2_spalnia
+              {% elif trigger.to_state.state == 'Прихожая' %}
+                media_player.yandex_station_lite_prikhozhaya
               {% endif %}
 
   # Scripts

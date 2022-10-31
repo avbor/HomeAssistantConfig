@@ -21,7 +21,11 @@
         entity_id: group.all_chromecasts
         state: "on"
       - condition: state
-        entity_id: media_player.yandex_station_lite_detskaia
+        entity_id:
+          - media_player.yandex_station_lite_detskaia
+          - media_player.yandex_station_mini2_gostinaia
+          - media_player.yandex_station_mini2_spalnia
+          - media_player.yandex_station_lite_prikhozhaya
         state: "playing"
       - condition: state
         entity_id: group.all_xbox
@@ -43,9 +47,12 @@
     platform: time
     at: input_datetime.wakeup_radio_in_nursery
   condition:
-    condition: state
-    entity_id: binary_sensor.workday_sensor
-    state: "on"
+    - condition: state
+      entity_id: binary_sensor.workday_sensor
+      state: "on"
+    - condition: state
+      entity_id: calendar.semia_alexander_borsiov_school_vacation_egor
+      state: "off"
   action:
     - service: media_player.volume_mute
       target:

@@ -298,10 +298,10 @@ cards:
       - type: entities
         show_header_toggle: false
         entities:
-          - entity: switch.0x158d00033b702e_switch
-            name: Розетка Xiaomi ZigBee Plug 01
-          - entity: switch.0x158d000391fb00_switch
-            name: Розетка Xiaomi ZigBee Plug 02
+          #- entity: switch.0x158d00033b702e_switch
+          #  name: Розетка Xiaomi ZigBee Plug 01
+          #- entity: switch.0x158d000391fb00_switch
+          #  name: Розетка Xiaomi ZigBee Plug 02
           - entity: switch.mi_smartplugwifi_01
             name: Розетка Xiaomi WiFi Plug 01
           #          - entity: switch.mi_smartplugwifi_02
@@ -323,8 +323,8 @@ cards:
           - switch.tplink_smartplug_02
           - switch.mi_smartplugwifi_01
           - switch.mi_smartplugwifi_02
-          - switch.0x158d00033b702e_switch
-          - switch.0x158d000391fb00_switch
+          #- switch.0x158d00033b702e_switch
+          #- switch.0x158d000391fb00_switch
         state_filter:
           - unavailable
       # Недоступные лампы

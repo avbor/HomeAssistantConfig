@@ -80,7 +80,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.0x158d000413b210_gas
+    entity_id: binary_sensor.lumi_lumi_sensor_natgas_iaszone
     from: "off"
     to: "on"
   action:
@@ -271,14 +271,21 @@
 
 - alias: Yandex Station SW Updated
   id: 3f22e8f0-6f31-49c1-bca1-ce19184c5184
+  mode: queued
+  max: 10
   trigger:
     - platform: state
-      entity_id: sensor.yandex_station_lite_detskaia_sw_version
-    - platform: state
-      entity_id: sensor.yandex_station_mini2_gostinaia_sw_version
-    - platform: state
-      entity_id: sensor.yandex_station_mini2_spalnia_sw_version
+      entity_id:
+        - sensor.yandex_station_lite_detskaia_sw_version
+        - sensor.yandex_station_lite_prikhozhaya_sw_version
+        - sensor.yandex_station_mini2_gostinaia_sw_version
+        - sensor.yandex_station_mini2_spalnia_sw_version
   #condition: "{{ trigger.to_state.state != trigger.from_state.state }}"
+  condition:
+    - "{{ trigger.to_state.state != trigger.from_state.state }}"
+    - >
+        {% set ignore = ['unknown', 'unavailable', 'none', None, null, '', 'null'] %}
+        {{ trigger.to_state.state not in ignore and trigger.from_state.state not in ignore }}
   action:
     - service: telegram_bot.send_message
       data:
@@ -288,6 +295,7 @@
           {%- if 'detskaia' in trigger.entity_id %} *Детской*.
           {%- elif 'gostinaia' in trigger.entity_id %} *Гостиной*.
           {%- elif 'spalnia' in trigger.entity_id %} *Спальне*.
+          {%- elif 'prikhozhaya' in trigger.entity_id %} *Прихожей*.
           {%- endif %}
           Было: {{ trigger.from_state.state }}
           Стало: {{ trigger.to_state.state }}
