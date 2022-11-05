@@ -45,40 +45,45 @@ cards:
               icon: mdi:shuffle-disabled
             vertical:
               icon: mdi:shuffle
-      - type: custom:vertical-stack-in-card
-        cards:
-          - type: markdown
-            content: >
-              #### Увлажнитель
-          - type: glance
-            #show_name: false
-            entities:
-              - entity: humidifier.smartmi_humidifier_01_detskaia
-                name: "Статус"
-                tap_action:
-                  action: call-service
-                  service: humidifier.toggle
-                  service_data:
-                    entity_id: humidifier.smartmi_humidifier_01_detskaia
-              - entity: sensor.smartmi_humidifier_01_detskaia_water_level
-                name: "Вода"
-              - entity: sensor.smartmi_humidifier_01_detskaia_mode
-                name: "Режим"
-                icon: mdi:speedometer
-          - type: entities
-            entities:
-              - entity: input_select.smartmi_humidifier_01_detskaia_mode
-              - type: section
-                label: Контроль влажности
-              - entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
-                name: "Автоматичеки"
-              - type: conditional
-                conditions:
-                  - entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
-                    state: "on"
-                row:
-                  entity: input_number.target_humidity_01_detskaia
-                  name: "Поддерживать"
+      - type: conditional
+        conditions:
+          - entity: humidifier.smartmi_humidifier_01_detskaia
+            state_not: "unavailable"
+        card:
+          type: custom:vertical-stack-in-card
+          cards:
+            - type: markdown
+              content: >
+                #### Увлажнитель
+            - type: glance
+              #show_name: false
+              entities:
+                - entity: humidifier.smartmi_humidifier_01_detskaia
+                  name: "Статус"
+                  tap_action:
+                    action: call-service
+                    service: humidifier.toggle
+                    service_data:
+                      entity_id: humidifier.smartmi_humidifier_01_detskaia
+                - entity: sensor.smartmi_humidifier_01_detskaia_water_level
+                  name: "Вода"
+                - entity: sensor.smartmi_humidifier_01_detskaia_mode
+                  name: "Режим"
+                  icon: mdi:speedometer
+            - type: entities
+              entities:
+                - entity: input_select.smartmi_humidifier_01_detskaia_mode
+                - type: section
+                  label: Контроль влажности
+                - entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
+                  name: "Автоматичеки"
+                - type: conditional
+                  conditions:
+                    - entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
+                      state: "on"
+                  row:
+                    entity: input_number.target_humidity_01_detskaia
+                    name: "Поддерживать"
   # Гостинная
   - type: vertical-stack
     cards:
@@ -165,39 +170,44 @@ cards:
               icon: mdi:shuffle-disabled
             vertical:
               icon: mdi:shuffle
-      - type: custom:vertical-stack-in-card
-        cards:
-          - type: markdown
-            content: >
-              #### Увлажнитель
-          - type: glance
-            entities:
-              - entity: humidifier.smartmi_humidifier_02_spalnia
-                name: "Статус"
-                tap_action:
-                  action: call-service
-                  service: humidifier.toggle
-                  service_data:
-                    entity_id: humidifier.smartmi_humidifier_02_spalnia
-              - entity: sensor.smartmi_humidifier_02_spalnia_water_level
-                name: "Вода"
-              - entity: sensor.smartmi_humidifier_02_spalnia_mode
-                name: "Режим"
-                icon: mdi:speedometer
-          - type: entities
-            entities:
-              - input_select.smartmi_humidifier_02_spalnia_mode
-              - type: section
-                label: Контроль влажности
-              - entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
-                name: "Автоматически"
-              - type: conditional
-                conditions:
-                  - entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
-                    state: "on"
-                row:
-                  entity: input_number.target_humidity_02_spalnia
-                  name: "Поддерживать"
+      - type: conditional
+        conditions:
+          - entity: humidifier.smartmi_humidifier_02_spalnia
+            state_not: "unavailable"
+        card:
+          type: custom:vertical-stack-in-card
+          cards:
+            - type: markdown
+              content: >
+                #### Увлажнитель
+            - type: glance
+              entities:
+                - entity: humidifier.smartmi_humidifier_02_spalnia
+                  name: "Статус"
+                  tap_action:
+                    action: call-service
+                    service: humidifier.toggle
+                    service_data:
+                      entity_id: humidifier.smartmi_humidifier_02_spalnia
+                - entity: sensor.smartmi_humidifier_02_spalnia_water_level
+                  name: "Вода"
+                - entity: sensor.smartmi_humidifier_02_spalnia_mode
+                  name: "Режим"
+                  icon: mdi:speedometer
+            - type: entities
+              entities:
+                - input_select.smartmi_humidifier_02_spalnia_mode
+                - type: section
+                  label: Контроль влажности
+                - entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
+                  name: "Автоматически"
+                - type: conditional
+                  conditions:
+                    - entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
+                      state: "on"
+                  row:
+                    entity: input_number.target_humidity_02_spalnia
+                    name: "Поддерживать"
 
   # Кладовая
   - type: vertical-stack

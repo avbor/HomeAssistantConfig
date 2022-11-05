@@ -16,7 +16,7 @@ devices_to_map:
 all_tv:
   name: Все телевизоры
   entities:
-    - media_player.samsungtv_ue43ru7470
+    - media_player.ue43ru7470
     - media_player.ue32es5500
     - media_player.ue46es5507
     - switch.samsungtv_40c5100
@@ -26,7 +26,7 @@ all_chromecasts:
   entities:
     - media_player.detskaia
     - media_player.gostinaia
-    - media_player.mini_v_vannoi
+    #- media_player.mini_v_vannoi
     - media_player.kukhnia
 
 all_yandex_stations:

@@ -122,7 +122,7 @@ domofon_pack:
         - platform: state
           entity_id:
             - sensor.kb2003_poslednee_uvedomlenie
-            - sensor.mi_8_poslednee_uvedomlenie
+            #- sensor.mi_8_poslednee_uvedomlenie
             - sensor.2109119dg_last_notification
       condition:
         condition: or

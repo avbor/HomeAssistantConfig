@@ -44,7 +44,7 @@ status_led:
   pin: GPIO2
 
 bluetooth_proxy:
-  active: true
+  #active: true
 
 #web_server:
 #  port: 80

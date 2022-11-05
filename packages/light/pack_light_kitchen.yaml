@@ -47,14 +47,14 @@ kitchen_light_pack:
         entity_id: binary_sensor.0x158d0003fac0ec_motion
         to: "on"
       condition:
-        condition: and
-        conditions:
-          - condition: time
-            after: "21:00"
-            before: "09:00"
-          - condition: numeric_state
-            entity_id: sensor.0x158d0003fac0ec_illuminance
-            below: 15
+        #condition: and
+        #conditions:
+        #  - condition: time
+        #    after: "21:00"
+        #    before: "09:00"
+        - condition: numeric_state
+          entity_id: sensor.0x158d0003fac0ec_illuminance
+          below: 15
       action:
         service: homeassistant.turn_on
         entity_id: light.kukhnia_lenta
@@ -68,10 +68,10 @@ kitchen_light_pack:
         to: "off"
         for:
           minutes: 3
-      condition:
-        condition: time
-        after: "21:00"
-        before: "09:00"
+      #condition:
+      #  condition: time
+      #  after: "21:00"
+      #  before: "09:00"
       action:
         service: homeassistant.turn_off
         entity_id: light.kukhnia_lenta

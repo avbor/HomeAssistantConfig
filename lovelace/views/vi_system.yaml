@@ -179,73 +179,107 @@ cards:
               - entity: input_number.low_battery_alert_threshold
                 name: "Send notification at:"
 
-      - type: markdown
-        content: >
-          ### <center>Xiaomi Gateway 3 Control</center>
-      - type: entities
-        entities:
-          - input_select.xiaomi_gateway3_name
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
+          - type: markdown
+            content: >
+              ### <center>Watchman</center>
           - type: button
-            name: "Reboot"
-            icon: mdi:restart
-            icon_height: 64px
+            name: "\U00002611 Parse config"
+            show_icon: false
             tap_action:
               action: call-service
-              confirmation:
-                text: Перезагрузить Xiaomi Gateway?
-              service: script.turn_on
-              service_data:
-                entity_id: script.mi_gw3_reboot
-            entity: script.mi_gw3_reboot
-          - type: button
-            name: "Enable FTP"
-            icon: mdi:file-tree
-            icon_height: 64px
-            tap_action:
-              action: call-service
-              service: script.turn_on
-              service_data:
-                entity_id: script.mi_gw3_enable_ftp
-            entity: script.mi_gw3_enable_ftp
-          - type: button
-            name: "ZB Pair On"
-            icon: mdi:leak
-            icon_height: 64px
-            tap_action:
-              action: call-service
-              service: script.turn_on
-              service_data:
-                entity_id: script.mi_gw3_pair_on
-              entity: script.mi_gw3_pair_on
-          - type: button
-            name: "ZB Pair Off"
-            icon: mdi:leak-off
-            icon_height: 64px
-            tap_action:
-              action: call-service
-              service: script.turn_on
-              service_data:
-                entity_id: script.mi_gw3_pair_off
-              entity: script.mi_gw3_pair_off
+              service: watchman.report
+              data:
+                parse_config: true
+            entity: script.hass_check_config
+          - type: markdown
+            content: >-
+              <table width=100%> 
+                <tr>
+                  <td align="left">
+                    <h4>Missing Entities: {{ states("sensor.watchman_missing_entities") }}</h4>
+                  </td>
+                  <td align="right">
+                    <h4>Missing Services: {{ states("sensor.watchman_missing_services") }}</h4>
+                  </td>
+                </tr>
+              </table> 
+              {%- for item in state_attr("sensor.watchman_missing_entities", "entities") %}
+                <hr>
+                <table width=100%>
+                  <tr>
+                    <td>
+                      <ha-icon icon='mdi: 
+                        {%- if item.state=="missing"-%}cloud-alert'
+                        {%- elif item.state=="unavail" -%}cloud-off-outline'
+                        {%- else-%}cloud-question'
+                        {%- endif -%} ></ha-icon> 
+                      <b>{{item.friendly_name}}</b> [<i>{{item.state}}</i>]<br>
+                      {{item.id}}<br>
+                      <a title="{{item.occurrences}}">{{item.occurrences.split('/')[-1].split(':')[0]}}</a>
+                    </td>
+                  </tr>
+                </table>
+              {%-endfor %}
+            card_mod:
+              style:
+                ha-markdown:
+                  $: |
+                    ha-markdown-element:first-of-type hr{
+                      border-color: #303030;
+                    }
 
-      - type: markdown
-        content: >
-          ### <center>Scripts</center>
-      - type: horizontal-stack
-        cards:
-          - type: button
-            entity: script.start_vacuum_hallway_by_door_sensor
-            name: Отмена уборки прихожей
-            icon: mdi:stop-circle-outline
-            icon_height: 64px
-            show_state: true
-            tap_action:
-              action: call-service
-              service: script.turn_off
-              service_data:
-                entity_id: script.start_vacuum_hallway_by_door_sensor
+  #      - type: markdown
+  #        content: >
+  #          ### <center>Xiaomi Gateway 3 Control</center>
+  #      - type: entities
+  #        entities:
+  #          - input_select.xiaomi_gateway3_name
+  #      - type: horizontal-stack
+  #        cards:
+  #          - type: button
+  #            name: "Reboot"
+  #            icon: mdi:restart
+  #            icon_height: 64px
+  #            tap_action:
+  #              action: call-service
+  #              confirmation:
+  #                text: Перезагрузить Xiaomi Gateway?
+  #              service: script.turn_on
+  #              service_data:
+  #                entity_id: script.mi_gw3_reboot
+  #            entity: script.mi_gw3_reboot
+  #          - type: button
+  #            name: "Enable FTP"
+  #            icon: mdi:file-tree
+  #            icon_height: 64px
+  #            tap_action:
+  #              action: call-service
+  #              service: script.turn_on
+  #              service_data:
+  #                entity_id: script.mi_gw3_enable_ftp
+  #            entity: script.mi_gw3_enable_ftp
+  #          - type: button
+  #            name: "ZB Pair On"
+  #            icon: mdi:leak
+  #            icon_height: 64px
+  #            tap_action:
+  #              action: call-service
+  #              service: script.turn_on
+  #              service_data:
+  #                entity_id: script.mi_gw3_pair_on
+  #              entity: script.mi_gw3_pair_on
+  #          - type: button
+  #            name: "ZB Pair Off"
+  #            icon: mdi:leak-off
+  #            icon_height: 64px
+  #            tap_action:
+  #              action: call-service
+  #              service: script.turn_on
+  #              service_data:
+  #                entity_id: script.mi_gw3_pair_off
+  #              entity: script.mi_gw3_pair_off
 
   - type: vertical-stack
     cards:
@@ -288,7 +322,7 @@ cards:
           - type: section
             label: Кухня
           - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
-            name: Автоподсветка кухни [ДД] (21:00 - 09:00)
+            name: Автоподсветка кухни [ДД]
 
   - type: vertical-stack
     cards:
@@ -298,20 +332,32 @@ cards:
       - type: entities
         show_header_toggle: false
         entities:
-          #- entity: switch.0x158d00033b702e_switch
-          #  name: Розетка Xiaomi ZigBee Plug 01
-          #- entity: switch.0x158d000391fb00_switch
-          #  name: Розетка Xiaomi ZigBee Plug 02
           - entity: switch.mi_smartplugwifi_01
-            name: Розетка Xiaomi WiFi Plug 01
-          #          - entity: switch.mi_smartplugwifi_02
-          #            name: Розетка Xiaomi WiFi Plug 02
+            name: Розетка Mi SmartPlug WiFi 01
+          - entity: switch.mi_smartplugwifi_02
+            name: Розетка Mi SmartPlug WiFi 02
           - entity: switch.tplink_smartplug_01
             name: Розетка TP-Link SmartPlug 01
           - entity: switch.tplink_smartplug_02
             name: Розетка TP-Link SmartPlug 02
-          - entity: switch.blitzwolf_shp13_02_3ad702fe_on_off
+          - entity: switch.tz3000_g5xawfcq_ts0121_switch
             name: Розетка BlitzWolf SHP13 01
+          - entity: switch.blitzwolf_shp13_02_3ad702fe_on_off
+            name: Розетка BlitzWolf SHP13 02
+          - entity: switch.blitzwolf_shp15_01_switch
+            name: Розетка BlitzWolf SHP15 01
+          - entity: switch.gosund_sp111_03_switch
+            name: Розетка Gosund SP111 03
+          - entity: switch.gosund_sp111_04_switch
+            name: Розетка Gosund SP111 04
+          - entity: switch.gosund_sp111_05_switch
+            name: Розетка Gosund SP111 05
+          - entity: switch.gosund_sp111_06_switch
+            name: Розетка Gosund SP111 06
+          - entity: switch.gosund_sp111_09_switch
+            name: Розетка Gosund SP111 09
+          - entity: switch.gosund_sp111_10_switch
+            name: Розетка Gosund SP111 10
       - type: markdown
         content: >
           ### <center>Недоступные розетки</center>
@@ -319,12 +365,19 @@ cards:
         card:
           show_header_toggle: false
         entities:
-          - switch.tplink_smartplug_01
-          - switch.tplink_smartplug_02
           - switch.mi_smartplugwifi_01
           - switch.mi_smartplugwifi_02
-          #- switch.0x158d00033b702e_switch
-          #- switch.0x158d000391fb00_switch
+          - switch.tplink_smartplug_01
+          - switch.tplink_smartplug_02
+          - switch.tz3000_g5xawfcq_ts0121_switch
+          - switch.blitzwolf_shp13_02_3ad702fe_on_off
+          - switch.blitzwolf_shp15_01_switch
+          - switch.gosund_sp111_03_switch
+          - switch.gosund_sp111_04_switch
+          - switch.gosund_sp111_05_switch
+          - switch.gosund_sp111_06_switch
+          - switch.gosund_sp111_09_switch
+          - switch.gosund_sp111_10_switch
         state_filter:
           - unavailable
       # Недоступные лампы
@@ -388,5 +441,14 @@ cards:
               - entity: light.sonoff_1001053235
                 name: Люстра в Спальне
                 icon: mdi:ceiling-light
+              - entity: light.detskaia_podsvetka_na_okne
+                name: Подсветка на окне в Детской
+                icon: mdi:string-lights
+              - entity: light.gostinaia_podsvetka_na_okne
+                name: Подсветка на окне в Гостиной
+                icon: mdi:string-lights
+              - entity: light.dacha_dvor
+                name: Подсветка двора на Даче
+                icon: mdi:light-flood-down
             state_filter:
               - unavailable

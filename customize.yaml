@@ -2,11 +2,9 @@ zone.home:
   radius: 20
 person.alexander:
   entity_picture: /local/stall.png
-device_tracker.oneplus_a3003:
+device_tracker.kb2003:
   entity_picture: /local/stall.png
 person.irina:
-  entity_picture: /local/Irina.jpg
-device_tracker.mi_8:
   entity_picture: /local/Irina.jpg
 device_tracker.2109119dg:
   entity_picture: /local/Irina.jpg
@@ -22,8 +20,6 @@ script.radio_play:
 script.radio_stop:
   friendly_name: Выключить
   icon: mdi:stop
-light.detskaia:
-  friendly_name: Детская - Люстра
 light.ikea_e27_detskaia:
   friendly_name: Детская - Люстра
 light.ikea_e14_level_light_color_on_off:
@@ -64,8 +60,6 @@ binary_sensor.lumi_lumi_sensor_magnet_opening:
 #  occupancy_timeout: [120, 180, 240]
 sensor.start_time:
   unit_of_measurement: "s"
-climate.boiler_194340:
-  friendly_name: Centurio IQ 2.0
 sensor.average_voltage_in_flat:
   state_class: measurement
   device_class: voltage

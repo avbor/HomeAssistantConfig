@@ -147,6 +147,22 @@ cards:
               service: script.turn_on
               service_data:
                 entity_id: script.reset_main_brush_left
+      - type: markdown
+        content: >
+          #### Разное
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: script.start_vacuum_hallway_by_door_sensor
+            name: Отмена уборки прихожей
+            icon: mdi:stop-circle-outline
+            icon_height: 48px
+            show_state: true
+            tap_action:
+              action: call-service
+              service: script.turn_off
+              service_data:
+                entity_id: script.start_vacuum_hallway_by_door_sensor
   - type: vertical-stack
     cards:
     - type: markdown

@@ -135,6 +135,9 @@ nursery_light_pack:
           - condition: sun
             before: sunrise
             before_offset: "00:30:00"
+          - condition: state
+            entity_id: calendar.semia_alexander_borsiov_school_vacation_egor
+            state: "off"
       action:
         - service: script.turn_on
           target:

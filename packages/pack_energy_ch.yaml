@@ -122,7 +122,7 @@ energy_pack_ch:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.socket_ch_radiator_terrace_energy_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_ch_radiator_terrace_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
         energy_cost_ch_radiator_terrace_daily_prev:
           device_class: monetary
           unit_of_measurement: "RUB"
@@ -164,13 +164,13 @@ energy_pack_ch:
 
     # For Radiator in Terrace
     socket_ch_radiator_terrace_energy_daily:
-      name: Terrace Room Daily Energy
+      name: Terrace Daily Energy
       source: sensor.gosund_sp111_02_todays_usage
       cycle: daily
       tariffs:
         - total
     socket_ch_radiator_terrace_energy_monthly:
-      name: Terrace Room Monthly Energy
+      name: Terrace Monthly Energy
       source: sensor.gosund_sp111_02_todays_usage
       cycle: monthly
       tariffs:

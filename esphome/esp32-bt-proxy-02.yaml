@@ -18,7 +18,7 @@ status_led:
 #  port: 80
 
 bluetooth_proxy:
-  active: true
+  #active: true
 
 binary_sensor: 
   !include common/family_ibeacon_sensors.yaml
