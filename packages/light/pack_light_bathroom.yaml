@@ -43,8 +43,8 @@ bathroom_light_pack:
                   conditions: "{{ states('binary_sensor.trust_iaszone') == 'off' }}"
                   sequence:
                     choose:
-                      - alias: Motion detected > 3 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.trust_iaszone.last_changed)) > 180 }}"
+                      - alias: Motion detected > 5 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.trust_iaszone.last_changed)) > 300 }}"
                         sequence:
                           - parallel:
                               - sequence:
@@ -58,8 +58,8 @@ bathroom_light_pack:
                                   - service: fan.turn_off
                                     target:
                                       entity_id: fan.bathroom_extractor
-                      - alias: Motion detected <= 3 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.trust_iaszone.last_changed)) <= 180 }}"
+                      - alias: Motion detected <= 5 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.trust_iaszone.last_changed)) <= 300 }}"
                         sequence:
                           - condition: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
                           - service: light.turn_off
