@@ -314,7 +314,7 @@
           '.*ed5e33eb_0ca3_4263_a681_a68b1045a5e6.*|'
           '^sensor\.oneplus_8t_ibeacon_.*|'
           '^binary_sensor\..*_oneplus_8t_presence$|'
-          '^binary_sensor\..*_holy_iot_green_1_presence$|'
+          '^binary_sensor\..*_holy_iot_.*_presence$|'
           '^binary_sensor\..*_nut_gray_1_presence$|'
           '^.*\.nas03_.*|'
           '^vacuum\.xiaomi_vacuum_cleaner$|'
