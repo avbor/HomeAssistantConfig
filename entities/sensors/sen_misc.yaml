@@ -39,20 +39,20 @@
       database: _internal
       where: "time > now() - 10s"
       field: diskBytes
-- platform: sauresha
-  email: !secret saures_user
-  password: !secret saures_pass
-  flat_id: !secret saures_flat_id
-  controllers:
-    "1113513":
-      name: ""
-  counters:
-    "13193152":
-      name: ""
-    "09-104476":
-      name: ""
-  scan_interval:
-    minutes: 90
+#- platform: sauresha
+#  email: !secret saures_user
+#  password: !secret saures_pass
+#  flat_id: !secret saures_flat_id
+#  controllers:
+#    "1113513":
+#      name: ""
+#  counters:
+#    "13193152":
+#      name: ""
+#    "09-104476":
+#      name: ""
+#  scan_interval:
+#    minutes: 90
 - platform: time_date
   display_options:
     - "time"

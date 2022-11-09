@@ -54,7 +54,7 @@ kitchen_light_pack:
         #    before: "09:00"
         - condition: numeric_state
           entity_id: sensor.0x158d0003fac0ec_illuminance
-          below: 15
+          below: 10
       action:
         service: homeassistant.turn_on
         entity_id: light.kukhnia_lenta

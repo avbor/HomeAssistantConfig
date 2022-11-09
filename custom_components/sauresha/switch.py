@@ -5,24 +5,15 @@ from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, COORDINATOR, CONF_ISDEBUG
 from .api import SauresHA
-from .entity import SauresBinarySensor
-
-
-_LOGGER = logging.getLogger(__name__)
+from .entity import SauresSwitch
 
 SCAN_INTERVAL = timedelta(minutes=20)
 
-
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Setup the sensor platform."""
-    _LOGGER.exception(
-        "The sauresha platform for the binary sensor integration does not support YAML platform setup. Please remove it from your config"
-    )
-    return True
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
-    """Setup sensor platform."""
+    """Setup switch platform."""
     my_sensors: list = []
     is_debug = CONF_ISDEBUG
     scan_interval = config_entry.data.get(CONF_SCAN_INTERVAL)
@@ -30,13 +21,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
     controller: SauresHA = hass.data[DOMAIN].get(COORDINATOR)
     for curflat in controller.flats:
         try:
-            sensors = await controller.async_get_binary_sensors(curflat)
+            sensors = await controller.async_get_switches(curflat, False)
             for curSensor in sensors:
-                sensor = SauresBinarySensor(
+                sensor = SauresSwitch(
                     hass,
                     controller,
                     curflat,
-                    curSensor.get("type", {}).get("number"),
                     curSensor.get("meter_id"),
                     curSensor.get("sn"),
                     curSensor.get("meter_name"),

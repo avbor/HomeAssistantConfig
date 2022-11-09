@@ -92,8 +92,10 @@ cards:
           ### <center>Счетчики воды</center>
       - type: entities
         entities:
-          - entity: sensor.sauresha_5555_09_104476
-          - entity: sensor.sauresha_5555_13193152
+          - entity: sensor.saures_goriachaia_voda
+            name: Горячая вода
+          - entity: sensor.saures_kholodnaia_voda
+            name: Холодная вода
 
   - type: vertical-stack
     cards:
