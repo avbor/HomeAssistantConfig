@@ -21,7 +21,7 @@ web_server:
 sensor:
 #  - platform: adc
 #    pin: VCC
-#    name: "${board_name} - VCC Volt"
+#    name: "${board_name} VCC Volt"
 #    icon: mdi:flash-outline
 
   - platform: hlw8012
@@ -37,7 +37,7 @@ sensor:
     update_interval: 15s
 
     current:
-      name: "${board_name} - Ampere"
+      name: "${board_name} Ampere"
       unit_of_measurement: A
       state_class: measurement
       device_class: current
@@ -45,7 +45,7 @@ sensor:
       icon: mdi:current-ac
 
     voltage:
-      name: "${board_name} - Volt"
+      name: "${board_name} Volt"
       unit_of_measurement: V
       state_class: measurement
       device_class: voltage
@@ -53,7 +53,7 @@ sensor:
       icon: mdi:flash-outline
 
     power:
-      name: "${board_name} - Watt"
+      name: "${board_name} Watt"
       unit_of_measurement: W
       id: "power_wattage"
       state_class: measurement
@@ -63,7 +63,7 @@ sensor:
       - multiply: 0.5
 
   - platform: total_daily_energy
-    name: "${board_name} - Todays Usage"
+    name: "${board_name} Todays Usage"
     power_id: "power_wattage"
     filters:
       # Multiplication factor from W to kW is 0.001
@@ -89,7 +89,7 @@ switch:
     id: relay
 
   - platform: template
-    name: "${board_name} - Switch"
+    name: "${board_name} Switch"
     icon: mdi:power
     optimistic: true
     id: button_switch

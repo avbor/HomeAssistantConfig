@@ -22,7 +22,7 @@ web_server:
 sensor:
 #  - platform: adc
 #    pin: VCC
-#    name: "${board_name} - VCC Volt"
+#    name: "${board_name} VCC Volt"
 #    icon: mdi:flash-outline
 
   - platform: hlw8012
