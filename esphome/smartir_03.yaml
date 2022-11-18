@@ -10,7 +10,7 @@ packages:
 
 esphome:
   includes: 
-    - include/daikin_ir.h
+    - include/daikin_ir_v2.h
   libraries:
     - IRremoteESP8266
 
@@ -49,8 +49,8 @@ binary_sensor:
       number: GPIO13
       inverted: true
     internal: true
-    name: ${board_name}_button
-    id: button
+    name: ${board_name} Button
+    id: btn
 
 climate:
   - platform: custom
