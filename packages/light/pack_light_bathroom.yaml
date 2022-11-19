@@ -25,6 +25,12 @@ bathroom_light_pack:
           entity_id: binary_sensor.trust_iaszone
           to: "on"
           id: "motion_on"
+        - platform: event
+          event_type: zha_event
+          event_data:
+            device_ieee: "00:15:8d:00:03:d1:77:62"
+            command: "click"
+          id: "click"
       action:
         choose:
           - alias: Timer Idle
@@ -130,6 +136,39 @@ bathroom_light_pack:
                       - service: light.turn_on
                         target:
                           entity_id: light.sonoff_zbmini_04_on_off
+          - alias: Button
+            conditions:
+              - condition: trigger
+                id: "click"
+            sequence:
+              choose:
+                - alias: Single click
+                  conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
+                  sequence:
+                    - service: light.toggle
+                      data:
+                        entity_id: light.sonoff_zbmini_04_on_off
+                    - delay: "00:00:02"
+                    - choose:
+                        - alias: Light On
+                          conditions: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
+                          sequence:
+                            - service: fan.turn_on
+                              target:
+                                entity_id: fan.bathroom_extractor
+                        - alias: Light Off
+                          conditions: "{{ is_state('light.sonoff_zbmini_04_on_off', 'off') }}"
+                          sequence:
+                            - condition: "{{ is_state('binary_sensor.bathroom_high_humidity', 'off') }}"
+                            - service: fan.turn_off
+                              target:
+                                entity_id: fan.bathroom_extractor
+                - alias: Double click
+                  conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
+                  sequence:
+                    - service: fan.toggle
+                      target:
+                        entity_id: fan.bathroom_extractor
 
     - alias: Ванная - вытяжка
       id: 9c4552b3-11ee-4364-bf40-2b142c5f97e6
@@ -167,59 +206,59 @@ bathroom_light_pack:
                 target:
                   entity_id: fan.bathroom_extractor
 
-    - alias: "Кнопка Xiaomi в Ванной"
-      id: 12e5ed24-2543-4bc8-978a-434dc466d818
-      mode: queued
-      max: 5
-      max_exceeded: silent
-      trigger:
-        - platform: event
-          event_type: zha_event
-          event_data:
-            device_ieee: "00:15:8d:00:03:d1:77:62"
-            command: "click"
-          id: "click"
+    #- alias: "Кнопка Xiaomi в Ванной"
+    #  id: 12e5ed24-2543-4bc8-978a-434dc466d818
+    #  mode: queued
+    #  max: 5
+    #  max_exceeded: silent
+    #  trigger:
+    #    - platform: event
+    #      event_type: zha_event
+    #      event_data:
+    #        device_ieee: "00:15:8d:00:03:d1:77:62"
+    #        command: "click"
+    #      id: "click"
       #        - platform: event
       #          event_type: zha_event
       #          event_data:
       #            device_ieee: "00:15:8d:00:03:d1:77:62"
       #            command: "hold"
       #          id: "hold"
-      action:
-        choose:
-          - alias: Action Click
-            conditions:
-              - condition: trigger
-                id: "click"
-            sequence:
-              choose:
-                - alias: Single click
-                  conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
-                  sequence:
-                    - service: light.toggle
-                      data:
-                        entity_id: light.sonoff_zbmini_04_on_off
-                    - delay: "00:00:02"
-                    - choose:
-                        - alias: Light On
-                          conditions: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
-                          sequence:
-                            - service: fan.turn_on
-                              target:
-                                entity_id: fan.bathroom_extractor
-                        - alias: Light Off
-                          conditions: "{{ is_state('light.sonoff_zbmini_04_on_off', 'off') }}"
-                          sequence:
-                            - condition: "{{ is_state('binary_sensor.bathroom_high_humidity', 'off') }}"
-                            - service: fan.turn_off
-                              target:
-                                entity_id: fan.bathroom_extractor
-                - alias: Double click
-                  conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
-                  sequence:
-                    - service: fan.toggle
-                      target:
-                        entity_id: fan.bathroom_extractor
+      #action:
+      #  choose:
+      #    - alias: Action Click
+      #      conditions:
+      #        - condition: trigger
+      #          id: "click"
+      #      sequence:
+      #        choose:
+      #          - alias: Single click
+      #            conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
+      #            sequence:
+      #              - service: light.toggle
+      #                data:
+      #                  entity_id: light.sonoff_zbmini_04_on_off
+      #              - delay: "00:00:02"
+      #              - choose:
+      #                  - alias: Light On
+      #                    conditions: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
+      #                    sequence:
+      #                      - service: fan.turn_on
+      #                        target:
+      #                          entity_id: fan.bathroom_extractor
+      #                  - alias: Light Off
+      #                    conditions: "{{ is_state('light.sonoff_zbmini_04_on_off', 'off') }}"
+      #                    sequence:
+      #                      - condition: "{{ is_state('binary_sensor.bathroom_high_humidity', 'off') }}"
+      #                      - service: fan.turn_off
+      #                        target:
+      #                          entity_id: fan.bathroom_extractor
+      #          - alias: Double click
+      #            conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
+      #            sequence:
+      #              - service: fan.toggle
+      #                target:
+      #                  entity_id: fan.bathroom_extractor
     #          - alias: Action Hold
     #            conditions:
     #              - condition: trigger
