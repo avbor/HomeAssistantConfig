@@ -1,5 +1,5 @@
 substitutions:
-  esp_board: esp32dev
+  esp_board: m5stack-atom
   board_name: esp32-bt-proxy-01
   room_name: Living Room
 
@@ -7,9 +7,7 @@ packages:
   wifi: !include common/wifi_bt_proxy.yaml
   device_base: !include common/device_base_esp32.yaml
   esp32_ble_tracker: !include common/esp32_ble_tracker_bt_proxy.yaml
-
-status_led:
-  pin: GPIO2
+#  family_ibeacon_sensors: !include common/family_ibeacon_sensors.yaml
 
 #web_server:
 #  port: 80
@@ -17,5 +15,26 @@ status_led:
 bluetooth_proxy:
   #active: true
 
-binary_sensor: 
-  !include common/family_ibeacon_sensors.yaml
+light:
+  - platform: neopixelbus
+    type: GRB
+    variant: SK6812
+    pin: GPIO27
+    num_leds: 1
+    id: rgb_led
+    name: ${board_name} Light
+    effects:
+      - random:
+      - flicker:
+      - addressable_rainbow:
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: 39
+      inverted: true
+    name: ${board_name} Button
+    internal: true
+    on_press:
+      then:
+        - light.toggle: rgb_led
