@@ -1,6 +1,6 @@
 substitutions:
   esp_board: m5stack-atom
-  board_name: esp32-bt-proxy-01
+  board_name: m5s-atom-bt-proxy-01
   room_name: Living Room
 
 packages:
@@ -8,9 +8,6 @@ packages:
   device_base: !include common/device_base_esp32.yaml
   esp32_ble_tracker: !include common/esp32_ble_tracker_bt_proxy.yaml
 #  family_ibeacon_sensors: !include common/family_ibeacon_sensors.yaml
-
-#web_server:
-#  port: 80
 
 bluetooth_proxy:
   #active: true
