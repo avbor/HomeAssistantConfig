@@ -61,6 +61,12 @@ _Remote site (country house):_
 - Phoscon ConBee 2 by Dresden Elektronik\
   Integration "Zigbee Home Automation (ZHA)"
 
+- ESP32 D1 Mini with _bluetooth_proxy_ component x5\
+  Integration "ESPHome"
+
+- UGREEN CM109 (CSR8510A10) USB BT 5.0 Dongle\
+  Integration "Bluetooth"
+
 #### WiFi Devices:
 - Relays:
   - Sonoff MINI & MINI R2\
@@ -164,11 +170,14 @@ _Remote site (country house):_
 
 #### Bluetooth Devices:
 - Sensors:
-  - Xiaomi TH Sensor 2 (LYWSD03MMC, miaomiaoche.sensor_ht.t2)\
-  Via Xiaomi Gateway 3
+  - Xiaomi TH Sensor 2 (LYWSD03MMC, miaomiaoche.sensor_ht.t2) with custom [FW](https://github.com/pvvx/ATC_MiThermometer)\
+  Integration "BTHome"
 
   - Xiaomi TH Digital Clock (LYWSD02MMC, miaomiaoche.sensor_ht.t1)\
-  Via Xiaomi Gateway 3
+  Integration "Xiaomi BLE"
+
+  - Qingping Air Monitor Lite (CGDN1)\
+  Integration "Qingping"
 
 - Other:
   - Mi Body Composition Scale 2 (NUN4048GL)\
@@ -179,7 +188,7 @@ _Remote site (country house):_
   Integration "Google Cast"
 
   - Google Chromecast (Gen 3)\
-  Integration "Google Cast"
+  https://github.com/pvvx/ATC_MiThermometer "Google Cast"
 
   - Google Home Mini\
   Integration "Google Cast"
@@ -217,7 +226,6 @@ Via "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 **Server:**
 - Ubuntu Server 20.04 LTS
 - QEMU + KVM + libvirt
-- Home Assistant (Virtual Machine)
 - NGINX as revers proxy
 
 **WiFi Access Point:**
