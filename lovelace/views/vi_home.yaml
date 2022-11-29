@@ -1,6 +1,6 @@
 title: Home
 path: home
-icon: 'hass:home-assistant'
+icon: "hass:home-assistant"
 cards:
   - type: vertical-stack
     cards:
@@ -31,7 +31,7 @@ cards:
           ### <center>Климат в квартире</center>
       - type: horizontal-stack
         cards:
-          - type: 'custom:mini-graph-card'
+          - type: "custom:mini-graph-card"
             name: Температура
             icon: mdi:thermometer
             hours_to_show: 24
@@ -40,17 +40,17 @@ cards:
             hour24: true
             align_state: center
             entities:
-                - entity: sensor.average_temperature_in_flat
+              - entity: sensor.average_temperature_in_flat
             color_thresholds:
               - value: 21
                 color: "#1f4bf0"
               - value: 23
                 color: "#36ce0e"
               - value: 25
-                color: "#c0392b" 
+                color: "#c0392b"
             show:
               labels: false
-          - type: 'custom:mini-graph-card'
+          - type: "custom:mini-graph-card"
             name: Влажность
             icon: mdi:water-percent
             hours_to_show: 24
@@ -59,7 +59,7 @@ cards:
             hour24: true
             align_state: center
             entities:
-                - entity: sensor.average_humidity_in_flat
+              - entity: sensor.average_humidity_in_flat
             color_thresholds:
               - value: 15
                 color: "#e6b80f"
@@ -70,7 +70,83 @@ cards:
               - value: 50
                 color: "#1fb4f0"
               - value: 60
-                color: "#0c30b6" 
+                color: "#0c30b6"
+            show:
+              labels: false
+      - type: "custom:mini-graph-card"
+        name: CO₂
+        icon: mdi:molecule-co2
+        hours_to_show: 24
+        points_per_hour: 12
+        line_width: 3
+        decimals: 0
+        hour24: true
+        align_state: center
+        entities:
+          - entity: sensor.average_carbon_dioxide_in_flat
+        color_thresholds:
+          - value: 400
+            color: "#36ce0e"
+          - value: 1000
+            color: "#b3e321"
+          - value: 1500
+            color: "#f5df18"
+          - value: 2000
+            color: "#ff0000"
+          - value: 3000
+            color: "#660000"
+        show:
+          labels: false
+      - type: horizontal-stack
+        cards:
+          - type: "custom:mini-graph-card"
+            name: PM2.5
+            icon: mdi:molecule
+            hours_to_show: 24
+            points_per_hour: 12
+            decimals: 0
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.average_pm25_in_flat
+            color_thresholds:
+              - value: 0
+                color: "#36ce0e"
+              - value: 35
+                color: "#f5df18"
+              - value: 75
+                color: "#ffa500"
+              - value: 115
+                color: "#ff0000"
+              - value: 150
+                color: "#800080"
+              - value: 250
+                color: "#660000"
+            show:
+              labels: false
+          - type: "custom:mini-graph-card"
+            name: PM10
+            icon: mdi:molecule
+            hours_to_show: 24
+            points_per_hour: 12
+            decimals: 0
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.average_pm10_in_flat
+            color_thresholds:
+              - value: 0
+                color: "#36ce0e"
+              - value: 50
+                color: "#f5df18"
+              - value: 150
+                color: "#ffa500"
+              - value: 250
+                color: "#ff0000"
+              - value: 350
+                color: "#800080"
+              - value: 420
+                color: "#660000"
             show:
               labels: false
 
@@ -133,7 +209,7 @@ cards:
             type: glance
             show_state: false
 
-    # --- Карта:
+      # --- Карта:
       - type: conditional
         conditions:
           - entity: group.devices_to_map
@@ -198,7 +274,7 @@ cards:
                 - sensor.do_doma_sasha
                 - sensor.do_doma_ira
 
-# --- Домофон и дверной звонок
+  # --- Домофон и дверной звонок
   - type: vertical-stack
     cards:
       - type: markdown
@@ -250,9 +326,9 @@ cards:
             state_color: true
           - entity: input_boolean.doorbell_mute
             name: Выключить звук
-# --- Газ
-#  - type: vertical-stack
-#    cards:
+      # --- Газ
+      #  - type: vertical-stack
+      #    cards:
       - type: markdown
         content: >
           ### <center>Датчик газа</center>
@@ -272,8 +348,8 @@ cards:
             state_color: true
             entities:
               - entity: binary_sensor.kitchen_stove_status
-                name: 'Плита'
-          - type: 'custom:mini-graph-card'
+                name: "Плита"
+          - type: "custom:mini-graph-card"
             cache: false
             hours_to_show: 3
             points_per_hour: 20
@@ -285,38 +361,38 @@ cards:
             hour24: true
             align_state: center
             entities:
-                - entity: sensor.lumi_th_kitchen_stove_temperature
-#                - entity: sensor.kitchen_stove_temperature_min_max_mean
-                  name: Текущая
-                  #show_state: false
-                  show_fill: false
-                  color: orange
-                - entity: sensor.kitchen_stove_temperature_median_zb
-#                - entity: sensor.kitchen_stove_temperature_median_min_max_mean
-                  name: Медиана
-                  #show_state: false
-                  show_fill: false
-                  color: tomato
+              - entity: sensor.lumi_th_kitchen_stove_temperature
+                #                - entity: sensor.kitchen_stove_temperature_min_max_mean
+                name: Текущая
+                #show_state: false
+                show_fill: false
+                color: orange
+              - entity: sensor.kitchen_stove_temperature_median_zb
+                #                - entity: sensor.kitchen_stove_temperature_median_min_max_mean
+                name: Медиана
+                #show_state: false
+                show_fill: false
+                color: tomato
 
-                - entity: sensor.kitchen_stove_temperature_min_max_bt
-                  name: Текущая BT
-                  #show_state: false
-                  show_fill: false
-                  color: orange
-                - entity: sensor.kitchen_stove_temperature_median_bt
-                  name: Медиана BT
-                  #show_state: false
-                  show_fill: false
-                  color: tomato
+              - entity: sensor.kitchen_stove_temperature_min_max_bt
+                name: Текущая BT
+                #show_state: false
+                show_fill: false
+                color: orange
+              - entity: sensor.kitchen_stove_temperature_median_bt
+                name: Медиана BT
+                #show_state: false
+                show_fill: false
+                color: tomato
 
-                - entity: sensor.kitchen_stove_status_int
-                  y_axis: secondary
-                  aggregate_func: max
-                  smoothing: false
-                  show_legend: false
-                  show_line: false
-                  show_points: false
-                  color: salmon
+              - entity: sensor.kitchen_stove_status_int
+                y_axis: secondary
+                aggregate_func: max
+                smoothing: false
+                show_legend: false
+                show_line: false
+                show_points: false
+                color: salmon
             show:
               name: false
               icon: false
@@ -326,43 +402,42 @@ cards:
               fill: fade
               state: false
 
-#          - type: 'custom:mini-graph-card'
-#            cache: false
-#            hours_to_show: 8
-#            points_per_hour: 20
-#            line_width: 2
-#            font_size: 75
-#            font_size_header: 12
-#            height: 80
-#            decimals: 1
-#            hour24: true
-#            align_state: center
-#            entities:
-#                - entity: sensor.kitchen_stove_temperature_min_max_bt
-#                  name: Текущая
-#                - entity: sensor.kitchen_stove_temperature_median_bt
-#                  name: Медиана
-#                  show_state: true
-#                  show_fill: false
-#                  color: indianred
-#                - entity: sensor.kitchen_stove_status_int
-#                  y_axis: secondary
-#                  aggregate_func: max
-#                  smoothing: false
-#                  show_legend: false
-#                  show_line: false
-#                  show_points: false
-#                  color: salmon
-#            show:
-#              name: false
-#              icon: false
-#              labels: false
-#              legend: false
-#              labels_secondary: false
-#              fill: fade
+  #          - type: 'custom:mini-graph-card'
+  #            cache: false
+  #            hours_to_show: 8
+  #            points_per_hour: 20
+  #            line_width: 2
+  #            font_size: 75
+  #            font_size_header: 12
+  #            height: 80
+  #            decimals: 1
+  #            hour24: true
+  #            align_state: center
+  #            entities:
+  #                - entity: sensor.kitchen_stove_temperature_min_max_bt
+  #                  name: Текущая
+  #                - entity: sensor.kitchen_stove_temperature_median_bt
+  #                  name: Медиана
+  #                  show_state: true
+  #                  show_fill: false
+  #                  color: indianred
+  #                - entity: sensor.kitchen_stove_status_int
+  #                  y_axis: secondary
+  #                  aggregate_func: max
+  #                  smoothing: false
+  #                  show_legend: false
+  #                  show_line: false
+  #                  show_points: false
+  #                  color: salmon
+  #            show:
+  #              name: false
+  #              icon: false
+  #              labels: false
+  #              legend: false
+  #              labels_secondary: false
+  #              fill: fade
 
-
-# --- Свет
+  # --- Свет
   - type: vertical-stack
     cards:
       - type: markdown
@@ -379,7 +454,7 @@ cards:
               filter:
                 include:
                   - entity_id: binary_sensor.lamp_status_*
-                    state: 'on'
+                    state: "on"
               card:
                 type: entities
                 state_color: true
@@ -405,7 +480,7 @@ cards:
           content: >
             *Весь свет выключен...*
 
-# --- Статус всякого
+  # --- Статус всякого
   - type: vertical-stack
     cards:
       - type: markdown
@@ -415,7 +490,7 @@ cards:
         state_color: true
         entities:
           - entity: sensor.entrance_door_status
-            name: 'Входная дверь'
+            name: "Входная дверь"
             icon: mdi:door
           - entity: vacuum.xiaomi_vacuum_cleaner
             name: "Пылесос Mi Robot"
@@ -468,17 +543,17 @@ cards:
             name: PlexSpy
             icon: mdi:plex
 
-# --- Weather
+  # --- Weather
   - type: vertical-stack
     cards:
-    # --- Погода:
+      # --- Погода:
       - type: markdown
         content: >
           ### <center>Погода</center>
       - type: weather-forecast
         entity: weather.openweathermap_moskva_danilovskii
         name: Москва
-      - type: 'custom:mini-graph-card'
+      - type: "custom:mini-graph-card"
         name: Атмосферное давление
         icon: mdi:gauge
         hours_to_show: 72
@@ -488,10 +563,10 @@ cards:
         hour24: true
         align_state: center
         entities:
-            - entity: sensor.local_pressure_mmhg
-              name: Aqara (Гостиная)
-            - entity: sensor.openweathermap_moskva_danilovskii_pressure_mmhg
-              name: OpenWeatherMap
-              #show_fill: false
+          - entity: sensor.local_pressure_mmhg
+            name: Aqara (Гостиная)
+          - entity: sensor.openweathermap_moskva_danilovskii_pressure_mmhg
+            name: OpenWeatherMap
+            #show_fill: false
         show:
           fill: false

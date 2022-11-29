@@ -18,6 +18,23 @@ cards:
             entity: sensor.0x158d0003931aec_humidity
             name: Влажность
             graph: line
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.air_monitor_lite_afb3_carbon_dioxide
+            name: CO₂
+            graph: line
+            detail: 2
+          - type: sensor
+            entity: sensor.air_monitor_lite_afb3_pm25
+            name: PM2.5
+            graph: line
+            detail: 2
+          - type: sensor
+            entity: sensor.air_monitor_lite_afb3_pm10
+            name: PM10
+            graph: line
+            detail: 2
       - type: "custom:simple-thermostat"
         entity: climate.daikin_nursery
         header: false
@@ -143,6 +160,23 @@ cards:
             entity: sensor.0x158d0003931b0e_humidity
             name: Влажность
             graph: line
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.air_monitor_lite_cb3b_carbon_dioxide
+            name: CO₂
+            graph: line
+            detail: 2
+          - type: sensor
+            entity: sensor.air_monitor_lite_cb3b_pm25
+            name: PM2.5
+            graph: line
+            detail: 2
+          - type: sensor
+            entity: sensor.air_monitor_lite_cb3b_pm10
+            name: PM10
+            graph: line
+            detail: 2
       - type: "custom:simple-thermostat"
         entity: climate.daikin_bedroom
         header: false

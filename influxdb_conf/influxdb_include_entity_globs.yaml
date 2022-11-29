@@ -18,3 +18,4 @@
 - sensor.*_voltage
 - sensor.*_volt
 - sensor.tplink_*_current
+- sensor.air_monitor_lite_*
