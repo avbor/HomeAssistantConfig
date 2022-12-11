@@ -14,6 +14,7 @@
 - device_tracker.2109119dg
 - device_tracker.kb2003
 - device_tracker.redmi5a_redmi5a
+- device_tracker.egor_mi8
 #- sensor.xiaomi_gas_density
 #- sensor.0x158d000413b210_gas_density
 - binary_sensor.lumi_lumi_sensor_magnet_opening

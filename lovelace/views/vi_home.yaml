@@ -73,32 +73,33 @@ cards:
                 color: "#0c30b6"
             show:
               labels: false
-      - type: "custom:mini-graph-card"
-        name: CO₂
-        icon: mdi:molecule-co2
-        hours_to_show: 24
-        points_per_hour: 12
-        line_width: 3
-        decimals: 0
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.average_carbon_dioxide_in_flat
-        color_thresholds:
-          - value: 400
-            color: "#36ce0e"
-          - value: 1000
-            color: "#b3e321"
-          - value: 1500
-            color: "#f5df18"
-          - value: 2000
-            color: "#ff0000"
-          - value: 3000
-            color: "#660000"
-        show:
-          labels: false
       - type: horizontal-stack
         cards:
+          - type: "custom:mini-graph-card"
+            name: CO₂
+            icon: mdi:molecule-co2
+            hours_to_show: 24
+            points_per_hour: 12
+            line_width: 3
+            decimals: 0
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.average_carbon_dioxide_in_flat
+                state_adaptive_color: true
+            color_thresholds:
+              - value: 400
+                color: "#36ce0e"
+              - value: 1000
+                color: "#b3e321"
+              - value: 1500
+                color: "#f5df18"
+              - value: 2000
+                color: "#ff0000"
+              - value: 3000
+                color: "#660000"
+            show:
+              labels: false
           - type: "custom:mini-graph-card"
             name: PM2.5
             icon: mdi:molecule
@@ -109,6 +110,7 @@ cards:
             align_state: center
             entities:
               - entity: sensor.average_pm25_in_flat
+                state_adaptive_color: true
             color_thresholds:
               - value: 0
                 color: "#36ce0e"
@@ -134,6 +136,7 @@ cards:
             align_state: center
             entities:
               - entity: sensor.average_pm10_in_flat
+                state_adaptive_color: true
             color_thresholds:
               - value: 0
                 color: "#36ce0e"
@@ -176,6 +179,7 @@ cards:
             - person.tatiana
             - person.galina
             - person.olga
+            - person.egor
           state_filter:
             - home
           card:
@@ -203,6 +207,7 @@ cards:
           entities:
             - person.alexander
             - person.irina
+            - person.egor
           state_filter:
             - "Дача"
           card:
@@ -227,6 +232,7 @@ cards:
               entities:
                 - person.alexander
                 - person.irina
+                - person.egor
       # --- Время в пути (Утро)
       - type: conditional
         conditions:

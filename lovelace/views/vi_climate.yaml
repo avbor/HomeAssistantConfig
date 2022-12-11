@@ -117,6 +117,23 @@ cards:
             entity: sensor.0x158d0003230618_humidity
             name: Влажность
             graph: line
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.air_monitor_lite_f6a7_carbon_dioxide
+            name: CO₂
+            graph: line
+            detail: 2
+          - type: sensor
+            entity: sensor.air_monitor_lite_f6a7_pm25
+            name: PM2.5
+            graph: line
+            detail: 2
+          - type: sensor
+            entity: sensor.air_monitor_lite_f6a7_pm10
+            name: PM10
+            graph: line
+            detail: 2
       - type: "custom:simple-thermostat"
         entity: climate.daikin_livingroom
         header: false

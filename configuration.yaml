@@ -16,6 +16,7 @@ homeassistant:
   time_zone: !secret home_timezone
   unit_system: metric
   currency: RUB
+  country: RU
   latitude: !secret home_latitude
   longitude: !secret home_longitude
   elevation: !secret home_elevation

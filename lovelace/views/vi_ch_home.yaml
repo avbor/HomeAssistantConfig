@@ -22,6 +22,7 @@ cards:
       entities:
         - person.alexander
         - person.irina
+        - person.egor
       state_filter:
         - "Дача"
       card:

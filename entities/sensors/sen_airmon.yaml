@@ -9,6 +9,7 @@
   entity_ids:
     - sensor.air_monitor_lite_afb3_carbon_dioxide
     - sensor.air_monitor_lite_cb3b_carbon_dioxide
+    - sensor.air_monitor_lite_f6a7_carbon_dioxide
 
 - platform: min_max
   name: Average pm25 In Flat
@@ -18,6 +19,7 @@
   entity_ids:
     - sensor.air_monitor_lite_cb3b_pm25
     - sensor.air_monitor_lite_afb3_pm25
+    - sensor.air_monitor_lite_f6a7_pm25
 
 - platform: min_max
   name: Average pm10 In Flat
@@ -27,3 +29,4 @@
   entity_ids:
     - sensor.air_monitor_lite_afb3_pm10
     - sensor.air_monitor_lite_cb3b_pm10
+    - sensor.air_monitor_lite_f6a7_pm10

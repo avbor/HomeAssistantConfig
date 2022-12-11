@@ -8,7 +8,7 @@
   mode: parallel
   trigger:
     platform: state
-    entity_id: person.alexander, person.irina, person.galina, person.tatiana, person.olga
+    entity_id: person.alexander, person.irina, person.galina, person.tatiana, person.olga, person.egor
   condition:
     condition: and
     conditions:
