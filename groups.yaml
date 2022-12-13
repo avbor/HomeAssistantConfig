@@ -69,6 +69,7 @@ all_lamps:
     - light.sonoff_zbmini_03_on_off
     - light.sonoff_zbmini_04_on_off
     - light.ikea_e27_level_light_color_on_off
+    - light.detskaia_girlianda_na_krovati
 
 light_detskaia:
   name: Весь свет в Детской
@@ -77,6 +78,7 @@ light_detskaia:
     - light.ikea_e27_detskaia
     - light.detskaia_podsvetka_na_okne
     - light.ikea_e14_level_light_color_on_off
+    - light.detskaia_girlianda_na_krovati
 
 light_prikhozhaya:
   name: Весь свет в Прихожей

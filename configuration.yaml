@@ -33,6 +33,7 @@ homeassistant:
 # Features
 #################################################
 
+cloud:
 api:
 config:
 hassio:

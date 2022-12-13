@@ -64,7 +64,8 @@
       data:
         entity_id: media_player.yandex_station_lite_detskaia
         command: sendText
-        text: Включи детское радио
+#        text: Включи детское радио
+        text: Включи дедморозное шоу
     - delay: "00:00:10"
     - service: media_player.volume_set
       target:

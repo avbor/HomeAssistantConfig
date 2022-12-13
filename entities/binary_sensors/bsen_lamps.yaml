@@ -63,7 +63,7 @@
       device_class: power
       friendly_name: Люстра на Кухне
       icon_template: mdi:ceiling-light
-#      value_template: "{{ is_state('light.kukhnia_liustra', 'on') }}"
+      #      value_template: "{{ is_state('light.kukhnia_liustra', 'on') }}"
       value_template: "{{ is_state('light.ikea_e27_kukhnia', 'on') }}"
     lamp_status_kukhnia_spots:
       device_class: power
@@ -105,3 +105,8 @@
       friendly_name: Споты в Ванной
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
+    lamp_status_girlianda_detskaia:
+      device_class: power
+      friendly_name: Гирлянда на кровати в Детской
+      icon_template: mdi:string-lights
+      value_template: "{{ is_state('light.detskaia_girlianda_na_krovati', 'on') }}"

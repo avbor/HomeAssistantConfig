@@ -358,6 +358,8 @@ cards:
             name: Розетка Gosund SP111 09
           - entity: switch.gosund_sp111_10_switch
             name: Розетка Gosund SP111 10
+          - entity: switch.tz3000_zloso4jk_ts011f_switch
+            name: Розетка NAS-WR01B 01
       - type: markdown
         content: >
           ### <center>Недоступные розетки</center>
@@ -378,6 +380,7 @@ cards:
           - switch.gosund_sp111_06_switch
           - switch.gosund_sp111_09_switch
           - switch.gosund_sp111_10_switch
+          - switch.tz3000_zloso4jk_ts011f_switch
         state_filter:
           - unavailable
       # Недоступные лампы
@@ -450,5 +453,8 @@ cards:
               - entity: light.dacha_dvor
                 name: Подсветка двора на Даче
                 icon: mdi:light-flood-down
+              - entity: light.detskaia_girlianda_na_krovati
+                name: Гирлянда на кровати в Детской
+                icon: mdi:string-lights
             state_filter:
               - unavailable

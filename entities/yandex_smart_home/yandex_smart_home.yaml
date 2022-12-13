@@ -18,6 +18,7 @@ filter:
     - light.ikea_e27_detskaia # Детская - Люстра
     - light.detskaia_podsvetka_na_okne # Детская - Подсветка на окне
     - light.ikea_e14_level_light_color_on_off # Детская - Лампа на столе
+    - light.detskaia_girlianda_na_krovati # Детская - гирлянда на кровати
     - sensor.0x158d0003931aec_temperature # Детская - Температура
     - climate.daikin_nursery # Детская - Кондиционер
     #- switch.broadlink_smartplug_01_switch # Детская - Ёлка
@@ -203,3 +204,6 @@ entity_config:
   media_player.ue46es5507:
     name: Телевизор
     room: Гостиная
+  light.detskaia_girlianda_na_krovati:
+    name: Гирлянда
+    room: Детская

@@ -9,3 +9,7 @@
 - platform: switch
   name: Гостиная - подсветка на окне
   entity_id: switch.tz3000_g5xawfcq_ts0121_switch
+
+- platform: switch
+  name: Детская - гирлянда на кровати
+  entity_id: switch.tz3000_zloso4jk_ts011f_switch
