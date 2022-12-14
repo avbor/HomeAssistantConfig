@@ -1,0 +1,44 @@
+esphome:
+  name: ${board_name}
+
+esp32:
+  board: ${esp_board}
+  framework:
+    type: esp-idf
+
+improv_serial:
+
+logger:
+#  level: VERY_VERBOSE
+
+#captive_portal:
+
+api:
+  password: !secret esphome_api_password
+  reboot_timeout: 5min
+
+ota:
+  password: !secret esphome_api_password
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+sensor:
+  - platform: wifi_signal
+    name: ${board_name} RSSI
+    update_interval: 60s
+    internal: false
+
+binary_sensor:
+  - platform: status
+    name: ${board_name} Status
+    internal: false
+
+button:
+  - platform: restart
+    name: ${board_name} Restart
+
+  - platform: safe_mode
+    name: ${board_name} Restart (Safe Mode)
+#    entity_category: diagnostic

@@ -3,12 +3,12 @@ substitutions:
   board_name: esp32-bt-proxy-02
   room_name: Hallway
 
-external_components: 
-  - source: github://myhomeiot/esphome-components
+#external_components: 
+#  - source: github://myhomeiot/esphome-components
 
 packages:
   wifi: !include common/wifi_bt_proxy.yaml
-  device_base: !include common/device_base_esp32.yaml
+  device_base: !include common/device_base_esp32_bt_proxy.yaml
   esp32_ble_tracker: !include common/esp32_ble_tracker_bt_proxy.yaml
   family_ibeacon_sensors: !include common/family_ibeacon_sensors.yaml
 
