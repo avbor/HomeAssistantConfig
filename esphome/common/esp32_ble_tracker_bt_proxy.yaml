@@ -3,4 +3,4 @@ esp32_ble_tracker:
     interval: 1100ms
     window: 1100ms
     duration: 10s
-    #active: true
+    active: false
