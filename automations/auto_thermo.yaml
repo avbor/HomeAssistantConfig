@@ -75,8 +75,8 @@
       - binary_sensor.0x158d00039cf974_contact
       - binary_sensor.0x158d0003d54725_contact
       - binary_sensor.0x158d0004073b67_contact
-    from: 'off'
-    to: 'on'
+    from: "off"
+    to: "on"
     for:
       hours: 8
   action:
@@ -94,8 +94,8 @@
       - binary_sensor.0x158d00039cf974_contact
       - binary_sensor.0x158d0003d54725_contact
       - binary_sensor.0x158d0004073b67_contact
-    from: 'off'
-    to: 'on'
+    from: "off"
+    to: "on"
     for:
       hours: 16
   action:
@@ -113,8 +113,8 @@
       - binary_sensor.0x158d00039cf974_contact
       - binary_sensor.0x158d0003d54725_contact
       - binary_sensor.0x158d0004073b67_contact
-    from: 'off'
-    to: 'on'
+    from: "off"
+    to: "on"
     for:
       hours: 24
   action:
@@ -122,3 +122,34 @@
     data_template:
       message: >
         Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *24* часов.
+
+# Качество воздуха
+- alias: Carbon dioxide alert
+  id: 5c2a3b8f-9bc7-4c73-a0b7-62f53e2d8d4a
+  mode: queued
+  max: 10
+  trigger:
+    - platform: template
+      value_template: "{{ (states('sensor.air_monitor_lite_afb3_carbon_dioxide') | int(0)) >= 1000 }}" # Детская
+      for:
+        minutes: 10
+    - platform: template
+      value_template: "{{ (states('sensor.air_monitor_lite_f6a7_carbon_dioxide') | int(0)) >= 1000 }}" # Гостиная
+      for:
+        minutes: 10
+    - platform: template
+      value_template: "{{ (states('sensor.air_monitor_lite_cb3b_carbon_dioxide') | int(0)) >= 1000 }}" # Спальня
+      for:
+        minutes: 10
+  action:
+    - service: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_flat_1
+        title: "*Внимание!*"
+        message: |
+          Повышенное содержание углекислого газа в 
+          {%- if 'afb3' in trigger.entity_id %} *Детской*
+          {%- elif 'f6a7' in trigger.entity_id %} *Гостиной*
+          {%- elif 'cb3b' in trigger.entity_id %} *Спальне*
+          {%- endif %} (*{{ states(trigger.entity_id) }}* ppm).
+          Необходимо проветрить комнату.

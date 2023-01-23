@@ -9,11 +9,11 @@
       humidity_sensor: sensor.a4c138d358e9_humidity
       sensor_types:
         - dew_point
-        - thermal_perception
+        - dew_point_perception
     - name: Country House - Kids Room
       unique_id: 8767d5c9-0f9c-4356-a57c-5caea32693df
       temperature_sensor: sensor.country_house_avg_temp_kids_rooms
       humidity_sensor: sensor.country_house_avg_humidity_kids_rooms
       sensor_types:
         - dew_point
-        - thermal_perception
+        - dew_point_perception

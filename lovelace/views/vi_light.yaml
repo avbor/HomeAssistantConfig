@@ -62,6 +62,26 @@ cards:
             cards:
               - type: conditional
                 conditions:
+                  - entity: light.ikea_e14_level_light_color_on_off
+                    state_not: "unavailable"
+                card:
+                  type: light
+                  entity: light.ikea_e14_level_light_color_on_off
+                  name: Стол слева
+                  icon: mdi:desk-lamp
+              - type: conditional
+                conditions:
+                  - entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
+                    state_not: "unavailable"
+                card:
+                  type: light
+                  entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
+                  name: Стол справа
+                  icon: mdi:desk-lamp
+          - type: horizontal-stack
+            cards:
+              - type: conditional
+                conditions:
                   - entity: light.detskaia_podsvetka_na_okne
                     state_not: "unavailable"
                 card:
@@ -69,15 +89,6 @@ cards:
                   entity: light.detskaia_podsvetka_na_okne
                   name: Окно
                   icon: mdi:string-lights
-              - type: conditional
-                conditions:
-                  - entity: light.ikea_e14_level_light_color_on_off
-                    state_not: "unavailable"
-                card:
-                  type: light
-                  entity: light.ikea_e14_level_light_color_on_off
-                  name: Рабочий стол
-                  icon: mdi:desk-lamp
               - type: conditional
                 conditions:
                   - entity: light.detskaia_girlianda_na_krovati

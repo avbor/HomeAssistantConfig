@@ -52,7 +52,7 @@ tag:
 media_source:
 my:
 dhcp:
-image:
+image_upload:
 energy:
 usb:
 hardware:

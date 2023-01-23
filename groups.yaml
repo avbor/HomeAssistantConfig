@@ -51,6 +51,7 @@ all_lamps:
     - light.ikea_e27_detskaia
     - light.detskaia_podsvetka_na_okne
     - light.ikea_e14_level_light_color_on_off
+    - light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
     - light.sonoff_1000ab3c28
     - light.gostinaia_podsvetka_na_okne
     - light.kukhnia_lenta
@@ -78,6 +79,7 @@ light_detskaia:
     - light.ikea_e27_detskaia
     - light.detskaia_podsvetka_na_okne
     - light.ikea_e14_level_light_color_on_off
+    - light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
     - light.detskaia_girlianda_na_krovati
 
 light_prikhozhaya:

@@ -407,7 +407,11 @@ cards:
                 name: Люстра в Кладовой
                 icon: mdi:vanity-light
               - entity: light.ikea_e14_level_light_color_on_off
-                name: Лампа на столе в Детской
+                name: Лампа на столе в Детской слева
+                icon: mdi:desk-lamp
+              - entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
+                name: Лампа на столе в Детской справа
+                icon: mdi:desk-lamp
               - entity: light.ikea_e27_level_light_color_on_off
                 name: Лампа на столе в Гостиной
                 icon: mdi:desk-lamp

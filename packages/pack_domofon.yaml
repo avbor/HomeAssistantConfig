@@ -132,6 +132,9 @@ domofon_pack:
               {{ trigger.to_state.state | regex_search('Курьер .* будет у вас в течение .*') }}
           - condition: template
             value_template: >-
+              {{ trigger.to_state.state | regex_search('В течение .* курьер .* будет у вас') }}
+          - condition: template
+            value_template: >-
               {{ trigger.to_state.state | regex_search('Курьер в пути. .*') }}
           - condition: template
             value_template: >-

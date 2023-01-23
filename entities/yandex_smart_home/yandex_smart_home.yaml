@@ -17,7 +17,8 @@ filter:
     # Детская
     - light.ikea_e27_detskaia # Детская - Люстра
     - light.detskaia_podsvetka_na_okne # Детская - Подсветка на окне
-    - light.ikea_e14_level_light_color_on_off # Детская - Лампа на столе
+    - light.ikea_e14_level_light_color_on_off # Детская - Лампа на столе слева
+    - light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light # Детская - Лампа на столе справа
     - light.detskaia_girlianda_na_krovati # Детская - гирлянда на кровати
     - sensor.0x158d0003931aec_temperature # Детская - Температура
     - climate.daikin_nursery # Детская - Кондиционер
@@ -72,7 +73,10 @@ entity_config:
     name: Подсветка
     room: Детская
   light.ikea_e14_level_light_color_on_off:
-    name: Лампа на столе
+    name: Лампа на столе слева
+    room: Детская
+  light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light:
+    name: Лампа на столе справа
     room: Детская
   light.sonoff_1000f30a9e:
     name: Споты
