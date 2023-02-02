@@ -27,7 +27,7 @@ ch_climate_pack:
           value_template: "{{ ((state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') | abs) * 100 }}"
         ch_heater_terrace_power:
           value_template: >-
-            {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int) %}
+            {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int(0)) %}
             {% if heat_power == 0 %}
               0
             {% elif heat_power > 500 and heat_power < 1000 %}

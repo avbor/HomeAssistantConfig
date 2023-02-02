@@ -80,7 +80,7 @@
   initial_state: true
   trigger:
     platform: state
-    entity_id: binary_sensor.lumi_lumi_sensor_natgas_iaszone
+    entity_id: binary_sensor.0x00158d000413b210_gas
     from: "off"
     to: "on"
   action:

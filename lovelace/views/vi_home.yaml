@@ -233,52 +233,53 @@ cards:
                 - person.alexander
                 - person.irina
                 - person.egor
+
       # --- Время в пути (Утро)
-      - type: conditional
-        conditions:
-          - entity: binary_sensor.time_between_7_10
-            state: "on"
-          - entity: binary_sensor.workday_sensor
-            state: "on"
-        card:
-          type: vertical-stack
-          cards:
-            - type: markdown
-              content: >
-                ### Время в пути:
-            - type: entities
-              entities:
-                - sensor.do_raboty_sasha
-                - sensor.do_raboty_ira
-            - type: history-graph
-              hours_to_show: 2
-              refresh_interval: 60
-              entities:
-                - sensor.do_raboty_sasha
-                - sensor.do_raboty_ira
-      # --- Время в пути (Вечер)
-      - type: conditional
-        conditions:
-          - entity: binary_sensor.time_between_17_21
-            state: "on"
-          - entity: binary_sensor.workday_sensor
-            state: "on"
-        card:
-          type: vertical-stack
-          cards:
-            - type: markdown
-              content: >
-                ### Время в пути:
-            - type: entities
-              entities:
-                - sensor.do_doma_sasha
-                - sensor.do_doma_ira
-            - type: history-graph
-              hours_to_show: 2
-              refresh_interval: 60
-              entities:
-                - sensor.do_doma_sasha
-                - sensor.do_doma_ira
+  #      - type: conditional
+  #        conditions:
+  #          - entity: binary_sensor.time_between_7_10
+  #            state: "on"
+  #          - entity: binary_sensor.workday_sensor
+  #            state: "on"
+  #        card:
+  #          type: vertical-stack
+  #          cards:
+  #            - type: markdown
+  #              content: >
+  #                ### Время в пути:
+  #            - type: entities
+  #              entities:
+  #                - sensor.do_raboty_sasha
+  #                - sensor.do_raboty_ira
+  #            - type: history-graph
+  #              hours_to_show: 2
+  #              refresh_interval: 60
+  #              entities:
+  #                - sensor.do_raboty_sasha
+  #                - sensor.do_raboty_ira
+  #      # --- Время в пути (Вечер)
+  #      - type: conditional
+  #        conditions:
+  #          - entity: binary_sensor.time_between_17_21
+  #            state: "on"
+  #          - entity: binary_sensor.workday_sensor
+  #            state: "on"
+  #        card:
+  #          type: vertical-stack
+  #          cards:
+  #            - type: markdown
+  #              content: >
+  #                ### Время в пути:
+  #            - type: entities
+  #              entities:
+  #                - sensor.do_doma_sasha
+  #                - sensor.do_doma_ira
+  #            - type: history-graph
+  #              hours_to_show: 2
+  #              refresh_interval: 60
+  #              entities:
+  #                - sensor.do_doma_sasha
+  #                - sensor.do_doma_ira
 
   # --- Домофон и дверной звонок
   - type: vertical-stack
@@ -344,10 +345,10 @@ cards:
             entities:
               - entity: switch.blitzwolf_shp13_02_3ad702fe_on_off
                 name: Питание
-              - entity: binary_sensor.lumi_lumi_sensor_natgas_iaszone
+              - entity: binary_sensor.0x00158d000413b210_gas
                 name: "Газ в воздухе"
-              #- entity: sensor.0x158d000413b210_gas_density
-              #  name: "Концентрация"
+              - entity: sensor.0x00158d000413b210_gas_density
+                name: "Концентрация"
       - type: custom:vertical-stack-in-card
         cards:
           - type: entities

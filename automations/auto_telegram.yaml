@@ -230,7 +230,7 @@
         Спалья: *{{ states('media_player.yandex_station_mini2_spalnia') }}*
         `-= Разное =-`
         Входная дверь: *{{ states('sensor.entrance_door_status') }}*
-        Датчик газа: *{{ states('binary_sensor.lumi_lumi_sensor_natgas_iaszone') }}*
+        Датчик газа: *{{ states('binary_sensor.0x00158d000413b210_gas') }}*
         Датчик газа (питание): *{{ states('switch.blitzwolf_shp13_02_3ad702fe_on_off') }}*
         Mi Robot: *{{ states('vacuum.xiaomi_vacuum_cleaner') }}*
         Transmission Status: *{{ states('sensor.transmission_status') }}*

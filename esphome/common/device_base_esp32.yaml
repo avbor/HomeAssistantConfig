@@ -14,11 +14,12 @@ logger:
 captive_portal:
 
 api:
-  password: !secret esphome_api_password
+  encryption:
+    key: !secret esphome_api_key
   reboot_timeout: 5min
 
 ota:
-  password: !secret esphome_api_password
+  password: !secret esphome_ota_password
 
 time:
   - platform: homeassistant

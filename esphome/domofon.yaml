@@ -28,7 +28,7 @@ substitutions:
 
   # OTA and API
   ota_password: !secret esphome_api_password
-  api_password: !secret esphome_api_password
+  api_key: !secret esphome_api_key
 
   # Software configuration
   call_end_detect_delay: 3000ms     # Interval between rings to detect incoming call
@@ -89,7 +89,8 @@ globals:
     initial_value: '0.7'
 
 api:
-  password: $api_password
+  encryption:
+    key: $api_key
   reboot_timeout: 0s
   services:
     # Accept call service for Home Assistant
@@ -305,42 +306,42 @@ script:
           id: rgb_led
           transition_length: 0ms
 
-sensor:
+#sensor:
 #  - platform: template
 #    name: "Domofon Heap Size"
 #    lambda: "return ESP.getFreeHeap();"
 #    update_interval: 30s
 #    unit_of_measurement: bytes
 #    accuracy_decimals: 0
-  - platform: uptime
-    internal: true
-    id: uptime_sensor
+#  - platform: uptime
+#    internal: true
+#    id: uptime_sensor
 
-text_sensor:
-  - platform: template
-    name: "Domofon Uptime"
-    lambda: |-
-      uint32_t dur = id(uptime_sensor).state;
-      int dys = 0;
-      int hrs = 0;
-      int mnts = 0;
-      if (dur > 86399) {
-        dys = trunc(dur / 86400);
-        dur = dur - (dys * 86400);
-      }
-      if (dur > 3599) {
-        hrs = trunc(dur / 3600);
-        dur = dur - (hrs * 3600);
-      }
-      if (dur > 59) {
-        mnts = trunc(dur / 60);
-        dur = dur - (mnts * 60);
-      }
-      char buffer[17];
-      sprintf(buffer, "%ud %02uh %02um %02us", dys, hrs, mnts, dur);
-      return {buffer};
-    icon: mdi:clock-start
-    update_interval: 60s
+#text_sensor:
+#  - platform: template
+#    name: "Domofon Uptime"
+#    lambda: |-
+#      uint32_t dur = id(uptime_sensor).state;
+#      int dys = 0;
+#      int hrs = 0;
+#      int mnts = 0;
+#      if (dur > 86399) {
+#        dys = trunc(dur / 86400);
+#        dur = dur - (dys * 86400);
+#      }
+#      if (dur > 3599) {
+#        hrs = trunc(dur / 3600);
+#        dur = dur - (hrs * 3600);
+#      }
+#      if (dur > 59) {
+#        mnts = trunc(dur / 60);
+#        dur = dur - (mnts * 60);
+#      }
+#      char buffer[17];
+#      sprintf(buffer, "%ud %02uh %02um %02us", dys, hrs, mnts, dur);
+#      return {buffer};
+#    icon: mdi:clock-start
+#    update_interval: 60s
 
 switch:
   - platform: restart

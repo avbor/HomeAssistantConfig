@@ -20,8 +20,6 @@
 - binary_sensor.lumi_lumi_sensor_magnet_opening
 - binary_sensor.neptun_water_leakage
 - sensor.yaml_code_lines_count
-- sensor.do_dachi
-- sensor.do_doma_ot_dachi
 - sensor.average_carbon_dioxide_in_flat
 - sensor.average_pm25_in_flat
 - sensor.average_pm10_in_flat

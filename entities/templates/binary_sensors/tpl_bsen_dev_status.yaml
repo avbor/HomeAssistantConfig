@@ -15,17 +15,17 @@
 
   - name: Kettle Status
     device_class: heat
-    state: "{{ (states('sensor.gosund_sp111_05_watt') | float) > 100 }}"
+    state: "{{ (states('sensor.gosund_sp111_05_watt') | float(0)) > 100 }}"
     icon: mdi:kettle
 
   - name: Dishwasher Status
     device_class: power
-    state: "{{ (states('sensor.gosund_sp111_06_watt') | float) > 1 }}"
+    state: "{{ (states('sensor.gosund_sp111_06_watt') | float(0)) > 1 }}"
     icon: mdi:dishwasher
 
   - name: Oven Status
     device_class: heat
-    state: "{{ (states('sensor.gosund_sp111_10_watt') | float) > 5 }}"
+    state: "{{ (states('sensor.gosund_sp111_10_watt') | float(0)) > 5 }}"
     icon: mdi:stove
 
   - name: Washer Status
@@ -37,7 +37,7 @@
 
   - name: Dryer Status
     device_class: power
-    state: "{{ (states('sensor.gosund_sp111_09_watt') | float) > 6 }}"
+    state: "{{ ((states('sensor.gosund_sp111_09_watt') | float(0))) > 6 }}"
     delay_on:
       seconds: 15
     icon: mdi:tumble-dryer

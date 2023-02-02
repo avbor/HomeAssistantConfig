@@ -2,27 +2,27 @@
 # Yandex Maps routes sensors
 #################################################
 
-- platform: yandex_maps
-  start: zone.home
-  destination: !secret yandex_map_dest_1
-  name: До работы [Саша]
-- platform: yandex_maps
-  start: !secret yandex_map_dest_1
-  destination: zone.home
-  name: До дома [Саша]
-- platform: yandex_maps
-  start: zone.home
-  destination: !secret yandex_map_dest_2
-  name: До работы [Ира]
-- platform: yandex_maps
-  start: !secret yandex_map_dest_2
-  destination: zone.home
-  name: До дома [Ира]
-- platform: yandex_maps
-  start: zone.home
-  destination: !secret yandex_map_dest_3
-  name: До дачи
-- platform: yandex_maps
-  start: !secret yandex_map_dest_3
-  destination: zone.home
-  name: До дома [от дачи]
+#- platform: yandex_maps
+#  start: zone.home
+#  destination: !secret yandex_map_dest_1
+#  name: До работы [Саша]
+#- platform: yandex_maps
+#  start: !secret yandex_map_dest_1
+#  destination: zone.home
+#  name: До дома [Саша]
+#- platform: yandex_maps
+#  start: zone.home
+#  destination: !secret yandex_map_dest_2
+#  name: До работы [Ира]
+#- platform: yandex_maps
+#  start: !secret yandex_map_dest_2
+#  destination: zone.home
+#  name: До дома [Ира]
+#- platform: yandex_maps
+#  start: zone.home
+#  destination: !secret yandex_map_dest_3
+#  name: До дачи
+#- platform: yandex_maps
+#  start: !secret yandex_map_dest_3
+#  destination: zone.home
+#  name: До дома [от дачи]

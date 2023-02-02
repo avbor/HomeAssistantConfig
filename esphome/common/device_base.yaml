@@ -9,11 +9,12 @@ logger:
   baud_rate: 0
 
 api:
-  password: !secret esphome_api_password
+  encryption:
+    key: !secret esphome_api_key
   reboot_timeout: 5min
 
 ota:
-  password: !secret esphome_api_password
+  password: !secret esphome_ota_password
 
 #web_server:
 #  port: 80

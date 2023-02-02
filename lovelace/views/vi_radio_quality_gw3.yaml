@@ -12,7 +12,7 @@ cards:
         clickable: false
         entities:
           include:
-            - sensor.*_gateway
+            - binary_sensor.*_gateway
         sort_by: friendly_name
         columns:
           - data: friendly_name
@@ -53,11 +53,10 @@ cards:
             modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: rssi
             name: RSSI
-            modify: 'isNaN(parseInt(x, 10)) ? "" : (100 + parseInt(x, 10)) * -1'
           - data: uptime
             name: Gateway Uptime
             modify: x+''
-          - data: state
+          - data: last_changed
             name: Connected Since
             modify: >
               var dt = new Date(x);
@@ -98,23 +97,23 @@ cards:
             modify: (x+'').replace(/^0x/,"").toLowerCase()
           - data: type
             name: Type
-            modify: (x+'').replace(/^-$/, "child device")
+            modify: 'x == "" ? "-" : (x+"").replace(/^-$/, "device")'
+          - data: device_fw_ver
+            name: FW
+            modify: 'x == "" ? "-" : x+""'
           - data: msg_received
             name: Received
             modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: msg_missed
-            name: Missed (Total)
-            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-          - data: last_missed
-            name: Missed (Last)
+            name: Missed
             modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
           - data: unresponsive
             name: Unresponsive
             modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-          - data: reset_cnt
-            name: Reset Count
+          - data: new_resets
+            name: Resets
             modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-          - data: link_quality
+          - data: linkquality
             name: LQI
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: rssi
@@ -123,6 +122,9 @@ cards:
           - data: last_msg
             name: Last Message
             modify: x+''
+          - data: available
+            name: Available
+            modify: 'x === true ? "✓" : x+""'
           - data: state
             name: Last Seen
             modify: >
@@ -158,6 +160,9 @@ cards:
           - data: msg_received
             name: Received
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+          - data: available
+            name: Available
+            modify: 'x === true ? "✓" : x+""'
           - data: state
             name: Last Seen
             modify: >

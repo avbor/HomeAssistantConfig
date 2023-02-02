@@ -35,38 +35,38 @@ cards:
 #    camera_image: camera.nas03_reolinkcam_02
     show_name: false
     show_state: false
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Время в пути</center>
-      - type: entities
-        entities:
-          #- entity: sensor.do_dachi
-          - entity: sensor.ym_dom_dacha_hr
-            name: Дом -> Дача
-            icon: mdi:home-group
-          - type: weblink
-            name: Маршрут
-            url: !secret yandex_map_route_dom_dacha
-            icon: mdi:map-marker-distance
-          - type: section
-          #- entity: sensor.do_doma_ot_dachi
-          - entity: sensor.ym_dacha_dom_hr
-            name: Дача -> Дом
-            icon: mdi:office-building
-          - type: weblink
-            name: Маршрут
-            url: !secret yandex_map_route_dacha_dom
-            icon: mdi:map-marker-distance
-      - type: history-graph
-        hours_to_show: 2
-        refresh_interval: 60
-        entities:
-          - entity: sensor.do_dachi
-            name: Дом -> Дача
-          - entity: sensor.do_doma_ot_dachi
-            name: Дача -> Дом
+#  - type: vertical-stack
+#    cards:
+#      - type: markdown
+#        content: >
+#          ### <center>Время в пути</center>
+#      - type: entities
+#        entities:
+#          #- entity: sensor.do_dachi
+#          - entity: sensor.ym_dom_dacha_hr
+#            name: Дом -> Дача
+#            icon: mdi:home-group
+#          - type: weblink
+#            name: Маршрут
+#            url: !secret yandex_map_route_dom_dacha
+#            icon: mdi:map-marker-distance
+#          - type: section
+#          #- entity: sensor.do_doma_ot_dachi
+#          - entity: sensor.ym_dacha_dom_hr
+#            name: Дача -> Дом
+#            icon: mdi:office-building
+#          - type: weblink
+#            name: Маршрут
+#            url: !secret yandex_map_route_dacha_dom
+#            icon: mdi:map-marker-distance
+#      - type: history-graph
+#        hours_to_show: 2
+#        refresh_interval: 60
+#        entities:
+#          - entity: sensor.do_dachi
+#            name: Дом -> Дача
+#          - entity: sensor.do_doma_ot_dachi
+#            name: Дача -> Дом
   # Свет
   - type: vertical-stack
     cards:

@@ -1,5 +1,5 @@
 """
-http://stanford-clark.com/MQTT/
+https://stanford-clark.com/MQTT/
 """
 import asyncio
 import json
@@ -43,7 +43,7 @@ class MQTTMessage:
 
 
 class RawMessage:
-    def __init__(self, raw=b''):
+    def __init__(self, raw=b""):
         self.pos = 0
         self.raw = raw
 
@@ -53,10 +53,10 @@ class RawMessage:
 
     def read(self, length: int) -> bytes:
         self.pos += length
-        return self.raw[self.pos - length:self.pos]
+        return self.raw[self.pos - length : self.pos]
 
     def read_int(self, length: int) -> int:
-        return int.from_bytes(self.read(length), 'big')
+        return int.from_bytes(self.read(length), "big")
 
     def read_str(self) -> str:
         slen = self.read_int(2)
@@ -66,28 +66,28 @@ class RawMessage:
         return self.read(self.size - self.pos)
 
     def write_int(self, value: int, length: int):
-        self.raw += value.to_bytes(length, 'big')
+        self.raw += value.to_bytes(length, "big")
 
     def write_str(self, value: str):
         self.write_int(len(value), 2)
         self.raw += value.encode()
 
     def write_len(self):
-        buf = b''
+        buf = b""
         var = len(self.raw)
         for _ in range(4):
             if var >= 128:
                 var, b = divmod(var, 128)
-                buf += (b | 128).to_bytes(1, 'big')
+                buf += (b | 128).to_bytes(1, "big")
             else:
-                buf += var.to_bytes(1, 'big')
+                buf += var.to_bytes(1, "big")
                 break
         self.raw = buf + self.raw
 
     def write_header(self, msg_type: int, qos=0, retain=False):
         self.write_len()
         header = (msg_type << 4) | (qos << 1) | int(retain)
-        self.raw = header.to_bytes(1, 'big') + self.raw
+        self.raw = header.to_bytes(1, "big") + self.raw
 
     @staticmethod
     def read_header(header: int) -> MQTTMessage:
@@ -101,7 +101,7 @@ class RawMessage:
     @staticmethod
     def connect(keep_alive: int = 0):
         msg = RawMessage()
-        msg.write_str('MQIsdp')  # protocol name
+        msg.write_str("MQIsdp")  # protocol name
         msg.write_int(3, 1)  # protocol version
         msg.write_int(0, 1)  # flags
         msg.write_int(keep_alive, 2)  # keep alive
@@ -132,12 +132,12 @@ class RawMessage:
     @staticmethod
     def ping():
         # adds zero length after header
-        return (PINGREQ << 4).to_bytes(2, 'little')
+        return (PINGREQ << 4).to_bytes(2, "little")
 
     @staticmethod
     def disconnect():
         # adds zero length after header
-        return (DISCONNECT << 4).to_bytes(2, 'little')
+        return (DISCONNECT << 4).to_bytes(2, "little")
 
 
 class MiniMQTT:
@@ -148,6 +148,7 @@ class MiniMQTT:
     def __init__(self, keepalive=15, timeout=5):
         self.keepalive = keepalive
         self.timeout = timeout
+        self.pub_buffer = []
 
     async def read_varlen(self) -> int:
         var = 0
@@ -161,7 +162,8 @@ class MiniMQTT:
     async def _connect(self, host: str):
         self.reader, self.writer = await asyncio.open_connection(host, 1883)
 
-        msg = RawMessage.connect()
+        # keepalive can't be 0 for mosquitto v2
+        msg = RawMessage.connect(60 * 60 * 18)
         self.writer.write(msg)
         await self.writer.drain()
 
@@ -174,8 +176,11 @@ class MiniMQTT:
 
     async def connect(self, host: str):
         try:
-            return await asyncio.wait_for(self._connect(host), self.timeout)
-        except:
+            resp = await asyncio.wait_for(self._connect(host), self.timeout)
+            if resp and self.pub_buffer:
+                asyncio.create_task(self.empty_buffer())
+            return resp
+        except Exception:
             return False
 
     async def disconnect(self):
@@ -183,7 +188,7 @@ class MiniMQTT:
         try:
             self.writer.write(msg)
             await asyncio.wait_for(self.writer.drain(), self.timeout)
-        except:
+        except Exception:
             _LOGGER.debug("Can't disconnect from gateway")
 
     async def subscribe(self, topic: str):
@@ -192,26 +197,29 @@ class MiniMQTT:
         try:
             self.writer.write(msg)
             await asyncio.wait_for(self.writer.drain(), self.timeout)
-        except:
+        except Exception:
             _LOGGER.debug(f"Can't subscribe to {topic}")
 
     async def publish(self, topic: str, payload, retain=False):
+        if self.writer is None:
+            self.pub_buffer.append([topic, payload, retain])
+            return
         if isinstance(payload, str):
             payload = payload.encode()
         elif isinstance(payload, dict):
-            payload = json.dumps(payload, separators=(',', ':')).encode()
+            payload = json.dumps(payload, separators=(",", ":")).encode()
 
         # no response for QoS 0
         msg = RawMessage.publish(topic, payload, retain)
         try:
             self.writer.write(msg)
             await asyncio.wait_for(self.writer.drain(), self.timeout)
-        except:
+        except Exception:
             _LOGGER.debug(f"Can't publish {payload} to {topic}")
 
     async def read(self) -> Optional[MQTTMessage]:
         raw = await self.reader.read(1)
-        if raw == b'':
+        if raw == b"":
             # disconnected
             return None
 
@@ -248,8 +256,14 @@ class MiniMQTT:
         try:
             self.writer.close()
             await asyncio.wait_for(self.writer.wait_closed(), self.timeout)
-        except:
+        except Exception:
             _LOGGER.debug("Can't close connection")
+
+    async def empty_buffer(self):
+        for args in self.pub_buffer:
+            await self.publish(*args)
+
+        self.pub_buffer.clear()
 
     def __aiter__(self):
         return self
@@ -259,9 +273,7 @@ class MiniMQTT:
 
         while True:
             try:
-                msg: MQTTMessage = await asyncio.wait_for(
-                    self.read(), self.keepalive
-                )
+                msg: MQTTMessage = await asyncio.wait_for(self.read(), self.keepalive)
                 if msg is None:
                     raise StopAsyncIteration
 
