@@ -105,6 +105,9 @@ domofon_pack:
         - condition: template
           value_template: >-
             {{ states('input_boolean.ha_shutdown') == 'off' }}
+        - condition: template
+          value_template: >-
+            {{ states('sensor.ha_uptime') != '0' }}
       action:
         - service: notify.telegram_group_system
           data:
