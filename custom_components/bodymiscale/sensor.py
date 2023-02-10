@@ -16,7 +16,6 @@ from .const import (
     ATTR_BMI,
     ATTR_BMILABEL,
     ATTR_BMR,
-    ATTR_BODY,
     ATTR_BODY_SCORE,
     ATTR_BONES,
     ATTR_FAT,
@@ -130,13 +129,6 @@ async def async_setup_entry(
                         key=ATTR_MUSCLE,
                     ),
                     Metric.MUSCLE_MASS,
-                ),
-                BodyScaleSensor(
-                    handler,
-                    SensorEntityDescription(
-                        key=ATTR_BODY,
-                    ),
-                    Metric.BODY_TYPE,
                 ),
                 BodyScaleSensor(
                     handler,
