@@ -101,7 +101,7 @@ lovelace: !include lovelace/lovelace.yaml
 recorder:
   db_url: !secret mysql_url
   purge_keep_days: 7
-  commit_interval: 60
+  #  commit_interval: 60
   exclude:
     domains:
       - updater
@@ -114,9 +114,9 @@ recorder:
     entity_globs:
       - sensor.*_zigbee
       - sensor.*_ble
+      - sensor.*_rssi
       - sensor.keenetic_gateway_*
       - sensor.*_poslednee_uvedomlenie
-      - sensor.*_wifi_rssi
       - sensor.gosund_sp111_*_volt
       - button.*_identify
     entities:
@@ -206,7 +206,6 @@ zha:
     ota:
       otau_directory: /config/zigpy_ota
       ikea_provider: true
-      ikea_update_url: http://fw.test.ota.homesmart.ikea.net/feed/version_info.json
   device_config:
     00:15:8d:00:05:78:c1:d0-1:
       type: "switch"

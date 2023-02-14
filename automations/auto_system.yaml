@@ -179,3 +179,19 @@
             - service: switch.turn_off
               target:
                 entity_id: switch.galaxy_tab_a_8_0_2019_screen
+
+- alias: Update HA DB SQL sensors
+  id: e41348f5-2915-4a51-8d88-e5f00e7c0b67
+  trigger:
+    - platform: time_pattern
+      hours: "/1"
+      minutes: 22
+  action:
+    - service: homeassistant.update_entity
+      target:
+        entity_id:
+          - sensor.hass_db_events_rows_count
+          - sensor.hass_db_states_rows_count
+          - sensor.hass_db_statistics_rows_count
+          - sensor.hass_db_total_rows_count
+          - sensor.hass_db_size
