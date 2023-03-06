@@ -107,7 +107,7 @@ domofon_pack:
             {{ states('input_boolean.ha_shutdown') == 'off' }}
         - condition: template
           value_template: >-
-            {{ states('sensor.ha_uptime') != '0' }}
+            {{ states('sensor.ha_uptime') > '1' }}
       action:
         - service: notify.telegram_group_system
           data:
@@ -124,7 +124,7 @@ domofon_pack:
       trigger:
         - platform: state
           entity_id:
-            - sensor.kb2003_poslednee_uvedomlenie
+            - sensor.kb2003_last_notification
             #- sensor.mi_8_poslednee_uvedomlenie
             - sensor.2109119dg_last_notification
       condition:

@@ -4,15 +4,15 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.components.sensor import SensorEntityDescription
+from homeassistant.const import PERCENTAGE
+from homeassistant.const import TEMP_CELSIUS
+
 from . import CONF_INCLUDE
 from . import DATA_CONFIG
 from . import DOMAIN
 from . import YandexQuasar
-from homeassistant.components.sensor import SensorEntity
-from homeassistant.components.sensor import SensorEntityDescription
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT
-from homeassistant.const import PERCENTAGE
-from homeassistant.const import TEMP_CELSIUS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,13 +23,13 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         key="temperature",
         name="Temperature",
         native_unit_of_measurement=TEMP_CELSIUS,
-        state_class=STATE_CLASS_MEASUREMENT,
+        state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key="humidity",
         name="Humidity",
         native_unit_of_measurement=PERCENTAGE,
-        state_class=STATE_CLASS_MEASUREMENT,
+        state_class=SensorStateClass.MEASUREMENT,
     ),
 )
 
@@ -103,6 +103,9 @@ class YandexSensor(SensorEntity):
     async def async_update(self):
         """Update the entity."""
         data = await self.quasar.get_device(self.device["id"])
+
+        self._attr_available = data["state"] == "online"
+
         for prop in data["properties"]:
             instance = prop["parameters"]["instance"]
             if instance == "humidity":

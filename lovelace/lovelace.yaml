@@ -20,8 +20,6 @@ resources:
     type: module
   - url: /hacsfiles/ha-yandex-icons/yandex-icons.js
     type: module
-  - url: /hacsfiles/lovelace-card-mod/card-mod.js
-    type: module
 dashboards:
   dash-chouse:
     mode: yaml

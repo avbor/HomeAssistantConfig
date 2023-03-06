@@ -119,6 +119,7 @@ recorder:
       - sensor.*_poslednee_uvedomlenie
       - sensor.gosund_sp111_*_volt
       - button.*_identify
+      - sensor.watchman_*
     entities:
       - sensor.time
       - sensor.date
@@ -280,4 +281,4 @@ rest_command: !include_dir_merge_named entities/rest_command
 schedule: !include_dir_merge_named entities/schedule
 yeelight: !include entities/yeelight/yeelight.yaml
 sonoff: !include entities/sonofflan/sonofflan.yaml
-thermal_comfort: !include entities/thermal_comfort/thermal_comfort.yaml
+#thermal_comfort: !include entities/thermal_comfort/thermal_comfort.yaml

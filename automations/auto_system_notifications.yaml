@@ -286,7 +286,7 @@
         {{ states('input_boolean.ha_shutdown') == 'off' }}
     - condition: template
       value_template: >-
-        {{ states('sensor.ha_uptime') != '0' }}
+        {{ states('sensor.ha_uptime') > '1' }}
     - condition: template
       value_template: >-
         {{ not trigger.event.data.entity_id | regex_search

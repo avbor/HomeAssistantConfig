@@ -13,6 +13,14 @@ energy_pack_ch:
       max: 100
       step: 0.01
       mode: box
+    country_house_enegry_total_usage:
+      name: Суммарное потребление кВт⋅ч
+      icon: mdi:transmission-tower-export
+      unit_of_measurement: "kWh"
+      min: 0
+      max: 999999
+      step: 1
+      mode: box
 
   # Sensors
   sensor:
