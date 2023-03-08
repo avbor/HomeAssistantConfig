@@ -88,6 +88,8 @@ logger:
   filters:
     zeroconf:
       - "Received invalid packet from .* at offset .* while unpacking .*"
+    zigpy_deconz.api:
+      - "No response to 'Command.aps_data_indication' command with seq id .*"
 
 system_log:
   max_entries: 50

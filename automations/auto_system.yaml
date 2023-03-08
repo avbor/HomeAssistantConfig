@@ -152,12 +152,17 @@
   trigger:
     - platform: time_pattern
       hours: "/2"
-      minutes: 44
+      minutes: "44"
   action:
     - service: hassio.addon_restart
       data:
         addon: a889bffc_go2rtc
     - delay: "00:00:10"
+    - service: homeassistant.update_entity
+      target:
+        entity_id:
+          - camera.reolinkcam_01_rtsp
+          - camera.reolinkcam_02_rtsp
     - choose:
         - alias: Screen On
           conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'on') }}"
@@ -185,7 +190,7 @@
   trigger:
     - platform: time_pattern
       hours: "/1"
-      minutes: 22
+      minutes: "22"
   action:
     - service: homeassistant.update_entity
       target:
@@ -195,3 +200,36 @@
           - sensor.hass_db_statistics_rows_count
           - sensor.hass_db_total_rows_count
           - sensor.hass_db_size
+
+- alias: Update MES sensors
+  id: 7f460de3-11dc-4e23-886c-a14b7db8bfeb
+  trigger:
+    - platform: time_pattern
+      hours: "/2"
+      minutes: "33"
+  condition:
+    - condition: time
+      after: "08:00:00"
+      before: "23:00:00"
+  action:
+    - service: homeassistant.update_entity
+      target:
+        entity_id:
+          - sensor.mes_07762_153_47_account
+          - binary_sensor.mes_07762_153_47_last_payment
+          - sensor.mes_07762_153_47_last_invoice
+          - sensor.mes_07762_153_47_meter_04915359
+    - service: homeassistant.update_entity
+      target:
+        entity_id:
+          - sensor.mes_55384_014_37_account
+          - binary_sensor.mes_55384_014_37_last_payment
+          - sensor.mes_55384_014_37_last_invoice
+          - sensor.mes_55384_014_37_meter_44259893
+    - service: homeassistant.update_entity
+      target:
+        entity_id:
+          - sensor.mes_82102_113_19_account
+          - binary_sensor.mes_82102_113_19_last_payment
+          - sensor.mes_82102_113_19_last_invoice
+          - sensor.mes_82102_113_19_meter_52105841

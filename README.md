@@ -33,7 +33,7 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 
 _Main site (city apartment):_
 
-- Keenetic Giga ([KN-1010](https://keenetic.ru/ru/keenetic-giga)) as Router, WiFi Mesh Controller and Wireguard VPN Server\
+- Keenetic Peak ([KN-2710](https://keenetic.ru/ru/keenetic-peak)) as Router, WiFi Mesh Controller and Wireguard VPN Server\Client\
   2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
