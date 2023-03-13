@@ -1,21 +1,3 @@
 #################################################
 # Input Datetime
 #################################################
-
-sunrise_in_nursery:
-  name: Время включения света в Детской
-  icon: mdi:alarm
-  has_date: false
-  has_time: true
-
-sunrise_in_bedroom:
-  name: Время включения света в Спальне
-  icon: mdi:alarm
-  has_date: false
-  has_time: true
-
-wakeup_radio_in_nursery:
-  name: Время включения радио в Детской
-  icon: mdi:alarm
-  has_date: false
-  has_time: true

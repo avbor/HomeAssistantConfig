@@ -2,12 +2,16 @@
 # Yandex Smart Home Settings
 #################################################
 notifier:
+
   - oauth_token: !secret ysm_notifier_oauth_token
     skill_id: !secret ysm_notifier_skill_id
     user_id: !secret ysm_notifier_user_id
+
 filter:
+
   include_domains:
     - vacuum
+
   include_entities:
     # Квартира
     - sensor.average_temperature_in_flat # Квартира - Температура
@@ -59,67 +63,89 @@ filter:
     # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
     - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
+
 entity_config:
+
   light.sonoff_1000f2a500:
     name: Споты
     room: Коридор
+
   light.sonoff_1000f2f14a:
     name: Споты
     room: Прихожая
+
   light.ikea_e27_detskaia:
     name: Люстра
     room: Детская
+
   light.detskaia_podsvetka_na_okne:
     name: Подсветка
     room: Детская
+
   light.ikea_e14_level_light_color_on_off:
     name: Лампа на столе слева
     room: Детская
+
   light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light:
     name: Лампа на столе справа
     room: Детская
+
   light.sonoff_1000f30a9e:
     name: Споты
     room: Гостиная
+
   light.sonoff_1000ab3c28:
     name: Бра
     room: Гостиная
+
   light.sonoff_1000f3035d:
     name: Люстра
     room: Гостиная
+
   light.gostinaia_podsvetka_na_okne:
     name: Подсветка
     room: Гостиная
+
   light.ikea_e27_level_light_color_on_off:
     name: Лампа на столе
     room: Гостиная
+
   light.sonoff_1000b72483:
     name: Споты
     room: Кухня
+
   light.ikea_e27_kukhnia:
     name: Люстра
     room: Кухня
+
   light.kukhnia_lenta:
     name: Подсветка
     room: Кухня
+
   light.sonoff_1000b6831b:
     name: Люстра
     room: Кладовая
+
   light.sonoff_zbmini_04_on_off:
     name: Споты
     room: Ванная
+
   light.sonoff_zbmini_03_on_off:
     name: Споты
     room: Туалет
+
   light.sonoff_1001053235:
     name: Люстра
     room: Спальня
+
   light.sonoff_01minizb_47ef08fe_on_off:
     name: Бра левое
     room: Спальня
+
   light.sonoff_1001045426:
     name: Бра правое
     room: Спальня
+
   sensor.average_temperature_in_flat:
     name: Климат в квартире
     room: Квартира
@@ -128,6 +154,7 @@ entity_config:
         entity: sensor.average_temperature_in_flat
       - type: humidity
         entity: sensor.average_humidity_in_flat
+
   sensor.0x158d0003931aec_temperature:
     name: Климат в детской
     room: Детская
@@ -136,6 +163,7 @@ entity_config:
         entity: sensor.0x158d0003931aec_humidity
       - type: battery_level
         entity: sensor.0x158d0003931aec_battery
+
   sensor.0x158d0003230618_temperature:
     name: Климат в гостиной
     room: Гостиная
@@ -144,6 +172,7 @@ entity_config:
         entity: sensor.0x158d0003230618_humidity
       - type: battery_level
         entity: sensor.0x158d0003230618_battery
+
   sensor.0x158d0003931b0e_temperature:
     name: Климат в спальне
     room: Спальня
@@ -152,6 +181,7 @@ entity_config:
         entity: sensor.0x158d0003931b0e_humidity
       - type: battery_level
         entity: sensor.0x158d0003931b0e_battery
+
   vacuum.xiaomi_vacuum_cleaner:
     name: Пылесос
     room: Квартира
@@ -162,6 +192,7 @@ entity_config:
         entity: sensor.a4c138d358e9_humidity
       - type: battery_level
         entity: sensor.a4c138d358e9_battery
+
   sensor.country_house_avg_temp_kids_rooms:
     name: Климат у детей
     properties:
@@ -169,45 +200,59 @@ entity_config:
         entity: sensor.country_house_avg_temp_kids_rooms
       - type: humidity
         entity: sensor.country_house_avg_humidity_kids_rooms
+
   climate.daikin_nursery:
     name: Кондиционер
     room: Детская
+
   climate.daikin_livingroom:
     name: Кондиционер
     room: Гостиная
+
   climate.daikin_bedroom:
     name: Кондиционер
     room: Спальня
+
   fan.bathroom_extractor:
     name: Вытяжка
     room: Ванная
+
   fan.toilet_extractor:
     name: Вытяжка
     room: Туалет
+
   cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering:
     name: Штора левая
     room: Кухня
+
   cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering:
     name: Штора правая
     room: Кухня
+
   switch.mi_smartplugwifi_02:
     name: Ёлка
     room: Гостиная
+
   #switch.broadlink_smartplug_01_switch:
   #  name: Ёлка
   #  room: Детская
+
   light.spalnia_stol:
     name: Ламна на столе
     room: Спальня
+
   media_player.ue43ru7470:
     name: Телевизор
     room: Спальня
+
   media_player.ue32es5500:
     name: Телевизор
     room: Кухня
+
   media_player.ue46es5507:
     name: Телевизор
     room: Гостиная
+
   light.detskaia_girlianda_na_krovati:
     name: Гирлянда
     room: Детская

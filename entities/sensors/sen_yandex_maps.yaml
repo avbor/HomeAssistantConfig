@@ -1,7 +1,6 @@
 #################################################
 # Yandex Maps routes sensors
 #################################################
-
 #- platform: yandex_maps
 #  start: zone.home
 #  destination: !secret yandex_map_dest_1

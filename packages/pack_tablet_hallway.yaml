@@ -3,7 +3,9 @@
 #################################################
 
 tablet_hallway_pack:
+
   automation:
+
     - alias: 'Планшет в Прихожей - включение экрана'
       id: d8f01254-9cde-41a8-b35a-f296621d3ac9
       mode: queued

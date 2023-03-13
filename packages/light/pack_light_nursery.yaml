@@ -4,6 +4,27 @@
 
 nursery_light_pack:
 
+  # Light
+  light:
+
+    - platform: switch
+      name: Детская - подсветка на окне
+      entity_id: switch.blitzwolf_shp15_01_switch
+
+    - platform: switch
+      name: Детская - гирлянда на кровати
+      entity_id: switch.tz3000_zloso4jk_ts011f_switch
+
+  # Input Datetime
+  input_datetime:
+
+    sunrise_in_nursery:
+      name: Время включения света в Детской
+      icon: mdi:alarm
+      has_date: false
+      has_time: true
+
+  # Automations
   automation:
 
     - alias: "Кнопка Xiaomi в Детской"

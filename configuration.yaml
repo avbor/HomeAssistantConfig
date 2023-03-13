@@ -130,6 +130,8 @@ recorder:
       - sensor.date_current_month
       - sensor.date_previous_month
       - sensor.uptime
+      - sensor.ha_uptime
+      - sensor.ha_uptime_text
       - sensor.moon
       - sun.sun
       - counter.syslog_errors
@@ -142,6 +144,8 @@ recorder:
       - sensor.sonoff_1001322978_current
       - sensor.sonoff_1001322978_power
       - sensor.sonoff_1001322978_voltage
+      - sensor.shellyem_34945470f5db_channel_1_power_factor
+      - sensor.shellyem_34945470f5db_channel_1_energy_returned
     event_types:
       - call_service
 

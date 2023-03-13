@@ -3,10 +3,14 @@
 #################################################
 
 bathroom_light_pack:
+
+  # Timers
   timer:
+
     bathroom_presence:
       duration: "00:05:00"
 
+  # Automations
   automation:
     - alias: "Свет в Ванной"
       id: 9a24416b-82b6-4fa8-81a7-ea6c71daa727

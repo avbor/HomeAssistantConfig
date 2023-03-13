@@ -7,6 +7,28 @@ cards:
       - type: markdown
         content: >
           ### <center>System information</center>
+      - type: entities
+        entities:
+          #- entity: sensor.ha_uptime_text
+          #  name: "Uptime:"
+          - entity: sensor.ha_uptime_text
+            type: custom:multiple-entity-row
+            name: "Uptime:"
+            show_state: false
+            entities:
+              - entity: sensor.ha_uptime_text
+                attribute: days
+                name: []
+                unit: "d"
+              - entity: sensor.ha_uptime_text
+                attribute: hours
+                name: []
+                unit: "h"
+              - entity: sensor.ha_uptime_text
+                attribute: minutes
+                name: []
+                unit: "m"
+
       - type: custom:vertical-stack-in-card
         cards:
           - type: markdown

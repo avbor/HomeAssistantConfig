@@ -2,8 +2,10 @@
 # Package Vacuum Cleaner
 #################################################
 vacuum_cleaner:
+
   # Map
   camera:
+
     - platform: xiaomi_cloud_map_extractor
       name: Mi Vacuum Cleaner 1S Cam
       host: 172.16.16.219
@@ -29,6 +31,7 @@ vacuum_cleaner:
 
   # Input Select
   input_select:
+
     room_to_vacuum:
       name: "Где убрать:"
       options:
@@ -53,6 +56,7 @@ vacuum_cleaner:
 
   # Sensors
   sensor:
+
     - platform: template
       sensors:
         mirobot_1s_current_fan_speed:
@@ -85,6 +89,7 @@ vacuum_cleaner:
 
   # Scripts
   script:
+
     start_vacuum_room:
       alias: "Clean Selected Room [Mi Robot]"
       sequence:
@@ -230,6 +235,7 @@ vacuum_cleaner:
 
   # Automations
   automation:
+
     - alias: "Оповещение о начале уборки"
       id: 61fb954b-3450-4fc6-9848-cc5304b54a16
       initial_state: true

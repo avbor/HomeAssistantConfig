@@ -6,6 +6,7 @@ new_year_holidays_pack:
 
 # Input Datetime
   input_datetime:
+
     new_year_illumination_on:
       name: Время включения новогодней подсветки
       icon: mdi:string-lights

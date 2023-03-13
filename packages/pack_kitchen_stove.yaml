@@ -6,6 +6,7 @@ kitchen_stove_pack:
 
   # Sensors
   sensor:
+
     - platform: statistics
       name: Kitchen Stove Temperature Median ZB
       entity_id: sensor.lumi_th_kitchen_stove_temperature
@@ -14,11 +15,14 @@ kitchen_stove_pack:
       sampling_size: 2000
       max_age:
         hours: 3
+
     - platform: min_max
       name: Kitchen Stove Temperature Min Max BT
+      unique_id: 971f91dd-7553-4c6d-b34c-a80e59b15d79
       type: last
       entity_ids:
         - sensor.atc_3fc4_temperature
+
     - platform: statistics
       name: Kitchen Stove Temperature Median BT
       entity_id: sensor.kitchen_stove_temperature_min_max_bt
@@ -30,13 +34,16 @@ kitchen_stove_pack:
 
     - platform: min_max
       name: Kitchen Stove Temperature Min Max Mean
+      unique_id: b5e724c4-f958-44c8-bcad-9900028174c9
       type: mean
       round_digits: 1
       entity_ids:
         - sensor.atc_3fc4_temperature
         - sensor.lumi_th_kitchen_stove_temperature
+
     - platform: min_max
       name: Kitchen Stove Temperature Median Min Max Mean
+      unique_id: a0a9acc7-16ba-4bd2-b623-c098f2017c29
       type: mean
       round_digits: 1
       entity_ids:
@@ -46,13 +53,16 @@ kitchen_stove_pack:
 
   # Binary Sensors
   binary_sensor:
+
     - platform: trend
       sensors:
+
         kitchen_stove_temperature_trend_bt:
           entity_id: sensor.kitchen_stove_temperature_min_max_bt
           device_class: heat
           max_samples: 60
           sample_duration: 180
+
         kitchen_stove_temperature_trend_zb:
           entity_id: sensor.lumi_th_kitchen_stove_temperature
           device_class: heat
@@ -61,12 +71,17 @@ kitchen_stove_pack:
 
   # Template Sensors
   template:
+
     - sensor:
+
         - name: Kitchen Stove Status Int
+          unique_id: a73780cf-4cee-493c-a897-c5746c6477bf
           state: "{{ is_state('binary_sensor.kitchen_stove_status', 'on') | abs }}"
 
     - binary_sensor:
+
         - name: Kitchen Stove Status BT
+          unique_id: 39fab472-350f-4b21-8581-c1145c9b981a
           device_class: heat
           icon: mdi:bluetooth
           state: >-
@@ -82,6 +97,7 @@ kitchen_stove_pack:
             {% endif %}
 
         - name: Kitchen Stove Status ZB
+          unique_id: 579ea5cd-23f6-40a9-92f4-1fda53b71963
           device_class: heat
           icon: mdi:zigbee
           state: >-
@@ -97,6 +113,7 @@ kitchen_stove_pack:
             {% endif %}
 
         - name: Kitchen Stove Status
+          unique_id: a1d808ae-acc8-4912-b1be-6548f478c161
           device_class: heat
 #          state: "{{ is_state('binary_sensor.kitchen_stove_status_bt','on') }}"
           state: >-
@@ -109,10 +126,13 @@ kitchen_stove_pack:
 
   # Customizations
   homeassistant:
+
     customize:
+
       sensor.kitchen_stove_temperature_median_bt:
         device_class: temperature
         unit_of_measurement: °C
+
       sensor.kitchen_stove_temperature_median_zb:
         device_class: temperature
         unit_of_measurement: °C

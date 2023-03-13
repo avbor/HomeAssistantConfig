@@ -4,6 +4,16 @@
 
 bedroom_light_pack:
 
+  # Input Datetime
+  input_datetime:
+
+    sunrise_in_bedroom:
+      name: Время включения света в Спальне
+      icon: mdi:alarm
+      has_date: false
+      has_time: true
+
+  # Automations
   automation:
 
     - alias: "Кнопки IKEA в Спальне"

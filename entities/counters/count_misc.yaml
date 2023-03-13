@@ -3,6 +3,7 @@
 #################################################
 
 syslog_errors:
+
   name: "Errors in SysLog since start"
   initial: 0
   step: 1
@@ -10,6 +11,7 @@ syslog_errors:
   icon: mdi:alert
 
 syslog_warnings:
+
   name: "Warnings in SysLog since start"
   initial: 0
   step: 1

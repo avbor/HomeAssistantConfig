@@ -4,7 +4,9 @@
 
 autoreboot_pack:
 
+  # Input numbers
   input_number:
+
     auto_reboot_error_threshold:
       name: Number of errors after boot cause auto restart HA
       icon: mdi:alert-circle-outline
@@ -13,14 +15,18 @@ autoreboot_pack:
       step: 1
       mode: box
 
+  # Counters
   counter:
+
     auto_reboot:
       name: "Automatic reboot counter"
       step: 1
       restore: true
       icon: mdi:restart-alert
 
+  # Scripts
   script:
+
     auto_reboot_by_errors_after_boot:
       alias: Automatic Reboot by Errors in SysLog after Boot
       sequence:
@@ -64,7 +70,9 @@ autoreboot_pack:
                     Кол-во состоявшихся перезагрузок: *{{ states('counter.auto_reboot') }}*
                     Текущее кол-во ошибок в логе: *{{ states('counter.syslog_errors') }}*
 
+  # Automations
   automation:
+
     - alias: "Auto Reboot: Reset Automatic Reboot Counter"
       id: 950840e8-8ef1-4984-8996-6ddee1f56cb7
       trigger:

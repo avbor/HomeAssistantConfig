@@ -3,14 +3,10 @@
 #################################################
 tv_remote_show_nursery:
   icon: mdi:remote-tv
+
 tv_remote_show_bedroom:
   icon: mdi:remote-tv
-ch_energy_show_radiator_livingroom:
-  icon: mdi:radiator
-ch_energy_show_radiator_kidsrooms:
-  icon: mdi:radiator
-ch_energy_show_radiator_terrace:
-  icon: mdi:radiator
+
 ha_shutdown:
   icon: mdi:power
   initial: false

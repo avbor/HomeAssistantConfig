@@ -1,0 +1,362 @@
+#################################################
+# Energy Consumption Monitoring - Country House
+#################################################
+
+ch_energy_pack:
+
+  # Input Numbers
+  input_number:
+
+    country_house_enegry_cost_current:
+      name: Стоимость кВт⋅ч текущая
+      icon: mdi:cash
+      unit_of_measurement: "RUB/kWh"
+      min: 0.01
+      max: 100
+      step: 0.01
+      mode: box
+
+    country_house_enegry_meter_value:
+      name: Значение счетчика кВт⋅ч
+      icon: mdi:meter-electric
+      unit_of_measurement: "kWh"
+      min: 0
+      max: 999999
+      step: 1
+      mode: box
+
+    country_house_enegry_meter_predicted_value:
+      name: Предсказанное значение счетчика кВт⋅ч
+      icon: mdi:meter-electric-outline
+      unit_of_measurement: "kWh"
+      min: 0
+      max: 999999
+      step: 1
+      mode: box
+
+  # Templates
+  template:
+
+    - sensor:
+
+        # Main
+        - name: energy_cost_ch_main_monthly
+          unique_id: 91e90545-5063-498f-8608-ef908a6c2c6d
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.ch_main_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_main_monthly_prev
+          unique_id: e21ac634-8818-4e73-90e7-001dac8ed5ba
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.ch_main_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        # Radiator - Living Room
+        - name: energy_cost_ch_radiator_livingroom_monthly
+          unique_id: f79d23ce-21fe-4704-ab70-799939adb038
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_radiator_livingroom_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_livingroom_monthly_prev
+          unique_id: e6ec4865-4c63-41b7-a91e-fd0a0af05837
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_livingroom_daily_avg
+          unique_id: 508b45e2-233f-4330-ad98-338c1aa2f244
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_livingroom_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
+
+        - name: energy_cost_ch_radiator_livingroom_daily_prev
+          unique_id: eedec3c9-8bd6-45bb-83e0-8e2b6a8a40b5
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        # Radiator - Kid's Rooms
+        - name: energy_cost_ch_radiator_kidsrooms_monthly
+          unique_id: 97a5d8b4-0929-41dc-8599-a692f542d39e
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_kidsrooms_monthly_prev
+          unique_id: 3e582e8a-634c-463d-8d4f-2488dae74b97
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_kidsrooms_daily_avg
+          unique_id: 8cdfddc0-f683-46c9-a6c0-6a9f824c1ca3
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_kidsrooms_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
+
+        - name: energy_cost_ch_radiator_kidsrooms_daily_prev
+          unique_id: dad3f11e-320c-4340-8d02-819746a1ba99
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        # Radiator - Terrace
+        - name: energy_cost_ch_radiator_terrace_monthly
+          unique_id: 31ecc367-495a-4cb7-a379-dc03e69e803f
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_radiator_terrace_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_terrace_monthly_prev
+          unique_id: 6e623fc1-cb7f-4a83-809e-4b4294f59161
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_terrace_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_terrace_daily_avg
+          unique_id: 9cba39c9-3ff8-4cb5-9be5-bf73f2ad9772
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_terrace_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
+
+        - name: energy_cost_ch_radiator_terrace_daily_prev
+          unique_id: c5b55af2-5ed0-4159-8091-9fb157df8d58
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_terrace_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+            }}
+
+    # Triggers
+    - trigger:
+        - platform: state
+          entity_id:
+            - input_number.country_house_enegry_meter_value
+      unique_id: 71109da9-5087-4554-8fb1-68bffbc7912c
+      sensor:
+        - name: "CH Energy Meter Value"
+          unique_id: e673ea36-e25b-4515-9157-8a8bedbd9cc5
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          state: >-
+            {% if trigger.to_state.state != trigger.from_state.state %}
+              {{ states('input_number.country_house_enegry_meter_value') }}
+            {% endif %}
+          attributes:
+            value_set_at: >-
+              {% if trigger.to_state.state != trigger.from_state.state %}
+                {{ now().strftime('%d.%m.%Y %-H:%M:%S') }}
+              {% endif %}
+
+    - trigger:
+        - platform: state
+          entity_id:
+            - input_number.country_house_enegry_meter_predicted_value
+      unique_id: b39d2d66-6917-4c0a-81f3-65ac8e9f106e
+      sensor:
+        - name: "CH Energy Meter Predicted Value"
+          unique_id: 58fe1c17-a8e3-4d62-afb3-3cc8aa6303f1
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          state: >-
+            {% if trigger.to_state.state != trigger.from_state.state %}
+              {{ states('input_number.country_house_enegry_meter_predicted_value') }}
+            {% endif %}
+
+  # Sensors
+  sensor:
+
+    - platform: min_max
+      name: Average Voltage In Country House
+      unique_id: 0315cada-a337-4a4b-b1b1-4c86c86e6af3
+      type: median
+      entity_ids:
+        - sensor.gosund_sp111_01_volt
+        - sensor.gosund_sp111_02_volt
+
+  # Utility Meters
+  utility_meter:
+
+    # For Main
+    ch_main_energy_hourly:
+      unique_id: 06a44801-2e3c-4f0c-89d0-eca6323f08f1
+      name: CH Main Energy Daily Hourly
+      source: sensor.shellyem_34945470f5db_channel_1_energy
+      cycle: hourly
+      tariffs:
+        - total
+
+    ch_main_energy_daily:
+      unique_id: 5924e3e0-c085-47c1-8777-d4f75f7f5480
+      name: CH Main Energy Daily Energy
+      source: sensor.shellyem_34945470f5db_channel_1_energy
+      cycle: daily
+      tariffs:
+        - total
+
+    ch_main_energy_monthly:
+      unique_id: 0740d58c-f61c-4951-a3d0-7f6c84b2500d
+      name: CH Main Energy Monthly Energy
+      source: sensor.shellyem_34945470f5db_channel_1_energy
+      cycle: monthly
+      offset:
+        days: 20
+      tariffs:
+        - total
+
+    # For Radiator in Living Room
+    socket_ch_radiator_livingroom_energy_daily:
+      unique_id: 8c08ced7-021c-4463-9e89-77dba89f37a6
+      name: Living Room Daily Energy
+      source: sensor.gosund_sp111_07_todays_usage
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_radiator_livingroom_energy_monthly:
+      unique_id: 3460b241-01dd-4160-9f31-4df154aadaed
+      name: Living Room Monthly Energy
+      source: sensor.gosund_sp111_07_todays_usage
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Radiator in Kid's Rooms
+    socket_ch_radiator_kidsrooms_energy_daily:
+      unique_id: 58f81cf4-2828-4550-ab9f-581963158007
+      name: Kids Room Daily Energy
+      source: sensor.gosund_sp111_08_todays_usage
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_radiator_kidsrooms_energy_monthly:
+      unique_id: 8653271a-f885-4f4c-be51-0c13859087dc
+      name: Kids Room Monthly Energy
+      source: sensor.gosund_sp111_08_todays_usage
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Radiator in Terrace
+    socket_ch_radiator_terrace_energy_daily:
+      unique_id: 9cb474ff-1af6-4186-8c83-21f3ed961ff8
+      name: Terrace Daily Energy
+      source: sensor.gosund_sp111_02_todays_usage
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_radiator_terrace_energy_monthly:
+      unique_id: 1a2f47b1-90c6-415c-ba75-c97450333482
+      name: Terrace Monthly Energy
+      source: sensor.gosund_sp111_02_todays_usage
+      cycle: monthly
+      tariffs:
+        - total
+
+  # Automations
+  automation:
+
+    # Adjusting predicted values for Main Energy Meter
+    - alias: CH Set Main Energy Meter values for predict
+      id: 3570493e-c074-4d88-b8ce-a196cb1a60a6
+      trigger:
+        - platform: state
+          entity_id:
+            - input_number.country_house_enegry_meter_value
+      action:
+        - service: input_number.set_value
+          data:
+            entity_id: input_number.country_house_enegry_meter_predicted_value
+            value: >-
+              {{ trigger.to_state.state | float(0) }}
+
+    # Predict Main Energy Meter
+    - alias: CH Predict energy meter readings
+      id: 36df2266-8486-42de-b42d-d7b956c24e40
+      trigger:
+        - platform: time
+          at: "23:59:55"
+      action:
+        - service: input_number.set_value
+          data:
+            entity_id: input_number.country_house_enegry_meter_predicted_value
+            value: >-
+              {{ ((states('input_number.country_house_enegry_meter_predicted_value') | float(0)) + (states('sensor.ch_main_energy_daily_total') | float(0))) | round(2) }}
+
+    # Push an energy meter reading
+    #- alias: CH Push Energy Meter reading
+    #  id: d20af113-a06c-4eec-a1a0-0a8a4f8f6fa9
+    #  trigger:
+    #    - platform: 

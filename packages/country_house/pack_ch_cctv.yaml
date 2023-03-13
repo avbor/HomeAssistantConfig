@@ -3,15 +3,22 @@
 #################################################
 
 ch_cctv_pack:
+
+  # REST Commands
   rest_command:
+
     sss_reolinkcam_02_enable:
       url: !secret sss_reolinkcam_02_enable_url
+
     sss_reolinkcam_02_disable:
       url: !secret sss_reolinkcam_02_disable_url
 
+  # Switches
   switch:
+
     - platform: template
       switches:
+
         sss_reolinkcam_02:
           turn_on:
             service: rest_command.sss_reolinkcam_02_enable
@@ -19,17 +26,23 @@ ch_cctv_pack:
             service: rest_command.sss_reolinkcam_02_disable
           icon_template: mdi:cctv
 
+  # Templates
   template:
+
     - trigger:
         - platform: webhook
           webhook_id: !secret sss_reolinkcam_02_webhook
+      unique_id: 23f86e6b-79d3-4207-8c39-3b4881fb1446
       binary_sensor:
         - name: sss_reolinkcam_02_motion
+          unique_id: 90643532-41b2-4431-8d05-e853a5fcb7f1
           device_class: motion
           state: "{{ trigger.data.motion }}"
           auto_off: "00:00:30"
 
+  # Automations
   automation:
+
     - alias: "Country House CCTV - Toggle Camera"
       id: 97f7f60b-61c2-482b-894a-c12704418075
       trigger:

@@ -4,6 +4,7 @@
 
 corridor_light_pack:
 
+  # Automations
   automation:
 
     - alias: "Кнопка Xiaomi в Коридоре"

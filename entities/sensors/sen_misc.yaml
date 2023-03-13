@@ -2,29 +2,6 @@
 # Miscellaneous sensors
 #################################################
 
-#- platform: sql
-#  db_url: !secret mysql_url
-#  queries:
-#    - name: HASS DB Size
-#      query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1048576, 2) AS "value" FROM information_schema.tables WHERE table_schema="homeassistant" GROUP BY table_schema;'
-#      column: 'value'
-#      unit_of_measurement: MB
-#    - name: HASS DB States Rows Count
-#      query: 'SELECT COUNT(*) AS "rows" FROM states;'
-#      column: 'rows'
-#      unit_of_measurement: rows
-#    - name: HASS DB Events Rows Count
-#      query: 'SELECT COUNT(*) AS "rows" FROM events;'
-#      column: 'rows'
-#      unit_of_measurement: rows
-#    - name: HASS DB Statistics Rows Count
-#      query: 'SELECT COUNT(*) AS "rows" FROM statistics;'
-#      column: 'rows'
-#      unit_of_measurement: rows
-#    - name: HASS DB Total Rows Count
-#      query: 'SELECT SUM(table_rows) AS "total_rows" FROM information_schema.tables WHERE table_schema = "homeassistant";'
-#      column: 'total_rows'
-#      unit_of_measurement: rows
 - platform: influxdb
   host: a0d7b954-influxdb
   port: 8086
@@ -39,31 +16,13 @@
       database: _internal
       where: "time > now() - 10s"
       field: diskBytes
-#- platform: sauresha
-#  email: !secret saures_user
-#  password: !secret saures_pass
-#  flat_id: !secret saures_flat_id
-#  controllers:
-#    "1113513":
-#      name: ""
-#  counters:
-#    "13193152":
-#      name: ""
-#    "09-104476":
-#      name: ""
-#  scan_interval:
-#    minutes: 90
+
 - platform: time_date
   display_options:
     - "time"
     - "date"
     - "date_time_iso"
-#- platform: moon
-#- platform: version
-#  source: local
-#- platform: version
-#  source: hassio
-#  image: qemux86-64
+
 - platform: command_line
   name: Supervisor updates
   command: 'curl -s http://supervisor/supervisor/info -H "Authorization: Bearer $(printenv SUPERVISOR_TOKEN)" | jq ''{"newest_version":.data.version_latest,"current_version":.data.version,"addons":[.data.addons[] | select(.version != .version_latest)]}'''
@@ -73,11 +32,13 @@
     - current_version
     - addons
   unit_of_measurement: pending update(s)
+
 - platform: command_line
   name: YAML Code Lines Count
   command: find . -name '*.yaml' -not -path "./custom_components/*" -type f -print0 | xargs -0 cat | sed '/^\s*#/d;/^\s*$/d' | wc -l
   scan_interval: 14400
   unit_of_measurement: lines
+
 - platform: command_line
   name: ERRORS in System Log [command line]
   command: grep -c -E "^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3} ERROR .*$" /config/home-assistant.log || true
@@ -90,94 +51,3 @@
     grep -c -v -E "^.+ We found a custom integration .+ which has not been tested by Home Assistant.+$" || true
   scan_interval: 3600
   unit_of_measurement: pc
-#- platform: uptime
-- platform: template
-  sensors:
-    date_formatted:
-      friendly_name: "Date (DD.MM.YYYY)"
-      value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%d.%m.%Y') }}"
-      icon_template: mdi:calendar
-      attribute_templates:
-        day_of_week: >-
-          {% set day_num = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"] %}
-          {% set day_of_week = day_num[now().weekday()] %}
-          {{ day_of_week }}
-    date_current_month:
-      friendly_name: "{{ states('date_current_month') }}"
-      icon_template: mdi:calendar
-      value_template: >-
-        {% set month_num = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] %}
-        {% set month = month_num[(now().month - 1)] %}
-        {{ month }}
-    date_previous_month:
-      friendly_name: "{{ states('date_previous_month') }}"
-      icon_template: mdi:calendar
-      value_template: >-
-        {% set month_num = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] %}
-        {% set month = month_num[(now().month - 2)] %}
-        {{ month }}
-    ha_supervisor_current_version:
-      friendly_name: HA Supervisor Current Version
-      value_template: "{{state_attr('sensor.supervisor_updates','current_version')}}"
-    ha_supervisor_latest_version:
-      friendly_name: HA Supervisor Latest Version
-      value_template: "{{state_attr('sensor.supervisor_updates','newest_version')}}"
-    boiler_status:
-      friendly_name: "Electrolux Centurio IQ Status"
-      value_template: >
-        {% if (states('sensor.tplink_smartplug_01_current') | float) > 4 %}On{% else %}Off{% endif %}
-    boiler_water_temp:
-      unit_of_measurement: °C
-      device_class: temperature
-      value_template: >
-        {% if state_attr('climate.vodonagrevatel', 'current_temperature') %}
-          {{ state_attr('climate.vodonagrevatel', 'current_temperature') }}
-        {% else %}
-          0
-        {% endif %}
-    ha_uptime:
-      friendly_name: HA Uptime
-      icon_template: mdi:clock
-      value_template: "{{ ((as_timestamp(now()) | int - as_timestamp(states('sensor.uptime')) | int) / 60) | int }}"
-      unit_of_measurement: minutes
-    sun_next_rising:
-      friendly_name: Восход солнца
-      icon_template: mdi:weather-sunset-up
-      value_template: >-
-        {{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H:%M') }}
-    sun_next_setting:
-      friendly_name: Заход солнца
-      icon_template: mdi:weather-sunset-down
-      value_template: >-
-        {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H:%M') }}
-- platform: min_max
-  name: Average Temperature In Flat
-  type: median
-  entity_ids:
-    - sensor.0x158d0003931aec_temperature
-    - sensor.0x158d0003230618_temperature
-    - sensor.0x158d0003931b0e_temperature
-    - sensor.0x158d00039e2ecb_temperature
-    - sensor.atc_4e9a_temperature
-- platform: min_max
-  name: Average Humidity In Flat
-  type: median
-  entity_ids:
-    - sensor.0x158d0003931aec_humidity
-    - sensor.0x158d0003230618_humidity
-    - sensor.0x158d0003931b0e_humidity
-    - sensor.0x158d00039e2ecb_humidity
-    - sensor.atc_4e9a_humidity
-- platform: min_max
-  name: Average Voltage In Flat
-  type: median
-  entity_ids:
-    - sensor.tplink_smartplug_01_voltage
-    - sensor.gosund_sp111_03_volt
-    - sensor.gosund_sp111_05_volt
-- platform: min_max
-  name: Average Voltage In Country House
-  type: median
-  entity_ids:
-    - sensor.gosund_sp111_01_volt
-    - sensor.gosund_sp111_02_volt

@@ -4,6 +4,7 @@
 
 common_light_pack:
 
+  # Automations
   automation:
 
     - alias: Turn Off All Light When Nobody at Home

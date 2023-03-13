@@ -5,12 +5,14 @@ water_leak_protection:
 
 # Input Boolean
   input_boolean:
+
     neptun_activated:
       name: Neptune Activated
       icon: mdi:help-network
 
 # Binary Sensors
   binary_sensor:
+
     - platform: template
       sensors:
         neptun_water_leakage:
@@ -21,6 +23,7 @@ water_leak_protection:
 
 # Scripts
   script:
+
     neptun_state_reset:
       alias: Reset Neptun State in HA (TurnOff)
       sequence:
@@ -66,6 +69,7 @@ water_leak_protection:
 
 # Automations
   automation:
+
     # Защита от протечек - отключение подачи воды по датчикам
     - alias: Water Leak Detected
       id: 2eb96392-3d8a-41b7-87f2-7c6e5c5b6232

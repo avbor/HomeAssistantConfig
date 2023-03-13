@@ -1,15 +1,3 @@
 #################################################
 # Light, Lamp, etc...
 #################################################
-
-- platform: switch
-  name: Детская - подсветка на окне
-  entity_id: switch.blitzwolf_shp15_01_switch
-
-- platform: switch
-  name: Гостиная - подсветка на окне
-  entity_id: switch.tz3000_g5xawfcq_ts0121_switch
-
-- platform: switch
-  name: Детская - гирлянда на кровати
-  entity_id: switch.tz3000_zloso4jk_ts011f_switch

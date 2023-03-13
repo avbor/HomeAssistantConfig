@@ -2,24 +2,73 @@
 # Miscellaneous template trigger-based sensors
 #################################################
 - trigger:
-
   - platform: time_pattern
     hours: "/1"
     minutes: 7
-
+  unique_id: bc9099b4-5f43-4ffb-ab2a-9d259964f87d
   sensor:
+
     - name: Yandex Station Lite Detskaia - SW Version
+      unique_id: ae47a0ff-b824-4b2a-8727-d3c0fc1b57ea
       state: >-
         {{ device_attr('eace692c1150612126c4bb63e37b8285', 'sw_version') }}
 
     - name: Yandex Station Lite Prikhozhaya - SW Version
+      unique_id: a3aa4abf-f9b2-45e1-b63d-0bc732e7ba7b
       state: >-
         {{ device_attr('4adef171069be4f9526114a7328779e3', 'sw_version') }}
-      
+
     - name: Yandex Station Mini2 Gostinaia - SW Version
+      unique_id: c8e45fab-6fac-4199-a26c-840263705d95
       state: >-
         {{ device_attr('05f6870adef060905d93448e7f386f0d', 'sw_version') }}
-      
+
     - name: Yandex Station Mini2 Spalnia - SW Version
+      unique_id: 97e13807-0255-4250-a4fc-9df3ac5ef565
       state: >-
         {{ device_attr('5772d03ba3bdaef053d59d4554654308', 'sw_version') }}
+
+- trigger:
+  - platform: time_pattern
+    seconds: "/30"
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+  - platform: event
+    event_type: event_template_reloaded
+  unique_id: 9ac814d6-71ed-4823-8fb8-8f089785e8e4
+  sensor:
+
+    - name: HA Uptime
+      unique_id: 11175cd6-6cdd-4867-9ff8-f854b965f333
+      icon: mdi:clock
+      unit_of_measurement: minutes
+      state: >-
+        {{ ((as_timestamp(now()) | int - as_timestamp(states('sensor.uptime')) | int) / 60) | int }}
+
+    - name: Date Formatted
+      unique_id: 731ff771-2fa8-4d86-8b2f-0e1d328bcda6
+      icon: mdi:calendar
+      state: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%d.%m.%Y') }}"
+      attributes:
+        day_of_week: >-
+          {% set day_num = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"] %}
+          {% set day_of_week = day_num[now().weekday()] %}
+          {{ day_of_week }}
+
+    - name: Date Current Month
+      unique_id: 42270124-dcdf-45b2-bbef-f69e22e66ac4
+      icon: mdi:calendar
+      state: >-
+        {% set month_num = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] %}
+        {% set month = month_num[(now().month - 1)] %}
+        {{ month }}
+
+    - name: Date Previous Month
+      unique_id: 443d6973-64a3-48d4-b561-3ad35cf57efd
+      icon: mdi:calendar
+      state: >-
+        {% set month_num = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] %}
+        {% set month = month_num[(now().month - 2)] %}
+        {{ month }}

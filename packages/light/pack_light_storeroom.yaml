@@ -4,11 +4,13 @@
 
 storeroom_light_pack:
 
+  # Timers
   timer:
 
     storeroom_light:
       duration: "00:02:00"
 
+  # Automations
   automation:
 
     - alias: "Люстра в Кладовой"

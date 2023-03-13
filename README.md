@@ -126,6 +126,9 @@ _Remote site (country house):_
   - Reolink [RLC-510A](https://reolink.com/product/rlc-510a/)\
     Integration "Generic Camera" and "Reolink Dev" by [fwestenberg](https://github.com/fwestenberg/reolink_dev)
 
+  - Shelly [EM](https://www.shelly.cloud/en/products/shop/em-120a)\
+    Integration "Shelly"
+
 #### ZigBee Devices:
 - Relays:
   - Aqara Wireless Relay (LLKZMK11LM, lumi.relay.c2acn01)

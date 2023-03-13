@@ -3,11 +3,15 @@
 #################################################
 
 ch_light_pack:
+
+  # Light
   light:
+
     - platform: switch
       name: Дача - Двор
       entity_id: switch.sonoff_basic_03_switch
 
+  # Automations
   automation:
     - alias: "Дача - Включение подсветки двора - Приехали вечером"
       id: b2d0dfb1-d7c9-42ad-ae66-70e8c8f306c8

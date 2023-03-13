@@ -4,6 +4,7 @@
 
 kitchen_light_pack:
 
+  # Automations
   automation:
 
     - alias: "Кнопка Xiaomi на Кухне"

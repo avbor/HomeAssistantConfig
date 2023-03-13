@@ -3,30 +3,61 @@
 #################################################
 
 ch_climate_pack:
+
+  # Input Boolean
+  input_boolean:
+
+    ch_energy_show_radiator_livingroom:
+      icon: mdi:radiator
+
+    ch_energy_show_radiator_kidsrooms:
+      icon: mdi:radiator
+
+    ch_energy_show_radiator_terrace:
+      icon: mdi:radiator
+
   # Sensors
   sensor:
+
     - platform: min_max
       name: Country House Avg Temp - Kids Rooms
+      unique_id: 00ea4868-27d4-44e7-b29c-e205b1b3d740
       type: median
       entity_ids:
         - sensor.a4c138c7ded2_temperature
         - sensor.a4c1380b3a85_temperature
+
     - platform: min_max
       name: Country House Avg Humidity - Kids Rooms
+      unique_id: aac9aa34-da5f-4910-9ab4-00e02063b404
       type: median
       entity_ids:
         - sensor.a4c138c7ded2_humidity
         - sensor.a4c1380b3a85_humidity
-    - platform: template
-      sensors:
-        ch_heater_living_room_status:
-          value_template: "{{ ((state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs) * 100 }}"
-        ch_heater_kids_rooms_status:
-          value_template: "{{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}"
-        ch_heater_terrace_status:
-          value_template: "{{ ((state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') | abs) * 100 }}"
-        ch_heater_terrace_power:
-          value_template: >-
+
+  # Templates
+  template:
+
+    - sensor:
+
+        - name: ch_heater_living_room_status
+          unique_id: 62995209-7e00-4417-8259-b44117b29827
+          state: >-
+            {{ ((state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs) * 100 }}
+
+        - name: ch_heater_kids_rooms_status
+          unique_id: 0570de2f-750a-41e4-849c-6a618acbede0
+          state: >-
+            {{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}
+
+        - name: ch_heater_terrace_status
+          unique_id: 52fb7987-099d-47b6-8c85-ee59f097b5e4
+          state: >-
+            {{ ((state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') | abs) * 100 }}
+
+        - name: ch_heater_terrace_power
+          unique_id: 9c477f38-20b2-42f9-91fc-50b9d0e4da64
+          state: >-
             {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int(0)) %}
             {% if heat_power == 0 %}
               0
@@ -36,32 +67,38 @@ ch_climate_pack:
               2
             {% endif %}
 
-  # Binary Sensors:
-  binary_sensor:
-    - platform: template
-      sensors:
-        ch_heater_living_room_status:
+    - binary_sensor:
+
+        - name: ch_heater_living_room_status
+          unique_id: 8357e1e6-2f99-4750-8353-719aa092ce49
           device_class: heat
-          value_template: "{{ state_attr('climate.country_house_living_room', 'hvac_action') == 'heating' }}"
-          icon_template: >-
+          state: >-
+            {{ state_attr('climate.country_house_living_room', 'hvac_action') == 'heating' }}
+          icon: >-
             {% if state_attr('climate.country_house_living_room', 'hvac_action') == 'heating' %}
               mdi:radiator
             {% else %}
               mdi:radiator-disabled
             {% endif %}
-        ch_heater_kids_rooms_status:
+
+        - name: ch_heater_kids_rooms_status
+          unique_id: 529dbbe5-9d12-4a80-a4e9-46c779eeba97
           device_class: heat
-          value_template: "{{ (state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') }}"
-          icon_template: >-
+          state: >-
+            {{ (state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') }}
+          icon: >-
             {% if state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating' %}
               mdi:radiator
             {% else %}
               mdi:radiator-disabled
             {% endif %}
-        ch_heater_terrace_status:
+
+        - name: ch_heater_terrace_status
+          unique_id: a2ba01c3-7e44-429a-b792-c0014ecc2f10
           device_class: heat
-          value_template: "{{ (state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') }}"
-          icon_template: >-
+          state: >-
+            {{ (state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') }}
+          icon: >-
             {% if state_attr('climate.country_house_terrace', 'hvac_action') == 'heating' %}
               mdi:radiator
             {% else %}
@@ -70,6 +107,7 @@ ch_climate_pack:
 
   # Climate
   climate:
+
     - platform: generic_thermostat
       unique_id: 9b877559-21bf-424b-8edc-0e1efb8c5834
       name: Country House Living Room
@@ -83,6 +121,7 @@ ch_climate_pack:
         minutes: 1
       away_temp: 10
       precision: 0.1
+
     - platform: generic_thermostat
       unique_id: 5c3bb751-1458-4b32-b86c-5ef3206ded5a
       name: Country House Kids Rooms
@@ -96,6 +135,7 @@ ch_climate_pack:
         minutes: 1
       away_temp: 10
       precision: 0.1
+
     - platform: generic_thermostat
       unique_id: aad05c78-6dc3-435a-becc-2e1c2a377fda
       name: Country House Terrace

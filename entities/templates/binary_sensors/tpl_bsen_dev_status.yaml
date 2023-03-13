@@ -4,31 +4,37 @@
 - binary_sensor:
 
   - name: Boiler Status
+    unique_id: 08d28b87-f038-4101-981e-ff737c121a1e
     device_class: heat
     state: "{{ (states('sensor.tplink_smartplug_01_current') | float) > 4 }}"
     icon: mdi:water-boiler
 
   - name: Fridge Status
+    unique_id: 13ff6c97-4837-44c8-a282-bcb4ead269c4
     device_class: cold
     state: "{{ is_state('switch.gosund_sp111_04_switch', 'on') }}"
     icon: mdi:fridge-outline
 
   - name: Kettle Status
+    unique_id: 2103b15b-c629-43af-af5a-f27aba090f10
     device_class: heat
     state: "{{ (states('sensor.gosund_sp111_05_watt') | float(0)) > 100 }}"
     icon: mdi:kettle
 
   - name: Dishwasher Status
+    unique_id: 7d976e93-8e99-4de6-b853-1e8d9c0cd8e8
     device_class: power
     state: "{{ (states('sensor.gosund_sp111_06_watt') | float(0)) > 1 }}"
     icon: mdi:dishwasher
 
   - name: Oven Status
+    unique_id: c77b0fa4-edad-4a1d-94d8-ab58d20bec8a
     device_class: heat
     state: "{{ (states('sensor.gosund_sp111_10_watt') | float(0)) > 5 }}"
     icon: mdi:stove
 
   - name: Washer Status
+    unique_id: 6307f3c8-e3b1-4b6b-b9db-d3e1f0637b7c
     device_class: power
     state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float) > 5 }}"
     delay_off:
@@ -36,6 +42,7 @@
     icon: mdi:washing-machine
 
   - name: Dryer Status
+    unique_id: b592220f-701b-4e83-b22c-9d9aabe6ea35
     device_class: power
     state: "{{ ((states('sensor.gosund_sp111_09_watt') | float(0))) > 6 }}"
     delay_on:
@@ -43,21 +50,26 @@
     icon: mdi:tumble-dryer
 
   - name: Yandex Station Mini2 Spalnia Status
+    unique_id: 981b10c4-d0c3-4ce7-bdac-2255089981e2
     device_class: power
     state: "{{ not states('media_player.yandex_station_mini2_spalnia') in ('paused', 'idle') }}"
 
   - name: Yandex Station Mini2 Gostinaia Status
+    unique_id: 621cc388-3206-4498-9cbd-a8ee9cda0233
     device_class: power
     state: "{{ not states('media_player.yandex_station_mini2_gostinaia') in ('paused', 'idle') }}"
 
   - name: Yandex Station Lite Detskaia Status
+    unique_id: cff97dce-4c8b-4135-8708-1ce0d8929293
     device_class: power
     state: "{{ not states('media_player.yandex_station_lite_detskaia') in ('paused', 'idle') }}"
 
   - name: Bathroom Extractor Fan
+    unique_id: b1a90bf0-3308-475a-989b-cc528ab76001
     device_class: power
     state: "{{ is_state('fan.bathroom_extractor', 'on') }}"
 
   - name: Toilet Extractor Fan
+    unique_id: bd8112ed-7b23-4fe1-ac93-c2b853a9decb
     device_class: power
     state: "{{ is_state('fan.toilet_extractor', 'on') }}"

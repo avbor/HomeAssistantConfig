@@ -5,6 +5,7 @@
 vpn_route_pack:
 
   shell_command:
+
     route_site_through_vpn: >-
       ssh -i /config/.ssh/id_ecdsa
       -o 'StrictHostKeyChecking=no'
@@ -13,6 +14,7 @@ vpn_route_pack:
       {{ states("input_text.site_to_vpn") }}
 
   input_text:
+
     site_to_vpn:
       name: DNS Name
       pattern: '^((?!\/).)*$'

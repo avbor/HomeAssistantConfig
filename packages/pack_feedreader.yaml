@@ -13,6 +13,7 @@ feedreader_pack:
       - https://moscow.mchs.gov.ru/deyatelnost/press-centr/operativnaya-informaciya/shtormovye-i-ekstrennye-preduprezhdeniya/rss
 
   automation:
+
   - alias: "RSS feed notifications"
     id: 7acc6aec-3319-44e8-bf1c-dc36109f1b89
     mode: queued

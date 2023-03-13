@@ -3,7 +3,9 @@
 #################################################
 
 domofon_pack:
+
   automation:
+
     - alias: Domofon - Opened by Button Notification
       id: cb5e25c1-dcb7-4b75-a6c4-6b12eb84f86b
       initial_state: true

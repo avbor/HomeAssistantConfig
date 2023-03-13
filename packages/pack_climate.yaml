@@ -1,0 +1,315 @@
+#################################################
+# Package Climate
+#################################################
+
+climate_pack:
+
+  template:
+
+    - binary_sensor:
+
+        # AC
+        - name: AC Nursery Status
+          unique_id: a69c90a2-3b42-485a-8d66-0dff572e2f16
+          device_class: power
+          state: "{{ is_state('binary_sensor.0x158d00039cf974_contact', 'on') }}"
+
+        - name: AC Living Room Status
+          unique_id: 65309a75-cd35-41a1-90db-d2a03902832c
+          device_class: power
+          state: "{{ is_state('binary_sensor.0x158d0003d54725_contact', 'on') }}"
+
+        - name: AC Bedroom Status
+          unique_id: d4f0645f-90ba-4ceb-8a85-ac332b6738e6
+          device_class: power
+          state: "{{ is_state('binary_sensor.0x158d0004073b67_contact', 'on') }}"
+
+        - name: Central Heating - Nursery
+          unique_id: 3350b831-ce3b-4e08-b165-2a3e0f36b87e
+          state: >
+            {{ states('sensor.lumi_lumi_weather_824e9807_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+        # Central Heating
+        - name: Central Heating - Livingroom
+          unique_id: a050a979-fdef-47ef-a233-d881d1909a9d
+          state: >
+            {{ states('sensor.lumi_lumi_weather_bf387507_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+        - name: Central Heating - Kitchen
+          unique_id: 2a0b19c5-85fa-40af-ab49-51833922cce9
+          state: >
+            {{ states('sensor.lumi_lumi_weather_4dad5507_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+        - name: Central Heating - Bedroom
+          unique_id: 00af6db0-3047-4fbf-8baa-2a14f20975d3
+          state: >
+            {{ states('sensor.lumi_lumi_weather_temperature')|int(0) > 30 }}
+          device_class: heat
+          delay_off:
+            hours: 1
+
+        # Bathroom and WC humidity
+        - name: bathroom_high_humidity
+          unique_id: 12881078-dca2-4d14-81fc-ba83a56116b1
+          device_class: moisture
+          state: "{{ (int(states('sensor.0x158d0003931a55_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
+
+        - name: toilet_high_humidity
+          unique_id: 8d8f45f2-28b9-442e-be91-6b22490c7da9
+          device_class: moisture
+          state: "{{ (int(states('sensor.atc_4e9a_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
+
+  # Sensors
+  sensor:
+
+    # Average temperature and humidity
+    - platform: min_max
+      name: Average Temperature In Flat
+      unique_id: afbb2215-8004-4c61-ada1-92d47bacbb40
+      type: median
+      entity_ids:
+        - sensor.0x158d0003931aec_temperature
+        - sensor.0x158d0003230618_temperature
+        - sensor.0x158d0003931b0e_temperature
+        - sensor.0x158d00039e2ecb_temperature
+        - sensor.atc_4e9a_temperature
+
+    - platform: min_max
+      name: Average Humidity In Flat
+      unique_id: c4ca2177-95d2-4f5f-a6e1-394ecc403a08
+      type: median
+      entity_ids:
+        - sensor.0x158d0003931aec_humidity
+        - sensor.0x158d0003230618_humidity
+        - sensor.0x158d0003931b0e_humidity
+        - sensor.0x158d00039e2ecb_humidity
+        - sensor.atc_4e9a_humidity
+
+    # Air quality
+    - platform: min_max
+      name: Average Carbon Dioxide In Flat
+      unique_id: 7d5acec8-de0e-4055-8a2e-2187a03a8fde
+      type: median
+      round_digits: 0
+      entity_ids:
+        - sensor.air_monitor_lite_afb3_carbon_dioxide
+        - sensor.air_monitor_lite_cb3b_carbon_dioxide
+        - sensor.air_monitor_lite_f6a7_carbon_dioxide
+
+    - platform: min_max
+      name: Average pm25 In Flat
+      unique_id: 5663e213-db69-4789-93c1-007e48de0516
+      type: median
+      round_digits: 0
+      entity_ids:
+        - sensor.air_monitor_lite_cb3b_pm25
+        - sensor.air_monitor_lite_afb3_pm25
+        - sensor.air_monitor_lite_f6a7_pm25
+
+    - platform: min_max
+      name: Average pm10 In Flat
+      unique_id: d65f3d47-2df7-4bcc-9a9a-456d17248a0c
+      type: median
+      round_digits: 0
+      entity_ids:
+        - sensor.air_monitor_lite_afb3_pm10
+        - sensor.air_monitor_lite_cb3b_pm10
+        - sensor.air_monitor_lite_f6a7_pm10
+
+  automation:
+
+    # Central Heating
+    - alias: Central Heating State Notification
+      id: a50dc6a0-b2d1-45d9-bab8-7fc62e43fb05
+      mode: queued
+      max: 10
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.central_heating_nursery
+          id: nursery
+        - platform: state
+          entity_id: binary_sensor.central_heating_livingroom
+          id: livingroom
+        - platform: state
+          entity_id: binary_sensor.central_heating_kitchen
+          id: kitchen
+        - platform: state
+          entity_id: binary_sensor.central_heating_bedroom
+          id: bedroom
+      condition: "{{ states('sensor.ha_uptime') != '0' }}"
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              {%- if trigger.id == "nursery" %}{% set room = "детской" %}{% set temp = states('sensor.lumi_lumi_weather_824e9807_temperature') %}
+              {%- elif trigger.id == "livingroom" %}{% set room = "гостиной" %}{% set temp = states('sensor.lumi_lumi_weather_bf387507_temperature') %}
+              {%- elif trigger.id == "kitchen" %}{% set room = "кухне" %}{% set temp = states('sensor.lumi_lumi_weather_4dad5507_temperature') %}
+              {%- elif trigger.id == "bedroom" %}{% set room = "спальне" %}{% set temp = states('sensor.lumi_lumi_weather_temperature') %}
+              {%- endif %}
+              Отопление в {{ room }} {% if trigger.to_state.state == 'on' %}*включено*{%else%}*выключено*{%endif%}.
+              Температура в районе трубы отопления {{ temp }}°C.
+
+    # Thermo alerts
+    # Детская #######################################
+    - alias: Thermo alert [Nursery]
+      id: bb3a7df3-3e20-4ebe-8b49-bc9ba69ad2b6
+      trigger:
+        - platform: template
+          value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float(0)) < 22 }}"
+          for:
+            minutes: 5
+        - platform: template
+          value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float(0)) > 25 }}"
+          for:
+            minutes: 5
+      action:
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: >-
+              В *Детской*
+              {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
+              {% elif (trigger.to_state.state | float(0)) < 23 -%} холодно,
+              {% endif -%} температура: *{{ trigger.to_state.state }}°C*
+
+    # Гостиная ######################################
+    - alias: Thermo alert [Living Room]
+      id: 0e135e8d-3ad5-40cb-9d8f-9ab3df6b91bd
+      trigger:
+        - platform: template
+          value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float(0)) < 22 }}"
+          for:
+            minutes: 5
+        - platform: template
+          value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float(0)) > 25 }}"
+          for:
+            minutes: 5
+      action:
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: >-
+              В *Гостиной*
+              {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
+              {% elif (trigger.to_state.state | float(0)) < 23 -%} холодно,
+              {% endif -%} температура: *{{ trigger.to_state.state }}°C*
+
+    # Спальня #######################################
+    - alias: Thermo alert [Bedroom]
+      id: 524b5b92-0f5d-4429-88d2-9903ec325389
+      trigger:
+        - platform: template
+          value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float(0)) < 21 }}"
+          for:
+            minutes: 5
+        - platform: template
+          value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float(0)) > 24.5 }}"
+          for:
+            minutes: 5
+      action:
+        - service: notify.telegram_group_flat_1
+          data_template:
+            message: >-
+              В *Спальне*
+              {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
+              {% elif (trigger.to_state.state | float(0)) < 23 -%} холодно,
+              {% endif -%} температура: *{{ trigger.to_state.state }}°C*
+
+    # AC
+    # Оповещения о долгой работе кондиционеров ######
+    - alias: AC - long running [8h]
+      id: 09f64418-db04-4327-a714-57d9ea39d1ed
+      initial_state: true
+      trigger:
+        platform: state
+        entity_id:
+          - binary_sensor.0x158d00039cf974_contact
+          - binary_sensor.0x158d0003d54725_contact
+          - binary_sensor.0x158d0004073b67_contact
+        from: "off"
+        to: "on"
+        for:
+          hours: 8
+      action:
+        service: notify.telegram_group_flat_1
+        data_template:
+          message: >
+            Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше 8 часов.
+
+    - alias: AC - long running [16h]
+      id: 970eef7a-4b66-4186-88ff-a0542c13c10a
+      initial_state: true
+      trigger:
+        platform: state
+        entity_id:
+          - binary_sensor.0x158d00039cf974_contact
+          - binary_sensor.0x158d0003d54725_contact
+          - binary_sensor.0x158d0004073b67_contact
+        from: "off"
+        to: "on"
+        for:
+          hours: 16
+      action:
+        service: notify.telegram_group_flat_1
+        data_template:
+          message: >
+            Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *16* часов.
+
+    - alias: AC - long running [24h]
+      id: 106513d8-941c-4bfe-8f42-1fe9c95a77de
+      initial_state: true
+      trigger:
+        platform: state
+        entity_id:
+          - binary_sensor.0x158d00039cf974_contact
+          - binary_sensor.0x158d0003d54725_contact
+          - binary_sensor.0x158d0004073b67_contact
+        from: "off"
+        to: "on"
+        for:
+          hours: 24
+      action:
+        service: notify.telegram_group_flat_1
+        data_template:
+          message: >
+            Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *24* часов.
+
+    # Air quality
+    - alias: Carbon dioxide alert
+      id: 5c2a3b8f-9bc7-4c73-a0b7-62f53e2d8d4a
+      mode: queued
+      max: 10
+      trigger:
+        - platform: template
+          value_template: "{{ (states('sensor.air_monitor_lite_afb3_carbon_dioxide') | int(0)) >= 1000 }}" # Детская
+          for:
+            minutes: 10
+        - platform: template
+          value_template: "{{ (states('sensor.air_monitor_lite_f6a7_carbon_dioxide') | int(0)) >= 1000 }}" # Гостиная
+          for:
+            minutes: 10
+        - platform: template
+          value_template: "{{ (states('sensor.air_monitor_lite_cb3b_carbon_dioxide') | int(0)) >= 1000 }}" # Спальня
+          for:
+            minutes: 10
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            title: "*Внимание!*"
+            message: |
+              Повышенное содержание углекислого газа в 
+              {%- if 'afb3' in trigger.entity_id %} *Детской*
+              {%- elif 'f6a7' in trigger.entity_id %} *Гостиной*
+              {%- elif 'cb3b' in trigger.entity_id %} *Спальне*
+              {%- endif %} (*{{ states(trigger.entity_id) }}* ppm).
+              Необходимо проветрить комнату.

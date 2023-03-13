@@ -3,7 +3,10 @@
 #################################################
 
 ble_presence_pack:
+
+  # Binary sensors
   binary_sensor:
+
     - platform: group
       name: "Holy IoT Green 1 Presence"
       device_class: presence
@@ -13,6 +16,7 @@ ble_presence_pack:
         - binary_sensor.kitchen_holy_iot_green_1_presence
         - binary_sensor.living_room_holy_iot_green_1_presence
         - binary_sensor.nursery_holy_iot_green_1_presence
+
     - platform: group
       name: "Holy IoT Black 1 Presence"
       device_class: presence
@@ -22,6 +26,7 @@ ble_presence_pack:
         - binary_sensor.kitchen_holy_iot_black_1_presence
         - binary_sensor.living_room_holy_iot_black_1_presence
         - binary_sensor.nursery_holy_iot_black_1_presence
+
     - platform: group
       name: "Nut Gray 1 Presence"
       device_class: presence
@@ -31,6 +36,7 @@ ble_presence_pack:
         - binary_sensor.kitchen_nut_gray_1_presence
         - binary_sensor.living_room_nut_gray_1_presence
         - binary_sensor.nursery_nut_gray_1_presence
+
     - platform: group
       name: "OnePlus 8T Presence"
       device_class: presence
@@ -41,7 +47,9 @@ ble_presence_pack:
         - binary_sensor.living_room_oneplus_8t_presence
         - binary_sensor.nursery_oneplus_8t_presence
 
+  # Automations
   automation:
+
     - alias: Forgotten school pass reminder - Egor
       id: 0a72e0b9-d7f2-41b9-90b3-5d1a601de887
       trigger:

@@ -3,9 +3,13 @@
 #################################################
 
 doorbell_pack:
+
   template:
+
     - binary_sensor:
+
         - name: "Doorbell Ringing"
+          unique_id: e3e3ce5d-9206-4dd6-97ea-1af326082584
           device_class: sound
           delay_off: "00:00:03"
           state: >-
@@ -18,14 +22,17 @@ doorbell_pack:
             {% endif %}
 
   input_boolean:
+
     doorbell_mute:
       name: "Disable Doorbell Ringing"
       icon: mdi:bell-off-outline
+
     alice_voiceover:
       name: "Alice alerts on the doorbell"
       icon: mdi:account-voice
 
   automation:
+
     - alias: "Doorbell Ringing"
       id: 420fe43c-f00d-46b6-a787-032b0c58bd47
       mode: single

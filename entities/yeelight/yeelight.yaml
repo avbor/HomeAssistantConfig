@@ -3,15 +3,21 @@
 #################################################
 
 devices:
+
   172.16.16.202:
     name: Спальня - Стол
+
   172.16.16.214:
     name: Кухня - Лента
+
 #  172.16.16.222:
 #    name: Детская
+
 #  172.16.16.203:
 #    name: Кухня - Люстра
+
 custom_effects:
+
   - name: 'Sunrise'
     flow_params:
       count: 1
@@ -23,6 +29,7 @@ custom_effects:
         - TemperatureTransition: [3000, 180000, 12]
         - TemperatureTransition: [3500, 180000, 13]
         - TemperatureTransition: [3900, 180000, 100]
+
   - name: 'SunriseBW'
     flow_params:
       count: 1

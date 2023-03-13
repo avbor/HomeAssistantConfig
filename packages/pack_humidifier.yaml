@@ -6,13 +6,16 @@ humidifiers_pack:
 
   # Input Boolean
   input_boolean:
+
     smartmi_humidifier_01_detskaia_autocontrol:
       icon: mdi:home-floor-a
+
     smartmi_humidifier_02_spalnia_autocontrol:
       icon: mdi:home-floor-a
 
   # Input Select
   input_select:
+
     smartmi_humidifier_01_detskaia_mode:
       name: "Выбор режима:"
       options:
@@ -22,6 +25,7 @@ humidifiers_pack:
         - Auto
       initial: Auto
       icon: mdi:speedometer
+
     smartmi_humidifier_02_spalnia_mode:
       name: "Выбор режима:"
       options:
@@ -34,6 +38,7 @@ humidifiers_pack:
 
   # Input Number
   input_number:
+
     target_humidity_01_detskaia:
       name: Целевая влажность
       unit_of_measurement: "%"
@@ -41,6 +46,7 @@ humidifiers_pack:
       min: 30
       max: 80
       step: 5
+
     target_humidity_02_spalnia:
       name: Целевая влажность
       unit_of_measurement: "%"
@@ -51,8 +57,11 @@ humidifiers_pack:
 
   # Template Sensors
   template:
+
     - binary_sensor:
+
         - name: Humidifier Nursery Status
+          unique_id: 9c48d0ee-d237-40b6-86df-4a37d0d4dd29
           device_class: power
           state: "{{ is_state('humidifier.smartmi_humidifier_01_detskaia', 'on') }}"
           icon: >-
@@ -63,6 +72,7 @@ humidifiers_pack:
                 {% endif %}
 
         - name: Humidifier Bedroom Status
+          unique_id: 45b1d6fb-ddc6-4316-84b1-d2679d54a0f0
           device_class: power
           state: "{{ is_state('humidifier.smartmi_humidifier_02_spalnia', 'on') }}"
           icon: >-
@@ -74,8 +84,10 @@ humidifiers_pack:
 
   # Sensors
   sensor:
+
     - platform: template
       sensors:
+
         # 01
         smartmi_humidifier_01_detskaia_mode:
           friendly_name: "Режим работы"
@@ -85,10 +97,12 @@ humidifiers_pack:
             {% else %}
               off
             {% endif %}
+
         smartmi_humidifier_01_detskaia_target_humidity:
           friendly_name: "Целевая влажность"
           value_template: >
             {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'humidity') }}
+
         # 02
         smartmi_humidifier_02_spalnia_mode:
           friendly_name: "Режим работы"
@@ -98,6 +112,7 @@ humidifiers_pack:
             {% else %}
               off
             {% endif %}
+
         smartmi_humidifier_02_spalnia_target_humidity:
           friendly_name: "Целевая влажность"
           value_template: >
@@ -105,6 +120,7 @@ humidifiers_pack:
 
   # Scripts
   script:
+
     set_smartmi_humidifier_mode:
       fields:
         humidifier_entity:

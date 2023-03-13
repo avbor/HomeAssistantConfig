@@ -4,6 +4,7 @@
 
 - platform: template
   fans:
+
     toilet_extractor:
       unique_id: 912a2bfe-d504-44ba-ba28-aa4b66fda702
       friendly_name: "Вытяжка в Туалете"
@@ -15,6 +16,7 @@
       turn_off:
         service: switch.turn_off
         entity_id: switch.sonoff_basic_01_switch
+
     bathroom_extractor:
       unique_id: 89b94bc8-2c48-4240-b216-a688a9d8585b
       friendly_name: "Вытяжка в Ванной"

@@ -3,8 +3,10 @@
 #################################################
 
 alice_say_pack:
+
   # Input Select
   input_select:
+
     yandex_station_target_name:
       name: "Где произнести?"
       options:
@@ -17,6 +19,7 @@ alice_say_pack:
 
   # Input Text
   input_text:
+
     yandex_station_target_id:
       name: "Yandex Station selected ID"
       initial: media_player.yandex_station_lite_detskaia
@@ -29,6 +32,7 @@ alice_say_pack:
 
   # Input Number
   input_number:
+
     yandex_tation_tts_to_volume:
       name: Громкость
       icon: mdi:volume-high
@@ -39,6 +43,7 @@ alice_say_pack:
 
   # Automations
   automation:
+
     - alias: "Mirror Yandex Station input_select Name to ID"
       id: 1ec5424e-f770-486c-b4cf-ed29e65dcb36
       trigger:
@@ -61,6 +66,7 @@ alice_say_pack:
 
   # Scripts
   script:
+
     yanedx_station_tts_to:
       sequence:
         - service: media_player.play_media

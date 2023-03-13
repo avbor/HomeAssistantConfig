@@ -15,6 +15,7 @@
 #    state: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
 
   - name: Entrance Door Status
+    unique_id: 496b73c7-79a3-48b6-baad-ea419f995279
     state: >
       {% if is_state('binary_sensor.0x158d00031c790f_contact', "on") %}Открыта
       {% elif is_state('binary_sensor.0x158d00031c790f_contact', "off") %}Закрыта
@@ -22,6 +23,7 @@
       {% endif %}
 
   - name: Local Pressure mmhg
+    unique_id: 79c91679-e174-480f-87c5-91e74579bc95
     unit_of_measurement: mmHg
     state: >
       {% set pressure = states('sensor.0x158d0003230618_pressure') | float(default=-1) %}
@@ -32,6 +34,7 @@
       {% endif %}
 
   - name: OpenWeatherMap Moskva Danilovskii Pressure mmhg
+    unique_id: 66af03e7-f2c7-4287-84db-93172c77a58c
     unit_of_measurement: mmHg
     state: >
       {% set pressure = states('sensor.openweathermap_moskva_danilovskii_pressure') | float(default=-1) %}
@@ -42,6 +45,7 @@
       {% endif %}
 
   - name: OpenWeatherMap Stupino Nivki-2 Pressure mmhg
+    unique_id: 4f571e6a-19a5-44be-b9d8-0d8041a9afb1
     unit_of_measurement: mmHg
     state: >
       {% set pressure = states('sensor.openweathermap_stupino_nivki_2_pressure') | float(default=-1) %}
@@ -50,3 +54,57 @@
       {% else %}
       {{ states('sensor.openweathermap_stupino_nivki_2_pressure_mmhg') }}
       {% endif %}
+
+  - name: HA Uptime Text
+    unique_id: 8dda36db-5b01-4164-a8cd-11af6c36922a
+    icon: mdi:clock
+    state: >-
+      {%- set test = states('sensor.ha_uptime')|int(0) -%}
+      {%- set minutes = (test % 60) | int(0) %} 
+      {%- set hours = ((test % 1440) /60) | int(0) %}
+      {%- set days = (test / 1440)|int(0) -%}
+      {% if days > 0 %}{{ days }}d {% endif -%}
+      {% if hours > 0 or days > 0 %}{{ hours }}h {% endif -%}
+      {% if minutes > 0 or test >60 %}{{ minutes }}m {% else %}0m {% endif %}
+    attributes:
+      days: "{{( states('sensor.ha_uptime')|int(0) / 1440)|int(0) }}"
+      hours: "{{ ((states('sensor.ha_uptime')|int(0) % 1440) /60) | int(0) }}"
+      minutes: "{{ (states('sensor.ha_uptime')|int(0) % 60) | int(0) }}"
+
+  - name: Sun Next Rising
+    unique_id: 8308dcb4-cb14-467a-8628-466a846eac87
+    icon: mdi:weather-sunset-up
+    state: >-
+      {{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H:%M') }}
+
+  - name: Sun Next Setting
+    unique_id: e60900cf-81a1-47c8-b59a-4b4e60172827
+    icon: mdi:weather-sunset-down
+    state: >-
+      {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H:%M') }}
+
+  - name: Boiler Status
+    unique_id: 2397c3ab-80e5-4709-a6fe-ea044d7c880f
+    state: >-
+      {% if (states('sensor.tplink_smartplug_01_current') | float) > 4 %}On{% else %}Off{% endif %}
+
+  - name: Boiler Water Temp
+    unique_id: 3e9a23a1-4783-490b-8438-5563ba9bf976
+    unit_of_measurement: °C
+    device_class: temperature
+    state: >
+      {% if state_attr('climate.vodonagrevatel', 'current_temperature') %}
+        {{ state_attr('climate.vodonagrevatel', 'current_temperature') }}
+      {% else %}
+        0
+      {% endif %}
+
+  - name: HA Supervisor Current Version
+    unique_id: 778c09cd-5410-4d35-98f4-9eaf9fcb5fe7
+    state: >-
+      {{state_attr('sensor.supervisor_updates','current_version')}}
+
+  - name: HA Supervisor Latest Version
+    unique_id: 6550fe59-3e7f-4aa4-8f60-0900c4d7377b
+    state: >-
+      {{state_attr('sensor.supervisor_updates','newest_version')}}

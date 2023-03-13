@@ -3,11 +3,16 @@
 #################################################
 
 toilet_light_pack:
+
+  # Timers
   timer:
+
     toilet_presence:
       duration: "00:03:00"
 
+  # Automations
   automation:
+
     - alias: "Свет в Туалете"
       id: 7fa56654-f362-4f13-97ca-9d8e4ff52ccb
       mode: queued

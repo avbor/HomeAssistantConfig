@@ -3,11 +3,16 @@
 #################################################
 
 hallway_light_pack:
+
+  # Timers
   timer:
+
     hallway_light:
       duration: "00:02:00"
 
+  # Automations
   automation:
+
     - alias: "Свет в Прихожей"
       id: b564ba72-9799-4438-b7c0-2a72a61a864c
       mode: queued
