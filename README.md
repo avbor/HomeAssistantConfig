@@ -21,7 +21,8 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - SD 64 Gb A2 (OS)
   - HDD 500 Gb (Data)
 
-**Storage**
+**Storage:**\
+(Also as VM and containers host)
 - Synology [DS1621+](https://www.synology.com/en-us/products/DS1621+)
   - RAM: 32 Gb [CT16G4SFRA266](https://www.crucial.com/memory/ddr4/ct16g4sfra266) 16 Gb x2
   - HDD: WD 18 Tb 7200 rpm [HDD WD DC HC550 WUH721818ALE6L4](https://www.westerndigital.com/products/internal-drives/data-center-drives/ultrastar-dc-hc550-hdd#0F38459) x2
@@ -114,17 +115,14 @@ _Remote site (country house):_
   - Xiaomi Dafang 1080p (ZRM4040RT) flashed to [Xiaomi DaFang Hacks](https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks)\
   Integrations "Generic Camera" & "MJPEG IP Camera"
 
+  - Reolink [RLC-510A](https://reolink.com/product/rlc-510a/)\
+    Integration "Generic Camera" and "Reolink Dev" by [fwestenberg](https://github.com/fwestenberg/reolink_dev)
+
   - Tuya SmartIR Remote (UFO-R1 and similar) flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
 
   - Analog intercom integrated via [custom board](https://github.com/Anonym-tsk/smart-domofon/tree/master/ge1mer) based on ESP8266 and [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
-
-  - Xiaomi Xiao AI Smart Alarm Clock (AI01ZM, zimi.clock.myk01)\
-  Not used in HA
-
-  - Reolink [RLC-510A](https://reolink.com/product/rlc-510a/)\
-    Integration "Generic Camera" and "Reolink Dev" by [fwestenberg](https://github.com/fwestenberg/reolink_dev)
 
   - Shelly [EM](https://www.shelly.cloud/en/products/shop/em-120a)\
     Integration "Shelly"
@@ -136,8 +134,9 @@ _Remote site (country house):_
 
 - Plugs:
   - MiJia Smart Power Plug 2 (ZNCZ02LM, lumi.plug)
-  - BlitzWolf SHP13 (BW-SHP13, TS0121F)
+  - BlitzWolf SHP13 (BW-SHP13, TS0121)
   - BlitzWolf SHP15 (BW-SHP15, TS011F)
+  - Tuya NAS-WR01B (TS011F)
 
 - Light:
   - IKEA TRÅDFRI LED Bulb E14 400lm (LED1649C5, ikea.light.led1649c5)
@@ -186,12 +185,18 @@ _Remote site (country house):_
   - Mi Body Composition Scale 2 (NUN4048GL)\
   Integration "ESPHome" (via xiaomi_miscale platform)
 
+  - NUT Find3 Smart Tracker\
+  Integration "iBeacon"
+
+  - Holyiot iBeacon\Eddystone Trackers\
+  Via ESPHome ble_tracker component
+
 #### Media Players:
   - Google Chromecast (Gen 1)\
   Integration "Google Cast"
 
   - Google Chromecast (Gen 3)\
-  https://github.com/pvvx/ATC_MiThermometer "Google Cast"
+  Integration "Google Cast"
 
   - Google Home Mini\
   Integration "Google Cast"
@@ -199,7 +204,7 @@ _Remote site (country house):_
   - Yandex Station Lite\
   Integration "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 
-  - Tandex Station Mini-2\
+  - Yandex Station Mini-2\
   Integration "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 
   - Samsung TV Series 5 (ES, 2012 model year)\
@@ -227,9 +232,9 @@ Via "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 ### Software
 
 **Server:**
-- Ubuntu Server 20.04 LTS
+- Ubuntu Server 22.04 LTS
 - QEMU + KVM + libvirt
-- NGINX as revers proxy
+- NGINX
 
 **WiFi Access Point:**
 - OpenWRT 19.07
@@ -253,3 +258,6 @@ Via "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 **Mobile Apps:**
 - [Home Assistant](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android) official app on Android\
 Also as Device Tracker via "Mobile App"
+
+- [OwnTracks](https://play.google.com/store/apps/details?id=org.owntracks.android)\
+As Device Tracker via integration "OwnTracks"
