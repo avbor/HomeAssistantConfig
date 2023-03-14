@@ -122,6 +122,9 @@ recorder:
       - sensor.gosund_sp111_*_volt
       - button.*_identify
       - sensor.watchman_*
+      - sensor.tplink_smartplug_*_voltage
+      - binary_sensor.*_nut_gray_1_presence
+      - sensor.air_monitor_lite_*_humidity
     entities:
       - sensor.time
       - sensor.date
