@@ -30,6 +30,10 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - SSD SATA: WD 500 Gb [WDS500G1R0A](https://www.westerndigital.com/en-us/products/internal-drives/wd-red-sata-2-5-ssd#WDS500G1R0A) x2
   - SSD NVME: Samsung 500 Gb [MZ-V7S500BW](https://www.samsung.com/uk/memory-storage/nvme-ssd/970-evo-plus-nvme-m-2-ssd-500gb-mz-v7s500bw/) x2
 
+**UPS:**
+
+- APC SmartUPS 1500 (SMT1500I)
+
 **Network:**
 
 _Main site (city apartment):_
@@ -229,12 +233,40 @@ Via Tuya SmartIR flashed to ESPHome, IRremoteESP8266 lib and Xiaomi Magnet Senso
 - Electrolux [Centurio IQ 2.0](https://home-comfort.ru/catalog/vodonagrevateli/nakopitelnye_vodonagrevateli/seriya_centurio_iq_2_0/) with [ECH/WFN-02](https://home-comfort.ru/catalog/obogrevateli_elektricheskie/konvektory/aksessuary/modul_syemnyy_upravlyayushchiy_electrolux_ech_wfn_02_smart_wi_fi/) module\
 Via "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
 
+- Samsung Galaxy Tab A 8" (SM-T295) with [Fully Kiosk Browser](https://www.fully-kiosk.com)\
+Integration "Fully Kiosk Browser"
+
 ### Software
 
 **Server:**
 - Ubuntu Server 22.04 LTS
 - QEMU + KVM + libvirt
-- NGINX
+- ISC DHCP Server
+- Unbound
+- Bind9
+- Nginx
+- Transmission
+- Zabbix
+- Plex
+
+**Storage:**
+- DSM 7.1
+- Virtual Machine Manager
+- Surveillance Station
+- Photos
+- Download Station
+- acme.sh
+- Containers
+  - Nextcloud
+  - PostgeSQL
+  - Redis
+  - OnlyOffice
+  - Imaginary
+  - Vaultwarden
+  - Minecraft
+  - Portainer
+  - Torrserver
+  - Watchtower
 
 **WiFi Access Point:**
 - OpenWRT 19.07
