@@ -45,7 +45,23 @@ cards:
               - min
               - mean
               - max
-      #            - sum
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### CPU usage
+          - type: statistics-graph
+            entities:
+              - entity: sensor.processor_use
+                name: []
+            days_to_show: 7
+            chart_type: line
+            hide_legend: true
+            stat_types:
+              - min
+              - mean
+              - max
+
       - type: custom:vertical-stack-in-card
         cards:
           - type: markdown

@@ -38,6 +38,7 @@ cards:
             name: []
         days_to_show: 7
         chart_type: line
+        hide_legend: true
         stat_types:
           - min
           - mean
