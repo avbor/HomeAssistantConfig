@@ -28,52 +28,42 @@ conbee2_pack:
 
     - alias: "ConBee2: Attach USB Stick to HA VM"
       id: 0103f99c-5100-43f5-8c08-b35ef3175ec5
-      mode: queued
-      max: 2
       trigger:
         - platform: state
           entity_id: binary_sensor.conbee2_usb_stick_exist
           to: 'off'
-          id: "disconnected"
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            title: "*Внимание!*"
+            message: |
+              ConBee II отключен от VM, будет запущен процесс автоматического подключения.
+        - repeat:
+            sequence:
+              - service: shell_command.attach_conbee2_to_ha_vm
+              - delay: "00:03:00"
+            until:
+              - condition: state
+                entity_id: binary_sensor.conbee2_usb_stick_exist
+                state: "on"
+
+    - alias: "ConBee2: USB Stick Attached to HA VM"
+      id: 052b6f8e-a580-4470-9efa-4f097fb163aa
+      trigger:
         - platform: state
           entity_id: binary_sensor.conbee2_usb_stick_exist
           from: 'off'
           to: 'on'
-          id: "connected"
       action:
-        choose:
-          - alias: Stick disconnected
-            conditions:
-              - condition: trigger
-                id: "disconnected"
-            sequence:
-              - service: telegram_bot.send_message
-                data:
-                  target: !secret tlg_group_system
-                  title: "*Внимание!*"
-                  message: |
-                    ConBee II отключен от VM, будет запущен процесс атоматического подключения.
-              - repeat:
-                  sequence:
-                    - service: shell_command.attach_conbee2_to_ha_vm
-                    - delay: "00:03:00"
-                  until:
-                    - condition: state
-                      entity_id: binary_sensor.conbee2_usb_stick_exist
-                      state: "on"
-          - alias: Stick connected
-            conditions:
-              - condition: trigger
-                id: "connected"
-            sequence:
-              - service: telegram_bot.send_message
-                data:
-                  target: !secret tlg_group_system
-                  title: "*Внимание!*"
-                  message: |
-                    ConBee II подключен.
-                  inline_keyboard:
-                    - "Перезапустить HA:/cb2_ha_restart, Перезагрузить VM:/cb2_vm_reboot"
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            title: "*Внимание!*"
+            message: |
+              ConBee II подключен.
+            inline_keyboard:
+              - "Перезапустить HA:/cb2_ha_restart, Перезагрузить VM:/cb2_vm_reboot"
 
     - alias: "ConBee2: USB Device Errors in Log"
       id: 5cc751d0-a514-480f-9bdc-6c2bd17a7f0d
@@ -86,6 +76,11 @@ conbee2_pack:
           value_template: >-
             {{ 
               trigger.event.data.message | regex_search('usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2413834-if00')
+            }}
+        - condition: template
+          value_template: >-
+            {{ 
+              trigger.event.data.message | regex_search('Lost connection: SerialException')
             }}
       action:
         - service: telegram_bot.send_message
