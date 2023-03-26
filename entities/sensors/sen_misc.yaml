@@ -25,6 +25,7 @@
 
 - platform: command_line
   name: Supervisor updates
+  unique_id: dd7f56f4-0f40-4e02-be6f-9b4c0f4b11a7
   command: 'curl -s http://supervisor/supervisor/info -H "Authorization: Bearer $(printenv SUPERVISOR_TOKEN)" | jq ''{"newest_version":.data.version_latest,"current_version":.data.version,"addons":[.data.addons[] | select(.version != .version_latest)]}'''
   value_template: "{{ value_json.addons | length }}"
   json_attributes:
@@ -35,17 +36,21 @@
 
 - platform: command_line
   name: YAML Code Lines Count
+  unique_id: 59b3b287-7bcb-481b-b4e0-155eccac0214
   command: find . -name '*.yaml' -not -path "./custom_components/*" -type f -print0 | xargs -0 cat | sed '/^\s*#/d;/^\s*$/d' | wc -l
   scan_interval: 14400
   unit_of_measurement: lines
 
 - platform: command_line
   name: ERRORS in System Log [command line]
+  unique_id: 5a211dc9-0aaa-473d-9338-feb8d9d2be1b
   command: grep -c -E "^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3} ERROR .*$" /config/home-assistant.log || true
   scan_interval: 3600
   unit_of_measurement: pc
+
 - platform: command_line
   name: WARNINGS in System Log [command line]
+  unique_id: 5b31acd1-4cfc-4cbd-a25a-fcad4be751c2
   command: >
     grep -E "^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3} WARNING .*$" /config/home-assistant.log |
     grep -c -v -E "^.+ We found a custom integration .+ which has not been tested by Home Assistant.+$" || true

@@ -22,19 +22,19 @@ hass_check_config:
 hass_errors_counter_set_at_startup:
   alias: Set Errors Counter at Startup
   sequence:
-    - wait_template: "{{ (states('sensor.errors_in_system_log_command_line') | int) >= 0 }}"
+    - wait_template: "{{ (states('sensor.errors_in_system_log_command_line') | int(-1)) >= 0 }}"
     - service: counter.configure
       target:
         entity_id: counter.syslog_errors
       data:
-        value: "{{ states('sensor.errors_in_system_log_command_line') | int }}"
+        value: "{{ states('sensor.errors_in_system_log_command_line') | int(0) }}"
 
 hass_warnings_counter_set_at_startup:
   alias: Set Warnings Counter at Startup
   sequence:
-    - wait_template: "{{ (states('sensor.warnings_in_system_log_command_line') | int) >= 0 }}"
+    - wait_template: "{{ (states('sensor.warnings_in_system_log_command_line') | int(-1)) >= 0 }}"
     - service: counter.configure
       target:
         entity_id: counter.syslog_warnings
       data:
-        value: "{{ states('sensor.warnings_in_system_log_command_line') | int }}"
+        value: "{{ states('sensor.warnings_in_system_log_command_line') | int(0) }}"

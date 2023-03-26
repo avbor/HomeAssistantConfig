@@ -32,7 +32,7 @@ autoreboot_pack:
       sequence:
         - alias: Check Errors Counter
           condition: template
-          value_template: "{{ (states('sensor.errors_in_system_log_command_line') | int) >= (states('input_number.auto_reboot_error_threshold') | int) }}"
+          value_template: "{{ (states('sensor.errors_in_system_log_command_line') | int(0)) >= (states('input_number.auto_reboot_error_threshold') | int(0)) }}"
         - choose:
           - alias: If Auto Reboot Counter <= 2
             conditions:
