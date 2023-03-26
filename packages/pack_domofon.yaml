@@ -103,6 +103,12 @@ domofon_pack:
       trigger:
         - platform: state
           entity_id: binary_sensor.domofon_status
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
       condition:
         - condition: template
           value_template: >-

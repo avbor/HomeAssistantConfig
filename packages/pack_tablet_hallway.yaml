@@ -14,6 +14,12 @@ tablet_hallway_pack:
       trigger:
         - platform: state
           entity_id: light.sonoff_1000f2f14a
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
       action:
         choose:
           - alias: To On

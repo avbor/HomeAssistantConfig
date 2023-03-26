@@ -136,15 +136,39 @@ climate_pack:
         - platform: state
           entity_id: binary_sensor.central_heating_nursery
           id: nursery
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
         - platform: state
           entity_id: binary_sensor.central_heating_livingroom
           id: livingroom
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
         - platform: state
           entity_id: binary_sensor.central_heating_kitchen
           id: kitchen
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
         - platform: state
           entity_id: binary_sensor.central_heating_bedroom
           id: bedroom
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
       condition: "{{ states('sensor.ha_uptime') != '0' }}"
       action:
         - service: telegram_bot.send_message

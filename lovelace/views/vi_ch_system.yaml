@@ -155,3 +155,22 @@ cards:
                 unit: "₽"
                 styles:
                   font-weight: bold
+          - type: section
+            label: Передача показаний
+          - entity: input_number.country_house_enegry_meter_value_transfer_day
+            name: Число
+          - entity: sensor.ch_energy_meter_value_saved_for_transfer
+            name: "Зафиксированное значение"
+          - type: attribute
+            entity: sensor.ch_energy_meter_value_saved_for_transfer_modtime
+            attribute: modtime
+            name: Дата фиксации
+            icon: []
+          - entity: sensor.mes_55384_014_37_meter_44259893_readings_accepted_text
+            name: Показания учтены в МЭС
+          - type: attribute
+            entity: script.ch_push_energy_readings_to_mes
+            attribute: last_triggered
+            name: Попытка передачи
+            icon: []
+

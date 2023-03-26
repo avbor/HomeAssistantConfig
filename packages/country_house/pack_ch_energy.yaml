@@ -34,10 +34,32 @@ ch_energy_pack:
       step: 1
       mode: box
 
+    country_house_enegry_meter_value_transfer_day:
+      name: Число в месяце для передачи показаний
+      icon: mdi:calendar
+      min: 1
+      max: 31
+      step: 1
+      mode: box
+
   # Templates
   template:
 
     - sensor:
+
+        # Energy Cost (RUB per kWh)
+        - name: country_house_enegry_cost_mes_t1
+          unique_id: cdd3460d-aa93-47a0-9978-4247712fbf38
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >-
+            {% set t1_tariff = state_attr('sensor.mes_55384_014_37_account', 'zone_t1_tariff') | float(-1) %}
+            {% if t1_tariff != -1 %}
+              {{ t1_tariff }}
+            {% else %}
+              {{ 6.73 }}
+            {% endif %}
 
         # Main
         - name: energy_cost_ch_main_monthly
@@ -195,11 +217,76 @@ ch_energy_pack:
               ((state_attr('sensor.socket_ch_radiator_terrace_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
             }}
 
+        # MES Energy Meter 44259893 last accepted readings T1
+        - name: mes_55384_014_37_meter_44259893_zone_t1_last_indication
+          unique_id: a0599829-4f2b-43d8-aabe-6c5fc87e368c
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          state: >-
+            {{ state_attr('sensor.mes_55384_014_37_meter_44259893', 'zone_t1_last_indication') | int(-1) }}
+
+        # MES Energy Meter 44259893 current period readings T1
+        - name: mes_55384_014_37_meter_44259893_zone_t1_period_indication
+          unique_id: 28f82af2-50d4-4dff-9962-84566fb4df58
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          state: >-
+            {{ state_attr('sensor.mes_55384_014_37_meter_44259893', 'zone_t1_period_indication') | int(-1) }}
+
+        # MES Energy Meter 44259893 readings accepted text sensor
+        - name: mes_55384_014_37_meter_44259893_readings_accepted_text
+          unique_id: 71e3376d-6d74-4d0a-a82d-111d88379097
+          icon: >-
+            {% if states('binary_sensor.mes_55384_014_37_meter_44259893_readings_accepted') == 'off' -%}
+              mdi:cloud-remove-outline
+            {% elif states('binary_sensor.mes_55384_014_37_meter_44259893_readings_accepted') == 'on' -%}
+              mdi:cloud-check-outline
+            {% else -%}
+              mdi:cloud-alert-outline
+            {% endif -%}
+          state: >-
+            {% if states('binary_sensor.mes_55384_014_37_meter_44259893_readings_accepted') == 'on' -%}
+              Да
+            {% else -%}
+              Нет
+            {% endif -%}
+
+    - binary_sensor:
+
+        # MES Energy Meter 44259893 readings accepted
+        - name: mes_55384_014_37_meter_44259893_readings_accepted
+          unique_id: fdb869ba-8fb7-44e4-bff9-e66d30052638
+          icon: >-
+            {% 
+              if (states('sensor.mes_55384_014_37_meter_44259893_zone_t1_last_indication') | int(0)) == (states('sensor.ch_energy_meter_value_saved_for_transfer') | int(1)) 
+              or (states('sensor.mes_55384_014_37_meter_44259893_zone_t1_period_indication') | int(0)) == (states('sensor.ch_energy_meter_value_saved_for_transfer') | int(1))
+            -%}
+              mdi:cloud-check-outline
+            {% else -%}
+              mdi:cloud-remove-outline
+            {% endif %}
+          state: >-
+            {% 
+              if (states('sensor.mes_55384_014_37_meter_44259893_zone_t1_last_indication') | int(0)) == (states('sensor.ch_energy_meter_value_saved_for_transfer') | int(1)) 
+              or (states('sensor.mes_55384_014_37_meter_44259893_zone_t1_period_indication') | int(0)) == (states('sensor.ch_energy_meter_value_saved_for_transfer') | int(1))
+            -%}
+              True
+            {% endif -%}
+
     # Triggers
+    # Energy Meter Value with modification time
     - trigger:
         - platform: state
           entity_id:
             - input_number.country_house_enegry_meter_value
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
       unique_id: 71109da9-5087-4554-8fb1-68bffbc7912c
       sensor:
         - name: "CH Energy Meter Value"
@@ -216,11 +303,22 @@ ch_energy_pack:
               {% if trigger.to_state.state != trigger.from_state.state %}
                 {{ now().strftime('%d.%m.%Y %-H:%M:%S') }}
               {% endif %}
+            value_set_at_dt: >-
+              {% if trigger.to_state.state != trigger.from_state.state %}
+                {{ now() }}
+              {% endif %}
 
+    # Predict Energy Meter Value (last known energy meter value + daily consumption from shelly em)
     - trigger:
         - platform: state
           entity_id:
             - input_number.country_house_enegry_meter_predicted_value
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
       unique_id: b39d2d66-6917-4c0a-81f3-65ac8e9f106e
       sensor:
         - name: "CH Energy Meter Predicted Value"
@@ -232,6 +330,50 @@ ch_energy_pack:
             {% if trigger.to_state.state != trigger.from_state.state %}
               {{ states('input_number.country_house_enegry_meter_predicted_value') }}
             {% endif %}
+
+    # Save Energy Meter Readings for Transfer to MES
+    - trigger:
+        #- platform: time_pattern
+        #  minutes: "/2"
+        - platform: time
+          at: "07:15:00"
+      unique_id: 0113570c-f663-4427-84d0-04d284c1c8a3
+      sensor:
+        - name: "CH Energy Meter Value Saved for Transfer"
+          unique_id: 9c92137f-0b7b-4e07-948a-5b405827d6d3
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          state: >-
+            {% if (now().strftime('%d') | int(0)) == (states('input_number.country_house_enegry_meter_value_transfer_day') | int(0)) -%}
+              {{ states('sensor.ch_energy_meter_predicted_value') | round(0) }}
+            {% else -%}
+              {{ this.state | int(0) }}
+            {% endif %}
+
+    # Modification time for sensor.ch_energy_meter_value_saved_for_transfer
+    - trigger:
+        - platform: state
+          entity_id: sensor.ch_energy_meter_value_saved_for_transfer
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
+      unique_id: 925ab1e6-d8e4-4f49-affa-cd21d4dc758b
+      sensor:
+        - name: "CH Energy Meter Value Saved for Transfer ModTime"
+          unique_id: b6a90a36-c421-453e-b652-0d10f938649b
+          state: >-
+            {% if trigger.to_state.state != trigger.from_state.state %}
+              {{ now() }}
+            {% endif %}
+          attributes:
+            modtime: >-
+              {% if trigger.to_state.state != trigger.from_state.state %}
+                {{ now() }}
+              {% endif %}
 
   # Sensors
   sensor:
@@ -325,8 +467,99 @@ ch_energy_pack:
       tariffs:
         - total
 
+  # Scripts
+  script:
+
+    ch_push_energy_readings_to_mes:
+      alias: CH Push Energy Readings to MES
+      sequence:
+        choose:
+          - alias: Submit period active
+            conditions: "{{ state_attr('sensor.mes_55384_014_37_meter_44259893','submit_period_active') == true }}"
+            sequence:
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_country_house
+                  title: "*Электроэнергия:*"
+                  message: |
+                    📩 Выполняется передача показаний в МЭС.
+              - parallel:
+                  - sequence:
+                      - wait_for_trigger:
+                          platform: event
+                          event_type: lkcomu_interrao_push_indications
+                        timeout: 180
+                      - if:
+                          - "{{ wait.trigger == none }}"
+                        then:
+                          - service: telegram_bot.send_message
+                            data:
+                              target: !secret tlg_group_country_house
+                              title: "*Электроэнергия:*"
+                              message: |
+                                ❌ Ошибка передачи показаний - таймаут ожидания ответа.
+                        else:
+                          - choose:
+                              - conditions: "{{ wait.trigger.event.data['success'] }}"
+                                sequence:
+                                  - service: telegram_bot.send_message
+                                    data:
+                                      target: !secret tlg_group_country_house
+                                      title: "*Электроэнергия:*"
+                                      message: |
+                                        ✅ Показания успешно переданы.
+                            default:
+                              - service: telegram_bot.send_message
+                                data:
+                                  target: !secret tlg_group_country_house
+                                  parse_mode: html
+                                  disable_web_page_preview: true
+                                  title: "<b>Электроэнергия:</b>"
+                                  message: |
+                                    ❌ Ошибка передачи показаний.
+                                    Ответ: {{ trigger.event.data['comment'] }}
+                  - sequence:
+                    - delay:
+                        seconds: 1
+                    - service: lkcomu_interrao.push_indications
+                      data:
+                        indications: "{{ states('sensor.ch_energy_meter_value_saved_for_transfer') | float }}"
+                      target:
+                        entity_id: sensor.mes_55384_014_37_meter_44259893
+          - alias: Submit period not active
+            conditions: "{{ state_attr('sensor.mes_55384_014_37_meter_44259893','submit_period_active') == false }}"
+            sequence:
+              - service: telegram_bot.send_message
+                data:
+                  target: !secret tlg_group_country_house
+                  title: "*Электроэнергия:*"
+                  message: |
+                    Ошибка, передача показаний в МЭС возможна с 15 по 26 число.
+                    Сегодня {{ now().strftime('%d') }}.
+
   # Automations
   automation:
+
+    # Set current cost per kWh
+    - alias: CH Set current cost per kWh
+      id: 28450e89-7fdf-459d-bcbd-9e3ea9377de7
+      trigger:
+        - platform: state
+          entity_id: sensor.country_house_enegry_cost_mes_t1
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
+      condition:
+        - "{{ trigger.to_state.state | is_number() }}"
+      action:
+        - service: input_number.set_value
+          data:
+            entity_id: input_number.country_house_enegry_cost_current
+            value: >-
+              {{ trigger.to_state.state | float(0) }}
 
     # Adjusting predicted values for Main Energy Meter
     - alias: CH Set Main Energy Meter values for predict
@@ -335,6 +568,12 @@ ch_energy_pack:
         - platform: state
           entity_id:
             - input_number.country_house_enegry_meter_value
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
       action:
         - service: input_number.set_value
           data:
@@ -355,8 +594,51 @@ ch_energy_pack:
             value: >-
               {{ ((states('input_number.country_house_enegry_meter_predicted_value') | float(0)) + (states('sensor.ch_main_energy_daily_total') | float(0))) | round(2) }}
 
-    # Push an energy meter reading
-    #- alias: CH Push Energy Meter reading
-    #  id: d20af113-a06c-4eec-a1a0-0a8a4f8f6fa9
-    #  trigger:
-    #    - platform: 
+    # Push an energy meter reading to MES
+    - alias: CH Push Energy Meter reading
+      id: d20af113-a06c-4eec-a1a0-0a8a4f8f6fa9
+      trigger:
+        - platform: state
+          entity_id:
+            - sensor.ch_energy_meter_value_saved_for_transfer
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
+      condition:
+        - "{{ (now().strftime('%d') | int(0)) == (states('input_number.country_house_enegry_meter_value_transfer_day') | int(0)) }}"
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_country_house
+            title: "*Электроэнергия:*"
+            message: |
+              Зафиксировано новое значение кВт⋅ч для передачи в МЭС.
+              Предыдущее: {{ trigger.from_state.state }}
+              Текущее: {{ trigger.to_state.state }}
+              Расход: {{ (trigger.to_state.state | int(0)) - (trigger.from_state.state | int(0)) }} кВт⋅ч
+              Примерная сумма счета: {{ (((trigger.to_state.state | float(0)) - (trigger.from_state.state | float(0))) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(1) }} руб.
+        - service: script.turn_on
+          target:
+            entity_id: script.ch_push_energy_readings_to_mes
+
+      # MES - energy meter reading accepted
+    - alias: CH Energy Meter readings accepted notification
+      id: 99ae89c3-a865-4c3b-841c-729bbbc4b447
+      trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.mes_55384_014_37_meter_44259893_readings_accepted
+          to: "on"
+          not_from:
+            - unavailable
+            - unknown
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_country_house
+            title: "*Электроэнергия:*"
+            message: |
+              Переданные показания учтены в МЭС ({{ states('sensor.mes_55384_014_37_meter_44259893_zone_t1_period_indication') }} кВт⋅ч).
