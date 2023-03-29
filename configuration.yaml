@@ -210,6 +210,12 @@ notify:
 #  - platform: sms
 #    name: sms_alex
 #    recipient: !secret sms_phone_alex
+  - name: sms_rest_alex
+    platform: rest
+    resource: !secret sms_rest_addr
+    method: POST
+    target_param_name: "num"
+    message_param_name: "text"
 
 zha:
   zigpy_config:
