@@ -215,6 +215,7 @@ notify:
     resource: !secret sms_rest_addr
     method: POST
     target_param_name: "num"
+    title_param_name: "subj"
     message_param_name: "text"
 
 zha:

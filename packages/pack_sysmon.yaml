@@ -1,0 +1,48 @@
+#################################################
+# Package for System Monitoring
+#################################################
+
+sysmon_pack:
+  # Sensors
+  sensor:
+    - platform: systemmonitor
+      resources:
+        - type: processor_use
+        - type: memory_use_percent
+        - type: memory_use
+        - type: memory_free
+
+  # REST platform
+  rest:
+    # DiskIO for sda from Glances
+    - resource: http://localhost:61209/api/3/diskio/disk_name/sda
+      sensor:
+        - name: HA VM DiskIO sda kB/s Write
+          unique_id: b3989d26-2855-490a-bcec-df50b60fabcd
+          unit_of_measurement: "kB/s"
+          state_class: measurement
+          device_class: data_rate
+          icon: mdi:harddisk
+          value_template: "{{ (value_json['sda'][0].write_bytes | int(0)) / 1024 }}"
+
+        - name: HA VM DiskIO sda kB/s Read
+          unique_id: db768ab0-3cec-4620-8f46-734215ecb211
+          unit_of_measurement: "kB/s"
+          state_class: measurement
+          device_class: data_rate
+          icon: mdi:harddisk
+          value_template: "{{ (value_json['sda'][0].read_bytes | int(0)) / 1024 }}"
+
+        - name: HA VM DiskIO sda IOPS Write
+          unique_id: 4b27d1db-4f88-4e5e-9510-3c82d7a3e3ea
+          unit_of_measurement: "iops"
+          state_class: measurement
+          icon: mdi:harddisk
+          value_template: "{{ value_json['sda'][0].write_count }}"
+
+        - name: HA VM DiskIO sda IOPS Read
+          unique_id: 68a5b9fe-96bf-42ff-9015-36fd99060298
+          unit_of_measurement: "iops"
+          state_class: measurement
+          icon: mdi:harddisk
+          value_template: "{{ value_json['sda'][0].read_count }}"

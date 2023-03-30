@@ -1,0 +1,84 @@
+title: System Perfomance
+path: sysperf
+icon: mdi:chart-box-outline
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>CPU and RAM</center>
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### CPU usage
+          - type: statistics-graph
+            entities:
+              - entity: sensor.processor_use
+                name: []
+            days_to_show: 7
+            chart_type: line
+            hide_legend: true
+            stat_types:
+              - min
+              - mean
+              - max
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Memory usage
+          - type: statistics-graph
+            entities:
+              - entity: sensor.memory_use_percent
+                name: []
+            days_to_show: 7
+            chart_type: line
+            hide_legend: true
+            stat_types:
+              - min
+              - mean
+              - max
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Storage</center>
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Throughput rate
+          - type: statistics-graph
+            entities:
+              - entity: sensor.ha_vm_diskio_sda_kb_s_write
+                name: "Write"
+              - entity: sensor.ha_vm_diskio_sda_kb_s_read
+                name: "Read"
+            days_to_show: 7
+            chart_type: line
+            hide_legend: true
+            stat_types:
+              - min
+              - mean
+              - max
+
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### IOPS
+          - type: statistics-graph
+            entities:
+              - entity: sensor.ha_vm_diskio_sda_iops_write
+                name: "Write"
+              - entity: sensor.ha_vm_diskio_sda_iops_read
+                name: "Read"
+            days_to_show: 7
+            chart_type: line
+            hide_legend: true
+            stat_types:
+              - min
+              - mean
+              - max
