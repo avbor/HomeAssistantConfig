@@ -3,6 +3,7 @@
 #################################################
 
 sysmon_pack:
+
   # Sensors
   sensor:
     - platform: systemmonitor
@@ -12,8 +13,33 @@ sysmon_pack:
         - type: memory_use
         - type: memory_free
 
+    - platform: command_line
+      name: HA VM Disk sda Session Write
+      unique_id: 4a147f57-3494-47fc-a48a-e2c013f4cc4b
+      unit_of_measurement: GB
+      scan_interval: 60
+      command: "cat /proc/diskstats |grep '0 sda' | awk '{print $10*512/1024/1024/1024}'"
+
+    - platform: command_line
+      name: HA VM Disk sda Session Read
+      unique_id: 33f0d710-7a99-4a02-bb06-bfe98597a47b
+      unit_of_measurement: GB
+      scan_interval: 60
+      command: "cat /proc/diskstats |grep '0 sda' | awk '{print $6*512/1024/1024/1024}'"
+
+    - platform: statistics
+      name: HA VM Disk sda Write Change 1h
+      unique_id: db99b1b9-b1d1-4422-9271-a57176d5e047
+      entity_id: sensor.ha_vm_disk_sda_session_write
+      state_characteristic: change
+      sampling_size: 1000
+      max_age:
+        minutes: 60
+
+
   # REST platform
   rest:
+
     # DiskIO for sda from Glances
     - resource: http://localhost:61209/api/3/diskio/disk_name/sda
       sensor:

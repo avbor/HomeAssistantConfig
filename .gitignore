@@ -24,6 +24,8 @@
 !esphome/common/
 !esphome/include/
 !esphome/include/*
+!glances/
+!glances/glances.conf
 !influxdb_conf/
 !lovelace/
 !lovelace/*

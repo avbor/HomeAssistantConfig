@@ -120,3 +120,9 @@ sensor.memory_use_percent:
   state_class: measurement
 switch.sonoff_mini_r2_02_switch:
   friendly_name: Планшет в прихожей
+sensor.ha_vm_disk_sda_session_read:
+  state_class: total
+  device_class: data_size
+sensor.ha_vm_disk_sda_session_write:
+  state_class: total
+  device_class: data_size
