@@ -82,3 +82,23 @@ cards:
               - min
               - mean
               - max
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Storage</center>
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### Writes per hour
+          - type: statistics-graph
+            entities:
+              - entity: sensor.ha_vm_disk_sda_write_change_1h
+                name: "Write GB"
+            days_to_show: 7
+            chart_type: bar
+            hide_legend: true
+            stat_types:
+              - max
