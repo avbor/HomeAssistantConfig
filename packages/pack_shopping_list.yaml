@@ -1,0 +1,50 @@
+#################################################
+# Package for handle Shopping List
+#################################################
+
+shopping_list_pack:
+  # Automations
+  automation:
+    - alias: Sync Shopping List with Yandex
+      id: 930a85ab-d531-42e7-a1a6-86bdfe0a628f
+      mode: single
+      max_exceeded: silent
+      trigger:
+        - platform: time_pattern
+          minutes: "35"
+          id: time
+        - platform: event
+          event_type: shopping_list_updated
+          id: event
+        - platform: state
+          entity_id:
+            - person.alexander
+            - person.irina
+          to: "not_home"
+          id: state
+      action:
+        - wait_template: "{{ is_state_attr('media_player.yandex_station_lite_prikhozhaya', 'alice_state', 'IDLE') }}"
+        - if:
+            - alias: Event trigger
+              condition: trigger
+              id: "event"
+          then:
+            - delay: "00:05:00"
+        - service: media_player.volume_mute
+          target:
+            entity_id: media_player.yandex_station_lite_prikhozhaya
+          data:
+            is_volume_muted: true
+        - delay: "00:00:01"
+        - service: media_player.play_media
+          entity_id: media_player.yandex_station_lite_prikhozhaya
+          data:
+            media_content_id: update
+            media_content_type: shopping_list
+        - delay: "00:00:01"
+        - wait_template: "{{ is_state_attr('media_player.yandex_station_lite_prikhozhaya', 'alice_state', 'LISTENING') }}"
+        - service: media_player.volume_mute
+          target:
+            entity_id: media_player.yandex_station_lite_prikhozhaya
+          data:
+            is_volume_muted: false

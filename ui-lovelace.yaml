@@ -1,6 +1,7 @@
 title: 'Home, Sweeet Home...'
 views:
   - !include lovelace/views/vi_home.yaml
+  - !include lovelace/views/vi_shopping_list.yaml
   - !include lovelace/views/vi_climate.yaml
   - !include lovelace/views/vi_light.yaml
   - !include lovelace/views/vi_vacuum.yaml

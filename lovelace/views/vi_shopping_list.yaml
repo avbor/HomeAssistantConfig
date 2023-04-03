@@ -1,0 +1,24 @@
+title: Shopping List
+path: list
+icon: mdi:basket
+cards:
+  - type: vertical-stack
+    cards:
+      - type: shopping-list
+
+      - type: entities
+        entities:
+          - type: attribute
+            name: Синхронизировано
+            icon: yandex:alisa
+            entity: automation.sync_shopping_list_with_yandex
+            attribute: last_triggered
+      - type: button
+        name: Синхронизировать с Алисой
+        show_icon: false
+        tap_action:
+          action: call-service
+          service: automation.trigger
+          service_data:
+            entity_id: automation.sync_shopping_list_with_yandex
+        entity: automation.sync_shopping_list_with_yandex
