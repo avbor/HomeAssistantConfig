@@ -12,6 +12,7 @@ from . import capability as caps, const, prop
 from .capability import AbstractCapability
 from .capability_custom import CustomModeCapability, CustomRangeCapability, CustomToggleCapability
 from .const import (
+    CONF_DEVICE_CLASS,
     CONF_ENTITY_PROPERTIES,
     CONF_ROOM,
     CONF_TYPE,
@@ -34,8 +35,10 @@ class YandexEntity:
     def __init__(self, hass: HomeAssistant, config: Config, state: State):
         """Initialize a Yandex Smart Home entity."""
         self.hass = hass
-        self.config = config
         self.state = state
+
+        self._component_config = config
+        self._config = config.get_entity_config(self.entity_id)
         self._capabilities: list[AbstractCapability] | None = None
         self._properties: list[AbstractProperty] | None = None
 
@@ -52,23 +55,22 @@ class YandexEntity:
 
         self._capabilities = []
         state = self.state
-        entity_config = self.config.get_entity_config(state.entity_id)
 
         for capability_class, config_key in (
                 (CustomModeCapability, const.CONF_ENTITY_CUSTOM_MODES),
                 (CustomToggleCapability, const.CONF_ENTITY_CUSTOM_TOGGLES),
                 (CustomRangeCapability, const.CONF_ENTITY_CUSTOM_RANGES)):
-            if config_key in entity_config:
-                for instance in entity_config[config_key]:
+            if config_key in self._config:
+                for instance in self._config[config_key]:
                     capability = capability_class(
-                        self.hass, self.config, state, instance, entity_config[config_key][instance]
+                        self.hass, self._component_config, state, instance, self._config[config_key][instance]
                     )
 
                     if capability.supported():
                         self._capabilities.append(capability)
 
         for Capability in caps.CAPABILITIES:
-            capability = Capability(self.hass, self.config, state)
+            capability = Capability(self.hass, self._component_config, state)
             if capability.supported() and capability.instance not in [c.instance for c in self._capabilities]:
                 self._capabilities.append(capability)
 
@@ -82,15 +84,14 @@ class YandexEntity:
 
         self._properties = []
         state = self.state
-        entity_config = self.config.get_entity_config(state.entity_id)
 
-        for property_config in entity_config.get(CONF_ENTITY_PROPERTIES, []):
+        for property_config in self._config.get(CONF_ENTITY_PROPERTIES, []):
             self._properties.append(
-                CustomEntityProperty.get(self.hass, self.config, state, property_config)
+                CustomEntityProperty.get(self.hass, self._component_config, state, property_config)
             )
 
         for Property in prop.PROPERTIES:
-            entity_property = Property(self.hass, self.config, state)
+            entity_property = Property(self.hass, self._component_config, state)
             if entity_property.supported():
                 if entity_property.instance not in [p.instance for p in self._properties]:
                     self._properties.append(entity_property)
@@ -106,17 +107,16 @@ class YandexEntity:
         if not self.yandex_device_type:
             return False
 
-        return self.config.should_expose(self.entity_id)
+        return self._component_config.should_expose(self.entity_id)
 
     @property
     def yandex_device_type(self) -> str | None:
         """Yandex type based on domain and device class."""
-        entity_config = self.config.get_entity_config(self.entity_id)
-        if CONF_TYPE in entity_config:
-            return entity_config[CONF_TYPE]
+        if CONF_TYPE in self._config:
+            return self._config[CONF_TYPE]
 
-        device_class = self.state.attributes.get(ATTR_DEVICE_CLASS)
         domain = self.state.domain
+        device_class = self._config.get(CONF_DEVICE_CLASS, self.state.attributes.get(ATTR_DEVICE_CLASS))
         return DEVICE_CLASS_TO_YANDEX_TYPES.get((domain, device_class), DOMAIN_TO_YANDEX_TYPES.get(domain))
 
     async def devices_serialize(self, ent_reg: EntityRegistry, dev_reg: DeviceRegistry,
@@ -131,7 +131,7 @@ class YandexEntity:
         if not self.capabilities() and not self.properties():
             return None
 
-        entity_config = self.config.get_entity_config(self.entity_id)
+        entity_config = self._component_config.get_entity_config(self.entity_id)
         name = (entity_config.get(CONF_NAME) or self.state.name).strip() or self.entity_id
         entity_entry, device_entry = await self._get_entity_and_device(ent_reg, dev_reg)
 

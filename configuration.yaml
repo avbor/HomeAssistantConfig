@@ -7,9 +7,9 @@ homeassistant:
     - type: homeassistant
     - type: trusted_networks
       trusted_networks:
-        - 172.16.16.0/24
+        - 172.16.16.0/23
       trusted_users:
-        172.16.16.0/24: 5eb99a825ace48779fad323aac28014d
+        172.16.16.0/23: 5eb99a825ace48779fad323aac28014d
   name: Home, Sweet Home...
   #  external_url: !secret external_url
   internal_url: "http://172.16.16.245:8123"

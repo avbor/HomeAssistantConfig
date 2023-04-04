@@ -136,10 +136,15 @@ class ModeCapability(AbstractCapability, ABC):
 
     def get_value(self) -> str | None:
         """Return the state value of this capability for this entity."""
-        ha_mode = self.state.state
+        return self.get_yandex_mode_by_ha_mode(self._ha_value, False)
+
+    @property
+    def _ha_value(self):
+        """Return the current unmapped capability value."""
         if self.state_value_attribute:
-            ha_mode = self.state.attributes.get(self.state_value_attribute)
-        return self.get_yandex_mode_by_ha_mode(ha_mode, False)
+            return self.state.attributes.get(self.state_value_attribute)
+
+        return self.state.state
 
 
 @register_capability
@@ -478,6 +483,7 @@ class FanSpeedCapabilityClimate(FanSpeedCapability):
         ],
         const.MODE_INSTANCE_MODE_MIN: [
             const.TION_FAN_SPEED_1,
+            const.FAN_SPEED_LOW_MID,
         ],
         const.MODE_INSTANCE_MODE_LOW: [
             climate.const.FAN_LOW,
@@ -502,6 +508,7 @@ class FanSpeedCapabilityClimate(FanSpeedCapability):
         ],
         const.MODE_INSTANCE_MODE_MAX: [
             const.TION_FAN_SPEED_6,
+            const.FAN_SPEED_MID_HIGH,
         ],
     }
 
@@ -523,6 +530,16 @@ class FanSpeedCapabilityClimate(FanSpeedCapability):
     def modes_list_attribute(self) -> str | None:
         """Return HA attribute contains modes list for this entity."""
         return climate.ATTR_FAN_MODES
+
+    @property
+    def supported_ha_modes(self) -> list[str]:
+        modes = super().supported_ha_modes
+
+        # esphome default state for some devices
+        if self._ha_value == climate.const.FAN_ON and climate.const.FAN_ON not in modes:
+            modes.append(climate.const.FAN_ON)
+
+        return modes
 
     async def set_state(self, data: RequestData, state: dict[str, Any]):
         """Set device state."""
@@ -715,15 +732,18 @@ class CleanupModeCapability(ModeCapability):
 
     instance = const.MODE_INSTANCE_CLEANUP_MODE
     modes_map_default = {
-        const.MODE_INSTANCE_MODE_AUTO: ['auto', 'automatic', '102'],
-        const.MODE_INSTANCE_MODE_TURBO: ['turbo', 'high', 'performance', '104', 'full speed', 'max+'],
+        const.MODE_INSTANCE_MODE_ECO: [const.CLEANUP_MODE_OFF],
+        const.MODE_INSTANCE_MODE_AUTO: ['auto', 'automatic', '102', const.CLEANUP_MODE_BALANCED],
+        const.MODE_INSTANCE_MODE_TURBO: [const.CLEANUP_MODE_TURBO, 'high', 'performance', '104', 'full speed', 'max+'],
         const.MODE_INSTANCE_MODE_MIN: ['min', 'mop'],
         const.MODE_INSTANCE_MODE_LOW: ['gentle'],
-        const.MODE_INSTANCE_MODE_MAX: ['max', 'strong'],
+        const.MODE_INSTANCE_MODE_MAX: [const.CLEANUP_MODE_MAX, 'strong'],
+        const.MODE_INSTANCE_MODE_FAST: [const.CLEANUP_MODE_MAX_PLUS],
         const.MODE_INSTANCE_MODE_EXPRESS: ['express', '105'],
         const.MODE_INSTANCE_MODE_MEDIUM: ['medium', 'middle'],
         const.MODE_INSTANCE_MODE_NORMAL: ['normal', 'standard', 'basic', '103'],
-        const.MODE_INSTANCE_MODE_QUIET: ['quiet', 'low', 'min', 'silent', 'eco', '101'],
+        const.MODE_INSTANCE_MODE_QUIET: ['quiet', 'low', 'min', const.CLEANUP_MODE_SILENT, 'eco', '101'],
+        const.MODE_INSTANCE_MODE_SMART: [const.CLEANUP_MODE_MAX_PLUS],
     }
 
     def supported(self) -> bool:

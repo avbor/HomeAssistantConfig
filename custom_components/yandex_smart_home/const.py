@@ -92,6 +92,9 @@ CLOUD_STREAM_BASE_URL = 'https://stream.yaha-cloud.ru'
 EVENT_DEVICE_DISCOVERY = 'yandex_smart_home_device_discovery'
 EVENT_CONFIG_CHANGED = 'yandex_smart_home_config_changed'
 
+# Fake device class
+DEVICE_CLASS_BUTTON = 'button'
+
 # https://yandex.ru/dev/dialogs/smart-home/doc/concepts/device-types.html
 PREFIX_TYPES = 'devices.types.'
 TYPE_LIGHT = PREFIX_TYPES + 'light'
@@ -118,6 +121,15 @@ TYPE_WASHING_MACHINE = PREFIX_TYPES + 'washing_machine'
 TYPE_DISHWASHER = PREFIX_TYPES + 'dishwasher'
 TYPE_IRON = PREFIX_TYPES + 'iron'
 TYPE_SENSOR = PREFIX_TYPES + 'sensor'
+TYPE_SENSOR_MOTION = TYPE_SENSOR + '.motion'
+TYPE_SENSOR_VIBRATION = TYPE_SENSOR + '.vibration'
+TYPE_SENSOR_ILLUMINATION = TYPE_SENSOR + '.illumination'
+TYPE_SENSOR_OPEN = TYPE_SENSOR + '.open'
+TYPE_SENSOR_CLIMATE = TYPE_SENSOR + '.climate'
+TYPE_SENSOR_WATER_LEAK = TYPE_SENSOR + '.water_leak'
+TYPE_SENSOR_BUTTON = TYPE_SENSOR + '.button'
+TYPE_SENSOR_GAS = TYPE_SENSOR + '.gas'
+TYPE_SENSOR_SMOKE = TYPE_SENSOR + '.smoke'
 TYPE_PET_DRINKING_FOUNTAIN = PREFIX_TYPES + 'pet_drinking_fountain'
 TYPE_PET_FEEDER = PREFIX_TYPES + 'pet_feeder'
 TYPE_OTHER = PREFIX_TYPES + 'other'
@@ -146,6 +158,15 @@ TYPES = (
     TYPE_DISHWASHER,
     TYPE_IRON,
     TYPE_SENSOR,
+    TYPE_SENSOR_MOTION,
+    TYPE_SENSOR_VIBRATION,
+    TYPE_SENSOR_ILLUMINATION,
+    TYPE_SENSOR_OPEN,
+    TYPE_SENSOR_CLIMATE,
+    TYPE_SENSOR_WATER_LEAK,
+    TYPE_SENSOR_BUTTON,
+    TYPE_SENSOR_GAS,
+    TYPE_SENSOR_SMOKE,
     TYPE_PET_DRINKING_FOUNTAIN,
     TYPE_PET_FEEDER,
     TYPE_OTHER,
@@ -177,9 +198,32 @@ DOMAIN_TO_YANDEX_TYPES = {
 }
 
 DEVICE_CLASS_TO_YANDEX_TYPES = {
-    (media_player.DOMAIN, media_player.DEVICE_CLASS_TV): TYPE_MEDIA_DEVICE_TV,
-    (media_player.DOMAIN, media_player.DEVICE_CLASS_RECEIVER): TYPE_MEDIA_DEVICE_RECIEVER,
-    (switch.DOMAIN, switch.DEVICE_CLASS_OUTLET): TYPE_SOCKET,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.DOOR): TYPE_SENSOR_OPEN,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.GARAGE_DOOR): TYPE_SENSOR_OPEN,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.GAS): TYPE_SENSOR_GAS,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.MOISTURE): TYPE_SENSOR_WATER_LEAK,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.MOTION): TYPE_SENSOR_MOTION,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.MOVING): TYPE_SENSOR_MOTION,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.OCCUPANCY): TYPE_SENSOR_MOTION,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.OPENING): TYPE_SENSOR_OPEN,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.PRESENCE): TYPE_SENSOR_MOTION,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.SMOKE): TYPE_SENSOR_SMOKE,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.VIBRATION): TYPE_SENSOR_VIBRATION,
+    (binary_sensor.DOMAIN, binary_sensor.BinarySensorDeviceClass.WINDOW): TYPE_SENSOR_OPEN,
+    (media_player.DOMAIN, media_player.MediaPlayerDeviceClass.RECEIVER): TYPE_MEDIA_DEVICE_RECIEVER,
+    (media_player.DOMAIN, media_player.MediaPlayerDeviceClass.TV): TYPE_MEDIA_DEVICE_TV,
+    (sensor.DOMAIN, DEVICE_CLASS_BUTTON): TYPE_SENSOR_BUTTON,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.CO): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.CO2): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.HUMIDITY): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.ILLUMINANCE): TYPE_SENSOR_ILLUMINATION,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.PM1): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.PM10): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.PM25): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.PRESSURE): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.TEMPERATURE): TYPE_SENSOR_CLIMATE,
+    (sensor.DOMAIN, sensor.SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS): TYPE_SENSOR_CLIMATE,
+    (switch.DOMAIN, switch.SwitchDeviceClass.OUTLET): TYPE_SOCKET,
 }
 
 ON_OFF_INSTANCE_ON = 'on'
@@ -352,6 +396,7 @@ COLOR_NAMES = (
 # https://yandex.ru/dev/dialogs/smart-home/doc/concepts/mode-instance-modes.html
 MODE_INSTANCE_MODE_AUTO = 'auto'
 MODE_INSTANCE_MODE_ECO = 'eco'
+MODE_INSTANCE_MODE_SMART = 'smart'
 MODE_INSTANCE_MODE_TURBO = 'turbo'
 MODE_INSTANCE_MODE_COOL = 'cool'
 MODE_INSTANCE_MODE_DRY = 'dry'
@@ -426,6 +471,7 @@ MODE_INSTANCE_MODE_YOGURT = 'yogurt'
 MODE_INSTANCE_MODES = (
     MODE_INSTANCE_MODE_AUTO,
     MODE_INSTANCE_MODE_ECO,
+    MODE_INSTANCE_MODE_SMART,
     MODE_INSTANCE_MODE_TURBO,
     MODE_INSTANCE_MODE_COOL,
     MODE_INSTANCE_MODE_DRY,
@@ -665,11 +711,21 @@ FAN_SPEED_MAX = 'max'
 # https://github.com/dmitry-k/yandex_smart_home/issues/347
 FAN_SPEED_MID = 'mid'
 
+# https://github.com/dext0r/yandex_smart_home/issues/440
+FAN_SPEED_LOW_MID = 'low_mid'
+FAN_SPEED_MID_HIGH = 'mid_high'
+
 # SmartIR
 FAN_SPEED_HIGHEST = 'highest'
 
-# Fake device class
-DEVICE_CLASS_BUTTON = 'button'
+# https://github.com/humbertogontijo/python-roborock/blob/1616217a06e20d51921de984134555bcc0775a92/roborock/code_mappings.py#L61
+CLEANUP_MODE_OFF = 'off'
+CLEANUP_MODE_SILENT = 'silent'
+CLEANUP_MODE_BALANCED = 'balanced'
+CLEANUP_MODE_TURBO = 'turbo'
+CLEANUP_MODE_MAX = 'max'
+CLEANUP_MODE_MAX_PLUS = 'max_plus'
+CLEANUP_MODE_CUSTOM = 'custom'
 
 MEDIA_PLAYER_FEATURE_VOLUME_MUTE = 'volume_mute'
 MEDIA_PLAYER_FEATURE_VOLUME_SET = 'volume_set'
