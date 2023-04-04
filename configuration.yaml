@@ -207,10 +207,7 @@ notify:
   - name: telegram_group_system
     platform: telegram
     chat_id: !secret tlg_group_system
-#  - platform: sms
-#    name: sms_alex
-#    recipient: !secret sms_phone_alex
-  - name: sms_rest_alex
+  - name: sms_rest
     platform: rest
     resource: !secret sms_rest_addr
     method: POST
