@@ -258,7 +258,7 @@ yandex_station:
 
 start_time:
 
-samsungtv: !include entities/samsungtv/samsungtv.yaml
+#samsungtv: !include entities/samsungtv/samsungtv.yaml
 
 yandex_smart_home: !include entities/yandex_smart_home/yandex_smart_home.yaml
 
