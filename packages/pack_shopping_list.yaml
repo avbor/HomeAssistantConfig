@@ -41,7 +41,7 @@ shopping_list_pack:
           data:
             media_content_id: update
             media_content_type: shopping_list
-        - delay: "00:00:01"
+        - delay: "00:00:03"
         - wait_template: "{{ is_state_attr('media_player.yandex_station_lite_prikhozhaya', 'alice_state', 'LISTENING') }}"
         - service: media_player.volume_mute
           target:

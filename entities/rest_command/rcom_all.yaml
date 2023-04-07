@@ -1,3 +1,7 @@
 #################################################
 # RESTful Commands
 #################################################
+
+restart_go2rtc:
+  url: !secret go2rtc_restart_url
+  method: POST
