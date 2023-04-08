@@ -151,7 +151,7 @@
   id: 928847e4-3bd6-4d95-ba15-90c5b023b8a4
   trigger:
     - platform: time_pattern
-#      hours: "/2"
+      hours: "/2"
       minutes: "44"
   action:
     #- service: hassio.addon_restart
@@ -163,6 +163,7 @@
       target:
         entity_id:
           - camera.reolinkcam_01_rtsp
+          - camera.reolinkcam_01_rtsp_mp4
           - camera.reolinkcam_02_rtsp
     - delay: "00:00:05"
     - choose:

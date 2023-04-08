@@ -324,7 +324,7 @@
           '^sensor\.esp32_bt_proxy_\d{2}_rssi$|'
           '^sensor\..*_estimated_distance$|'
           '^(sensor|number|switch|button|binary_sensor)\.galaxy_tab_a_8_0_2019_.*$|'
-          '^camera\.reolinkcam_01_rtsp$|'
+          '^camera\.reolinkcam_01_rtsp.*$|'
           '^(sensor|binary_sensor|button)\.shellyem_.*'
           )
         }}
@@ -379,17 +379,16 @@
     platform: event
     event_type: device_tracker_new_device
   action:
-#    service: notify.telegram_group_system
-#    data_template:
-#      title: "*Найдено новое устройство в сети!*"
-#      message: |
-#        MAC: {{ trigger.event.data.mac }}
+    #    service: notify.telegram_group_system
+    #    data_template:
+    #      title: "*Найдено новое устройство в сети!*"
+    #      message: |
+    #        MAC: {{ trigger.event.data.mac }}
     - service: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
-        title: 
-          <b>Найдено новое устройство в сети!</b>
+        title: <b>Найдено новое устройство в сети!</b>
         message: |
           MAC: {{ trigger.event.data.mac }}
 

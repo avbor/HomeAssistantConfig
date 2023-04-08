@@ -163,13 +163,18 @@ cctv_pack:
                     target: !secret tlg_group_staircase
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
-            - service: shell_command.delete_staircase_movement_record
-            - service: camera.record
-              data:
-                entity_id: camera.reolinkcam_01_rtsp
-                filename: "/config/video/staircase_movement.mp4"
-                duration: 7
-                lookback: 3
+            - sequence:
+                - service: telegram_bot.send_video
+                  data:
+                    target: !secret tlg_group_staircase
+                    url: !secret go2rtc_reolinkcam_01_mp4_7s
+#            - service: shell_command.delete_staircase_movement_record
+#            - service: camera.record
+#              data:
+#                entity_id: camera.reolinkcam_01_rtsp_mp4
+#                filename: "/config/video/staircase_movement.mp4"
+#                duration: 7
+#                lookback: 3
 
     - alias: "Staircase - Send recorded video"
       id: 692afba6-c94d-477f-9ac4-d064643898ce

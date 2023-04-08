@@ -5,8 +5,7 @@
 tablet_hallway_pack:
 
   automation:
-
-    - alias: 'Планшет в Прихожей - включение экрана'
+    - alias: "Планшет в Прихожей - включение экрана"
       id: d8f01254-9cde-41a8-b35a-f296621d3ac9
       mode: queued
       max: 5
@@ -28,14 +27,24 @@ tablet_hallway_pack:
               - service: switch.turn_on
                 data:
                   entity_id: switch.galaxy_tab_a_8_0_2019_screen
+              - service: media_player.volume_set
+                target:
+                  entity_id: media_player.galaxy_tab_a_8_0_2019
+                data:
+                  volume_level: 1
           - alias: To Off
             conditions: "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
             sequence:
               - service: switch.turn_off
                 data:
                   entity_id: switch.galaxy_tab_a_8_0_2019_screen
+              - service: media_player.volume_set
+                target:
+                  entity_id: media_player.galaxy_tab_a_8_0_2019
+                data:
+                  volume_level: 0
 
-    - alias: 'Планшет в Прихожей - поддержание заряда'
+    - alias: "Планшет в Прихожей - поддержание заряда"
       id: 82fb6789-4385-44cc-b721-90b892063447
       max_exceeded: silent
       trigger:
