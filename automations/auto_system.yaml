@@ -163,7 +163,6 @@
       target:
         entity_id:
           - camera.reolinkcam_01_rtsp
-          - camera.reolinkcam_01_rtsp_mp4
           - camera.reolinkcam_02_rtsp
     - delay: "00:00:05"
     - choose:

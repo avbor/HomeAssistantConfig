@@ -196,3 +196,52 @@ cctv_pack:
             file: /config/video/staircase_movement.mp4
             caption: !secret look_at_cam_reolinkcam_01
             timeout: 180
+
+    - alias: "Staircase - Motion detected - Frigate"
+      id: 1550b036-824f-47d8-9dcf-674b475c5060
+      mode: single
+      max_exceeded: silent
+      trigger:
+        - platform: mqtt
+          topic: frigate_srv01/events
+          payload: "reolinkcam_01"
+          value_template: "{{ value_json['after']['camera'] }}"
+      variables:
+        id: "{{ trigger.payload_json['after']['id'] }}"
+        camera: "{{ trigger.payload_json['after']['camera'] }}"
+        target_chat: !secret tlg_group_staircase
+        type: "{{ trigger.payload_json['type'] }}"
+        base_url: !secret external_url
+      condition:
+        - "{{ type != 'end' }}"
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: "{{ target_chat }}"
+            message: |
+              {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
+              Обнаружено движение на лестничной клетке,
+              (ID: {{ id }}):
+        - service: telegram_bot.send_photo
+          data:
+            target: "{{ target_chat }}"
+            url: >-
+              {{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg
+        - repeat:
+            sequence:
+              - wait_for_trigger:
+                  - platform: mqtt
+                    topic: frigate_srv01/events
+                    payload: "{{ id }}"
+                    value_template: "{{ value_json['after']['id'] }}"
+                timeout:
+                  minutes: 2
+                continue_on_timeout: false
+              - condition: template
+                value_template: "{{ wait.trigger.payload_json['type'] == 'end' }}"
+              - service: telegram_bot.send_video
+                data:
+                  target: "{{ target_chat }}"
+                  url: >-
+                    {{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4
+            until: "{{ wait.trigger.payload_json['type'] == 'end' }}"
