@@ -1,18 +1,21 @@
 import asyncio
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.config import DATA_CUSTOMIZE
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import *
-from homeassistant.core import callback, State
+from homeassistant.core import callback, State, HomeAssistant
+from homeassistant.helpers import device_registry
 from homeassistant.helpers.device_registry import (
     CONNECTION_NETWORK_MAC,
     CONNECTION_ZIGBEE,
 )
 from homeassistant.helpers.entity import DeviceInfo, Entity, EntityCategory
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.template import Template
 
 from .const import DOMAIN
@@ -56,6 +59,8 @@ ICONS = {
     "smoke_density": "mdi:google-circles-communities",
     "supply": "mdi:gauge",
     "tvoc": "mdi:cloud",
+    # Linptech Presence Sensor ES1
+    "occupancy_duration": "mdi:timer",
 }
 
 ENTITY_CATEGORIES = {
@@ -89,6 +94,17 @@ ENTITY_CATEGORIES = {
     "wireless_1": EntityCategory.CONFIG,
     "wireless_2": EntityCategory.CONFIG,
     "wireless_3": EntityCategory.CONFIG,
+    # Linptech Presence Sensor ES1
+    "distance_00_08": EntityCategory.CONFIG,
+    "distance_08_15": EntityCategory.CONFIG,
+    "distance_15_23": EntityCategory.CONFIG,
+    "distance_23_30": EntityCategory.CONFIG,
+    "distance_30_38": EntityCategory.CONFIG,
+    "distance_38_45": EntityCategory.CONFIG,
+    "distance_45_53": EntityCategory.CONFIG,
+    "distance_53_60": EntityCategory.CONFIG,
+    "approach_distance": EntityCategory.CONFIG,
+    "occupancy_duration": EntityCategory.DIAGNOSTIC,
 }
 
 STATE_TIMEOUT = timedelta(minutes=10)
@@ -122,31 +138,9 @@ class XEntity(Entity):
         self._attr_entity_category = ENTITY_CATEGORIES.get(attr)
         self.entity_id = device.entity_id(conv)
 
-        if device.model == MESH_GROUP_MODEL:
-            connections = None
-        elif device.type in (GATEWAY, BLE, MESH):
-            connections = {(CONNECTION_NETWORK_MAC, device.mac)}
-        else:
-            connections = {(CONNECTION_ZIGBEE, device.ieee)}
-
-        if device.type != GATEWAY and gateway.device:
-            via_device = (DOMAIN, gateway.device.unique_id)
-        else:
-            via_device = None
-
-        # https://developers.home-assistant.io/docs/device_registry_index/
         self._attr_device_info = DeviceInfo(
-            connections=connections,
             identifiers={(DOMAIN, device.unique_id)},
-            manufacturer=device.info.manufacturer,
-            model=device.info.model,
-            name=device.info.name,
-            sw_version=device.fw_ver,
-            via_device=via_device,
         )
-
-        # fix don't enabled by default entities
-        device.entities[attr] = self
 
     @property
     def customize(self) -> dict:
@@ -180,7 +174,7 @@ class XEntity(Entity):
 
         if hasattr(self, "async_get_last_state"):
             state: State = await self.async_get_last_state()
-            if state:
+            if state and state.state not in ("unavailable", "unknown"):
                 self.async_restore_last_state(state.state, state.attributes)
                 return
 
@@ -301,3 +295,62 @@ class XEntity(Entity):
             await self.async_update()
         if self.added:
             self.async_write_ha_state()
+
+
+def setup_entity(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    add_entities: AddEntitiesCallback,
+    new_entity: Callable[["XGateway", XDevice, Converter], XEntity],
+) -> "SetupHandler":
+    def setup(gateway: "XGateway", device: XDevice, conv: Converter):
+        """Setup process three situations:
+        1. Add new entity first time
+        2. Add existing entity without gateway to new gateway and new config entry
+        3. Add existing entity with gateway to new config entry
+        """
+
+        # get existing entity
+        entity = device.entities.get(conv.attr)
+        if entity and entity.gw:
+            gateway = entity.gw
+
+        if device.model == MESH_GROUP_MODEL:
+            connections = None
+        elif device.type in (GATEWAY, BLE, MESH):
+            connections = {(CONNECTION_NETWORK_MAC, device.mac)}
+        else:
+            connections = {(CONNECTION_ZIGBEE, device.ieee)}
+
+        if device.type != GATEWAY and gateway.device:
+            via_device = (DOMAIN, gateway.device.unique_id)
+        else:
+            via_device = None
+
+        # https://developers.home-assistant.io/docs/device_registry_index/
+        reg = device_registry.async_get(hass)
+        reg.async_get_or_create(
+            config_entry_id=config_entry.entry_id,
+            identifiers={(DOMAIN, device.unique_id)},
+            connections=connections,
+            manufacturer=device.info.manufacturer,
+            model=device.info.model,
+            name=device.info.name,
+            sw_version=device.fw_ver,
+            via_device=via_device,
+        )
+
+        if not entity:
+            # create new entity if not exists
+            entity = new_entity(gateway, device, conv)
+            device.entities[conv.attr] = entity
+        elif entity.gw:
+            # ignore entity with gateway
+            return
+        else:
+            # bind entity to this gateway
+            entity.gw = gateway
+
+        add_entities([entity])
+
+    return setup

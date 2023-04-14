@@ -1,58 +1,58 @@
 from homeassistant.components.number import NumberEntity
-from homeassistant.const import MAJOR_VERSION, MINOR_VERSION
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import LENGTH_METERS, TIME_SECONDS
+from homeassistant.core import callback, HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DOMAIN
 from .core.converters import Converter
 from .core.device import XDevice
-from .core.entity import XEntity
+from .core.entity import XEntity, setup_entity
 from .core.gateway import XGateway
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    def setup(gateway: XGateway, device: XDevice, conv: Converter):
-        if conv.attr in device.entities:
-            entity: XEntity = device.entities[conv.attr]
-            entity.gw = gateway
-        else:
-            entity = XiaomiNumber(gateway, device, conv)
-        async_add_entities([entity])
+async def async_setup_entry(
+    hass: HomeAssistant, config_entry: ConfigEntry, add_entities: AddEntitiesCallback
+) -> None:
+    def new_entity(gateway: XGateway, device: XDevice, conv: Converter) -> XEntity:
+        return XiaomiNumber(gateway, device, conv)
 
     gw: XGateway = hass.data[DOMAIN][config_entry.entry_id]
-    gw.add_setup(__name__, setup)
+    gw.add_setup(__name__, setup_entity(hass, config_entry, add_entities, new_entity))
+
+
+UNITS = {
+    "approach_distance": LENGTH_METERS,
+    "occupancy_timeout": TIME_SECONDS,
+}
 
 
 # noinspection PyAbstractClass
 class XiaomiNumber(XEntity, NumberEntity):
-    _attr_value: float = None
-
     def __init__(self, gateway: "XGateway", device: XDevice, conv: Converter):
         super().__init__(gateway, device, conv)
 
+        if self.attr in UNITS:
+            self._attr_native_unit_of_measurement = UNITS[self.attr]
+
         if hasattr(conv, "min"):
-            self._attr_min_value = conv.min
+            self._attr_native_min_value = conv.min
         if hasattr(conv, "max"):
-            self._attr_max_value = conv.max
+            self._attr_native_max_value = conv.max
+        if hasattr(conv, "step"):
+            self._attr_native_step = conv.step
 
     @callback
     def async_set_state(self, data: dict):
         if self.attr in data:
-            self._attr_value = data[self.attr]
+            self._attr_native_value = data[self.attr]
 
     @callback
     def async_restore_last_state(self, state: float, attrs: dict):
-        self._attr_value = state
+        self._attr_native_value = state
 
     async def async_update(self):
         await self.device_read(self.subscribed_attrs)
 
-    # backward compatibility fix
-    if (MAJOR_VERSION, MINOR_VERSION) >= (2022, 8):
-
-        async def async_set_native_value(self, value: float) -> None:
-            await self.device_send({self.attr: value})
-
-    else:
-
-        async def async_set_value(self, value: float) -> None:
-            await self.device_send({self.attr: value})
+    async def async_set_native_value(self, value: float) -> None:
+        await self.device_send({self.attr: value})

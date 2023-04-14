@@ -3,34 +3,34 @@ from asyncio import Task
 from datetime import datetime, timedelta, timezone
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import *
-from homeassistant.core import callback
+from homeassistant.core import callback, HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from . import DOMAIN
 from .core.converters import Converter, STAT_GLOBALS
 from .core.device import XDevice
-from .core.entity import XEntity
+from .core.entity import XEntity, setup_entity
 from .core.gateway import XGateway
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
 
-async def async_setup_entry(hass, entry, add_entities):
-    def setup(gateway: XGateway, device: XDevice, conv: Converter):
-        if conv.attr in device.entities:
-            entity: XEntity = device.entities[conv.attr]
-            entity.gw = gateway
-        elif conv.attr == "action":
-            entity = XiaomiAction(gateway, device, conv)
+async def async_setup_entry(
+    hass: HomeAssistant, config_entry: ConfigEntry, add_entities: AddEntitiesCallback
+) -> None:
+    def new_entity(gateway: XGateway, device: XDevice, conv: Converter) -> XEntity:
+        if conv.attr == "action":
+            return XiaomiAction(gateway, device, conv)
         elif conv.attr in STAT_GLOBALS:
-            entity = XiaomiStats(gateway, device, conv)
+            return XiaomiStats(gateway, device, conv)
         else:
-            entity = XiaomiSensor(gateway, device, conv)
-        add_entities([entity])
+            return XiaomiSensor(gateway, device, conv)
 
-    gw: XGateway = hass.data[DOMAIN][entry.entry_id]
-    gw.add_setup(__name__, setup)
+    gw: XGateway = hass.data[DOMAIN][config_entry.entry_id]
+    gw.add_setup(__name__, setup_entity(hass, config_entry, add_entities, new_entity))
 
 
 UNITS = {
@@ -38,17 +38,26 @@ UNITS = {
     "humidity": PERCENTAGE,
     # zb light and motion and ble flower - lux
     "illuminance": LIGHT_LUX,
+    # Deprecated: please use UnitOfPower.WATT.
     "power": POWER_WATT,
+    # Deprecated: please use UnitOfElectricPotential.VOLT.
     "voltage": ELECTRIC_POTENTIAL_VOLT,
+    # Deprecated: please use UnitOfElectricCurrent.AMPERE.
     "current": ELECTRIC_CURRENT_AMPERE,
+    # Deprecated: please use UnitOfPressure.HPA
     "pressure": PRESSURE_HPA,
+    # Deprecated: please use UnitOfTemperature.CELSIUS
     "temperature": TEMP_CELSIUS,
+    # Deprecated: please use UnitOfEnergy.KILO_WATT_HOUR.
     "energy": ENERGY_KILO_WATT_HOUR,
+    # Deprecated: please use UnitOfTemperature.CELSIUS
     "chip_temperature": TEMP_CELSIUS,
     "conductivity": CONDUCTIVITY,
     "gas_density": "% LEL",
+    # Deprecated: please use UnitOfTime.SECONDS.
     "idle_time": TIME_SECONDS,
     "linkquality": "lqi",
+    # Deprecated: please use UnitOfPower.WATT.
     "max_power": POWER_WATT,
     "moisture": PERCENTAGE,
     "msg_received": "msg",
@@ -59,6 +68,10 @@ UNITS = {
     "smoke_density": "% obs/ft",
     "supply": PERCENTAGE,
     "tvoc": CONCENTRATION_PARTS_PER_BILLION,
+    # Deprecated: please use UnitOfLength.METERS.
+    "distance": LENGTH_METERS,
+    "occupancy_duration": TIME_SECONDS,
+    "occupancy_distance": LENGTH_METERS,
     # "link_quality": "lqi",
     # "rssi": "dBm",
     # "msg_received": "msg",
@@ -145,7 +158,7 @@ class XiaomiAction(XiaomiBaseSensor):
     clear_task: Task = None
 
     async def clear_state(self):
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(0.5)
 
         self._attr_native_value = ""
         self.async_write_ha_state()
