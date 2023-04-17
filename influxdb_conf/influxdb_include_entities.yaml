@@ -40,3 +40,7 @@
 #- sensor.worldwide_coronavirus_current
 #- sensor.worldwide_coronavirus_deaths
 #- sensor.worldwide_coronavirus_recovered
+#Frigate
+- sensor.frigate_detection_fps
+- sensor.frigate_intel_vaapi_gpu_load
+- sensor.frigate_ov_inference_speed

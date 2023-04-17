@@ -26,6 +26,34 @@ ch_cctv_pack:
             service: rest_command.sss_reolinkcam_02_disable
           icon_template: mdi:cctv
 
+    - platform: command_line
+      switches:
+
+        frigate_srv01_reolinkcam_02:
+          unique_id: 85349ace-4a18-49c6-a71d-b7f1b823beb3
+          friendly_name: Frigate ReolinkCam 02 Switch
+          command_timeout: 20
+          command_on: >-
+            ssh -i /config/.ssh/id_ecdsa
+            -o 'StrictHostKeyChecking=no'
+            ha@srv01.home.intra
+            "yq -i '.cameras.reolinkcam_02.enabled = True' /opt/docker-compose/frigate/config/config.yml &&
+            docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
+          command_off: >-
+            ssh -i /config/.ssh/id_ecdsa
+            -o 'StrictHostKeyChecking=no'
+            ha@srv01.home.intra
+            "yq -i '.cameras.reolinkcam_02.enabled = False' /opt/docker-compose/frigate/config/config.yml &&
+            docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
+          command_state: >-
+            curl -s -X GET http://srv01.home.intra:5000/api/config | jq '.cameras.reolinkcam_02.enabled'
+          value_template: >-
+            {{ value == "true" }}
+          icon_template: >-
+            {% if value == "true" %} mdi:cctv
+            {% else %} mdi:cctv-off
+            {% endif %}
+
   # Templates
   template:
 
@@ -55,19 +83,22 @@ ch_cctv_pack:
             sequence:
               - service: switch.turn_off
                 target:
-                  entity_id: switch.sss_reolinkcam_02
+#                  entity_id: switch.sss_reolinkcam_02
+                  entity_id: switch.frigate_srv01_reolinkcam_02
           - alias: Presence Sensor To Off
             conditions: "{{ trigger.to_state.state == 'off' }}"
             sequence:
               - service: switch.turn_on
                 target:
-                  entity_id: switch.sss_reolinkcam_02
+#                  entity_id: switch.sss_reolinkcam_02
+                  entity_id: switch.frigate_srv01_reolinkcam_02
 
-    - alias: "Country House CCTV - Motion detected"
+    - alias: "Country House CCTV - Person detected"
       id: a0d9386b-ecf4-46f1-92d8-6ad1a777d1d9
       trigger:
         - platform: state
-          entity_id: binary_sensor.sss_reolinkcam_02_motion
+#          entity_id: binary_sensor.sss_reolinkcam_02_motion
+          entity_id: binary_sensor.reolinkcam_02_person_occupancy
           from: "off"
           to: "on"
       condition:
@@ -80,7 +111,7 @@ ch_cctv_pack:
             target: !secret tlg_group_country_house
             message: |
               {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
-              Обнаружено движение на даче:
+              На даче обнаружен человек:
         - service: telegram_bot.send_photo
           data:
             target: !secret tlg_group_country_house

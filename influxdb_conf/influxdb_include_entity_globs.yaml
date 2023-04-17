@@ -21,3 +21,4 @@
 - sensor.air_monitor_lite_*
 - sensor.ha_vm_diskio_sda_*
 - sensor.ha_vm_disk_sda_*
+- sensor.reolinkcam_0*

@@ -140,11 +140,12 @@ cctv_pack:
           data:
             entity_id: switch.dafangcam02_ir_led
 
-    - alias: "Staircase - Motion detected"
+    - alias: "Staircase - Person detected"
       id: 56d572c7-3750-4988-8294-aa241a4f4b31
       trigger:
         - platform: state
-          entity_id: binary_sensor.sss_reolinkcam_01_motion
+#          entity_id: binary_sensor.sss_reolinkcam_01_motion
+          entity_id: binary_sensor.reolinkcam_01_person_occupancy
           from: "off"
           to: "on"
       action:
@@ -157,7 +158,7 @@ cctv_pack:
                     target: !secret tlg_group_staircase
                     message: |
                       {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
-                      Обнаружено движение на лестничной клетке:
+                      Обнаружен человек на лестничной клетке:
                 - service: telegram_bot.send_photo
                   data:
                     target: !secret tlg_group_staircase
