@@ -5,6 +5,8 @@ wifi:
       priority: 10
   reboot_timeout: 15min
   fast_connect: true
+  enable_btm: true
+  enable_rrm: true
   ap:
     ssid: ${board_name}
     password: !secret wifi_fallback_ap_pass

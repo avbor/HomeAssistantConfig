@@ -8,7 +8,25 @@ cards:
         title: Подъезд
         entities: []
         camera_image: camera.reolinkcam_01_rtsp
-#        camera_image: camera.nas03_reolinkcam_01
+      #        camera_image: camera.nas03_reolinkcam_01
+      - type: button
+        entity: input_boolean.staircase_show_last_person
+        name: "\U000021E7 Последнее обнаружение \U000021E9"
+        show_state: false
+        show_icon: false
+        tap_action:
+          action: toggle
+      - type: conditional
+        conditions:
+          - entity: input_boolean.staircase_show_last_person
+            state: "on"
+        card:
+          type: picture-entity
+          entity: camera.reolinkcam_01_person
+          show_name: false
+          show_state: false
+  - type: vertical-stack
+    cards:
       - type: picture-glance
         title: Прихожая
         entities:

@@ -4,6 +4,10 @@
 
 cctv_pack:
 
+  input_boolean:
+    staircase_show_last_person:
+      icon: mdi:account
+
   # Templates
   template:
 
