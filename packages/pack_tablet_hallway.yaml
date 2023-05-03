@@ -43,6 +43,11 @@ tablet_hallway_pack:
                   entity_id: media_player.galaxy_tab_a_8_0_2019
                 data:
                   volume_level: 0
+              - service: fully_kiosk.load_url
+                data:
+                  url: about:blank
+                target:
+                  device_id: 41638a8b36f2ac6228aed99d142fd286
 
     - alias: "Планшет в Прихожей - поддержание заряда"
       id: 82fb6789-4385-44cc-b721-90b892063447

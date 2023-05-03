@@ -255,6 +255,8 @@ calendar:
 yandex_station:
   include:
     - Водонагреватель
+    - Холодная вода
+    - Горячая вода
 
 start_time:
 
