@@ -105,7 +105,7 @@ cards:
             name: Показания счетчика
           - type: attribute
             entity: sensor.ch_energy_meter_value
-            attribute: value_set_at
+            attribute: value_set_at_dt
             name: Дата снятия показаний
             icon: []
           #- entity: input_number.country_house_enegry_meter_predicted_value

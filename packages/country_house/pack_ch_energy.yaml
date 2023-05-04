@@ -299,10 +299,6 @@ ch_energy_pack:
               {{ states('input_number.country_house_enegry_meter_value') }}
             {% endif %}
           attributes:
-            value_set_at: >-
-              {% if trigger.to_state.state != trigger.from_state.state %}
-                {{ now().strftime('%d.%m.%Y %-H:%M:%S') }}
-              {% endif %}
             value_set_at_dt: >-
               {% if trigger.to_state.state != trigger.from_state.state %}
                 {{ now() }}
