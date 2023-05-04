@@ -42,7 +42,7 @@ _Main site (city apartment):_
   2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
-- Keenetic Speedster ([KN-3010](https://keenetic.ru/ru/keenetic-speedster)) as Access Points in WiFi Mesh Network x2
+- Keenetic Voyager Pro ([KN-3510](https://keenetic.ru/ru/keenetic-voyager-pro)) as Access Points in WiFi Mesh Network x3
 
 - Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
 
@@ -51,7 +51,9 @@ _Remote site (country house):_
 - Huawei E5372 as LTE Modem with 4G Antenna (Baltic Signal [OMEGA](https://baltic-signal.ru/catalog/antennas/antennas-4g/antenna-baltic-signal-omega-3g-4g/))\
   Integration "Huawei LTE"
 
-- Xiaomi Mi WiFi 3G (v1) as Router, WireGuard VPN Client and Access Point. Flashed to [OpenWRT](http://openwrt.org/)
+- Keenetic Giga [KN-1010](https://keenetic.ru/ru/keenetic-giga-kn-1010) as Router, WiFi Mesh Controller, WireGuard VPN Client and Access Point.
+
+- Keneetic Speedster [KN-3010](https://keenetic.ru/ru/keenetic-speedster-kn-3010) as Access Point in WiFi Mesh Network
 
 **ZigBee/BT Gateways:**
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
@@ -225,7 +227,7 @@ _Remote site (country house):_
 Via modified Xiaomi Magnet Sensors, Aqara 2ch Relay and Sonoff Mini for power control
 
 - [SAURES R2 m3](https://www.saures.ru/blog/obzory-tovarov/obzor-modifikatsiy-kontrollera-saures-r2/)\
-Integration "Integration Saures controllers with HA" by [volshebniks](https://github.com/volshebniks/sauresha)
+Via RESTful sensors
 
 - AC Daikin [FTXB-C](https://www.daikin.eu/en_us/products/ftxb-c.html) Series\
 Via Tuya SmartIR flashed to ESPHome, IRremoteESP8266 lib and Xiaomi Magnet Sensors
@@ -241,18 +243,16 @@ Integration "Fully Kiosk Browser"
 **Server:**
 - Ubuntu Server 22.04 LTS
 - QEMU + KVM + libvirt
-- ISC DHCP Server
 - Unbound
 - Bind9
 - Nginx
 - Transmission
-- Zabbix
 - Plex
+- Frigate
 
 **Storage:**
 - DSM 7.1
 - Virtual Machine Manager
-- Surveillance Station
 - Photos
 - Download Station
 - acme.sh
@@ -267,12 +267,13 @@ Integration "Fully Kiosk Browser"
   - Portainer
   - Torrserver
   - Watchtower
-
-**WiFi Access Point:**
-- OpenWRT 19.07
+  - Zabbix
+  - MySQL
+  - Grafana
 
 **Used DB:**
 - MariaDB
+- MySQL
 - InfluxDB
 
 **Used HA Add-ons:**
@@ -283,8 +284,7 @@ Integration "Fully Kiosk Browser"
 - Mosquitto broker
 - SSH & Web Terminal
 - Visual Studio Code
-- Loki
-- Promtail
+- Glances
 - phpMyAdmin
 
 **Mobile Apps:**

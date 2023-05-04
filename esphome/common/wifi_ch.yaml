@@ -4,8 +4,8 @@ wifi:
   output_power: 20dB
   power_save_mode: none
   networks:
-    - ssid: !secret wifi_ch_ssid
-      password: !secret wifi_ch_password
+    - ssid: !secret wifi_ch_mesh_ssid
+      password: !secret wifi_ch_mesh_password
       priority: 10
     - ssid: !secret wifi_mesh_ssid
       password: !secret wifi_mesh_password
