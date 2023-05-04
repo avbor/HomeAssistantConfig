@@ -23,7 +23,7 @@ water_meters_pack:
   rest:
 
     - resource: https://api.saures.ru/1.0/object/meters
-      scan_interval: 900
+      scan_interval: 3600
       method: GET
       params:
         sid: "{{ states('sensor.saures_api_sid') }}"
@@ -102,3 +102,16 @@ water_meters_pack:
             {% if trigger.to_state.state != trigger.from_state.state %}
               {{ states('sensor.saures_water_meter_09_104476_cold') }}
             {% endif %}
+
+  # Automations
+  automation:
+    - alias: Update Saures Sensors after HA Start
+      id: c0192c64-d64b-45b6-ab2e-91170c12f591
+      trigger:
+        - platform: homeassistant
+          event: start
+      action:
+        - wait_template: "{{ has_value('sensor.saures_api_sid') }}"
+        - service: homeassistant.update_entity
+          target:
+            entity_id: sensor.saures_controller_1113513_battery
