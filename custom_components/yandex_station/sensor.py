@@ -2,19 +2,21 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
-from homeassistant.components.sensor import (
-    SensorEntity,
-    SensorStateClass,
-    SensorEntityDescription,
-)
-from homeassistant.const import PERCENTAGE, TEMP_CELSIUS, LIGHT_LUX
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.components.sensor import SensorEntityDescription
+from homeassistant.const import PERCENTAGE
+from homeassistant.const import TEMP_CELSIUS
 
-from . import DOMAIN, CONF_INCLUDE, DATA_CONFIG, YandexQuasar
+from . import CONF_INCLUDE
+from . import DATA_CONFIG
+from . import DOMAIN
+from . import YandexQuasar
 
 _LOGGER = logging.getLogger(__name__)
 
-DEVICES = ["devices.types.humidifier", "devices.types.sensor"]
+DEVICES = ["devices.types.humidifier"]
 
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
@@ -29,13 +31,6 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    SensorEntityDescription(
-        key="illumination",
-        name="Illumination",
-        native_unit_of_measurement=LIGHT_LUX,
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    SensorEntityDescription(key="open", name="Open"),
 )
 
 SENSOR_KEYS: list[str] = [desc.key for desc in SENSOR_TYPES]
@@ -82,12 +77,28 @@ class YandexSensor(SensorEntity):
         """Initialize entity."""
         self.quasar = quasar
         self.device = device
+        self.sensor_name = name
         self.entity_description = description
 
-        self._attr_name = f"{self.device['name']}: {name}"
-        self._attr_unique_id = (
-            f"{self.device['id'].replace('-', '')}: {self.entity_description.name}"
-        )
+    @property
+    def unique_id(self):
+        """Return entity unique id."""
+        return f"{self.device['id'].replace('-', '')}: {self.entity_description.name}"
+
+    @property
+    def name(self):
+        """Return entity name."""
+        return f"{self.device['name']}: {self.sensor_name}"
+
+    @property
+    def humidity(self) -> int:
+        """Return current humidity."""
+        return self._humidity
+
+    @property
+    def temperature(self) -> int:
+        """Return current temperature."""
+        return self._temperature
 
     async def async_update(self):
         """Update the entity."""
@@ -96,5 +107,13 @@ class YandexSensor(SensorEntity):
         self._attr_available = data["state"] == "online"
 
         for prop in data["properties"]:
-            if self.entity_description.key == prop["parameters"]["instance"]:
-                self._attr_native_value = prop["state"]["value"]
+            instance = prop["parameters"]["instance"]
+            if instance == "humidity":
+                self._humidity = prop["state"]["value"]
+            if instance == "temperature":
+                self._temperature = prop["state"]["value"]
+
+    @property
+    def native_value(self) -> Any:
+        """Return the native value of the sensor."""
+        return getattr(self, self.entity_description.key)

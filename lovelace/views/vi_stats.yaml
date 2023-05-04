@@ -89,18 +89,6 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### <center>Счетчики воды</center>
-      - type: entities
-        entities:
-          - entity: sensor.saures_goriachaia_voda
-            name: Горячая вода
-          - entity: sensor.saures_kholodnaia_voda
-            name: Холодная вода
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
           ### <center>Отопление</center>
       - type: history-graph
         hours_to_show: 24

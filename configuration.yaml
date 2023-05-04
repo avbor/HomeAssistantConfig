@@ -73,13 +73,15 @@ http:
 logger:
   default: warn
   #logs:
-  #      homeassistant.components.zha: debug
-  #      zigpy: debug
-  #    homeassistant.components.shell_command: debug
-  #    custom_components.electrolux_remote: debug
-  #    homeassistant.components.tuya: debug
-  #    homeassistant.components.http.ban: warning
-  #    homeassistant.components.device_tracker: debug
+  #  homeassistant.components.rest: debug
+  #  aiohttp: info
+  #  homeassistant.components.zha: debug
+  #  zigpy: debug
+  #  homeassistant.components.shell_command: debug
+  #  custom_components.electrolux_remote: debug
+  #  homeassistant.components.tuya: debug
+  #  homeassistant.components.http.ban: warning
+  #  homeassistant.components.device_tracker: debug
   #  homeassistant.components.dlna_dms: debug
   #  homeassistant.components.dlna_dms.config_flow: info
   #  async_upnp_client: info
@@ -255,8 +257,6 @@ calendar:
 yandex_station:
   include:
     - Водонагреватель
-    - Холодная вода
-    - Горячая вода
 
 start_time:
 

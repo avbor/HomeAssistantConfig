@@ -1,0 +1,104 @@
+#################################################
+# Package Water Counters
+#################################################
+
+water_meters_pack:
+
+  # Sensors
+  sensor:
+
+    - platform: rest
+      name: Saures API SID
+      unique_id: 7383e16f-715e-4dba-b560-e9316e52ffef
+      resource: "https://api.saures.ru/1.0/login"
+      method: POST
+      scan_interval: 600
+      headers:
+        Content-Type: application/x-www-form-urlencoded; charset=utf-8
+      payload: !secret saures_login_payload
+      value_template: "{{ value_json.data.sid }}"
+
+
+  # REST platform
+  rest:
+
+    - resource: https://api.saures.ru/1.0/object/meters
+      scan_interval: 900
+      method: GET
+      params:
+        sid: "{{ states('sensor.saures_api_sid') }}"
+        id: !secret saures_flat_id
+      sensor:
+
+        - name: Saures Controller 1113513 Battery
+          unique_id: 97d60260-8350-4ec7-823e-81b1867fdfa1
+          unit_of_measurement: "%"
+          state_class: measurement
+          device_class: battery
+          value_template: >
+            {% if value_json.data.sensors.0.bat is defined %}
+              {{ value_json.data.sensors.0.bat }}
+            {% else %}
+              states('sensor.saures_controller_1113513_battery')
+            {% endif %}
+
+        - name: Saures Water Meter 13193152 Hot
+          unique_id: 7ce214ba-58ba-416b-8764-4d0bda0f59b9
+          value_template: >
+            {% for meter in value_json.data.sensors.0.meters %}
+              {% if meter.sn == '13193152' %}
+                {{ meter.vals.0 }}
+              {% endif %}
+            {% endfor %}
+
+        - name: Saures Water Meter 09-104476 Cold
+          unique_id: 8709404b-90c3-4fe8-a7f7-6bc27b0c83d5
+          value_template: >
+            {% for meter in value_json.data.sensors.0.meters %}
+              {% if meter.sn == '09-104476' %}
+                {{ meter.vals.0 }}
+              {% endif %}
+            {% endfor %}
+
+  # Templates
+  template:
+
+    - trigger:
+        - platform: state
+          entity_id:
+            - sensor.saures_water_meter_13193152_hot
+          not_to:
+            - unavailable
+            - unknown
+      unique_id: f8307b62-ed44-438b-963a-6e215b55d8d1
+      sensor:
+        - name: "Water Meter Hot"
+          unique_id: 8dae80bb-88fe-43ab-ad90-4fc2b9f005d7
+          unit_of_measurement: m³
+          state_class: total
+          device_class: water
+          icon: mdi:counter
+          state: >-
+            {% if trigger.to_state.state != trigger.from_state.state %}
+              {{ states('sensor.saures_water_meter_13193152_hot') }}
+            {% endif %}
+
+    - trigger:
+        - platform: state
+          entity_id:
+            - sensor.saures_water_meter_09_104476_cold
+          not_to:
+            - unavailable
+            - unknown
+      unique_id: 9b4b804a-6792-4b21-b7c5-680c8ff93d99
+      sensor:
+        - name: "Water Meter Cold"
+          unique_id: 9aec53a0-28c2-488e-b7c3-c3f8aff0ef2b
+          unit_of_measurement: m³
+          state_class: total
+          device_class: water
+          icon: mdi:counter
+          state: >-
+            {% if trigger.to_state.state != trigger.from_state.state %}
+              {{ states('sensor.saures_water_meter_09_104476_cold') }}
+            {% endif %}

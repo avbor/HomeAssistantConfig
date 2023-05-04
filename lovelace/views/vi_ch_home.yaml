@@ -84,32 +84,59 @@ cards:
       - type: markdown
         content: >
           ### <center>Напряжение (V)</center>
-      - type: gauge
-        entity: sensor.average_voltage_in_country_house
-        name: ""
-        needle: true
-        #        min: 205
-        #        max: 245
-        #        severity:
-        #          yellow: 0
-        #          green: 215
-        #          red: 235
-        min: 170
-        max: 280
-        segments:
-          - from: 0
-            color: red
-          - from: 195
-            color: yellow
-          - from: 210
-            color: green
-          - from: 240
-            color: yellow
-          - from: 255
-            color: red
+
+      - type: horizontal-stack
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: markdown
+                content: >
+                  <center>Входящее</center>
+              - type: gauge
+                entity: sensor.shellyem_34945470f5db_channel_1_voltage
+                name: ""
+                needle: true
+                min: 100
+                max: 295
+                segments:
+                  - from: 100
+                    color: red
+                  - from: 116
+                    color: yellow
+                  - from: 210
+                    color: green
+                  - from: 240
+                    color: yellow
+                  - from: 285
+                    color: red
+
+          - type: vertical-stack
+            cards:
+              - type: markdown
+                content: >
+                  <center>Стабилизированное</center>
+              - type: gauge
+                entity: sensor.average_voltage_in_country_house
+                name: ""
+                needle: true
+                min: 170
+                max: 280
+                segments:
+                  - from: 0
+                    color: red
+                  - from: 195
+                    color: yellow
+                  - from: 210
+                    color: green
+                  - from: 240
+                    color: yellow
+                  - from: 255
+                    color: red
       - type: statistics-graph
         entities:
           - entity: sensor.average_voltage_in_country_house
+            name: []
+          - entity: sensor.shellyem_34945470f5db_channel_1_voltage
             name: []
         days_to_show: 7
         chart_type: line

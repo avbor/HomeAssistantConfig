@@ -141,6 +141,18 @@ cards:
     cards:
       - type: markdown
         content: >
+          ### <center>Счетчики воды</center>
+      - type: entities
+        entities:
+          - entity: sensor.water_meter_hot
+            name: Горячая вода
+          - entity: sensor.water_meter_cold
+            name: Холодная вода
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
           ### <center>Отопление</center>
       - type: entities
         state_color: true
