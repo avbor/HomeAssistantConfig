@@ -90,7 +90,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_livingroom_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((states('sensor.socket_ch_radiator_livingroom_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_livingroom_monthly_prev
@@ -100,7 +100,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_livingroom_daily_avg
@@ -115,7 +115,7 @@ ch_energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_ch_radiator_livingroom_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_ch_radiator_livingroom_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
 
         - name: energy_cost_ch_radiator_livingroom_daily_prev
           unique_id: eedec3c9-8bd6-45bb-83e0-8e2b6a8a40b5
@@ -124,7 +124,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Kid's Rooms
@@ -135,7 +135,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((states('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_kidsrooms_monthly_prev
@@ -145,7 +145,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_kidsrooms_daily_avg
@@ -160,7 +160,7 @@ ch_energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_ch_radiator_kidsrooms_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_ch_radiator_kidsrooms_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
 
         - name: energy_cost_ch_radiator_kidsrooms_daily_prev
           unique_id: dad3f11e-320c-4340-8d02-819746a1ba99
@@ -169,7 +169,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Terrace
@@ -180,7 +180,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_terrace_energy_monthly_total') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((states('sensor.socket_ch_radiator_terrace_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_terrace_monthly_prev
@@ -190,7 +190,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_terrace_energy_monthly_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_terrace_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_terrace_daily_avg
@@ -205,7 +205,7 @@ ch_energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_ch_radiator_terrace_monthly_prev') | float(0)) / ( days | float )) | round(2) }}
+            {{ ((states('sensor.energy_cost_ch_radiator_terrace_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
 
         - name: energy_cost_ch_radiator_terrace_daily_prev
           unique_id: c5b55af2-5ed0-4159-8091-9fb157df8d58
@@ -214,7 +214,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_terrace_energy_daily_total', 'last_period') | float) * (states('input_number.country_house_enegry_cost_current') | float)) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_terrace_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # MES Energy Meter 44259893 last accepted readings T1
@@ -519,7 +519,7 @@ ch_energy_pack:
                         seconds: 1
                     - service: lkcomu_interrao.push_indications
                       data:
-                        indications: "{{ states('sensor.ch_energy_meter_value_saved_for_transfer') | float }}"
+                        indications: "{{ states('sensor.ch_energy_meter_value_saved_for_transfer') | float(0) }}"
                       target:
                         entity_id: sensor.mes_55384_014_37_meter_44259893
           - alias: Submit period not active

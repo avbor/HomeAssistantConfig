@@ -258,6 +258,9 @@
   trigger:
     - platform: webhook
       webhook_id: !secret github_ha_repo_stars_webhook
+      local_only: false
+      allowed_methods:
+        - POST
   action:
     - service: telegram_bot.send_message
       data:

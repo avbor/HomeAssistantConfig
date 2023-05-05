@@ -14,6 +14,7 @@ cctv_pack:
     - trigger:
         - platform: webhook
           webhook_id: !secret sss_reolinkcam_01_webhook
+          local_only: true
       unique_id: b0db0ecc-27e6-46aa-b157-640f02effd80
       binary_sensor:
         - name: sss_reolinkcam_01_motion

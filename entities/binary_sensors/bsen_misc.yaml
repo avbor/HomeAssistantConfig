@@ -2,9 +2,6 @@
 # Miscellaneous binary sensors
 #################################################
 
-- platform: workday
-  country: RU
-
 - platform: tod
   name: time_between_17_21
   after: '17:00'
