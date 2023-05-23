@@ -1,29 +1,29 @@
 substitutions:
   esp_board: m5stack-atom
   board_name: m5s-atom-bt-proxy-01
-  room_name: Living Room
+  room_name: Country House - Main
 
 packages:
-  wifi: !include common/wifi_bt_proxy.yaml
-  device_base: !include common/device_base_esp32.yaml
+  wifi: !include common/wifi_ch_bt_proxy.yaml
+  device_base: !include common/device_base_esp32_bt_proxy.yaml
   esp32_ble_tracker: !include common/esp32_ble_tracker_bt_proxy.yaml
-#  family_ibeacon_sensors: !include common/family_ibeacon_sensors.yaml
+  family_ibeacon_sensors: !include common/family_ibeacon_sensors.yaml
 
 bluetooth_proxy:
   #active: true
 
-light:
-  - platform: neopixelbus
-    type: GRB
-    variant: SK6812
-    pin: GPIO27
-    num_leds: 1
-    id: rgb_led
-    name: ${board_name} Light
-    effects:
-      - random:
-      - flicker:
-      - addressable_rainbow:
+#light:
+#  - platform: neopixelbus
+#    type: GRB
+#    variant: SK6812
+#    pin: GPIO27
+#    num_leds: 1
+#    id: rgb_led
+#    name: ${board_name} Light
+#    effects:
+#      - random:
+#      - flicker:
+#      - addressable_rainbow:
 
 binary_sensor:
   - platform: gpio
@@ -32,6 +32,6 @@ binary_sensor:
       inverted: true
     name: ${board_name} Button
     internal: true
-    on_press:
-      then:
-        - light.toggle: rgb_led
+#    on_press:
+#      then:
+#        - light.toggle: rgb_led

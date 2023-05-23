@@ -217,6 +217,51 @@ ch_energy_pack:
               ((state_attr('sensor.socket_ch_radiator_terrace_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
+        # Water Pump
+        - name: energy_cost_ch_water_pump_monthly
+          unique_id: 6844d568-19e7-418b-99e6-56ede1e2b2f4
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_water_pump_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_water_pump_monthly_prev
+          unique_id: 32e53048-3dd6-4e30-a438-7fbfb133c6a8
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_water_pump_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_water_pump_daily_avg
+          unique_id: 175d2bad-91fa-438c-a0e1-d4e5484c1703
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_water_pump_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+
+        - name: energy_cost_ch_water_pump_daily_prev
+          unique_id: bc5b9ef8-5204-4079-9a8d-5792a9ae63d5
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_water_pump_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
         # MES Energy Meter 44259893 last accepted readings T1
         - name: mes_55384_014_37_meter_44259893_zone_t1_last_indication
           unique_id: a0599829-4f2b-43d8-aabe-6c5fc87e368c
@@ -459,6 +504,23 @@ ch_energy_pack:
       unique_id: 1a2f47b1-90c6-415c-ba75-c97450333482
       name: Terrace Monthly Energy
       source: sensor.gosund_sp111_02_todays_usage
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Water Pump
+    socket_ch_water_pump_energy_daily:
+      unique_id: fdd4ae5c-8671-4785-a1f5-664270929cdb
+      name: Water Pump Daily Energy
+      source: sensor.gosund_sp111_11_todays_usage
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_water_pump_energy_monthly:
+      unique_id: e1d44185-e5fb-40ae-a7fb-67048f72baaa
+      name: Water Pump Monthly Energy
+      source: sensor.gosund_sp111_11_todays_usage
       cycle: monthly
       tariffs:
         - total

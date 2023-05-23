@@ -83,6 +83,7 @@ class DaikinAC : public Component, public Climate {
     climate::ClimateTraits traits() {
       auto traits = climate::ClimateTraits();
       traits.set_supported_modes({
+          climate::CLIMATE_MODE_OFF,
           climate::CLIMATE_MODE_AUTO,
           climate::CLIMATE_MODE_COOL,
           climate::CLIMATE_MODE_HEAT,

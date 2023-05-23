@@ -1,0 +1,14 @@
+wifi:
+  networks:
+    - ssid: !secret wifi_ch_mesh_ssid
+      password: !secret wifi_ch_mesh_password
+      priority: 10
+    - ssid: !secret wifi_mesh_ssid
+      password: !secret wifi_mesh_password
+      priority: 5
+  reboot_timeout: 15min
+  enable_btm: true
+  enable_rrm: true
+  ap:
+    ssid: ${board_name}
+    password: !secret wifi_fallback_ap_pass

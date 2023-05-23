@@ -62,3 +62,12 @@ climate:
     climates:
       - name: "Daikin Livingroom"
       #receiver_id: rcvr
+
+#  - platform: heatpumpir
+#    name: "Test AC - heatpumpir"
+#    protocol: daikin_arc480
+#    horizontal_default: auto
+#    vertical_default: auto
+#    min_temperature: 18.0
+#    max_temperature: 30.0
+#    sensor: ha_temp_${room_name}

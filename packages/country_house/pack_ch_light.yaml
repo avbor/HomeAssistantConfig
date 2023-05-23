@@ -33,7 +33,7 @@ ch_light_pack:
       id: 920540ae-bdaf-46e6-b6e1-3a4c179c8abe
       trigger:
         - platform: state
-          entity_id: sensor.0x158d00054859d5_action
+          entity_id: sensor.0x00158d00054859d5_action
           to: single
       action:
         - service: light.toggle

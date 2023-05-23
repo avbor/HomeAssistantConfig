@@ -13,11 +13,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.0x158d00040e019e_temperature
+            entity: sensor.0x00158d00040e019e_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.0x158d00040e019e_humidity
+            entity: sensor.0x00158d00040e019e_humidity
             name: Влажность
             graph: line
   - type: vertical-stack
