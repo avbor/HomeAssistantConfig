@@ -9,6 +9,9 @@ packages:
   esp32_ble_tracker: !include common/esp32_ble_tracker_bt_proxy.yaml
   family_ibeacon_sensors: !include common/family_ibeacon_sensors.yaml
 
+wifi:
+  use_address: 192.168.10.230
+
 bluetooth_proxy:
   #active: true
 
