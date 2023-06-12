@@ -65,7 +65,7 @@ ICONS = {
 
 ENTITY_CATEGORIES = {
     BLE: EntityCategory.DIAGNOSTIC,
-    GATEWAY: EntityCategory.DIAGNOSTIC,
+    # GATEWAY: EntityCategory.DIAGNOSTIC,
     MESH: EntityCategory.DIAGNOSTIC,
     ZIGBEE: EntityCategory.DIAGNOSTIC,
     "battery": EntityCategory.DIAGNOSTIC,
@@ -105,6 +105,30 @@ ENTITY_CATEGORIES = {
     "distance_53_60": EntityCategory.CONFIG,
     "approach_distance": EntityCategory.CONFIG,
     "occupancy_duration": EntityCategory.DIAGNOSTIC,
+    # Aqara Triple Wall Switch E1 (with N)
+    "led_inverted": EntityCategory.CONFIG,
+    "led_no_disturb": EntityCategory.CONFIG,
+    "led_no_disturb_start": EntityCategory.CONFIG,
+    "led_no_disturb_end": EntityCategory.CONFIG,
+    # GranwinIoT Mesh Light V5
+    "turn_on_state": EntityCategory.CONFIG,
+    "default_brightness": EntityCategory.CONFIG,
+    "default_temp": EntityCategory.CONFIG,
+    "sleep_aid_minutes": EntityCategory.CONFIG,
+    "sleep_aid_use_custom": EntityCategory.CONFIG,
+    "sleep_aid_custom_init_brightness": EntityCategory.CONFIG,
+    "sleep_aid_custom_init_temp": EntityCategory.CONFIG,
+    "wakeup_minutes": EntityCategory.CONFIG,
+    "wakeup_use_custom": EntityCategory.CONFIG,
+    "wakeup_custom_final_brightness": EntityCategory.CONFIG,
+    "wakeup_custom_final_temp": EntityCategory.CONFIG,
+    "night_light": EntityCategory.CONFIG,
+    "night_light_start": EntityCategory.CONFIG,
+    "night_light_end": EntityCategory.CONFIG,
+    "turn_on_transit_sec": EntityCategory.CONFIG,
+    "turn_off_transit_sec": EntityCategory.CONFIG,
+    "change_transit_sec": EntityCategory.CONFIG,
+    "min_brightness": EntityCategory.CONFIG,
 }
 
 STATE_TIMEOUT = timedelta(minutes=10)
@@ -244,11 +268,13 @@ class XEntity(Entity):
         elif self.device.type == MESH:
             assert "mi_spec" in payload, payload
 
-            ok = await self.gw.miot_send(self.device, payload)
-            if not ok or self.attr == "group":
+            if not await self.gw.miot_send(self.device, payload):
                 return
 
-            await self.miot_after_send(value)
+            if self.attr != "group":
+                await self.miot_after_send(value)
+            else:
+                await self.miot_group_after_send(value)
 
     async def miot_after_send(self, value: dict):
         # TODO: rewrite me
@@ -262,6 +288,18 @@ class XEntity(Entity):
             self.async_set_state(data)
             self._async_write_ha_state()
             break
+
+    async def miot_group_after_send(self, value: dict):
+        try:
+            childs = []
+            for did in self.device.extra["childs"]:
+                light = self.gw.devices[did].entities.get("light")
+                childs.append(light.miot_after_send(value))
+            if childs:
+                await asyncio.gather(*childs)
+
+        except Exception as e:
+            self.debug("Can't update child states", exc_info=e)
 
     async def device_read(self, attrs: set):
         payload = self.device.encode_read(attrs)
@@ -319,6 +357,8 @@ def setup_entity(
             connections = None
         elif device.type in (GATEWAY, BLE, MESH):
             connections = {(CONNECTION_NETWORK_MAC, device.mac)}
+            if mac2 := device.extra.get("mac2"):
+                connections.add((CONNECTION_NETWORK_MAC, mac2))
         else:
             connections = {(CONNECTION_ZIGBEE, device.ieee)}
 

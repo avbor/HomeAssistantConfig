@@ -12,10 +12,11 @@ ERROR = 0
 OK = 1
 DOWNLOAD = 2
 
-OPENMIIO_CMD = "/data/openmiio_agent miio mqtt cache central z3 --zigbee.tcp=8888 >> /var/log/openmiio.log 2>&1 &"
-OPENMIIO_BASE = "https://github.com/AlexxIT/openmiio_agent/releases/download/v1.1.0/"
-OPENMIIO_MD5_MIPS = "93459b58872eac448a2be81da863950c"
-OPENMIIO_MD5_ARM = "26ae806b2011febc3dad35367fca17d3"
+# rewrite log every time to prevent memory overflow
+OPENMIIO_CMD = "/data/openmiio_agent miio mqtt cache central z3 --zigbee.tcp=8888 > /var/log/openmiio.log 2>&1 &"
+OPENMIIO_BASE = "https://github.com/AlexxIT/openmiio_agent/releases/download/v1.2.1/"
+OPENMIIO_MD5_MIPS = "6c3f4dca62647b9d19a81e1ccaa5ccc0"
+OPENMIIO_MD5_ARM = "bb0b33b8d71acbfb9668ae9a0600c2d8"
 OPENMIIO_URL_MIPS = OPENMIIO_BASE + "openmiio_agent_mips"
 OPENMIIO_URL_ARM = OPENMIIO_BASE + "openmiio_agent_arm"
 
@@ -40,8 +41,10 @@ class TelnetShell:
         raw = await asyncio.wait_for(coro, timeout=timeout)
         return raw[:-2] if as_bytes else raw[:-2].decode()
 
-    async def read_file(self, filename: str, as_base64=False):
-        command = f"cat {filename}|base64" if as_base64 else f"cat {filename}"
+    async def read_file(self, filename: str, as_base64=False, tail=None):
+        command = f"tail -c {tail} {filename}" if tail else f"cat {filename}"
+        if as_base64:
+            command += " | base64"
         try:
             raw = await self.exec(command, as_bytes=True, timeout=60)
             # b"cat: can't open ..."
@@ -105,6 +108,9 @@ class TelnetShell:
     async def get_token(self) -> str:
         raise NotImplementedError
 
+    async def get_miio_info(self) -> str:
+        raise NotImplementedError
+
     async def prevent_unpair(self):
         raise NotImplementedError
 
@@ -117,28 +123,30 @@ class TelnetShell:
 
 # noinspection PyAbstractClass
 class ShellOpenMiio(TelnetShell):
-    async def check_openmiio_agent(self) -> int:
-        # different binaries for different arch
+    @property
+    def openmiio_md5(self) -> str:
         raise NotImplementedError
 
-    async def run_openmiio_agent(self) -> str:
-        ok = await self.check_openmiio_agent()
-        if ok == OK:
-            # run if not in ps
-            if "openmiio_agent" in await self.get_running_ps():
-                return "The latest version is already running"
+    @property
+    def openmiio_url(self) -> str:
+        raise NotImplementedError
 
-            await self.exec(OPENMIIO_CMD)
-            return "The latest version is launched"
+    async def check_openmiio(self) -> bool:
+        """Check binary exec flag and MD5."""
+        cmd = f"[ -x /data/openmiio_agent ] && md5sum /data/openmiio_agent"
+        return self.openmiio_md5 in await self.exec(cmd)
 
-        if ok == DOWNLOAD:
-            if "openmiio_agent" in await self.get_running_ps():
-                await self.exec(f"killall openmiio_agent")
+    async def download_openmiio(self):
+        """Kill previous binary, download new one, upload it to gw and set exec flag"""
+        await self.exec("killall openmiio_agent")
 
-            await self.exec(OPENMIIO_CMD)
-            return "The latest version is updated and launched"
+        raw = await download(self.openmiio_url)
+        await self.write_file("/data/openmiio_agent", raw)
 
-        return "ERROR: can't download latest version"
+        await self.exec("chmod +x /data/openmiio_agent")
+
+    async def run_openmiio(self):
+        await self.exec(OPENMIIO_CMD)
 
 
 # noinspection PyAbstractClass

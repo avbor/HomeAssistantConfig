@@ -1,8 +1,6 @@
-from homeassistant.components.number import NumberEntity
-from homeassistant.components.number.const import DEFAULT_STEP
+from homeassistant.components.text import TextEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import LENGTH_METERS, TIME_SECONDS
-from homeassistant.core import callback, HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DOMAIN
@@ -16,34 +14,20 @@ async def async_setup_entry(
     hass: HomeAssistant, config_entry: ConfigEntry, add_entities: AddEntitiesCallback
 ) -> None:
     def new_entity(gateway: XGateway, device: XDevice, conv: Converter) -> XEntity:
-        return XiaomiNumber(gateway, device, conv)
+        return XiaomiText(gateway, device, conv)
 
     gw: XGateway = hass.data[DOMAIN][config_entry.entry_id]
     gw.add_setup(__name__, setup_entity(hass, config_entry, add_entities, new_entity))
 
 
-UNITS = {
-    "approach_distance": LENGTH_METERS,
-    "occupancy_timeout": TIME_SECONDS,
-}
-
-
 # noinspection PyAbstractClass
-class XiaomiNumber(XEntity, NumberEntity):
+class XiaomiText(XEntity, TextEntity):
+    _attr_native_value = ""
+
     def __init__(self, gateway: "XGateway", device: XDevice, conv: Converter):
         super().__init__(gateway, device, conv)
 
-        if self.attr in UNITS:
-            self._attr_native_unit_of_measurement = UNITS[self.attr]
-
-        multiply = getattr(conv, "multiply", 1)
-
-        if hasattr(conv, "min"):
-            self._attr_native_min_value = conv.min * multiply
-        if hasattr(conv, "max"):
-            self._attr_native_max_value = conv.max * multiply
-        if hasattr(conv, "step") or hasattr(conv, "multiply"):
-            self._attr_native_step = getattr(conv, "step", DEFAULT_STEP) * multiply
+        self._attr_pattern = getattr(conv, "pattern")  # None is ok
 
     @callback
     def async_set_state(self, data: dict):
@@ -57,5 +41,5 @@ class XiaomiNumber(XEntity, NumberEntity):
     async def async_update(self):
         await self.device_read(self.subscribed_attrs)
 
-    async def async_set_native_value(self, value: float) -> None:
+    async def async_set_value(self, value: str) -> None:
         await self.device_send({self.attr: value})

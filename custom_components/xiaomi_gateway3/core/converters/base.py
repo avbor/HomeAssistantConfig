@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional, TYPE_CHECKING
 
-from .const import *
 from homeassistant.components.number.const import DEFAULT_STEP
 
+from .const import *
 
 if TYPE_CHECKING:
     from ..device import XDevice
@@ -343,6 +343,62 @@ class GasSensitivityWriteConv(Converter):
 
     def read(self, device: "XDevice", payload: dict):
         pass
+
+
+class AqaraTimePatternConv(Converter):
+    """
+    Encoding format:
+        Period: <START_HOUR>:<START_MINUTE> - <END_HOUR>:<END_MINUTE>
+        Encoded: AAAAAAAA BBBBBBBB CCCCCCCC DDDDDDDD
+            (Each character represents 1 bit)
+            AAAAAAAA = binary number of <END_MINUTE>
+            BBBBBBBB = binary number of <END_HOUR>
+            CCCCCCCC = binary number of <START_MIN>
+            DDDDDDDD = binary number of <START_HOUR>
+
+    Example:
+        Period: 23:59 - 10:44
+        Encoded: 00101100 00001010 00111011 00010111
+            00101100 = 44 <END_MINUTE>
+            00001010 = 10 <END_HOUR>
+            00111011 = 59 <START_MIN>
+            00010111 = 23 <START_HOUR>
+    """
+
+    pattern = "^[0-2][0-9]:[0-5][0-9]-[0-2][0-9]:[0-5][0-9]$"
+
+    def decode(self, device: "XDevice", payload: dict, v: int):
+        payload[self.attr] = (
+            f"{v & 0xFF:02d}:{(v >> 8) & 0xFF:02d}-"
+            f"{(v >> 16) & 0xFF:02d}:{(v >> 24) & 0xFF:02d}"
+        )
+
+    def encode(self, device: "XDevice", payload: dict, v: str):
+        v = int(v[:2]) | int(v[3:5]) << 8 | int(v[6:8]) << 16 | int(v[9:11]) << 24
+        super().encode(device, payload, v)
+
+
+class GiotTimePatternConv(Converter):
+    """
+    Period encoding:
+    8-digit number: HHMMhhmm
+        HH = start hour
+        MM = start minute
+        hh = end hour
+        mm = end minute
+    Example:
+        Period: 23:59 - 10:44
+        Encoded: 23591044
+    """
+
+    pattern = "^[0-2][0-9]:[0-5][0-9]-[0-2][0-9]:[0-5][0-9]$"
+
+    def decode(self, device: "XDevice", payload: dict, v: int):
+        payload[self.attr] = f"{v[:2]}:{v[2:4]}-{v[4:6]}:{v[6:]}"
+
+    def encode(self, device: "XDevice", payload: dict, v: str):
+        v = v.replace(":", "").replace("-", "")
+        super().encode(device, payload, v)
 
 
 class ParentConv(Converter):
