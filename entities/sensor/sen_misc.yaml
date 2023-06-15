@@ -1,0 +1,24 @@
+#################################################
+# Miscellaneous sensors
+#################################################
+
+- platform: influxdb
+  host: a0d7b954-influxdb
+  port: 8086
+  username: !secret influxdb_user
+  password: !secret influxdb_pass
+  queries:
+    - name: InfluxDB Database Size
+      unit_of_measurement: MB
+      value_template: "{{ (value | float(0) / 1024 /1024) | round(1) }}"
+      group_function: sum
+      measurement: '"monitor"."shard"'
+      database: _internal
+      where: "time > now() - 10s"
+      field: diskBytes
+
+- platform: time_date
+  display_options:
+    - "time"
+    - "date"
+    - "date_time_iso"

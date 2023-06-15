@@ -1,0 +1,10 @@
+#################################################
+# Command line switches
+#################################################
+- switch:
+    name: mount_mnt_nas
+    unique_id: 22095ca5-eb0f-4e6c-99c8-5945592170a8
+    command_on: "mkdir -p /mnt/nas; mount -t nfs4 172.16.16.5:/volume1/media-01 /mnt/nas"
+    command_off: "umount -f /mnt/nas"
+    command_state: "grep -c /mnt/nas /proc/mounts || true"
+    value_template: "{{ value == '1' }}"

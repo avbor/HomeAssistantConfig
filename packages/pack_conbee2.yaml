@@ -12,16 +12,16 @@ conbee2_pack:
       root@nas03.home.intra
       /volume3/sys_files/vm/attach_conbee2_to_ha_vm.sh
 
-  # Binary Sensors
-  binary_sensor:
+  # Command line
+  command_line:
 
-    - platform: command_line
-      name: "ConBee2 USB Stick Exist"
-      unique_id: 52d8bdb2-9963-4b41-96b9-ecd55dcf0f0b
-      command: if test -h /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2413834-if00; then echo "true"; else echo "false"; fi
-      device_class: connectivity
-      payload_on: "true"
-      payload_off: "false"
+    - binary_sensor:
+        name: "ConBee2 USB Stick Exist"
+        unique_id: 52d8bdb2-9963-4b41-96b9-ecd55dcf0f0b
+        command: if test -h /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2413834-if00; then echo "true"; else echo "false"; fi
+        device_class: connectivity
+        payload_on: "true"
+        payload_off: "false"
 
   # Automations
   automation:

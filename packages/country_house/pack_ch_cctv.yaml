@@ -26,33 +26,33 @@ ch_cctv_pack:
             service: rest_command.sss_reolinkcam_02_disable
           icon_template: mdi:cctv
 
-    - platform: command_line
-      switches:
+  # Command line
+  command_line:
 
-        frigate_srv01_reolinkcam_02:
-          unique_id: 85349ace-4a18-49c6-a71d-b7f1b823beb3
-          friendly_name: Frigate ReolinkCam 02 Switch
-          command_timeout: 20
-          command_on: >-
-            ssh -i /config/.ssh/id_ecdsa
-            -o 'StrictHostKeyChecking=no'
-            ha@srv01.home.intra
-            "yq -i '.cameras.reolinkcam_02.enabled = True' /opt/docker-compose/frigate/config/config.yml &&
-            docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
-          command_off: >-
-            ssh -i /config/.ssh/id_ecdsa
-            -o 'StrictHostKeyChecking=no'
-            ha@srv01.home.intra
-            "yq -i '.cameras.reolinkcam_02.enabled = False' /opt/docker-compose/frigate/config/config.yml &&
-            docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
-          command_state: >-
-            curl -s -X GET http://srv01.home.intra:5000/api/config | jq '.cameras.reolinkcam_02.enabled'
-          value_template: >-
-            {{ value == "true" }}
-          icon_template: >-
-            {% if value == "true" %} mdi:cctv
-            {% else %} mdi:cctv-off
-            {% endif %}
+    - switch:
+        name: frigate_srv01_reolinkcam_02
+        unique_id: 85349ace-4a18-49c6-a71d-b7f1b823beb3
+        command_timeout: 20
+        command_on: >-
+          ssh -i /config/.ssh/id_ecdsa
+          -o 'StrictHostKeyChecking=no'
+          ha@srv01.home.intra
+          "yq -i '.cameras.reolinkcam_02.enabled = True' /opt/docker-compose/frigate/config/config.yml &&
+          docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
+        command_off: >-
+          ssh -i /config/.ssh/id_ecdsa
+          -o 'StrictHostKeyChecking=no'
+          ha@srv01.home.intra
+          "yq -i '.cameras.reolinkcam_02.enabled = False' /opt/docker-compose/frigate/config/config.yml &&
+          docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
+        command_state: >-
+          curl -s -X GET http://srv01.home.intra:5000/api/config | jq '.cameras.reolinkcam_02.enabled'
+        value_template: >-
+          {{ value == "true" }}
+        icon: >-
+          {% if value == "true" %} mdi:cctv
+          {% else %} mdi:cctv-off
+          {% endif %}
 
   # Templates
   template:

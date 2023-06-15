@@ -83,7 +83,7 @@ autoreboot_pack:
         condition: template
         value_template: "{{ (states('counter.auto_reboot') | int) > 0 }}"
       action:
-        - service: counter.configure
+        - service: counter.set_value
           target:
             entity_id: counter.auto_reboot
           data:
