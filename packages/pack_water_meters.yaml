@@ -13,6 +13,7 @@ water_meters_pack:
       resource: "https://api.saures.ru/1.0/login"
       method: POST
       scan_interval: 600
+      timeout: 180
       headers:
         Content-Type: application/x-www-form-urlencoded; charset=utf-8
       payload: !secret saures_login_payload
@@ -24,6 +25,7 @@ water_meters_pack:
 
     - resource: https://api.saures.ru/1.0/object/meters
       scan_interval: 3600
+      timeout: 180
       method: GET
       params:
         sid: "{{ states('sensor.saures_api_sid') }}"
