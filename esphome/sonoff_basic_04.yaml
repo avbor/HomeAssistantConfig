@@ -12,6 +12,9 @@ esphome:
   on_boot:
     - switch.turn_off: button_sw
 
+wifi:
+  use_address: 192.168.10.117
+
 web_server:
   port: 80
 

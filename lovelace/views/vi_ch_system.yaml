@@ -60,6 +60,9 @@ cards:
             entities:
               - entity: sensor.gosund_sp111_01_ampere
                 name: false
+          - entity: switch.sonoff_basic_04_switch
+            name: Фильтр бассейна
+            icon: mdi:pool
           #          - type: section
           #          - entity: sensor.gosund_sp111_02_watt
           #            type: custom:multiple-entity-row

@@ -38,5 +38,8 @@
       data:
         entity_id:
           - group.all_chromecasts
+    - service: media_player.turn_off
+      target:
+        entity_id:
           - group.all_yandex_stations
           - group.all_xbox

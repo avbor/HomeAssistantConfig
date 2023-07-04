@@ -1,0 +1,48 @@
+#################################################
+# Package Country House Pool
+#################################################
+
+ch_pool_pack:
+
+  # Automations
+  automation:
+
+    - alias: Дача - Управление фильтром бассейна
+      id: 48bf00c7-ef92-40a9-a724-8628c2004e9d
+      trigger:
+        - platform: time
+          at: "06:00:00"
+          id: start
+        - platform: time
+          at: "21:00:00"
+          id: stop
+        - platform: state
+          entity_id: sensor.0x00158d00054859d5_action
+          to: double
+          id: aqara_button
+      action:
+        choose:
+          - alias: Power On Filter
+            conditions:
+              - condition: trigger
+                id: "start"
+            sequence:
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.sonoff_basic_04_switch
+          - alias: Power Off Filter
+            conditions:
+              - condition: trigger
+                id: "stop"
+            sequence:
+              - service: switch.turn_off
+                target:
+                  entity_id: switch.sonoff_basic_04_switch
+          - alias: Toggle Filter
+            conditions:
+              - condition: trigger
+                id: "aqara_button"
+            sequence:
+              - service: switch.toggle
+                target:
+                  entity_id: switch.sonoff_basic_04_switch
