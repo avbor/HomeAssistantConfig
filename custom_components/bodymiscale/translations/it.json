@@ -25,6 +25,15 @@
       }
     }
   },
+  "entity_component": {
+    "_": {
+      "name": "bodymiscale",
+      "state": {
+        "ok": "OK",
+        "problem": "Problema"
+      }
+    }
+  },
   "options": {
     "step": {
       "init": {
@@ -37,11 +46,6 @@
           "impedance": "Se la tua bilancia non fornisce il valore di impedenza lascia questo campo vuoto."
         }
       }
-    }
-  },
-  "state": {
-    "_": {
-      "problem": "Problema"
     }
   }
 }
