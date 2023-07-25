@@ -115,7 +115,7 @@
         title: "*Внимание!*"
         message: |
           Сработал датчик *газа* на кухне.
-          Датчик *газа* отклчюен!
+          Датчик *газа* отключен!
 
 - alias: Gas Alert - Sensor Powered Off More Than 30 Min
   id: 3e69fa5f-34f2-4e5e-86e2-467aad2420b6
