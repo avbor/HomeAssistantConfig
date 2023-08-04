@@ -181,10 +181,6 @@ tts:
   - platform: google_translate
     language: "ru"
 
-discovery:
-  ignore:
-    - homekit
-
 telegram_bot:
   - platform: webhooks # or "polling"
     #    url: !secret tlg_webhook_proxy_url

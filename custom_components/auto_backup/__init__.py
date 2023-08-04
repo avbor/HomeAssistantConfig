@@ -56,6 +56,8 @@ ATTR_EXCLUDE = "exclude"
 ATTR_EXCLUDE_ADDONS = "exclude_addons"
 ATTR_EXCLUDE_FOLDERS = "exclude_folders"
 ATTR_DOWNLOAD_PATH = "download_path"
+ATTR_COMPRESSED = "compressed"
+ATTR_LOCATION = "location"
 
 DEFAULT_BACKUP_FOLDERS = {
     "ssl": "ssl",
@@ -78,7 +80,11 @@ SCHEMA_BACKUP_BASE = vol.Schema(
         vol.Optional(ATTR_PASSWORD): vol.Any(None, cv.string),
         vol.Optional(ATTR_KEEP_DAYS): vol.Any(None, vol.Coerce(float)),
         vol.Optional(ATTR_DOWNLOAD_PATH): vol.All(cv.ensure_list, [cv.isdir]),
-    }
+        vol.Optional(ATTR_COMPRESSED): cv.boolean,
+        vol.Optional(ATTR_LOCATION): vol.All(
+            cv.string, lambda v: None if v == "/backup" else v
+        ),
+    },
 )
 
 SCHEMA_LIST_STRING = vol.All(cv.ensure_list, [cv.string])
@@ -88,28 +94,35 @@ SCHEMA_ADDONS_FOLDERS = {
     vol.Optional(ATTR_ADDONS, default=[]): SCHEMA_LIST_STRING,
 }
 
-SCHEMA_BACKUP_FULL = SCHEMA_BACKUP_BASE.extend(
-    {vol.Optional(ATTR_EXCLUDE): SCHEMA_ADDONS_FOLDERS}
+SCHEMA_BACKUP_FULL = vol.All(
+    cv.deprecated(ATTR_DOWNLOAD_PATH),
+    SCHEMA_BACKUP_BASE.extend({vol.Optional(ATTR_EXCLUDE): SCHEMA_ADDONS_FOLDERS}),
 )
 
-SCHEMA_BACKUP_PARTIAL = SCHEMA_BACKUP_BASE.extend(SCHEMA_ADDONS_FOLDERS)
+SCHEMA_BACKUP_PARTIAL = vol.All(
+    cv.deprecated(ATTR_DOWNLOAD_PATH), SCHEMA_BACKUP_BASE.extend(SCHEMA_ADDONS_FOLDERS)
+)
 
-SCHEMA_BACKUP = vol.Any(
-    SCHEMA_BACKUP_BASE.extend(
-        {
-            vol.Optional(ATTR_INCLUDE): SCHEMA_ADDONS_FOLDERS,
-            vol.Optional(ATTR_EXCLUDE): SCHEMA_ADDONS_FOLDERS,
-        }
-    ),
-    SCHEMA_BACKUP_BASE.extend(
-        {
-            vol.Optional(ATTR_INCLUDE_ADDONS): SCHEMA_LIST_STRING,
-            vol.Optional(ATTR_INCLUDE_FOLDERS): SCHEMA_LIST_STRING,
-            vol.Optional(ATTR_EXCLUDE_ADDONS): SCHEMA_LIST_STRING,
-            vol.Optional(ATTR_EXCLUDE_FOLDERS): SCHEMA_LIST_STRING,
-        }
+SCHEMA_BACKUP = vol.All(
+    cv.deprecated(ATTR_DOWNLOAD_PATH),
+    vol.Any(
+        SCHEMA_BACKUP_BASE.extend(
+            {
+                vol.Optional(ATTR_INCLUDE): SCHEMA_ADDONS_FOLDERS,
+                vol.Optional(ATTR_EXCLUDE): SCHEMA_ADDONS_FOLDERS,
+            }
+        ),
+        SCHEMA_BACKUP_BASE.extend(
+            {
+                vol.Optional(ATTR_INCLUDE_ADDONS): SCHEMA_LIST_STRING,
+                vol.Optional(ATTR_INCLUDE_FOLDERS): SCHEMA_LIST_STRING,
+                vol.Optional(ATTR_EXCLUDE_ADDONS): SCHEMA_LIST_STRING,
+                vol.Optional(ATTR_EXCLUDE_FOLDERS): SCHEMA_LIST_STRING,
+            }
+        ),
     ),
 )
+
 
 MAP_SERVICES = {
     SERVICE_BACKUP: SCHEMA_BACKUP,
