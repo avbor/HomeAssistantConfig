@@ -10,10 +10,40 @@
     }
   },
   "entity": {
-    "sensor": {
-      "custom_component": {
-        "name": "Custom integrations"
+    "button": {
+      "homeassistant_reload": {
+        "name": "Reload"
       },
+      "homeassistant_restart": {
+        "name": "Restart"
+      },
+      "repairs_ignore_all": {
+        "name": "Ignore all"
+      },
+      "repairs_unignore_all": {
+        "name": "Unignore all"
+      }
+    },
+    "event": {
+      "repairs_event": {
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "create": "Issue created",
+              "remove": "Issue removed",
+              "update": "Issue updated"
+            }
+          },
+          "domain": {
+            "name": "Issue issuer"
+          },
+          "issue_id": {
+            "name": "Issue ID"
+          }
+        }
+      }
+    },
+    "sensor": {
       "homeassistant_air_quality": {
         "name": "Air quality"
       },
@@ -44,6 +74,9 @@
       "homeassistant_cover": {
         "name": "Covers"
       },
+      "homeassistant_custom_component": {
+        "name": "Custom integrations"
+      },
       "homeassistant_date": {
         "name": "Dates"
       },
@@ -64,6 +97,9 @@
       },
       "homeassistant_humidifier": {
         "name": "Humidifiers"
+      },
+      "homeassistant_image": {
+        "name": "Images"
       },
       "homeassistant_input_boolean": {
         "name": "Input booleans"
@@ -97,6 +133,9 @@
       },
       "homeassistant_number": {
         "name": "Numbers"
+      },
+      "homeassistant_persistent_notification": {
+        "name": "Persistent notifications"
       },
       "homeassistant_person": {
         "name": "Persons"
@@ -151,6 +190,15 @@
       },
       "homeassistant_zone": {
         "name": "Zones"
+      },
+      "repairs_total_issues": {
+        "name": "Total"
+      },
+      "repairs_ignored_issues": {
+        "name": "Ignored"
+      },
+      "repairs_active_issues": {
+        "name": "Active"
       }
     },
     "switch": {

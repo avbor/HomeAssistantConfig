@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import voluptuous as vol
+
 from homeassistant.components.recorder import DOMAIN
 from homeassistant.components.recorder.statistics import (
     async_add_external_statistics,
@@ -21,10 +22,10 @@ class SpookService(AbstractSpookAdminService):
     schema = {
         vol.Required("has_mean"): bool,
         vol.Required("has_sum"): bool,
-        vol.Optional("name", default=None): str,
+        vol.Optional("name", default=None): vol.Any(None, str),
         vol.Required("source"): str,
         vol.Required("statistic_id"): str,
-        vol.Optional("unit_of_measurement", default=None): str,
+        vol.Optional("unit_of_measurement", default=None): vol.Any(None, str),
         vol.Required("stats"): [
             {
                 vol.Required("start"): cv.datetime,

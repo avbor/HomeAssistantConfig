@@ -34,7 +34,7 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = DOMAIN
     repair = "lovelace_unknown_entity_references"
-    events = {
+    inspect_events = {
         EVENT_COMPONENT_LOADED,
         EVENT_LOVELACE_UPDATED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
@@ -204,6 +204,16 @@ class SpookRepair(AbstractSpookRepair):
             if (entity_id := config.get("entity")) and isinstance(entity_id, str):
                 return {config["entity"]}
             if (entities := config.get("entities")) and isinstance(entities, list):
+                extracted = []
+                for entity in entities:
+                    if isinstance(entity, str):
+                        extracted.append(entity)
+                    elif (
+                        isinstance(entity, dict)
+                        and "entity" in entity
+                        and isinstance(entity["entity"], str)
+                    ):
+                        extracted.append(entity["entity"])
                 return set(config["entities"])
         return set()
 
