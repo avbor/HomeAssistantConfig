@@ -2,13 +2,11 @@
 # Yandex Smart Home Settings
 #################################################
 notifier:
-
   - oauth_token: !secret ysm_notifier_oauth_token
     skill_id: !secret ysm_notifier_skill_id
     user_id: !secret ysm_notifier_user_id
 
 filter:
-
   include_domains:
     - vacuum
 
@@ -63,9 +61,12 @@ filter:
     # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
     - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
+    # Keenetic
+    - switch.keenetic_vpn_xbox_01
+    - switch.keenetic_vpn_mi8
+    - switch.keenetic_vpn_lenovo_tb128xu
 
 entity_config:
-
   light.sonoff_1000f2a500:
     name: Споты
     room: Коридор
@@ -185,6 +186,7 @@ entity_config:
   vacuum.xiaomi_vacuum_cleaner:
     name: Пылесос
     room: Квартира
+
   sensor.a4c138d358e9_temperature:
     name: Климат в гостиной
     properties:
@@ -256,3 +258,15 @@ entity_config:
   light.detskaia_girlianda_na_krovati:
     name: Гирлянда
     room: Детская
+
+  switch.keenetic_vpn_xbox_01:
+    name: ВПН для ИксБокса
+    room: Квартира
+
+  switch.keenetic_vpn_mi8:
+    name: ВПН для телефона Егора
+    room: Квартира
+
+  switch.keenetic_vpn_lenovo_tb128xu:
+    name: ВПН для планшета Кирилла
+    room: Квартира
