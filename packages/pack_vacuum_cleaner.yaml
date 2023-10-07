@@ -12,6 +12,7 @@ vacuum_cleaner:
       token: !secret mi_vacuum_1s_token
       username: !secret xiaomi_cloud_username
       password: !secret xiaomi_cloud_password
+      country: 'cn'
       draw: ["all"]
       colors:
         color_charger: [0, 255, 0, 180]

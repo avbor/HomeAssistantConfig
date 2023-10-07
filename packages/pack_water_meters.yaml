@@ -16,6 +16,7 @@ water_meters_pack:
       timeout: 180
       headers:
         Content-Type: application/x-www-form-urlencoded; charset=utf-8
+        User-Agent: HTTPie/3.2.2
       payload: !secret saures_login_payload
       value_template: "{{ value_json.data.sid }}"
 
@@ -27,6 +28,8 @@ water_meters_pack:
       scan_interval: 3600
       timeout: 180
       method: GET
+      headers:
+        User-Agent: HTTPie/3.2.2
       params:
         sid: "{{ states('sensor.saures_api_sid') }}"
         id: !secret saures_flat_id

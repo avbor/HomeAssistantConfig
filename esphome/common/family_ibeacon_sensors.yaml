@@ -2,19 +2,23 @@ binary_sensor:
   - platform: ble_presence
     name: ${room_name} OnePlus 8T Presence
     ibeacon_uuid: "ed5e33eb-0ca3-4263-a681-a68b1045a5e6"
-  
+
+  - platform: ble_presence
+    name: ${room_name} Amazfit GTR 4 Presence
+    mac_address: C5:54:47:7D:B1:9F
+
   - platform: ble_presence
     name: ${room_name} Holy IoT Green-1 Presence
     ibeacon_uuid: "fda50693-a4e2-4fb1-afcf-c6eb07647825"
     ibeacon_major: 10011
     ibeacon_minor: 2
-  
+
   - platform: ble_presence
     name: ${room_name} Holy IoT Black-1 Presence
     ibeacon_uuid: "fda50693-a4e2-4fb1-afcf-c6eb07647825"
     ibeacon_major: 10011
     ibeacon_minor: 1
-  
+
   - platform: ble_presence
     name: ${room_name} Nut Gray-1 Presence
     mac_address: F8:3F:C3:FC:F8:A9

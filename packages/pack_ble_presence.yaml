@@ -47,6 +47,16 @@ ble_presence_pack:
         - binary_sensor.living_room_oneplus_8t_presence
         - binary_sensor.nursery_oneplus_8t_presence
 
+    - platform: group
+      name: "Amazfit GTR 4 Presence"
+      device_class: presence
+      entities:
+        - binary_sensor.bedroom_amazfit_gtr_4_presence
+        - binary_sensor.hallway_amazfit_gtr_4_presence
+        - binary_sensor.kitchen_amazfit_gtr_4_presence
+        - binary_sensor.living_room_amazfit_gtr_4_presence
+        - binary_sensor.nursery_amazfit_gtr_4_presence
+
   # Automations
   automation:
 

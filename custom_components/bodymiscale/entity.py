@@ -1,13 +1,8 @@
 """Bodymiscale entity module."""
 
 from homeassistant.const import CONF_NAME
-from homeassistant.helpers.device_registry import DeviceEntryType
-from homeassistant.helpers.entity import (
-    UNDEFINED,
-    DeviceInfo,
-    Entity,
-    EntityDescription,
-)
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.entity import UNDEFINED, Entity, EntityDescription
 
 from .const import DOMAIN, VERSION
 from .metrics import BodyScaleMetricsHandler
@@ -43,11 +38,7 @@ class BodyScaleBaseEntity(Entity):  # type: ignore[misc]
         if self.entity_description.name == UNDEFINED:
             # Name not provided... get it from the key
             self._attr_name = self.entity_description.key.replace("_", " ").capitalize()
-
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        """Return device specific attributes."""
-        return DeviceInfo(
+        self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             name=self._handler.config[CONF_NAME],
             sw_version=VERSION,
