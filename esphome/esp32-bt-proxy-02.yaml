@@ -19,9 +19,6 @@ bluetooth_proxy:
   #active: true
 
 esp32_ble_tracker:
-  id: ble_tracker_id
-  scan_parameters:
-    active: true
   on_ble_service_data_advertise:
     - mac_address: F9:9D:1D:40:23:40
       service_uuid: "5242"

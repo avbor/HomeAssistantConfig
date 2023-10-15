@@ -1,6 +1,8 @@
 esp32_ble_tracker:
+  id: ble_tracker_id
   scan_parameters:
     interval: 450ms
     window: 160ms
     duration: 10s
-    active: false
+    active: true
+    continuous: true

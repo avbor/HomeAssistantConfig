@@ -25,6 +25,8 @@ binary_sensor:
     ibeacon_minor: 1
     device_class: "presence"
     icon: mdi:key-chain-variant
+    on_press:
+      - script.execute: ble_active_scan
 
   - platform: ble_presence
     name: ${room_name} Nut Gray-1 Presence

@@ -43,3 +43,46 @@ button:
   - platform: safe_mode
     name: ${board_name} Restart (Safe Mode)
 #    entity_category: diagnostic
+
+  - platform: template
+    name: ${board_name} BLE Active Scan
+    id: run_active_scan
+    on_press:
+    - script.execute: ble_active_scan
+
+script:
+  - id: ble_active_scan
+    mode: single
+    then:
+    - lambda: |-
+        id(ble_tracker_id).stop_scan();
+    - delay: 2s
+    - lambda: |-
+        id(ble_tracker_id).set_scan_active(true);
+        id(ble_tracker_id).set_scan_duration(10);
+        id(ble_tracker_id).set_scan_interval(720);
+        id(ble_tracker_id).set_scan_window(256);
+        id(ble_tracker_id).set_scan_continuous(true);
+        id(ble_tracker_id).start_scan();
+    - logger.log: 
+        format: Active scan started
+        level: INFO
+    - delay: 30s
+    - logger.log: 
+        format: Active scan stopped
+        level: INFO
+    - lambda: |-
+        id(ble_tracker_id).stop_scan();
+    - delay: 2s
+    - lambda: |-
+        id(ble_tracker_id).set_scan_active(false);
+        id(ble_tracker_id).set_scan_duration(10);
+        id(ble_tracker_id).set_scan_interval(720);
+        id(ble_tracker_id).set_scan_window(256);
+        id(ble_tracker_id).set_scan_continuous(true);
+        id(ble_tracker_id).start_scan();
+
+interval:
+  - interval: 30min
+    then:
+    - script.execute: ble_active_scan
