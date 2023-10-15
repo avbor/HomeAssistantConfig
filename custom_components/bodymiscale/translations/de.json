@@ -2,6 +2,8 @@
   "config": {
     "error": {
       "already_configured": "Bereits konfiguriert",
+      "height_limit": "Die Höhe ist zu hoch (Grenze: 220 cm)",
+      "height_low": "Die Höhe ist zu niedrig (min : 50 cm)",
       "invalid_date": "Ungültiges Datum"
     },
     "step": {
@@ -18,9 +20,26 @@
       "user": {
         "data": {
           "birthday": "Geburtstag",
-          "gender": "Geschlecht"
+          "gender": "Geschlecht",
+          "name": "Name"
         }
       }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "basal_metabolism": { "name": "Grundumsatz" },
+      "bmi": { "name": "BMI" },
+      "body_fat": { "name": "Körperfett" },
+      "body_score": { "name": "Körperbewertung" },
+      "bone_mass": { "name": "Knochenmasse" },
+      "lean_body_mass": { "name": "Magere Körpermasse" },
+      "metabolic_age": { "name": "stoffwechselbedingtes Körperalter" },
+      "muscle_mass": { "name": "Muskelmasse" },
+      "protein": { "name": "Protein" },
+      "visceral_fat": { "name": "Bauchfett" },
+      "water": { "name": "Wasser" },
+      "weight": { "name": "Gewicht" }
     }
   },
   "entity_component": {
@@ -29,6 +48,70 @@
       "state": {
         "ok": "OK",
         "problem": "Problem"
+      },
+      "state_attributes": {
+        "age": { "name": "Alter" },
+        "basal_metabolism": { "name": "Grundumsatz" },
+        "bmi": { "name": "BMI" },
+        "bmi_label": {
+          "name": "BMI Klassifikation",
+          "state": {
+            "massive_obesity": "massive Fettleibigkeit",
+            "moderate_obesity": "moderate Fettleibigkeit",
+            "normal_or_healthy_weight": "Normal - gesundes Gewicht",
+            "overweight": "Übergewicht",
+            "severe_obesity": "schwere Fettleibigkeit",
+            "slight_overweight": "leichtes Übergewicht",
+            "unavailable": "Nicht verfügbar",
+            "underweight": "Untergewicht"
+          }
+        },
+        "body_fat": { "name": "Körperfett" },
+        "body_score": { "name": "Körperbewertung" },
+        "body_type": {
+          "name": "Körperbau",
+          "state": {
+            "balanced": "ausgewogen",
+            "balanced_muscular": "ausgewogen muskulös",
+            "balanced_skinny": "ausgeglichen schlank",
+            "lack_exercise": "Bewegungsmangel",
+            "obese": "fettleibig",
+            "overweight": "Übergewicht",
+            "skinny": "schlank",
+            "skinny_muscular": "muskulös schlank",
+            "thick_set": "stämmig",
+            "unavailable": "Nicht verfügbar"
+          }
+        },
+        "bone_mass": { "name": "Knochenmasse" },
+        "fat_mass_to_gain": { "name": "Fettmasse zu gewinnen" },
+        "fat_mass_to_lose": { "name": "Fettmasse zu verlieren" },
+        "gender": {
+          "name": "Geschlecht",
+          "state": {
+            "female": "weibl.",
+            "male": "männl."
+          }
+        },
+        "height": { "name": "Körpergröße" },
+        "ideal": { "name": "Idealgewicht" },
+        "impedance": { "name": "Zusammensetzung" },
+        "lean_body_mass": { "name": "Magere Körpermasse" },
+        "metabolic_age": { "name": "stoffwechselbedingtes Körperalter" },
+        "muscle_mass": { "name": "Muskelmasse" },
+        "problem": {
+          "name": "Problem",
+          "state": {
+            "impedance_unavailable": "Bioelektrische Impedanzmessung (Körperzusammensetzung) nicht verfügbar",
+            "none": "keine",
+            "weight unavailable_and_impedance unavailable": "Gewichts- und bioelektrische Impedanzmessung (Körperzusammensetzung) nicht verfügbar.",
+            "weight_unavailable": "Gewichtsmessung nicht verfügbar"
+          }
+        },
+        "protein": { "name": "Protein" },
+        "visceral_fat": { "name": "Bauchfett" },
+        "water": { "name": "Wasser" },
+        "weight": { "name": "Gewicht" }
       }
     }
   },
@@ -45,5 +128,6 @@
         }
       }
     }
-  }
+  },
+  "title": "BodyMiScale"
 }

@@ -3,6 +3,7 @@
     "error": {
       "already_configured": "Уже настроено",
       "height_limit": "Рост слишком большой (предел: 220 см)",
+      "height_low": "Рост слишком низкая (min : 50 см)",
       "invalid_date": "Неверная дата"
     },
     "step": {
@@ -25,12 +26,100 @@
       }
     }
   },
+  "entity": {
+    "sensor": {
+      "basal_metabolism": { "name": "Базальный метаболизм" },
+      "bmi": { "name": "Индекс BMI" },
+      "body_fat": { "name": "Жировая ткань" },
+      "body_score": { "name": "Оценка тела" },
+      "bone_mass": { "name": "Костная масса" },
+      "lean_body_mass": { "name": "Сухая масса тела" },
+      "metabolic_age": { "name": "Метаболический возраст" },
+      "muscle_mass": { "name": "Мышечная масса" },
+      "protein": { "name": "Белки" },
+      "visceral_fat": { "name": "Висцеральный жир" },
+      "water": { "name": "Вода" },
+      "weight": { "name": "Вес" }
+    }
+  },
   "entity_component": {
     "_": {
       "name": "bodymiscale",
       "state": {
         "ok": "OK",
         "problem": "Проблема"
+      },
+      "state_attributes": {
+        "age": { "name": "Возраст" },
+        "basal_metabolism": { "name": "Базальный метаболизм" },
+        "bmi": { "name": "Индекс BMI" },
+        "bmi_label": {
+          "name": "Интерпретация BMI",
+          "state": {
+            "massive_obesity": "Ожирение 3й степени",
+            "moderate_obesity": "Ожирение 1й степени",
+            "normal_or_healthy_weight": "Нормальный вес",
+            "overweight": "Лишний вес",
+            "severe_obesity": "Ожирение 2й степени",
+            "slight_overweight": "Избыточный вес",
+            "unavailable": "недоступен",
+            "underweight": "Недостаточный вес"
+          }
+        },
+        "body_fat": { "name": "Жировая ткань" },
+        "body_score": { "name": "Оценка тела" },
+        "body_type": {
+          "name": "Тип тела",
+          "state": {
+            "balanced": "Оптимальный",
+            "balanced_muscular": "Мускулистый",
+            "balanced_skinny": "Худощавый",
+            "lack_exercise": "Недостаток упражнений",
+            "obese": "Ожирение",
+            "overweight": "Лишний вес",
+            "skinny": "Тощий",
+            "skinny_muscular": "Подтянуто-мускулистый",
+            "thick_set": "Коренастый",
+            "unavailable": "недоступен"
+          }
+        },
+        "bone_mass": { "name": "Костная масса" },
+        "fat_mass_to_gain": { "name": "Набираемая жировая масса" },
+        "fat_mass_to_lose": { "name": "Потеря жировой массы" },
+        "gender": {
+          "name": "Пол",
+          "state": {
+            "female": "женский",
+            "male": "мужской"
+          }
+        },
+        "height": { "name": "Рост" },
+        "ideal": { "name": "Идеальный вес" },
+        "impedance": { "name": "Импеданс" },
+        "lean_body_mass": { "name": "Сухая масса тела" },
+        "metabolic_age": { "name": "Метаболический возраст" },
+        "muscle_mass": { "name": "Мышечная масса" },
+        "problem": {
+          "name": "Проблема",
+          "state": {
+            "impedance_high": "Высокий биоимпеданс",
+            "impedance_low": "Низкий биоимпеданс",
+            "impedance_unavailable": "Биоимпеданс недоступен",
+            "none": "Нет",
+            "weight_high": "Высокий вес",
+            "weight_high_and_impedance_high": "Высокие вес и биоимпеданс",
+            "weight_high_and_impedance_low": "Высокий вес, низкий биоимпеданс",
+            "weight_low": "Низкий вес",
+            "weight_low_and_impedance_high": "Низкий вес, высокий биоимпеданс",
+            "weight_low_and_impedance_low": "Низкие вес и биоимпеданс",
+            "weight_unavailable": "Вес недоступен",
+            "weight_unavailable_and_impedance_unavailable": "Вес и биоимпеданс недоступны"
+          }
+        },
+        "protein": { "name": "Белки" },
+        "visceral_fat": { "name": "Висцеральный жир" },
+        "water": { "name": "Вода" },
+        "weight": { "name": "Вес" }
       }
     }
   },
@@ -47,5 +136,6 @@
         }
       }
     }
-  }
+  },
+  "title": "BodyMiScale"
 }

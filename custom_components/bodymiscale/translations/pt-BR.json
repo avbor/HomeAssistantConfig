@@ -3,6 +3,7 @@
     "error": {
       "already_configured": "Já configurado",
       "height_limit": "Altura é muito alta (limite: 220 cm)",
+      "height_low": "Altura é muito baixa (min : 50 cm)",
       "invalid_date": "Data inválida"
     },
     "step": {
@@ -25,12 +26,100 @@
       }
     }
   },
+  "entity": {
+    "sensor": {
+      "basal_metabolism": { "name": "Metabolismo basal" },
+      "bmi": { "name": "IMC" },
+      "body_fat": { "name": "Gordura corporal" },
+      "body_score": { "name": "Escore corporal" },
+      "bone_mass": { "name": "Massa óssea" },
+      "lean_body_mass": { "name": "Massa corporal magra" },
+      "metabolic_age": { "name": "Idade metabólica" },
+      "muscle_mass": { "name": "Massa muscular" },
+      "protein": { "name": "Proteína" },
+      "visceral_fat": { "name": "Gordura visceral" },
+      "water": { "name": "Água" },
+      "weight": { "name": "Peso" }
+    }
+  },
   "entity_component": {
     "_": {
       "name": "bodymiscale",
       "state": {
         "ok": "OK",
         "problem": "Problema"
+      },
+      "state_attributes": {
+        "age": { "name": "Idade" },
+        "basal_metabolism": { "name": "Metabolismo basal" },
+        "bmi": { "name": "IMC" },
+        "bmi_label": {
+          "name": "Etiqueta IMC",
+          "state": {
+            "massive_obesity": "Obesidade maciça",
+            "moderate_obesity": "Obesidade moderada",
+            "normal_or_healthy_weight": "Normal",
+            "overweight": "Sobrepeso",
+            "severe_obesity": "Obesidade severa",
+            "slight_overweight": "Ligeiro acima do peso",
+            "unavailable": "indisponível",
+            "underweight": "Underweight"
+          }
+        },
+        "body_fat": { "name": "Gordura corporal" },
+        "body_score": { "name": "Escore corporal" },
+        "body_type": {
+          "name": "Tipo de corpo",
+          "state": {
+            "balanced": "Equilibrado",
+            "balanced_muscular": "Musculoso equilibrado",
+            "balanced_skinny": "Magro equilibrado",
+            "lack_exercise": "Falta de exercício",
+            "obese": "Obeso",
+            "overweight": "Sobrepeso",
+            "skinny": "Magro",
+            "skinny_muscular": "Magro musculoso",
+            "thick_set": "Grosso-conjunto",
+            "unavailable": "indisponível"
+          }
+        },
+        "bone_mass": { "name": "Massa óssea" },
+        "fat_mass_to_gain": { "name": "Massa gorda a ganhar" },
+        "fat_mass_to_lose": { "name": "Massa gorda a perder" },
+        "gender": {
+          "name": "Gênero",
+          "state": {
+            "female": "fêmea",
+            "male": "macho"
+          }
+        },
+        "height": { "name": "Cintura" },
+        "ideal": { "name": "Ideal" },
+        "impedance": { "name": "Impedance" },
+        "lean_body_mass": { "name": "Massa corporal magra" },
+        "metabolic_age": { "name": "Idade metabólica" },
+        "muscle_mass": { "name": "Massa muscular" },
+        "problem": {
+          "name": "Problema",
+          "state": {
+            "impedance_high": "Impedância alta",
+            "impedance_low": "Impedância baixa",
+            "impedance_unavailable": "Impedance indisponível",
+            "none": "Nenhum",
+            "weight_high": "Peso alto",
+            "weight_high_and_impedance_high": "Peso alto, impedância alta",
+            "weight_high_and_impedance_low": "Peso alto, impedância baixa",
+            "weight_low": "Peso baixo",
+            "weight_low_and_impedance_high": "Peso baixo, impedância alta",
+            "weight_low_and_impedance_low": "Peso baixo, impedância baixa",
+            "weight_unavailable": "Peso indisponível",
+            "weight_unavailable_and_impedance_unavailable": "Peso indisponível, impedance indisponível"
+          }
+        },
+        "protein": { "name": "Proteína" },
+        "visceral_fat": { "name": "Gordura visceral" },
+        "water": { "name": "Água" },
+        "weight": { "name": "Peso" }
       }
     }
   },
@@ -47,5 +136,6 @@
         }
       }
     }
-  }
+  },
+  "title": "BodyMiScale"
 }

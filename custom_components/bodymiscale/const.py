@@ -5,7 +5,7 @@ from homeassistant.const import Platform
 MIN_REQUIRED_HA_VERSION = "2022.4.0b0"
 NAME = "BodyMiScale"
 DOMAIN = "bodymiscale"
-VERSION = "3.0.9"
+VERSION = "3.1.1"
 
 ISSUE_URL = "https://github.com/dckiller51/bodymiscale/issues"
 
@@ -49,7 +49,7 @@ If you have any issues with this you need to open an issue here:
 -------------------------------------------------------------------
 """
 
-CONSTRAINT_HEIGHT_MIN = 0
+CONSTRAINT_HEIGHT_MIN = 50
 CONSTRAINT_HEIGHT_MAX = 220
 CONSTRAINT_IMPEDANCE_MIN = 0
 CONSTRAINT_IMPEDANCE_MAX = 3000
