@@ -51,6 +51,11 @@ button:
     - script.execute: ble_active_scan
 
 script:
+  # set_scan_active = bool
+  # set_scan_duration = milliseconds
+  # set_scan_interval = milliseconds / 0.625 (example: 450ms / 0.625 = 720)
+  # set_scan_window = milliseconds / 0.625 (example: 160ms / 0.625 = 256)
+  # set_scan_continuous = bool
   - id: ble_active_scan
     mode: single
     then:

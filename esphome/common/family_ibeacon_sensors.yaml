@@ -10,6 +10,8 @@ binary_sensor:
     mac_address: C5:54:47:7D:B1:9F
     device_class: "presence"
     icon: mdi:watch
+    filters:
+      - delayed_off: 15s
 
   - platform: ble_presence
     name: ${room_name} Holy IoT Green-1 Presence
@@ -25,6 +27,8 @@ binary_sensor:
     ibeacon_minor: 1
     device_class: "presence"
     icon: mdi:key-chain-variant
+    filters:
+      - delayed_off: 30s
     on_press:
       - script.execute: ble_active_scan
 
