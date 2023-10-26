@@ -120,6 +120,10 @@ toilet_light_pack:
                     - service: light.turn_off
                       target:
                         entity_id: light.sonoff_zbmini_03_on_off
+                    - condition: "{{ is_state('fan.toilet_extractor', 'on') }}"
+                    - service: fan.turn_off
+                      target:
+                        entity_id: fan.toilet_extractor
           - alias: Motion
             conditions:
               - condition: trigger

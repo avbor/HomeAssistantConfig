@@ -28,6 +28,16 @@ ble_presence_pack:
         - binary_sensor.nursery_holy_iot_black_1_presence
 
     - platform: group
+      name: "Holy IoT White 1 Presence"
+      device_class: presence
+      entities:
+        - binary_sensor.bedroom_holy_iot_white_1_presence
+        - binary_sensor.hallway_holy_iot_white_1_presence
+        - binary_sensor.kitchen_holy_iot_white_1_presence
+        - binary_sensor.living_room_holy_iot_white_1_presence
+        - binary_sensor.nursery_holy_iot_white_1_presence
+
+    - platform: group
       name: "Nut Gray 1 Presence"
       device_class: presence
       entities:

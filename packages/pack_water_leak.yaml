@@ -35,10 +35,10 @@ water_leak_protection:
       alias: "Закрытие водопроводных кранов"
       sequence:
         - service: switch.turn_on
-          entity_id: switch.rele_aqara_vodoprovodnye_krany_switch_2
+          entity_id: switch.lumi_lumi_relay_c2acn01_switch_2
         - delay: '00:00:30'
         - service: switch.turn_off
-          entity_id: switch.rele_aqara_vodoprovodnye_krany_switch_2
+          entity_id: switch.lumi_lumi_relay_c2acn01_switch_2
 
     water_valves_open:
       alias: "Открытие водопроводных кранов"
@@ -52,20 +52,20 @@ water_leak_protection:
               - service: switch.turn_off
                 entity_id: switch.sonoff_1000b68886
               - service: switch.turn_on
-                entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
+                entity_id: switch.lumi_lumi_relay_c2acn01_switch
               - delay: '00:00:30'
               - service: switch.turn_off
-                entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
+                entity_id: switch.lumi_lumi_relay_c2acn01_switch
               - service: switch.turn_on
                 entity_id: switch.sonoff_1000b68886
               - service: script.turn_on
                 entity_id: script.neptun_state_reset
           default:
             - service: switch.turn_on
-              entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
+              entity_id: switch.lumi_lumi_relay_c2acn01_switch
             - delay: '00:00:30'
             - service: switch.turn_off
-              entity_id: switch.rele_aqara_vodoprovodnye_krany_switch
+              entity_id: switch.lumi_lumi_relay_c2acn01_switch
 
 # Automations
   automation:
@@ -156,14 +156,51 @@ water_leak_protection:
       trigger:
         - platform: state
           entity_id:
-            - switch.rele_aqara_vodoprovodnye_krany_switch
-            - switch.rele_aqara_vodoprovodnye_krany_switch_2
+            - switch.lumi_lumi_relay_c2acn01_switch
+            - switch.lumi_lumi_relay_c2acn01_switch_2
           to: 'on'
           for: "00:01:00"
       action:
         service: switch.turn_off
         data:
           entity_id: "{{ trigger.entity_id }}"
+
+    # Software Interlock
+    - alias: Valves Relay Software Interlock
+      id: f16be388-8c31-43d0-905b-d9c31968414c
+      trigger:
+        - platform: state
+          entity_id: switch.lumi_lumi_relay_c2acn01_switch
+          to: "on"
+          id: open
+        - platform: state
+          entity_id: switch.lumi_lumi_relay_c2acn01_switch_2
+          to: "on"
+          id: close
+      action:
+        - choose:
+          - alias: "open_channel_to_on"
+            conditions:
+              - condition: trigger
+                id: "open"
+            sequence:
+              - if:
+                  - "{{ is_state('switch.lumi_lumi_relay_c2acn01_switch_2', 'on') }}"
+                then:
+                  - service: switch.turn_off
+                    target:
+                      entity_id: switch.lumi_lumi_relay_c2acn01_switch_2
+          - alias: "close_channel_to_on"
+            conditions:
+              - condition: trigger
+                id: "close"
+            sequence:
+              - if:
+                  - "{{ is_state('switch.lumi_lumi_relay_c2acn01_switch', 'on') }}"
+                then:
+                  - service: switch.turn_off
+                    target:
+                      entity_id: switch.lumi_lumi_relay_c2acn01_switch
 
     # Оповещения
     - alias: Оповещения об активации датчиков [notify to group flat]

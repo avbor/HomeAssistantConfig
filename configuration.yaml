@@ -222,9 +222,9 @@ zha:
       otau_directory: /config/zigpy_ota
       ikea_provider: true
   device_config:
-    00:15:8d:00:05:78:c1:d0-1:
+    00:15:8d:00:05:4e:ac:c7-1:
       type: "switch"
-    00:15:8d:00:05:78:c1:d0-2:
+    00:15:8d:00:05:4e:ac:c7-2:
       type: "switch"
 
 conversation:

@@ -27,3 +27,19 @@ cards:
         tap_action:
           action: call-service
           service: shell_command.route_site_through_vpn
+      - type: markdown
+        content: "### <center> Включить VPN для устройства </center>"
+      - type: horizontal-stack
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: switch.keenetic_vpn_lenovo_tb128xu
+                name: Lenovo M10
+                icon: mdi:tablet
+              - entity: switch.keenetic_vpn_mi8
+                name: Xiaomi Mi 8
+                icon: mdi:cellphone
+              - entity: switch.keenetic_vpn_xbox_01
+                name: XBox
+                icon: mdi:microsoft-xbox

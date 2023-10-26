@@ -357,6 +357,13 @@
   condition:
     - condition: template
       value_template: >-
+        {{ not trigger.event.data.entity_id | regex_search
+          (
+          '^sensor\.galaxy_tab_a_8_0_2019_battery'
+          )
+        }}
+    - condition: template
+      value_template: >-
         {{ trigger.event.data.entity_id in (expand('group.battery_devices') | map(attribute='entity_id')) }}
     - condition: template
       value_template: >-

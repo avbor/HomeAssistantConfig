@@ -14,6 +14,18 @@ binary_sensor:
       - delayed_off: 15s
 
   - platform: ble_presence
+    name: ${room_name} Holy IoT Black-1 Presence
+    ibeacon_uuid: "fda50693-a4e2-4fb1-afcf-c6eb07647825"
+    ibeacon_major: 10011
+    ibeacon_minor: 1
+    device_class: "presence"
+    icon: mdi:key-chain-variant
+    filters:
+      - delayed_off: 30s
+    on_press:
+      - script.execute: ble_active_scan
+
+  - platform: ble_presence
     name: ${room_name} Holy IoT Green-1 Presence
     ibeacon_uuid: "fda50693-a4e2-4fb1-afcf-c6eb07647825"
     ibeacon_major: 10011
@@ -21,12 +33,12 @@ binary_sensor:
     device_class: "presence"
 
   - platform: ble_presence
-    name: ${room_name} Holy IoT Black-1 Presence
-    ibeacon_uuid: "fda50693-a4e2-4fb1-afcf-c6eb07647825"
+    name: ${room_name} Holy IoT White-1 Presence
+    ibeacon_uuid: "fda50693-a4e2-4fb1-afcf-c6eb07647826"
     ibeacon_major: 10011
-    ibeacon_minor: 1
+    ibeacon_minor: 3
     device_class: "presence"
-    icon: mdi:key-chain-variant
+    icon: mdi:car-key
     filters:
       - delayed_off: 30s
     on_press:

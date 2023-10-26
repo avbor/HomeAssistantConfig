@@ -10,7 +10,7 @@ cards:
       - type: horizontal-stack
         cards:
           - type: button
-            entity: switch.rele_aqara_vodoprovodnye_krany_switch_2
+            entity: switch.lumi_lumi_relay_c2acn01_switch_2
             name: Закрыть
             icon: mdi:water-remove-outline
             icon_height: 64px
@@ -28,7 +28,7 @@ cards:
                 entity_id: script.water_valves_close
 
           - type: button
-            entity: switch.rele_aqara_vodoprovodnye_krany_switch
+            entity: switch.lumi_lumi_relay_c2acn01_switch
             name: Открыть
             icon: mdi:water-check-outline
             icon_height: 64px

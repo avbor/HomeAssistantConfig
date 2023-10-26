@@ -25,10 +25,23 @@ esp32_ble_tracker:
       then:
         - lambda: 'id(black1_battery).publish_state(x[1]);'
 
+    - mac_address: E6:9F:37:5B:1D:DA
+      service_uuid: "5242"
+      then:
+        - lambda: 'id(white1_battery).publish_state(x[1]);'
+
 sensor:
   - platform: template
     name: "Holy-IoT Black-1 Battery"
     id: black1_battery
+    device_class: "battery"
+    unit_of_measurement: "%"
+    entity_category: "diagnostic"
+    accuracy_decimals: 0
+
+  - platform: template
+    name: "Holy-IoT White-1 Battery"
+    id: white1_battery
     device_class: "battery"
     unit_of_measurement: "%"
     entity_category: "diagnostic"
