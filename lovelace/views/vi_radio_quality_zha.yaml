@@ -1,6 +1,6 @@
-title: Radio Quality [ZHA]
+title: ZHA
 path: zha-net
-icon: mdi:zigbee
+#icon: mdi:zigbee
 panel: true
 cards:
   - type: vertical-stack

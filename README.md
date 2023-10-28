@@ -32,13 +32,15 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 
 **UPS:**
 
-- APC SmartUPS 1500 (SMT1500I)
+- APC SmartUPS 1500 (SMT1500I)\
+  Integration "Network UPS Tools (NUT)"
 
 **Network:**
 
 _Main site (city apartment):_
 
-- Keenetic Peak ([KN-2710](https://keenetic.ru/ru/keenetic-peak)) as Router, WiFi Mesh Controller and Wireguard VPN Server\Client\
+- Keenetic Peak ([KN-2710](https://keenetic.ru/ru/keenetic-peak)) as Router, WiFi Mesh Controller, DNS and DHCP Servers\
+  and Wireguard VPN Server\Client\
   2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
@@ -60,18 +62,24 @@ _Remote site (country house):_
   Integration "Xiaomi Gateway (Aqara)", not used for now.
 
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
-  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)
+  Not used for now.
 
 - Xiaomi Multi-Mode Gateway 2 (Hub 2) EU (DMWG03LM, lumi.gateway.mgl001)\
-  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) and "Zigbee2MQTT"
 
 - Aqara Hub E1 (ZHWG16LM)\
-  Not used for now
+  Not used for now.
 
 - Phoscon ConBee 2 by Dresden Elektronik\
   Integration "Zigbee Home Automation (ZHA)"
 
+- Sonoff ZBDongle-E\
+  Integration "Zigbee2MQTT" and "Thread" (Milti-PAN firmware & Silicon Labs Multiprotocol add-on)
+
 - ESP32 D1 Mini with _bluetooth_proxy_ component x5\
+  Integration "ESPHome"
+
+- M5Stack ATOM Lite ESP32 with _bluetooth_proxy_ component\
   Integration "ESPHome"
 
 - UGREEN CM109 (CSR8510A10) USB BT 5.0 Dongle\
@@ -80,7 +88,7 @@ _Remote site (country house):_
 #### WiFi Devices:
 - Relays:
   - Sonoff MINI & MINI R2\
-  Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN)
+  Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN) & "ESPHome"
 
   - Sonoff Basic R2 flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
@@ -99,7 +107,7 @@ _Remote site (country house):_
   Integration "ESPHome"
 
   - BroadLink SP4L-EU\
-  Integration "Broadlink"
+  Integration "Broadlink", not used for now.
 
 - Light:
   - Yeelight LED Color Bulb (YLDP03YL, yeelink.light.color3)\
@@ -122,10 +130,10 @@ _Remote site (country house):_
   Integration "Xiaomi Miio"
 
   - Xiaomi Dafang 1080p (ZRM4040RT) flashed to [Xiaomi DaFang Hacks](https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks)\
-  Integrations "Generic Camera" & "MJPEG IP Camera"
+  Integrations "Generic Camera" & "MJPEG IP Camera" via [go2rtc](https://github.com/AlexxIT/go2rtc)
 
   - Reolink [RLC-510A](https://reolink.com/product/rlc-510a/)\
-    Integration "Generic Camera" and "Reolink Dev" by [fwestenberg](https://github.com/fwestenberg/reolink_dev)
+    Integration "Generic Camera" via [go2rtc](https://github.com/AlexxIT/go2rtc) and "Reolink IP NVR/camera"
 
   - Tuya SmartIR Remote (UFO-R1 and similar) flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
@@ -208,7 +216,7 @@ _Remote site (country house):_
   Integration "Google Cast"
 
   - Google Home Mini\
-  Integration "Google Cast"
+  Integration "Google Cast", not used for now.
 
   - Yandex Station Lite\
   Integration "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
@@ -251,10 +259,15 @@ Integration "Fully Kiosk Browser"
 - Nginx
 - Transmission
 - Plex
-- Frigate
+- Containers
+  - [Frigate](https://github.com/blakeblackshear/frigate)
+  - [go2rtc](https://github.com/AlexxIT/go2rtc)
+  - hlsproxy
+  - xteve
+  - Watchtower
 
 **Storage:**
-- DSM 7.1
+- DSM 7.2
 - Virtual Machine Manager
 - Photos
 - Download Station
@@ -273,6 +286,8 @@ Integration "Fully Kiosk Browser"
   - Zabbix
   - MySQL
   - Grafana
+  - vlmcsd
+  - proxy4plex
 
 **Used DB:**
 - MariaDB
@@ -289,6 +304,11 @@ Integration "Fully Kiosk Browser"
 - Visual Studio Code
 - Glances
 - phpMyAdmin
+- Silicon Labs Multiprotocol
+- [Multipan Flasher](https://github.com/darkxst/multipan_flasher)
+- Zigbee2MQTT (Multiple instances)
+- Matter Server
+- Frigate Proxy
 
 **Mobile Apps:**
 - [Home Assistant](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android) official app on Android\

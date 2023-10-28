@@ -3,6 +3,8 @@ views:
   - !include views/vi_system.yaml
   - !include views/vi_sysperf.yaml
   - !include views/vi_battery.yaml
+  - !include views/vi_aux_tools.yaml
   - !include views/vi_radio_quality_gw3.yaml
   - !include views/vi_radio_quality_zha.yaml
-  - !include views/vi_aux_tools.yaml
+  - !include views/vi_z2m_1.yaml
+  - !include views/vi_z2m_2.yaml

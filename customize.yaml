@@ -126,3 +126,5 @@ sensor.ha_vm_disk_sda_session_read:
 sensor.ha_vm_disk_sda_session_write:
   state_class: total
   device_class: data_size
+sensor.0x00158d000413b210_gas_density:
+  unit_of_measurement: "% LEL"

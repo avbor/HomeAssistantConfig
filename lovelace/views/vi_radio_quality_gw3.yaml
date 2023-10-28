@@ -1,6 +1,6 @@
-title: Radio Quality [GW 3]
+title: GW3
 path: gw3
-icon: mdi:radio-tower
+#icon: mdi:radio-tower
 panel: true
 cards:
   - type: vertical-stack
@@ -18,15 +18,15 @@ cards:
           - data: friendly_name
             name: Friendly Name
             modify: '(x+"").replace(/ Gateway$/,"")'
-          - data: network_pan_id
-            name: Network PAN ID
-            modify: 'x == "" ? "-" : x+""'
-          - data: radio_tx_power
-            name: Radio TX Power
-            modify: 'isNaN(parseInt(x, 10)) ? "-" : parseInt(x, 10)'
-          - data: radio_channel
-            name: Radio Channel
-            modify: 'isNaN(parseInt(x, 10)) ? "-" : parseInt(x, 10)'
+#          - data: network_pan_id
+#            name: Network PAN ID
+#            modify: 'x == "" ? "-" : x+""'
+#          - data: radio_tx_power
+#            name: Radio TX Power
+#            modify: 'isNaN(parseInt(x, 10)) ? "-" : parseInt(x, 10)'
+#          - data: radio_channel
+#            name: Radio Channel
+#            modify: 'isNaN(parseInt(x, 10)) ? "-" : parseInt(x, 10)'
           - data: free_mem
             name: Memory Free (KB)
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
@@ -51,8 +51,8 @@ cards:
           - data: serial
             name: BT Err
             modify: 'isNaN(parseInt(x.bluetooth_oe, 10)) ? 0 : parseInt(x.bluetooth_oe, 10)'
-          - data: rssi
-            name: RSSI
+#          - data: rssi
+#            name: RSSI
           - data: uptime
             name: Gateway Uptime
             modify: x+''
@@ -74,72 +74,72 @@ cards:
           td.left: "padding: 10px 10px 10px 10px"
           th.left: "padding: 0px 0px 10px 10px"
       # ZigBee
-      - type: markdown
-        content: "### <center> ZigBee </center>"
-      - type: "custom:flex-table-card"
-        clickable: false
-        entities:
-          include:
-            - sensor.*_zigbee
-        sort_by: ieee
-        columns:
-          - data: friendly_name
-            name: Friendly Name
-            modify: 'x.replace(/ Zigbee$/,"")'
-          - data: ieee
-            name: IEEE
-            modify: (x+'').toLowerCase()
-          - data: nwk
-            name: NWK
-            modify: (x+'').replace(/^0x/,"")
-          - data: parent
-            name: Parent
-            modify: (x+'').replace(/^0x/,"").toLowerCase()
-          - data: type
-            name: Type
-            modify: 'x == "" ? "-" : (x+"").replace(/^-$/, "device")'
-          - data: device_fw_ver
-            name: FW
-            modify: 'x == "" ? "-" : x+""'
-          - data: msg_received
-            name: Received
-            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-          - data: msg_missed
-            name: Missed
-            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-          - data: unresponsive
-            name: Unresponsive
-            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-          - data: new_resets
-            name: Resets
-            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-          - data: linkquality
-            name: LQI
-            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
-          - data: rssi
-            name: RSSI
-            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
-          - data: last_msg
-            name: Last Message
-            modify: x+''
-          - data: available
-            name: Available
-            modify: 'x === true ? "✓" : x+""'
-          - data: state
-            name: Last Seen
-            modify: >
-              var dt = new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x)));
-              isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""
-        css:
-          table+: "padding-top: 15px;"
-          "tbody tr:nth-child(even)": "background-color: #a2542f6;"
-          td.left: "padding: 10px 10px 10px 10px"
-          th.left: "padding: 0px 0px 10px 10px"
+#      - type: markdown
+#        content: "### <center> ZigBee </center>"
+#      - type: "custom:flex-table-card"
+#        clickable: false
+#        entities:
+#          include:
+#            - sensor.*_zigbee
+#        sort_by: ieee
+#        columns:
+#          - data: friendly_name
+#            name: Friendly Name
+#            modify: 'x.replace(/ Zigbee$/,"")'
+#          - data: ieee
+#            name: IEEE
+#            modify: (x+'').toLowerCase()
+#          - data: nwk
+#            name: NWK
+#            modify: (x+'').replace(/^0x/,"")
+#          - data: parent
+#            name: Parent
+#            modify: (x+'').replace(/^0x/,"").toLowerCase()
+#          - data: type
+#            name: Type
+#            modify: 'x == "" ? "-" : (x+"").replace(/^-$/, "device")'
+#          - data: device_fw_ver
+#            name: FW
+#            modify: 'x == "" ? "-" : x+""'
+#          - data: msg_received
+#            name: Received
+#            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
+#          - data: msg_missed
+#            name: Missed
+#            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
+#          - data: unresponsive
+#            name: Unresponsive
+#            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
+#          - data: new_resets
+#            name: Resets
+#            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
+#          - data: linkquality
+#            name: LQI
+#            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+#          - data: rssi
+#            name: RSSI
+#            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+#          - data: last_msg
+#            name: Last Message
+#            modify: x+''
+#          - data: available
+#            name: Available
+#            modify: 'x === true ? "✓" : x+""'
+#          - data: state
+#            name: Last Seen
+#            modify: >
+#              var dt = new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x)));
+#              isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""
+#        css:
+#          table+: "padding-top: 15px;"
+#          "tbody tr:nth-child(even)": "background-color: #a2542f6;"
+#          td.left: "padding: 10px 10px 10px 10px"
+#          th.left: "padding: 0px 0px 10px 10px"
       ###### iframe with the graph of the "last missed" from Grafana ######
       ###### Query example: SELECT "last_missed" FROM "autogen"."state" WHERE ("domain" = 'sensor') AND $timeFilter GROUP BY "friendly_name" ######
-      - type: iframe
-        url: !secret graf_url_zigbee_last_missed
-        aspect_ratio: 10%
+#      - type: iframe
+#        url: !secret graf_url_zigbee_last_missed
+#        aspect_ratio: 10%
       ######---------------------------------------------------------######
       # Bluetooth
       - type: markdown

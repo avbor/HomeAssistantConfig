@@ -20,6 +20,8 @@ resources:
     type: module
   - url: /hacsfiles/ha-yandex-icons/yandex-icons.js
     type: module
+  - url: /local/community/custom-brand-icons/custom-brand-icons.js
+    type: js
 dashboards:
   dash-chouse:
     mode: yaml
