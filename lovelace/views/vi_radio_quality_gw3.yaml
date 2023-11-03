@@ -124,7 +124,7 @@ cards:
 #            modify: x+''
 #          - data: available
 #            name: Available
-#            modify: 'x === true ? "✓" : x+""'
+#            modify: 'x === true ? "✓" : "✗"'
 #          - data: state
 #            name: Last Seen
 #            modify: >
@@ -162,7 +162,7 @@ cards:
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
           - data: available
             name: Available
-            modify: 'x === true ? "✓" : x+""'
+            modify: 'x === true ? "✓" : "✗"'
           - data: state
             name: Last Seen
             modify: >
