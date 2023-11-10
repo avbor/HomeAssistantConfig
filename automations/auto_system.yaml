@@ -147,45 +147,45 @@
         {% endif -%}
       entity_id: automation.device_needs_attention_notify_to_group_system
 
-- alias: Restart go2rtc addon
-  id: 928847e4-3bd6-4d95-ba15-90c5b023b8a4
-  trigger:
-    - platform: time_pattern
-      hours: "/2"
-      minutes: "44"
-  action:
-    #- service: hassio.addon_restart
-    #  data:
-    #    addon: a889bffc_go2rtc
-    - service: rest_command.restart_go2rtc
-    - delay: "00:00:10"
-    - service: homeassistant.update_entity
-      target:
-        entity_id:
-          - camera.reolinkcam_01_rtsp
-          - camera.reolinkcam_02_rtsp
-    - delay: "00:00:05"
-    - choose:
-        - alias: Screen On
-          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'on') }}"
-          sequence:
-            - service: button.press
-              target:
-                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
-        - alias: Screen Off
-          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'off') }}"
-          sequence:
-            - service: switch.turn_on
-              target:
-                entity_id: switch.galaxy_tab_a_8_0_2019_screen
-            - delay: "00:00:05"
-            - service: button.press
-              target:
-                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
-            - delay: "00:00:15"
-            - service: switch.turn_off
-              target:
-                entity_id: switch.galaxy_tab_a_8_0_2019_screen
+#- alias: Restart go2rtc addon
+#  id: 928847e4-3bd6-4d95-ba15-90c5b023b8a4
+#  trigger:
+#    - platform: time_pattern
+#      hours: "/2"
+#      minutes: "44"
+#  action:
+#    #- service: hassio.addon_restart
+#    #  data:
+#    #    addon: a889bffc_go2rtc
+#    - service: rest_command.restart_go2rtc
+#    - delay: "00:00:10"
+#    - service: homeassistant.update_entity
+#      target:
+#        entity_id:
+#          - camera.reolinkcam_01_rtsp
+#          - camera.reolinkcam_02_rtsp
+#    - delay: "00:00:05"
+#    - choose:
+#        - alias: Screen On
+#          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'on') }}"
+#          sequence:
+#            - service: button.press
+#              target:
+#                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
+#        - alias: Screen Off
+#          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'off') }}"
+#          sequence:
+#            - service: switch.turn_on
+#              target:
+#                entity_id: switch.galaxy_tab_a_8_0_2019_screen
+#            - delay: "00:00:05"
+#            - service: button.press
+#              target:
+#                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
+#            - delay: "00:00:15"
+#            - service: switch.turn_off
+#              target:
+#                entity_id: switch.galaxy_tab_a_8_0_2019_screen
 
 - alias: Update HA DB SQL sensors
   id: e41348f5-2915-4a51-8d88-e5f00e7c0b67

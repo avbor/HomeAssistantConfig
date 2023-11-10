@@ -19,7 +19,7 @@ cards:
                 type: custom:multiple-entity-row
                 name: За окном
                 entities:
-                  - entity: sensor.lumi_lumi_sen_ill_mgl01_illuminance
+                  - entity: sensor.outdoor_illuminance
                     name: false
                   - entity: sensor.th_kukhnia_za_oknom_humidity
                     name: false
@@ -217,7 +217,8 @@ cards:
       # --- Карта:
       - type: conditional
         conditions:
-          - entity: group.devices_to_map
+#          - entity: group.devices_to_map
+          - entity: group.persons_to_map
             state: "not_home"
           - entity: binary_sensor.coutry_house_presence
             state: "off"
@@ -301,6 +302,7 @@ cards:
                 name: Открыть автоматически (однократно)
               - entity: switch.domofon_automatically_reject
                 name: Отклонять все вызовы
+                icon: mdi:door-closed-cancel
           - type: horizontal-stack
             cards:
               - type: button
@@ -316,6 +318,7 @@ cards:
               - type: button
                 show_name: false
                 name: Отклонить
+                icon: mdi:door-closed-cancel
                 icon_height: 32px
                 tap_action:
                   action: call-service
@@ -522,6 +525,14 @@ cards:
           - entity: binary_sensor.toilet_extractor_fan
             name: Туалет
             icon: mdi:fan
+          - entity: binary_sensor.bathroom_high_humidity
+            type: custom:multiple-entity-row
+            name: Высокая влажность
+            icon: mdi:water-circle
+            state_header: "Ванная"
+            entities:
+              - entity: binary_sensor.toilet_high_humidity
+                name: Туалет
           # Кондиционеры
           - type: section
             label: Кондиционеры

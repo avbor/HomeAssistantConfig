@@ -15,6 +15,13 @@ devices_to_map:
     - device_tracker.2109119dg
     - device_tracker.mi8_miphone_2
 
+persons_to_map:
+  all: true
+  entities:
+    - person.alexander
+    - person.irina
+    - person.egor
+
 all_tv:
   name: Все телевизоры
   entities:

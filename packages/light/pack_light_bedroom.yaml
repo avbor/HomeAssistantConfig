@@ -4,6 +4,12 @@
 
 bedroom_light_pack:
 
+  # Input Boolean
+  input_boolean:
+
+    bedroom_light_show_settings:
+      icon: mdi:tune-variant
+
   # Input Datetime
   input_datetime:
 

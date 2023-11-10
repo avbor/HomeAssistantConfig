@@ -4,6 +4,26 @@
 
 nursery_light_pack:
 
+  # Input Boolean
+  input_boolean:
+
+    nursery_light_show_settings:
+      icon: mdi:tune-variant
+
+    nursery_window_light_auto:
+      icon: mdi:lightbulb-auto
+
+  # Input Numbers
+  input_number:
+
+    nursery_window_light_illuminance_threshold:
+      icon: mdi:theme-light-dark
+      unit_of_measurement: "lx"
+      min: 100
+      max: 2000
+      step: 10
+      mode: box
+
   # Light
   light:
 
@@ -141,6 +161,72 @@ nursery_light_pack:
               - service: light.toggle
                 data:
                   entity_id: light.detskaia_podsvetka_na_okne
+
+    - alias: "Подсветка на окне в Детской"
+      id: 319b4fe1-b76d-459f-ac43-3187f0c9079a
+      trigger:
+        - platform: numeric_state
+          entity_id: sensor.outdoor_illuminance
+          below: input_number.nursery_window_light_illuminance_threshold
+          for: "00:10:00"
+          id: "dark"
+        - platform: numeric_state
+          entity_id: sensor.outdoor_illuminance
+          above: input_number.nursery_window_light_illuminance_threshold
+          for: "00:10:00"
+          id: "lightly"
+      condition: "{{ is_state('input_boolean.nursery_window_light_auto', 'on') }}"
+      action:
+        choose:
+          - alias: Darkens (Turn On)
+            conditions:
+              - condition: trigger
+                id: "dark"
+            sequence:
+              - condition: state
+                entity_id: light.detskaia_podsvetka_na_okne
+                state: "off"
+              - service: light.turn_on
+                data:
+                  entity_id: light.detskaia_podsvetka_na_okne
+          - alias: Brightens (Turn Off)
+            conditions:
+              - condition: or
+                conditions:
+                  - condition: trigger
+                    id: "lightly"
+            sequence:
+              - condition: state
+                entity_id: light.detskaia_podsvetka_na_okne
+                state: "on"
+              - service: light.turn_off
+                data:
+                  entity_id: light.detskaia_podsvetka_na_okne
+
+    - alias: "Лампы на столе в Детской"
+      id: 2d312381-a7c3-4d33-874b-d7771d8ff178
+      trigger:
+        - platform: time
+          at: "00:30:00"
+          id: "time_off"
+      action:
+        choose:
+          - alias: Time (Turn Off)
+            conditions:
+              - condition: trigger
+                id: "time_off"
+            sequence:
+              - parallel:
+                  - sequence:
+                      - condition: "{{ is_state('light.ikea_e14_level_light_color_on_off', 'on') }}"
+                      - service: light.turn_off
+                        target:
+                          entity_id: light.ikea_e14_level_light_color_on_off
+                  - sequence:
+                      - condition: "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light', 'on') }}"
+                      - service: light.turn_off
+                        target:
+                          entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
 
     - alias: "Sunrise Lighting (Nursery)"
       id: d50bfe78-2e35-4870-a24c-71d0f6ebf969

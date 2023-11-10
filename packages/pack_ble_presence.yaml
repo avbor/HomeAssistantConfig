@@ -70,6 +70,45 @@ ble_presence_pack:
   # Automations
   automation:
 
+    - alias: Forgotten car key - Alex
+      id: abdaa9e1-cfbc-4c00-b22c-db82f01cd214
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.amazfit_gtr_4_presence
+          from: "on"
+          to: "off"
+      condition:
+        - condition: state
+          entity_id: binary_sensor.holy_iot_white_1_presence
+          state: "on"
+        - condition: state
+          entity_id: binary_sensor.holy_iot_black_1_presence
+          state: "off"
+      action:
+        - wait_template: "{{ is_state('binary_sensor.holy_iot_white_1_presence', 'off') }}"
+          timeout: "00:00:30"
+        - if:
+            - "{{ not wait.completed }}"
+          then:
+            - parallel:
+                - service: telegram_bot.send_message
+                  data:
+                    target: !secret tlg_stall_id
+                    parse_mode: html
+                    title: "<b>Внимание!</b>"
+                    message: "Возможно, ты забыл ключ от машины!"
+                - service: notify.mobile_app_kb2003
+                  data:
+                    title: "Ключ от машины!"
+                    message: "Возможно, ты забыл ключ от машины..."
+                    data:
+                      ttl: 0
+                      priority: high
+                      channel: alarm_stream
+                      importance: max
+                      color: red
+                      clickAction: entityId:binary_sensor.holy_iot_white_1_presence
+
     - alias: Forgotten school pass reminder - Egor
       id: 0a72e0b9-d7f2-41b9-90b3-5d1a601de887
       trigger:

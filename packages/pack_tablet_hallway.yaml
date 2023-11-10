@@ -31,7 +31,12 @@ tablet_hallway_pack:
                 target:
                   entity_id: media_player.galaxy_tab_a_8_0_2019
                 data:
-                  volume_level: 1
+                  volume_level: >-
+                    {% if is_state('binary_sensor.time_between_21_08','off') -%}
+                      0.8
+                    {% else -%}
+                      0.3
+                    {% endif -%}
           - alias: To Off
             conditions: "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
             sequence:

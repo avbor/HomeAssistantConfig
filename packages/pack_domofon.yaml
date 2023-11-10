@@ -4,6 +4,13 @@
 
 domofon_pack:
 
+  yandex_station_intents:
+    intents:
+      Открой домофон:
+        extra_phrases:
+          - Домофон открой
+        say_phrase: "{{ ['Окей', 'Хорошо', 'Открываю']|random }}"
+
   automation:
 
     - alias: Domofon - Opened by Button Notification
@@ -30,12 +37,30 @@ domofon_pack:
         entity_id: binary_sensor.domofon_incoming_call
         to: "on"
       action:
-        service: notify.telegram_group_flat_1
-        data:
-          message: "_Домофон_: входящий звонок... {% if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') %}(*откроется автоматически*){% endif %}"
-          data:
-            inline_keyboard:
-              - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
+        - parallel:
+            - service: notify.telegram_group_flat_1
+              data:
+                message: "_Домофон_: входящий звонок... {% if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') %}(*откроется автоматически*){% endif %}"
+                data:
+                  inline_keyboard:
+                    - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
+            - service: script.domofon_alice_notify
+
+    - alias: Domofon - Alice Intent control
+      trigger:
+        - platform: event
+          event_type: yandex_intent
+          event_data:
+            text: Открой домофон
+          id: "open"
+      action:
+        choose:
+          - alias: Open Door
+            conditions:
+              - condition: trigger
+                id: "open"
+            sequence:
+              - service: esphome.domofon_accept_call
 
     - alias: Domofon - Telegram Control - domofon_open
       id: 99d5c580-c382-48b3-bd2d-f6eb00b62c31
@@ -238,3 +263,49 @@ domofon_pack:
                 - service: notify.telegram_group_flat_1
                   data:
                     message: "_Домофон_: отключен режим однократного авто-открытия."
+
+  script:
+
+    domofon_alice_notify:
+      sequence:
+        - service: media_player.volume_set
+          data:
+            entity_id: media_player.yandex_station_mini2_gostinaia
+            volume_level: >-
+              {% set time = now().hour -%}
+              {% if time >= 21 or time < 9 -%}
+                0.5
+              {% else -%}
+                0.7
+              {% endif -%}
+        - service: media_player.play_media
+          entity_id: media_player.yandex_station_mini2_gostinaia
+          data:
+            media_content_id: >-
+              {% set time = now().hour -%}
+              {% if time >= 21 or time < 9 -%}
+                <speaker is_whisper="true">Внимание! Звонок в домофон, открыть?
+              {% else -%}
+                Внимание! Звонок в домофон, открыть?
+              {% endif -%}
+            media_content_type: dialog:Домашний Ассистент:Домофон
+        - wait_for_trigger:
+            platform: event
+            event_type: yandex_intent
+            event_data:
+              session: { dialog: Домофон }
+          timeout:
+            seconds: 5
+        - choose:
+            - conditions: "{{ wait.trigger.event.data.text in ['да','конечно' ,'открой','открывай'] }}"
+              sequence:
+                - event: yandex_intent_response
+                  event_data:
+                    text: Открываю
+                - service: esphome.domofon_accept_call
+            - conditions: "{{ wait.trigger.event.data.text in ['нет'] }}"
+              sequence:
+                - event: yandex_intent_response
+                  event_data:
+                    text: Звонок сброшен
+                - service: esphome.domofon_reject_call

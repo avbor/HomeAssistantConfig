@@ -4,6 +4,12 @@
 
 kitchen_light_pack:
 
+  # Input Boolean
+  input_boolean:
+
+    kitchen_light_show_settings:
+      icon: mdi:tune-variant
+
   # Automations
   automation:
 
@@ -48,16 +54,11 @@ kitchen_light_pack:
         entity_id: binary_sensor.0x158d0003fac0ec_motion
         to: "on"
       condition:
-        #condition: and
-        #conditions:
-        #  - condition: time
-        #    after: "21:00"
-        #    before: "09:00"
         - condition: numeric_state
           entity_id: sensor.0x158d0003fac0ec_illuminance
           below: 10
       action:
-        service: homeassistant.turn_on
+        service: light.turn_on
         entity_id: light.kukhnia_lenta
 
     - alias: "Подсветка на кухне (сенсор движения - выкл)"
@@ -69,10 +70,6 @@ kitchen_light_pack:
         to: "off"
         for:
           minutes: 3
-      #condition:
-      #  condition: time
-      #  after: "21:00"
-      #  before: "09:00"
       action:
-        service: homeassistant.turn_off
+        service: light.turn_off
         entity_id: light.kukhnia_lenta

@@ -130,6 +130,8 @@ recorder:
       - binary_sensor.*_nut_gray_1_presence
       - sensor.air_monitor_lite_*_humidity
       - sensor.*_last_seen
+      - input_number.*_window_light_illuminance_threshold
+      - input_number.*_covers_illuminance_threshold
     entities:
       - sensor.time
       - sensor.date
@@ -300,3 +302,4 @@ schedule: !include_dir_merge_named entities/schedule
 yeelight: !include entities/yeelight/yeelight.yaml
 sonoff: !include entities/sonofflan/sonofflan.yaml
 #thermal_comfort: !include entities/thermal_comfort/thermal_comfort.yaml
+yandex_station_intents: !include entities/yandex_station_intents/yandex_station_intents.yaml

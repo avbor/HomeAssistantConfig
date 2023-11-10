@@ -98,29 +98,47 @@ cards:
                   entity: light.detskaia_girlianda_na_krovati
                   name: Гирлянда
                   icon: mdi:string-lights
-
-          - type: entities
-            entities:
-              - entity: automation.sunrise_lighting_nursery
-                name: "Включать свет (рабочие дни)"
-                icon: mdi:weather-sunset-up
-              - type: conditional
-                conditions:
-                  - entity: automation.sunrise_lighting_nursery
-                    state: "on"
-                row:
-                  entity: input_datetime.sunrise_in_nursery
-                  name: "Время включения"
-              - entity: automation.wakeup_radio_childrens
-                name: "Включать радио (рабочие дни)"
-                icon: mdi:radio
-              - type: conditional
-                conditions:
-                  - entity: automation.wakeup_radio_childrens
-                    state: "on"
-                row:
-                  entity: input_datetime.wakeup_radio_in_nursery
-                  name: "Время включения радио"
+          - type: button
+            entity: input_boolean.nursery_light_show_settings
+            name: "\U000021E7 Настройки \U000021E9"
+            show_state: false
+            show_icon: false
+            tap_action:
+              action: toggle
+          - type: conditional
+            conditions:
+              - entity: input_boolean.nursery_light_show_settings
+                state: "on"
+            card:
+              type: entities
+              entities:
+                - entity: input_boolean.nursery_window_light_auto
+                  name: Авто подсветка окна
+                  label: Подсветка окна
+                - entity: input_number.nursery_window_light_illuminance_threshold
+                  name: Порог (lux)
+                - type: section
+                - entity: automation.sunrise_lighting_nursery
+                  name: "Включать свет (рабочие дни)"
+                  icon: mdi:weather-sunset-up
+                - type: conditional
+                  conditions:
+                    - entity: automation.sunrise_lighting_nursery
+                      state: "on"
+                  row:
+                    entity: input_datetime.sunrise_in_nursery
+                    name: "Время включения"
+                - type: section
+                - entity: automation.wakeup_radio_childrens
+                  name: "Включать радио (рабочие дни)"
+                  icon: mdi:radio
+                - type: conditional
+                  conditions:
+                    - entity: automation.wakeup_radio_childrens
+                      state: "on"
+                  row:
+                    entity: input_datetime.wakeup_radio_in_nursery
+                    name: "Время включения радио"
 
   # Гостиная
   - type: vertical-stack
@@ -182,6 +200,25 @@ cards:
               name: Подсветка на окне
               icon: mdi:string-lights
 
+      - type: button
+        entity: input_boolean.livingroom_light_show_settings
+        name: "\U000021E7 Настройки \U000021E9"
+        show_state: false
+        show_icon: false
+        tap_action:
+          action: toggle
+      - type: conditional
+        conditions:
+          - entity: input_boolean.livingroom_light_show_settings
+            state: "on"
+        card:
+          type: entities
+          entities:
+            - entity: input_boolean.livingroom_window_light_auto
+              name: Авто подсветка окна
+            - entity: input_number.livingroom_window_light_illuminance_threshold
+              name: Порог (lux)
+
   # Кухня
   - type: vertical-stack
     cards:
@@ -219,14 +256,32 @@ cards:
               entity: light.kukhnia_lenta
               name: Подсветка
               icon: mdi:led-strip-variant
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
-            name: Автовключение подсветки (21:00 - 09:00)
-            icon: mdi:led-strip-variant
-          - entity: cover.kitchen_covers
-            name: Шторы
+      - type: button
+        entity: input_boolean.kitchen_light_show_settings
+        name: "\U000021E7 Настройки \U000021E9"
+        show_state: false
+        show_icon: false
+        tap_action:
+          action: toggle
+      - type: conditional
+        conditions:
+          - entity: input_boolean.kitchen_light_show_settings
+            state: "on"
+        card:
+          type: entities
+          show_header_toggle: false
+          entities:
+            - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vkl
+              name: Авто подсветка кухни
+              icon: mdi:led-strip-variant
+            - type: section
+            - entity: cover.kitchen_covers
+              name: Шторы
+              icon: mdi:window-shutter
+            - entity: input_boolean.kitchen_covers_auto
+              name: Авто шторы
+            - entity: input_number.kitchen_covers_illuminance_threshold
+              name: Порог (lux)
 
   # Спальня
   - type: vertical-stack
@@ -280,25 +335,37 @@ cards:
               entity: light.sonoff_1001045426
               name: Бра - Право
               icon: mdi:wall-sconce-flat
+      - type: button
+        entity: input_boolean.bedroom_light_show_settings
+        name: "\U000021E7 Настройки \U000021E9"
+        show_state: false
+        show_icon: false
+        tap_action:
+          action: toggle
       - type: conditional
         conditions:
-          - entity: light.spalnia_stol
-            state_not: "unavailable"
+          - entity: input_boolean.bedroom_light_show_settings
+            state: "on"
         card:
-          type: vertical-stack
-          cards:
-            - type: entities
-              entities:
-                - entity: automation.sunrise_lighting_bedroom
-                  name: "Включать свет (рабочие дни)"
-                  icon: mdi:weather-sunset-up
-                - type: conditional
-                  conditions:
-                    - entity: automation.sunrise_lighting_bedroom
-                      state: "on"
-                  row:
-                    entity: input_datetime.sunrise_in_bedroom
-                    name: "Время включения"
+          type: conditional
+          conditions:
+            - entity: light.spalnia_stol
+              state_not: "unavailable"
+          card:
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - entity: automation.sunrise_lighting_bedroom
+                    name: "Включать свет (рабочие дни)"
+                    icon: mdi:weather-sunset-up
+                  - type: conditional
+                    conditions:
+                      - entity: automation.sunrise_lighting_bedroom
+                        state: "on"
+                    row:
+                      entity: input_datetime.sunrise_in_bedroom
+                      name: "Время включения"
 
   # Ванная и Туалет
   - type: vertical-stack

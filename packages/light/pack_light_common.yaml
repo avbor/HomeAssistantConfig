@@ -4,6 +4,40 @@
 
 common_light_pack:
 
+  # Templates
+  template:
+
+    - trigger:
+        - platform: state
+          entity_id:
+            - sensor.lumi_lumi_sen_ill_mgl01_illuminance
+          not_to:
+            - unavailable
+            - unknown
+      unique_id: 529deb38-0e47-44bc-99dd-1d009a213643
+      sensor:
+        - name: "Outdoor Illuminance"
+          unique_id: 9bba1af5-7860-449f-bfd4-d0e355bab796
+          unit_of_measurement: lx
+          state_class: measurement
+          device_class: illuminance
+          icon: mdi:sun-wireless-outline
+          state: >-
+            {% if trigger.to_state.state != trigger.from_state.state %}
+              {{ states('sensor.lumi_lumi_sen_ill_mgl01_illuminance') }}
+            {% endif %}
+
+  # Sensors
+#  sensor:
+#
+#    # Avg Outdoor Illuminance
+#    - platform: min_max
+#      name: Average Outdoor Illuminance
+#      unique_id: af5a2d40-61c1-4f48-8db0-e252485f15d8
+#      type: median
+#      entity_ids:
+#        - sensor.lumi_lumi_sen_ill_mgl01_illuminance
+
   # Automations
   automation:
 

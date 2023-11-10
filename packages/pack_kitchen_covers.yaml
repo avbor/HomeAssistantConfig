@@ -4,6 +4,23 @@
 
 kitchen_covers_pack:
 
+  # Input Boolean
+  input_boolean:
+
+    kitchen_covers_auto:
+      icon: mdi:window-shutter-auto
+
+  # Input Numbers
+  input_number:
+
+    kitchen_covers_illuminance_threshold:
+      icon: mdi:theme-light-dark
+      unit_of_measurement: "lx"
+      min: 100
+      max: 2000
+      step: 10
+      mode: box
+
   cover:
 
     - platform: group
@@ -19,15 +36,16 @@ kitchen_covers_pack:
       id: 24f83b60-8392-4278-8725-6d1a33a0a483
       trigger:
         - platform: numeric_state
-          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          below: 500
+          entity_id: sensor.outdoor_illuminance
+          below: input_number.kitchen_covers_illuminance_threshold
           for: "00:10:00"
           id: "dark"
         - platform: numeric_state
-          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          above: 400
+          entity_id: sensor.outdoor_illuminance
+          above: input_number.kitchen_covers_illuminance_threshold
           for: "00:10:00"
           id: "lightly"
+      condition: "{{ is_state('input_boolean.kitchen_covers_auto', 'on') }}"
       action:
         choose:
           - alias: Darkens (Close)
@@ -35,6 +53,7 @@ kitchen_covers_pack:
               - condition: trigger
                 id: "dark"
             sequence:
+              - condition: "{{ is_state('cover.kitchen_covers', 'open') }}"
               - service: cover.close_cover
                 target:
                   entity_id: cover.kitchen_covers
@@ -43,6 +62,7 @@ kitchen_covers_pack:
               - condition: trigger
                 id: "lightly"
             sequence:
+              - condition: "{{ is_state('cover.kitchen_covers', 'closed') }}"
               - service: cover.open_cover
                 target:
                   entity_id: cover.kitchen_covers

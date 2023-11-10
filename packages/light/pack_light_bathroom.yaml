@@ -116,11 +116,20 @@ bathroom_light_pack:
                 - alias: To Off
                   conditions: "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
                   sequence:
-                    - condition: "{{ is_state('binary_sensor.trust_iaszone', 'off') }}"
-                    - condition: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
-                    - service: light.turn_off
-                      target:
-                        entity_id: light.sonoff_zbmini_04_on_off
+                    - parallel:
+                        - sequence:
+                            - condition: "{{ is_state('binary_sensor.trust_iaszone', 'off') }}"
+                            - condition: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
+                            - service: light.turn_off
+                              target:
+                                entity_id: light.sonoff_zbmini_04_on_off
+                        - sequence:
+                            - condition: "{{ is_state('fan.bathroom_extractor', 'on') }}"
+                            - condition: "{{ is_state('binary_sensor.bathroom_high_humidity', 'off') }}"
+                            - condition: "{{ is_state('binary_sensor.trust_iaszone', 'off') }}"
+                            - service: fan.turn_off
+                              target:
+                                entity_id: fan.bathroom_extractor
           - alias: Motion
             conditions:
               - condition: trigger

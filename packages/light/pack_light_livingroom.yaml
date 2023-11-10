@@ -4,6 +4,26 @@
 
 livingroom_light_pack:
 
+  # Input Boolean
+  input_boolean:
+
+    livingroom_light_show_settings:
+      icon: mdi:tune-variant
+
+    livingroom_window_light_auto:
+      icon: mdi:lightbulb-auto
+
+  # Input Numbers
+  input_number:
+
+    livingroom_window_light_illuminance_threshold:
+      icon: mdi:theme-light-dark
+      unit_of_measurement: "lx"
+      min: 100
+      max: 2000
+      step: 10
+      mode: box
+
   # Light
   light:
 
@@ -65,18 +85,19 @@ livingroom_light_pack:
       id: 32c18d2f-1d01-4458-b5e2-05048b73a3d7
       trigger:
         - platform: numeric_state
-          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          below: 550
+          entity_id: sensor.outdoor_illuminance
+          below: input_number.livingroom_window_light_illuminance_threshold
           for: "00:10:00"
           id: "dark"
         - platform: numeric_state
-          entity_id: sensor.lumi_lumi_sen_ill_mgl01_illuminance
-          above: 550
+          entity_id: sensor.outdoor_illuminance
+          above: input_number.livingroom_window_light_illuminance_threshold
           for: "00:10:00"
           id: "lightly"
         - platform: time
           at: "00:30:00"
           id: "time"
+      condition: "{{ is_state('input_boolean.livingroom_window_light_auto', 'on') }}"
       action:
         choose:
           - alias: Darkens (Turn On)
