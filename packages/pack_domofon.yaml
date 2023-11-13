@@ -274,9 +274,9 @@ domofon_pack:
             volume_level: >-
               {% set time = now().hour -%}
               {% if time >= 21 or time < 9 -%}
-                0.5
+                0.4
               {% else -%}
-                0.7
+                0.6
               {% endif -%}
         - service: media_player.play_media
           entity_id: media_player.yandex_station_mini2_gostinaia
@@ -295,9 +295,9 @@ domofon_pack:
             event_data:
               session: { dialog: Домофон }
           timeout:
-            seconds: 5
+            seconds: 10
         - choose:
-            - conditions: "{{ wait.trigger.event.data.text in ['да','конечно' ,'открой','открывай'] }}"
+            - conditions: "{{ wait.trigger.event.data.text in ['да','конечно' ,'открой', 'открыть', 'открывай'] }}"
               sequence:
                 - event: yandex_intent_response
                   event_data:
