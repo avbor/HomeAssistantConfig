@@ -181,6 +181,7 @@ _Remote site (country house):_
   - MiJia Light Sensor (GZCGQ01LM, lumi.sen_ill.mgl01)
   - Trust Motion Sensor (ZPIR-8000)
   - IKEA TRÅDFRI Motion Sensor (E1745)
+  - TuYa Human Breathe Sensor (ZY-M100-S_2, TS0601, _TZE204_qasjif9e)
 
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)

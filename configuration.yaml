@@ -132,6 +132,7 @@ recorder:
       - sensor.*_last_seen
       - input_number.*_window_light_illuminance_threshold
       - input_number.*_covers_illuminance_threshold
+      - sensor.*_target_distance
     entities:
       - sensor.time
       - sensor.date

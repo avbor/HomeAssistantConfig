@@ -29,6 +29,10 @@ bathroom_light_pack:
           entity_id: binary_sensor.trust_iaszone
           to: "on"
           id: "motion_on"
+        - platform: state
+          entity_id: binary_sensor.0xa4c138792ba1d268_presence
+          to: "on"
+          id: "presence_on"
         - platform: event
           event_type: zha_event
           event_data:
@@ -43,6 +47,12 @@ bathroom_light_pack:
                 id: "timer_idle"
             sequence:
               choose:
+                - alias: Presence On
+                  conditions: "{{ states('binary_sensor.0xa4c138792ba1d268_presence') == 'on' }}"
+                  sequence:
+                    - service: timer.start
+                      target:
+                        entity_id: timer.bathroom_presence
                 - alias: Motion On
                   conditions: "{{ states('binary_sensor.trust_iaszone') == 'on' }}"
                   sequence:
@@ -130,6 +140,14 @@ bathroom_light_pack:
                             - service: fan.turn_off
                               target:
                                 entity_id: fan.bathroom_extractor
+          - alias: Presence
+            conditions:
+              - condition: trigger
+                id: "presence_on"
+            sequence:
+              - service: timer.start
+                target:
+                  entity_id: timer.bathroom_presence
           - alias: Motion
             conditions:
               - condition: trigger
