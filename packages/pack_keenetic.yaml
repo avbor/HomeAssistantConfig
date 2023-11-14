@@ -4,6 +4,29 @@
 
 keenetic_pack:
 
+  # Sensors
+  sensor:
+
+    - platform: rest
+      name: keenetic_mgts_ip
+      unique_id: 2aa13ade-9d53-48a6-8183-f238b13804a4
+      resource: http://172.16.16.254:81/rci/show/interface?name=GigabitEthernet1
+      scan_interval: 300
+      value_template: "{{ value_json.address }}"
+      json_attributes:
+        - mask
+        - mac
+
+    - platform: rest
+      name: keenetic_beeline_ip
+      unique_id: ae884372-1412-4b84-a38f-41b2b64f9a95
+      resource: http://172.16.16.254:81/rci/show/interface?name=GigabitEthernet0/Vlan2
+      scan_interval: 300
+      value_template: "{{ value_json.address }}"
+      json_attributes:
+        - mask
+        - mac
+
   # Switches
   switch:
 
