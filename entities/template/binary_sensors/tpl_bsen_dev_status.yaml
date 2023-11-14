@@ -36,7 +36,7 @@
   - name: Washer Status
     unique_id: 6307f3c8-e3b1-4b6b-b9db-d3e1f0637b7c
     device_class: power
-    state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float(0)) > 5 }}"
+    state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float(0)) > 3 }}"
     delay_off:
       minutes: 1
     icon: mdi:washing-machine
