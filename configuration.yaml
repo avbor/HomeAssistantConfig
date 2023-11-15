@@ -33,34 +33,14 @@ homeassistant:
 # Features
 #################################################
 
-cloud:
+default_config:
+
 api:
-config:
+
 hassio:
-system_health:
-stream:
-zeroconf:
-ssdp:
-sun:
-map:
-mobile_app:
+
 wake_on_lan:
-person:
-logbook:
-history:
-tag:
-media_source:
-my:
-dhcp:
-image_upload:
-energy:
-usb:
-hardware:
-bluetooth:
-homeassistant_alerts:
-#wwlln:
-#cloud:
-#updater:
+
 
 http:
   #base_url: !secret external_url
