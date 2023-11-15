@@ -4,6 +4,16 @@
 
 keenetic_pack:
 
+  # Command Line
+  command_line:
+
+    - sensor:
+        name: external_ip_address
+        unique_id: e6e4ba30-d1fd-4fe1-98d6-9fb2a86521a9
+        icon: mdi:ip-outline
+        scan_interval: 300
+        command: "dig -4 +tcp +short  myip.opendns.com @resolver1.opendns.com"
+
   # Sensors
   sensor:
 
