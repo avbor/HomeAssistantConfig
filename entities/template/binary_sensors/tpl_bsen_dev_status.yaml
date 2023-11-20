@@ -64,6 +64,11 @@
     device_class: power
     state: "{{ not states('media_player.yandex_station_lite_detskaia') in ('paused', 'idle') }}"
 
+  - name: Yandex Station Lite Prikhozhaya Status
+    unique_id: 0b1e1235-9a6c-43b1-a510-4988c82d3d29
+    device_class: power
+    state: "{{ not states('media_player.yandex_station_lite_prikhozhaya') in ('paused', 'idle') }}"
+
   - name: Bathroom Extractor Fan
     unique_id: b1a90bf0-3308-475a-989b-cc528ab76001
     device_class: power

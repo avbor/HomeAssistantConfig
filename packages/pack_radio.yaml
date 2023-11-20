@@ -29,8 +29,11 @@ ha_radio:
       name: 'Где включить:'
       options:
         - Ванная (Home Mini)
+        - Гостинная (Яндекс)
         - Гостинная (TV)
-        - Детская (Home Mini)
+        - Спальня (Яндекс)
+#        - Детская (Home Mini)
+        - Детская (Яндекс)
         - Детская (TV)
       initial: Ванная (Home Mini)
       icon: mdi:speaker-wireless
@@ -61,26 +64,37 @@ ha_radio:
     radio_play:
       alias: Play Internet Radio
       sequence:
-        - choose:
-          - conditions: "{{ '(TV)' in states('input_select.output_device') }}"
-            sequence:
-              - service: shell_command.chromecast_tv_on
-                data:
-                  ip_addr: >-
-                    {% if is_state("input_select.output_device", "Гостинная (TV)") -%}
-                      "172.16.16.211"
-                    {% elif is_state("input_select.output_device", "Детская (TV)") -%}
-                      "172.16.16.212"
-                    {% endif %}
+        - if:
+            - "{{ '(TV)' in states('input_select.output_device') }}"
+          then:
+            - service: shell_command.chromecast_tv_on
+              data:
+                ip_addr: >-
+                  {% if is_state("input_select.output_device", "Гостинная (TV)") -%}
+                    "172.16.16.211"
+                  {% elif is_state("input_select.output_device", "Детская (TV)") -%}
+                    "172.16.16.212"
+                  {% endif %}
         - service: media_player.volume_set
-          data:
+          target:
             entity_id: "{{ states('input_text.output_device_to_play') }}"
+          data:
             volume_level: "{{ states.input_number.volume_radio.state }}"
-        - service: media_player.play_media
-          data:
-            entity_id: "{{ states('input_text.output_device_to_play') }}"
-            media_content_id: "{{ states('input_text.radio_url_to_play') }}"
-            media_content_type: music
+        - if:
+            - "{{ '(Яндекс)' in states('input_select.output_device') }}"
+          then:
+            - service: yandex_station.send_command
+              data:
+                entity_id: "{{ states('input_text.output_device_to_play') }}"
+                command: sendText
+                text: >-
+                  Включи радио {{ states('input_select.radio_station') }}
+          else:
+            - service: media_player.play_media
+              data:
+                entity_id: "{{ states('input_text.output_device_to_play') }}"
+                media_content_id: "{{ states('input_text.radio_url_to_play') }}"
+                media_content_type: music
 
     radio_stop:
       alias: Stop Internet Radio
@@ -140,6 +154,14 @@ ha_radio:
                 media_player.gostinaia
               {% elif is_state("input_select.output_device", "Детская (TV)") -%}
                 media_player.detskaia
+              {% elif is_state("input_select.output_device", "Ванная (Home Mini)") -%}
+                media_player.mini_v_vannoi
+              {% elif is_state("input_select.output_device", "Гостинная (Яндекс)") -%}
+                media_player.yandex_station_mini2_gostinaia
+              {% elif is_state("input_select.output_device", "Спальня (Яндекс)") -%}
+                media_player.yandex_station_mini2_spalnia
+              {% elif is_state("input_select.output_device", "Детская (Яндекс)") -%}
+                media_player.yandex_station_lite_detskaia
               {% endif %}
 
     - alias: "Radio - Volume Control"

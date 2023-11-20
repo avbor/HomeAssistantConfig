@@ -139,6 +139,14 @@ cards:
                   row:
                     entity: input_datetime.wakeup_radio_in_nursery
                     name: "Время включения радио"
+                - type: conditional
+                  conditions:
+                    - entity: automation.wakeup_radio_childrens
+                      state: "on"
+                  row:
+                    entity: input_text.wakeup_radio_in_nursery_query
+                    name: "Что включить?"
+                    icon: mdi:microphone-question-outline
 
   # Гостиная
   - type: vertical-stack

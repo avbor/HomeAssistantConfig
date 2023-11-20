@@ -13,6 +13,13 @@ wakeup_radio_pack:
       has_date: false
       has_time: true
 
+  # Input Text
+  input_text:
+
+    wakeup_radio_in_nursery_query:
+      name: Время включения радио в Детской - Запрос
+      icon: mdi:microphone-question-outline
+
   # Automations
   automation:
 
@@ -39,8 +46,8 @@ wakeup_radio_pack:
           data:
             entity_id: media_player.yandex_station_lite_detskaia
             command: sendText
-            text: Включи детское радио
-    #        text: Включи дедморозное шоу
+            text: >-
+              Включи {{ states('input_text.wakeup_radio_in_nursery_query') }}
         - delay: "00:00:10"
         - service: media_player.volume_set
           target:

@@ -2,9 +2,25 @@ title: Media
 path: media
 icon: mdi:television-play
 cards:
-  # --- Radio
+  # --- Radio & Music
   - type: vertical-stack
     cards:
+      - type: markdown
+        content: >
+          ### <center>Я.Музыка</center>
+      - type: entities
+        entities:
+          - input_text.yandex_station_start_stream_query
+          - input_select.yandex_station_start_stream_to
+      - type: button
+        show_name: false
+        icon_height: 32px
+        icon: mdi:play
+        tap_action:
+          action: call-service
+          service: script.turn_on
+          service_data:
+            entity_id: script.alice_start_stream_from_prikhozhaya
       - type: markdown
         content: >
           ### <center>Радио</center>
@@ -64,14 +80,27 @@ cards:
         entity: script.yanedx_station_tts_to
       - type: conditional
         conditions:
+          - entity: binary_sensor.yandex_station_lite_prikhozhaya_status
+            state_not: "on"
           - entity: binary_sensor.yandex_station_lite_detskaia_status
             state_not: "on"
           - entity: binary_sensor.yandex_station_mini2_gostinaia_status
+            state_not: "on"
+          - entity: binary_sensor.yandex_station_mini2_spalnia_status
             state_not: "on"
         card:
           type: markdown
           content: >
             *Все устройства бездействуют...*
+      - type: conditional
+        conditions:
+          - entity: media_player.yandex_station_lite_prikhozhaya
+            state_not: "paused"
+          - entity: media_player.yandex_station_lite_prikhozhaya
+            state_not: "idle"
+        card:
+          type: media-control
+          entity: media_player.yandex_station_lite_prikhozhaya
       - type: conditional
         conditions:
           - entity: media_player.yandex_station_lite_detskaia
@@ -318,25 +347,25 @@ cards:
           entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
 
   # --- Google
-#  - type: vertical-stack
-#    cards:
-#      - type: markdown
-#        content: >
-#          ### <center>Google</center>
-#      - type: conditional
-#        conditions:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Google</center>
+      - type: conditional
+        conditions:
 #          - entity: media_player.gostinaia
 #            state: "off"
 #          - entity: media_player.detskaia
 #            state: "off"
-#          - entity: media_player.mini_v_vannoi
-#            state: "off"
+          - entity: media_player.mini_v_vannoi
+            state: "off"
 #          - entity: media_player.kukhnia
 #            state: "off"
-#        card:
-#          type: markdown
-#          content: >
-#            *Все устройства бездействуют...*
+        card:
+          type: markdown
+          content: >
+            *Все устройства бездействуют...*
 #      - type: conditional
 #        conditions:
 #          - entity: media_player.gostinaia
@@ -351,13 +380,13 @@ cards:
 #        card:
 #          type: media-control
 #          entity: media_player.detskaia
-#      - type: conditional
-#        conditions:
-#          - entity: media_player.mini_v_vannoi
-#            state_not: "off"
-#        card:
-#          type: media-control
-#          entity: media_player.mini_v_vannoi
+      - type: conditional
+        conditions:
+          - entity: media_player.mini_v_vannoi
+            state_not: "off"
+        card:
+          type: media-control
+          entity: media_player.mini_v_vannoi
 #      - type: conditional
 #        conditions:
 #          - entity: media_player.kukhnia

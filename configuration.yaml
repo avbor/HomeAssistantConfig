@@ -72,6 +72,8 @@ logger:
       - "Received invalid packet from .* at offset .* while unpacking .*"
     zigpy_deconz.api:
       - "No response to 'Command.aps_data_indication' command with seq id .*"
+    inter_rao_energosbyt.api.moscow:
+      - ".* EnergosbytException..Client error: Cannot connect to host .*"
 
 system_log:
   max_entries: 50
@@ -242,6 +244,10 @@ calendar:
 yandex_station:
   include:
     - Водонагреватель
+  media_players:
+    - entity_id: media_player.mini_v_vannoi
+      name: Мини в Ванной
+      sync_volume: false
 
 start_time:
 

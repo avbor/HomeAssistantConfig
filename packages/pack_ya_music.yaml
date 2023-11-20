@@ -1,0 +1,120 @@
+#################################################
+# Package for Play Yandex Music
+#################################################
+
+alice_stream_pack:
+
+  # Input Text
+  input_text:
+
+    yandex_station_start_stream_query:
+      name: "Алиса, включи..."
+      initial: "Мою любимую музыку вперемешку"
+      icon: mdi:form-textbox
+
+  # Input Select
+  input_select:
+
+    yandex_station_start_stream_to:
+      name: 'Где включить:'
+      options:
+        - Мини в Ванной
+#        - Стинция в Детской
+#        - Стинция в Гостиной
+#        - Стинция в Спальне
+
+  script:
+
+    alice_start_stream_from_prikhozhaya:
+      alias: "Запуск стрима с колонки в Прихожей"
+      sequence:
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') != states('input_select.yandex_station_start_stream_to') }}"
+          then:
+            - repeat:
+                sequence:
+                  - service: media_player.select_source
+                    target:
+                      entity_id: media_player.yandex_station_lite_prikhozhaya
+                    data:
+                      source: >-
+                        {{ states('input_select.yandex_station_start_stream_to') }}
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') == states('input_select.yandex_station_start_stream_to') }}"
+                    timeout: "00:00:01"
+                until:
+                  - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') == states('input_select.yandex_station_start_stream_to') }}"
+                  - "{{ repeat.index <= 3 }}"
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'volume_level') != 0.1 }}"
+          then:
+            - repeat:
+                sequence:
+                  - service: media_player.volume_set
+                    data:
+                      entity_id: media_player.yandex_station_lite_prikhozhaya
+                      volume_level: 0.1
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'volume_level') == 0.1 }}"
+                    timeout: "00:00:01"
+                until:
+                  - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'volume_level') == 0.1 }}"
+                  - "{{ repeat.index <= 3 }}"
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'is_volume_muted') != true }}"
+          then:
+            - repeat:
+                sequence:
+                  - service: media_player.volume_mute
+                    target:
+                      entity_id: media_player.yandex_station_lite_prikhozhaya
+                    data:
+                      is_volume_muted: true
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'is_volume_muted') == true }}"
+                    timeout: "00:00:01"
+                until:
+                  - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'is_volume_muted') == true }}"
+                  - "{{ repeat.index <= 3 }}"
+
+        - service: yandex_station.send_command
+          target:
+            entity_id: media_player.yandex_station_lite_prikhozhaya
+          data:
+            command: sendText
+            text: >-
+              Включи {{ states('input_text.yandex_station_start_stream_query') }}
+
+        - wait_template: "{{ is_state('media_player.yandex_station_lite_prikhozhaya', 'playing') }}"
+          timeout: "00:00:10"
+        - if:
+            - "{{ not wait.completed }}"
+          then:
+            - service: media_player.media_pause
+              target:
+                entity_id: media_player.yandex_station_lite_prikhozhaya
+
+  # Automations
+  automation:
+
+    - alias: Синхронизация состояния Алисы в Прихожей с Мини в Ванной
+      id: 82c05e64-0259-4f54-8d17-952d241ef34e
+      trigger:
+        - platform: state
+          entity_id: media_player.mini_v_vannoi
+          from: playing
+          to: "off"
+      condition:
+        condition: state
+        entity_id: media_player.yandex_station_lite_prikhozhaya
+        state: playing
+      action:
+        - service: media_player.media_pause
+          target:
+            entity_id: media_player.yandex_station_lite_prikhozhaya
+        - delay: "00:00:01"
+        - service: media_player.select_source
+          target:
+            entity_id: media_player.yandex_station_lite_prikhozhaya
+          data:
+            source: "Станция"

@@ -293,19 +293,39 @@ domofon_pack:
             platform: event
             event_type: yandex_intent
             event_data:
-              session: { dialog: Домофон }
+              session:
+                dialog: Домофон
           timeout:
             seconds: 10
+          continue_on_timeout: false
         - choose:
             - conditions: "{{ wait.trigger.event.data.text in ['да','конечно' ,'открой', 'открыть', 'открывай'] }}"
               sequence:
-                - event: yandex_intent_response
-                  event_data:
-                    text: Открываю
-                - service: esphome.domofon_accept_call
+                - parallel:
+                    - service: esphome.domofon_accept_call
+                    #- event: yandex_intent_response
+                    #  event_data:
+                    #    text: Открываю
+                    - service: media_player.play_media
+                      entity_id: media_player.yandex_station_mini2_gostinaia
+                      data:
+                        media_content_id: "Открываю"
+                        media_content_type: text
             - conditions: "{{ wait.trigger.event.data.text in ['нет'] }}"
               sequence:
-                - event: yandex_intent_response
-                  event_data:
-                    text: Звонок сброшен
-                - service: esphome.domofon_reject_call
+                - parallel:
+                    - service: esphome.domofon_reject_call
+                    #- event: yandex_intent_response
+                    #  event_data:
+                    #    text: Звонок сброшен
+                    - service: media_player.play_media
+                      entity_id: media_player.yandex_station_mini2_gostinaia
+                      data:
+                        media_content_id: "Звонок сброшен"
+                        media_content_type: text
+          default:
+            - service: media_player.play_media
+              entity_id: media_player.yandex_station_mini2_gostinaia
+              data:
+                media_content_id: "Я вас не поняла"
+                media_content_type: text
