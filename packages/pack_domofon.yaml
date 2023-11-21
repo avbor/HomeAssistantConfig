@@ -286,7 +286,7 @@ domofon_pack:
               {% if time >= 21 or time < 9 -%}
                 <speaker is_whisper="true">Внимание! Звонок в домофон, открыть?
               {% else -%}
-                Внимание! Звонок в домофон, открыть?
+                Звонок в домофон, открыть?
               {% endif -%}
             media_content_type: dialog:Домашний Ассистент:Домофон
         - wait_for_trigger:
@@ -303,29 +303,23 @@ domofon_pack:
               sequence:
                 - parallel:
                     - service: esphome.domofon_accept_call
-                    #- event: yandex_intent_response
-                    #  event_data:
-                    #    text: Открываю
                     - service: media_player.play_media
                       entity_id: media_player.yandex_station_mini2_gostinaia
                       data:
                         media_content_id: "Открываю"
                         media_content_type: text
+                    - service: notify.telegram_group_flat_1
+                      data:
+                        message: "_Домофон_: открыт Алисой."
             - conditions: "{{ wait.trigger.event.data.text in ['нет'] }}"
               sequence:
                 - parallel:
                     - service: esphome.domofon_reject_call
-                    #- event: yandex_intent_response
-                    #  event_data:
-                    #    text: Звонок сброшен
                     - service: media_player.play_media
                       entity_id: media_player.yandex_station_mini2_gostinaia
                       data:
                         media_content_id: "Звонок сброшен"
                         media_content_type: text
-          default:
-            - service: media_player.play_media
-              entity_id: media_player.yandex_station_mini2_gostinaia
-              data:
-                media_content_id: "Я вас не поняла"
-                media_content_type: text
+                    - service: notify.telegram_group_flat_1
+                      data:
+                        message: "_Домофон_: звонок сброшен Алисой."
