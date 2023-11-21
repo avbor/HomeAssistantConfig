@@ -8,7 +8,7 @@ toilet_light_pack:
   timer:
 
     toilet_presence:
-      duration: "00:03:00"
+      duration: "00:02:00"
 
   # Automations
   automation:
@@ -30,6 +30,10 @@ toilet_light_pack:
           entity_id: binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone
           to: "on"
           id: "motion_on"
+        - platform: state
+          entity_id: binary_sensor.0xa4c138b96f4627bc_presence
+          to: "on"
+          id: "presence_on"
         - platform: event
           event_type: zha_event
           event_data:
@@ -44,6 +48,12 @@ toilet_light_pack:
                 id: "timer_idle"
             sequence:
               choose:
+                - alias: Presence On
+                  conditions: "{{ states('binary_sensor.0xa4c138b96f4627bc_presence') == 'on' }}"
+                  sequence:
+                    - service: timer.start
+                      target:
+                        entity_id: timer.bathroom_presence
                 - alias: Motion On
                   conditions: "{{ states('binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone') == 'on' }}"
                   sequence:
@@ -54,8 +64,8 @@ toilet_light_pack:
                   conditions: "{{ states('binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone') == 'off' }}"
                   sequence:
                     choose:
-                      - alias: Motion detected > 3 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone.last_changed)) > 180 }}"
+                      - alias: Motion detected > 2 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone.last_changed)) > 120 }}"
                         sequence:
                           - parallel:
                               - sequence:
@@ -68,8 +78,8 @@ toilet_light_pack:
                                   - service: fan.turn_off
                                     target:
                                       entity_id: fan.toilet_extractor
-                      - alias: Motion detected <= 3 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone.last_changed)) <= 180 }}"
+                      - alias: Motion detected <= 2 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.adurolight_vms_adurolight_f604cd01_ias_zone.last_changed)) <= 120 }}"
                         sequence:
                           - condition: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
                           - service: light.turn_off
@@ -124,6 +134,14 @@ toilet_light_pack:
                     - service: fan.turn_off
                       target:
                         entity_id: fan.toilet_extractor
+          - alias: Presence
+            conditions:
+              - condition: trigger
+                id: "presence_on"
+            sequence:
+              - service: timer.start
+                target:
+                  entity_id: timer.bathroom_presence
           - alias: Motion
             conditions:
               - condition: trigger
