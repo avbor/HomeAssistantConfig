@@ -2,7 +2,7 @@
 # Package for Play Yandex Music
 #################################################
 
-alice_stream_pack:
+ya_music_pack:
 
   # Input Text
   input_text:
@@ -12,25 +12,80 @@ alice_stream_pack:
       initial: "Мою любимую музыку вперемешку"
       icon: mdi:form-textbox
 
+    yandex_station_device_to_play:
+      name: 'Ya Music Output Device'
+
   # Input Select
   input_select:
 
     yandex_station_start_stream_to:
       name: 'Где включить:'
       options:
-        - Мини в Ванной
-#        - Стинция в Детской
-#        - Стинция в Гостиной
-#        - Стинция в Спальне
+        - Ванная (Home Mini)
+        - Гостинная (Яндекс)
+        - Спальня (Яндекс)
+        - Детская (Яндекс)
+
+  # Input Number
+  input_number:
+
+    volume_ya_music:
+      name: Громкость
+      icon: mdi:volume-high
+      initial: 0.30
+      min: 0
+      max: 1
+      step: 0.1
 
   script:
+
+    alice_start_music_by_text_query:
+      alias: "Запуск музыки по запросу"
+      sequence:
+
+        - if:
+            - "{{ '(Яндекс)' in states('input_select.yandex_station_start_stream_to') }}"
+          then:
+            - service: media_player.volume_set
+              data:
+                entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
+                volume_level: "{{ states('input_number.volume_ya_music') }}"
+            - service: yandex_station.send_command
+              data:
+                entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
+                command: sendText
+                text: >-
+                  Включи {{ states('input_text.yandex_station_start_stream_query') }}
+          else:
+            - if:
+                - "{{ 'Мини в Ванной' in states('input_text.yandex_station_device_to_play') }}"
+              then:
+                - service: media_player.volume_set
+                  data:
+                    entity_id: media_player.mini_v_vannoi
+                    volume_level: "{{ states('input_number.volume_ya_music') }}"
+            - service: script.alice_start_stream_from_prikhozhaya
+
+    ya_music_stop:
+      alias: Stop Ya Music
+      sequence:
+        - if:
+            - "{{ 'Мини в Ванной' in states('input_text.yandex_station_device_to_play') }}"
+          then:
+            - service: media_player.turn_off
+              data:
+                entity_id: media_player.mini_v_vannoi
+          else:
+            - service: media_player.turn_off
+              data:
+                entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
 
     alice_start_stream_from_prikhozhaya:
       alias: "Запуск стрима с колонки в Прихожей"
       sequence:
 
         - if:
-            - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') != states('input_select.yandex_station_start_stream_to') }}"
+            - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') != states('input_text.yandex_station_device_to_play') }}"
           then:
             - repeat:
                 sequence:
@@ -39,11 +94,11 @@ alice_stream_pack:
                       entity_id: media_player.yandex_station_lite_prikhozhaya
                     data:
                       source: >-
-                        {{ states('input_select.yandex_station_start_stream_to') }}
-                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') == states('input_select.yandex_station_start_stream_to') }}"
+                        {{ states('input_text.yandex_station_device_to_play') }}
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') == states('input_text.yandex_station_device_to_play') }}"
                     timeout: "00:00:01"
                 until:
-                  - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') == states('input_select.yandex_station_start_stream_to') }}"
+                  - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'source') == states('input_text.yandex_station_device_to_play') }}"
                   - "{{ repeat.index <= 3 }}"
 
         - if:
@@ -96,6 +151,47 @@ alice_stream_pack:
 
   # Automations
   automation:
+
+    - alias: "Ya Music - Selected Name to Device"
+      id: 2a16fa66-67a7-4960-95b0-9b766528f44d
+      trigger:
+        - platform: homeassistant
+          event: start
+        - platform: state
+          entity_id: input_select.yandex_station_start_stream_to
+      action:
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.yandex_station_device_to_play
+            value: >-
+              {% if is_state("input_select.yandex_station_start_stream_to", "Ванная (Home Mini)") -%}
+                Мини в Ванной
+              {% elif is_state("input_select.yandex_station_start_stream_to", "Гостинная (Яндекс)") -%}
+                media_player.yandex_station_mini2_gostinaia
+              {% elif is_state("input_select.yandex_station_start_stream_to", "Спальня (Яндекс)") -%}
+                media_player.yandex_station_mini2_spalnia
+              {% elif is_state("input_select.yandex_station_start_stream_to", "Детская (Яндекс)") -%}
+                media_player.yandex_station_lite_detskaia
+              {% endif %}
+
+    - alias: "Ya Music - Volume Control"
+      id: 0303b471-3e9c-436a-84c0-cc5784eee706
+      trigger:
+        platform: state
+        entity_id: input_number.volume_ya_music
+      action:
+        - if:
+            - "{{ 'Мини в Ванной' in states('input_text.yandex_station_device_to_play') }}"
+          then:
+            - service: media_player.volume_set
+              data:
+                entity_id: media_player.mini_v_vannoi
+                volume_level: "{{ states('input_number.volume_ya_music') }}"
+          else:
+            - service: media_player.volume_set
+              data:
+                entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
+                volume_level: "{{ states('input_number.volume_ya_music') }}"
 
     - alias: Синхронизация состояния Алисы в Прихожей с Мини в Ванной
       id: 82c05e64-0259-4f54-8d17-952d241ef34e

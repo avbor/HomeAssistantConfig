@@ -12,15 +12,28 @@ cards:
         entities:
           - input_text.yandex_station_start_stream_query
           - input_select.yandex_station_start_stream_to
-      - type: button
-        show_name: false
-        icon_height: 32px
-        icon: mdi:play
-        tap_action:
-          action: call-service
-          service: script.turn_on
-          service_data:
-            entity_id: script.alice_start_stream_from_prikhozhaya
+          - input_number.volume_ya_music
+      - type: horizontal-stack
+        cards:
+          - type: button
+            show_name: false
+            icon_height: 32px
+            icon: mdi:play
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.alice_start_music_by_text_query
+          - type: button
+            show_name: false
+            icon_height: 32px
+            icon: mdi:stop
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.ya_music_stop
+            entity: script.ya_music_stop
       - type: markdown
         content: >
           ### <center>Радио</center>
