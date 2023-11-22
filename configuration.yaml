@@ -231,6 +231,9 @@ calendar:
       - name: "School Vacation Egor"
         calendar: "Семья (Alexander Borsiov)"
         search: "Каникулы - Егор"
+      - name: "Vacation"
+        calendar: "Семья (Alexander Borsiov)"
+        search: "Отпуск"
 
 #xbox:
 #  client_id: !secret xbox_client_id
