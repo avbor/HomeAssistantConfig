@@ -108,4 +108,4 @@ bedroom_light_pack:
         - service: light.turn_on
           entity_id: light.spalnia_stol
           data:
-            effect: SunriseBW
+            effect: SunriseBW_to_25

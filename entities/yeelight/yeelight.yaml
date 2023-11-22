@@ -40,3 +40,14 @@ custom_effects:
         - TemperatureTransition: [3000, 180000, 12]
         - TemperatureTransition: [3500, 180000, 13]
         - TemperatureTransition: [3900, 180000, 100]
+
+  - name: 'SunriseBW_to_25'
+    flow_params:
+      count: 1
+      action: stay
+      transitions:
+        - TemperatureTransition: [1700, 180000, 10] # [temp, duration, brightness] 180000ms
+        - TemperatureTransition: [2500, 180000, 11]
+        - TemperatureTransition: [3000, 180000, 12]
+        - TemperatureTransition: [3500, 180000, 13]
+        - TemperatureTransition: [3900, 180000, 25]

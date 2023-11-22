@@ -86,7 +86,7 @@
   - name: Boiler Status
     unique_id: 2397c3ab-80e5-4709-a6fe-ea044d7c880f
     state: >-
-      {% if (states('sensor.tplink_smartplug_01_current') | float) > 4 %}On{% else %}Off{% endif %}
+      {% if (states('sensor.tplink_smartplug_01_current') | float(0)) > 4 %}On{% else %}Off{% endif %}
 
   - name: Boiler Water Temp
     unique_id: 3e9a23a1-4783-490b-8438-5563ba9bf976

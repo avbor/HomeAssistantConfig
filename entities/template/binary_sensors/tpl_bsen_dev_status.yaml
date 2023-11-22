@@ -6,7 +6,7 @@
   - name: Boiler Status
     unique_id: 08d28b87-f038-4101-981e-ff737c121a1e
     device_class: heat
-    state: "{{ (states('sensor.tplink_smartplug_01_current') | float) > 4 }}"
+    state: "{{ (states('sensor.tplink_smartplug_01_current') | float(0)) > 4 }}"
     icon: mdi:water-boiler
 
   - name: Fridge Status
