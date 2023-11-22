@@ -89,7 +89,6 @@ bedroom_light_pack:
 
     - alias: "Sunrise Lighting (Bedroom)"
       id: 35fa00c7-72bd-4a5f-9bef-7bcf13a3bf49
-      initial_state: true
       trigger:
         - platform: time
           at: input_datetime.sunrise_in_bedroom
