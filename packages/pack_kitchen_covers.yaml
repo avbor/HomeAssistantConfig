@@ -53,7 +53,7 @@ kitchen_covers_pack:
               - condition: trigger
                 id: "dark"
             sequence:
-              - condition: "{{ is_state('cover.kitchen_covers', 'open') }}"
+              - condition: "{{ states('cover.kitchen_covers') in ['open', 'opening'] }}"
               - service: cover.close_cover
                 target:
                   entity_id: cover.kitchen_covers
@@ -62,7 +62,7 @@ kitchen_covers_pack:
               - condition: trigger
                 id: "lightly"
             sequence:
-              - condition: "{{ is_state('cover.kitchen_covers', 'closed') }}"
+              - condition: "{{ states('cover.kitchen_covers') in ['closed', 'closing'] }}"
               - service: cover.open_cover
                 target:
                   entity_id: cover.kitchen_covers
