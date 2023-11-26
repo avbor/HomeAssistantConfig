@@ -24,6 +24,7 @@ filter:
     - light.detskaia_girlianda_na_krovati # Детская - гирлянда на кровати
     - sensor.0x158d0003931aec_temperature # Детская - Температура
     - climate.daikin_nursery # Детская - Кондиционер
+    - humidifier.smartmi_humidifier_01_detskaia # Детская - Увлажнитель
     #- switch.broadlink_smartplug_01_switch # Детская - Ёлка
     # Гостина
     - light.sonoff_1000f30a9e # Гостиная - Споты
@@ -57,7 +58,8 @@ filter:
     - light.sonoff_1001045426 # Спальня - Бра справа
     - climate.daikin_bedroom # Спальня - Кондиционер
     - media_player.ue43ru7470 # Спальня - Телевизор
-    - light.spalnia_stol # Спальня  -  Ламка на столе
+    - light.spalnia_stol # Спальня - Ламка на столе
+    - humidifier.smartmi_humidifier_02_spalnia # Спальня - Увлажнитель
     # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
     - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
@@ -270,3 +272,49 @@ entity_config:
   switch.keenetic_vpn_lenovo_tb128xu:
     name: ВПН для планшета Кирилла
     room: Квартира
+
+  humidifier.smartmi_humidifier_01_detskaia:
+    name: Увлажнитель
+    room: Детская
+    properties:
+      - type: temperature
+        entity: sensor.0x158d0003931aec_temperature
+      - type: humidity
+        entity: sensor.0x158d0003931aec_humidity
+      - type: water_level
+        entity: sensor.smartmi_humidifier_01_detskaia_water_level
+    custom_ranges:
+      humidity:
+        state_entity_id: input_number.target_humidity_01_detskaia
+        set_value:
+          service: input_number.set_value
+          entity_id: input_number.target_humidity_01_detskaia
+          data:
+            value: '{{ value }}'
+        range:
+          min: 30
+          max: 80
+          precision: 5
+
+  humidifier.smartmi_humidifier_02_spalnia:
+    name: Увлажнитель
+    room: Спальня
+    properties:
+      - type: temperature
+        entity: sensor.0x158d0003931b0e_temperature
+      - type: humidity
+        entity: sensor.0x158d0003931b0e_humidity
+      - type: water_level
+        entity: sensor.smartmi_humidifier_02_spalnia_water_level
+    custom_ranges:
+      humidity:
+        state_entity_id: input_number.target_humidity_02_spalnia
+        set_value:
+          service: input_number.set_value
+          entity_id: input_number.target_humidity_02_spalnia
+          data:
+            value: '{{ value }}'
+        range:
+          min: 30
+          max: 80
+          precision: 5

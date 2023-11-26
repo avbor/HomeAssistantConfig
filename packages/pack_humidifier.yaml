@@ -23,7 +23,7 @@ humidifiers_pack:
         - Medium
         - High
         - Auto
-      initial: Auto
+#      initial: Auto
       icon: mdi:speedometer
 
     smartmi_humidifier_02_spalnia_mode:
@@ -33,7 +33,7 @@ humidifiers_pack:
         - Medium
         - High
         - Auto
-      initial: Auto
+#      initial: Auto
       icon: mdi:speedometer
 
   # Input Number
@@ -98,10 +98,10 @@ humidifiers_pack:
               off
             {% endif %}
 
-        smartmi_humidifier_01_detskaia_target_humidity:
-          friendly_name: "Целевая влажность"
-          value_template: >
-            {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'humidity') }}
+#        smartmi_humidifier_01_detskaia_target_humidity:
+#          friendly_name: "Целевая влажность"
+#          value_template: >
+#            {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'humidity') }}
 
         # 02
         smartmi_humidifier_02_spalnia_mode:
@@ -113,10 +113,10 @@ humidifiers_pack:
               off
             {% endif %}
 
-        smartmi_humidifier_02_spalnia_target_humidity:
-          friendly_name: "Целевая влажность"
-          value_template: >
-            {{ state_attr('humidifier.smartmi_humidifier_02_spalnia', 'humidity') }}
+#        smartmi_humidifier_02_spalnia_target_humidity:
+#          friendly_name: "Целевая влажность"
+#          value_template: >
+#            {{ state_attr('humidifier.smartmi_humidifier_02_spalnia', 'humidity') }}
 
   # Scripts
   script:
@@ -204,6 +204,29 @@ humidifiers_pack:
           humidifier_entity: humidifier.smartmi_humidifier_01_detskaia
           humidifier_mode: "{{ trigger.to_state.state }}"
 
+    - alias: "Smartmi Humidifier 01 - Mode Revers Sync"
+      id: 8d2b93ea-d103-42e7-90bb-8ee4ca5c0648
+      trigger:
+        - platform: state
+          entity_id: sensor.smartmi_humidifier_01_detskaia_mode
+          to:
+            - Auto
+            - Silent
+            - Medium
+            - High
+          not_from:
+            - unavailable
+            - unknown
+      action:
+        - if:
+            - "{{ states('sensor.smartmi_humidifier_01_detskaia_mode') != states('input_select.smartmi_humidifier_01_detskaia_mode') }}"
+          then:
+            - service: input_select.select_option
+              target:
+                entity_id: input_select.smartmi_humidifier_01_detskaia_mode
+              data:
+                option: "{{ states('sensor.smartmi_humidifier_01_detskaia_mode') }}"
+
     - alias: "Увлажнение детской - Старт [время]"
       id: cb8d8af5-8a41-4ed8-a1c1-05b4a823fcdd
       trigger:
@@ -220,7 +243,7 @@ humidifiers_pack:
           entity_id: sensor.smartmi_humidifier_01_detskaia_water_level
           above: 25
       action:
-        service: fan.turn_on
+        service: humidifier.turn_on
         entity_id: humidifier.smartmi_humidifier_01_detskaia
 
     - alias: "Увлажнение детской - Стоп [время]"
@@ -261,14 +284,14 @@ humidifiers_pack:
           entity_id: sensor.smartmi_humidifier_01_detskaia_water_level
           above: 15
       action:
-        - service: fan.turn_on
+        - service: humidifier.turn_on
           entity_id: humidifier.smartmi_humidifier_01_detskaia
         - service: notify.telegram_group_system
           data:
             message: |
               В *Детской* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
 
-    - alias: "Увлажнение спальни - Стоп [Влажность]"
+    - alias: "Увлажнение детской - Стоп [Влажность]"
       id: ce34b5e0-d1d9-45b0-8a66-65eb392383ec
       trigger:
         platform: state
@@ -307,6 +330,29 @@ humidifiers_pack:
           humidifier_entity: humidifier.smartmi_humidifier_02_spalnia
           humidifier_mode: "{{ trigger.to_state.state }}"
 
+    - alias: "Smartmi Humidifier 02 - Mode Revers Sync"
+      id: 501ee548-817e-4210-af88-dcbbd2d4d2de
+      trigger:
+        - platform: state
+          entity_id: sensor.smartmi_humidifier_02_spalnia_mode
+          to:
+            - Auto
+            - Silent
+            - Medium
+            - High
+          not_from:
+            - unavailable
+            - unknown
+      action:
+        - if:
+            - "{{ states('sensor.smartmi_humidifier_02_spalnia_mode') != states('input_select.smartmi_humidifier_02_spalnia_mode') }}"
+          then:
+            - service: input_select.select_option
+              target:
+                entity_id: input_select.smartmi_humidifier_02_spalnia_mode
+              data:
+                option: "{{ states('sensor.smartmi_humidifier_02_spalnia_mode') }}"
+
     - alias: "Увлажнение спальни - Старт [Влажность]"
       id: a9f8c4d8-7b10-4128-8411-1aa68a330760
       trigger:
@@ -329,7 +375,7 @@ humidifiers_pack:
           entity_id: sensor.smartmi_humidifier_02_spalnia_water_level
           above: 15
       action:
-        - service: fan.turn_on
+        - service: humidifier.turn_on
           entity_id: humidifier.smartmi_humidifier_02_spalnia
         - service: notify.telegram_group_system
           data:

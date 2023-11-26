@@ -72,21 +72,25 @@ cards:
             - type: markdown
               content: >
                 #### Увлажнитель
-            - type: glance
-              #show_name: false
-              entities:
-                - entity: humidifier.smartmi_humidifier_01_detskaia
-                  name: "Статус"
-                  tap_action:
-                    action: call-service
-                    service: humidifier.toggle
-                    service_data:
-                      entity_id: humidifier.smartmi_humidifier_01_detskaia
-                - entity: sensor.smartmi_humidifier_01_detskaia_water_level
-                  name: "Вода"
-                - entity: sensor.smartmi_humidifier_01_detskaia_mode
-                  name: "Режим"
+            - type: horizontal-stack
+              cards:
+                - type: tile
+                  entity: humidifier.smartmi_humidifier_01_detskaia
+                  name: Статус
+                  vertical: true
+                  state_content:
+                    - state
+                - type: tile
+                  entity: sensor.smartmi_humidifier_01_detskaia_water_level
+                  name: Вода
+                  vertical: true
+                  color: black
+                - type: tile
+                  entity: sensor.smartmi_humidifier_01_detskaia_mode
+                  name: Режим
                   icon: mdi:speedometer
+                  vertical: true
+                  color: black
             - type: entities
               entities:
                 - entity: input_select.smartmi_humidifier_01_detskaia_mode
@@ -231,20 +235,25 @@ cards:
             - type: markdown
               content: >
                 #### Увлажнитель
-            - type: glance
-              entities:
-                - entity: humidifier.smartmi_humidifier_02_spalnia
-                  name: "Статус"
-                  tap_action:
-                    action: call-service
-                    service: humidifier.toggle
-                    service_data:
-                      entity_id: humidifier.smartmi_humidifier_02_spalnia
-                - entity: sensor.smartmi_humidifier_02_spalnia_water_level
-                  name: "Вода"
-                - entity: sensor.smartmi_humidifier_02_spalnia_mode
-                  name: "Режим"
+            - type: horizontal-stack
+              cards:
+                - type: tile
+                  entity: humidifier.smartmi_humidifier_02_spalnia
+                  name: Статус
+                  vertical: true
+                  state_content:
+                    - state
+                - type: tile
+                  entity: sensor.smartmi_humidifier_02_spalnia_water_level
+                  name: Вода
+                  vertical: true
+                  color: black
+                - type: tile
+                  entity: sensor.smartmi_humidifier_02_spalnia_mode
+                  name: Режим
                   icon: mdi:speedometer
+                  vertical: true
+                  color: black
             - type: entities
               entities:
                 - input_select.smartmi_humidifier_02_spalnia_mode

@@ -1,0 +1,90 @@
+#################################################
+# Package for Stop Yanedx Stations with Intents
+#################################################
+
+ya_station_stop_pack:
+
+  yandex_station_intents:
+
+    intents:
+      Выключи колонку в детской:
+        extra_phrases:
+          - останови колонку в детской
+          - выключи музыку в детской
+          - останови музыку в детской
+
+      Выключи колонку в гостиной:
+        extra_phrases:
+          - останови колонку в гостиной
+          - выключи музыку в гостиной
+          - останови музыку в гостиной
+
+      Выключи колонку на кухне:
+        extra_phrases:
+          - останови колонку на кухне
+          - выключи музыку на кухне
+          - останови музыку на кухне
+
+      Выключи колонку в спальне:
+        extra_phrases:
+          - останови колонку в спальне
+          - выключи музыку в спальне
+          - останови музыку в спальне
+
+      Выключи колонку в прихожей:
+        extra_phrases:
+          - останови колонку в прихожей
+          - выключи музыку в прихожей
+          - останови музыку в прихожей
+
+  automation:
+
+    - alias: Stop Yandex Station
+      trigger:
+        - platform: event
+          event_type: yandex_intent
+          event_data:
+            text: Выключи колонку в детской
+          id: nursery
+        - platform: event
+          event_type: yandex_intent
+          event_data:
+            text: Выключи колонку в гостиной
+          id: livingroom
+        - platform: event
+          event_type: yandex_intent
+          event_data:
+            text: Выключи колонку на кухне
+          id: livingroom
+        - platform: event
+          event_type: yandex_intent
+          event_data:
+            text: Выключи колонку в спальне
+          id: bedroom
+        - platform: event
+          event_type: yandex_intent
+          event_data:
+            text: Выключи колонку в прихожей
+          id: hallway
+      action:
+        - choose:
+            - conditions: "{{ trigger.id == 'nursery' }}"
+              sequence:
+                - service: media_player.turn_off
+                  data:
+                    entity_id: media_player.yandex_station_lite_detskaia
+            - conditions: "{{ trigger.id == 'livingroom' }}"
+              sequence:
+                - service: media_player.turn_off
+                  data:
+                    entity_id: media_player.yandex_station_mini2_gostinaia
+            - conditions: "{{ trigger.id == 'bedroom' }}"
+              sequence:
+                - service: media_player.turn_off
+                  data:
+                    entity_id: media_player.yandex_station_mini2_spalnia
+            - conditions: "{{ trigger.id == 'hallway' }}"
+              sequence:
+                - service: media_player.turn_off
+                  data:
+                    entity_id: media_player.yandex_station_lite_prikhozhaya

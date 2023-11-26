@@ -68,6 +68,8 @@ logger:
   #  async_upnp_client.profiles.profile: debug
   #  async_upnp_client.profiles.dlna: debug
   filters:
+    homeassistant.loader:
+      - "We found a custom integration .* which has not been tested by Home Assistant.*"
     zeroconf:
       - "Received invalid packet from .* at offset .* while unpacking .*"
     zigpy_deconz.api:
