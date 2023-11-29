@@ -9,11 +9,9 @@ cards:
           ### <center>System information</center>
       - type: entities
         entities:
-          #- entity: sensor.ha_uptime_text
-          #  name: "Uptime:"
           - entity: sensor.ha_uptime_text
             type: custom:multiple-entity-row
-            name: "Uptime:"
+            name: "Uptime"
             show_state: false
             entities:
               - entity: sensor.ha_uptime_text

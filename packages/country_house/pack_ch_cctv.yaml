@@ -26,6 +26,11 @@ ch_cctv_pack:
             service: rest_command.sss_reolinkcam_02_disable
           icon_template: mdi:cctv
 
+  # Input Booleans
+  input_boolean:
+    country_house_show_last_detect:
+      icon: mdi:account
+
   # Command line
   command_line:
 

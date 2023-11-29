@@ -9,23 +9,48 @@ cards:
           - type: markdown
             content: |
               #
-              # <center>{{ states('sensor.time') }}</center>
-              ## <center>{{ state_attr('sensor.date_formatted', 'day_of_week') }}, {{ states('sensor.date_formatted') }}</center>
+              ## <center>{{ states('sensor.time') }}, {{ state_attr('sensor.date_formatted', 'day_of_week') }}, {{ states('sensor.date_formatted') }}</center>
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: sensor.sun_next_rising
               - entity: sensor.th_kukhnia_za_oknom_temperature
                 type: custom:multiple-entity-row
                 name: За окном
+                tap_action: []
                 entities:
                   - entity: sensor.outdoor_illuminance
                     name: false
                   - entity: sensor.th_kukhnia_za_oknom_humidity
                     name: false
-              - entity: sensor.sun_next_setting
+              - entity: sensor.sunset_today
+                type: custom:multiple-entity-row
+                name: Световой день
+                show_state: false
+                tap_action: []
+                icon: mdi:weather-sunny
+                entities:
+                  - entity: sensor.sunrise_today
+                    name: Восход
+                  - entity: sensor.dayligh_hours_today
+                    name: false
+                  - entity: sensor.sunset_today
+                    name: Закат
+              - entity: sensor.sunset_tomorrow
+                type: custom:multiple-entity-row
+                name: Завтра
+                show_state: false
+                tap_action: []
+                icon: mdi:sun-clock-outline
+                entities:
+                  - entity: sensor.sunrise_tomorrow
+                    name: Восход
+                  - entity: sensor.dayligh_hours_tomorrow
+                    name: false
+                  - entity: sensor.sunset_tomorrow
+                    name: Закат
               - entity: sensor.moon
                 name: Луна
+                tap_action: []
       - type: markdown
         content: >
           ### <center>Климат в квартире</center>
@@ -293,16 +318,50 @@ cards:
           - type: entities
             entities:
               - entity: switch.domofon_mute_sound
+                type: custom:multiple-entity-row
                 name: Выключить звук
-              - entity: switch.domofon_mute_sound_once
-                name: Выключить звук (однократно)
+                show_state: false
+                tap_action: []
+                entities:
+                  - entity: switch.domofon_mute_sound
+                    name: Всегда
+                    toggle: true
+                  - entity: switch.domofon_mute_sound_once
+                    name: Один раз
+                    toggle: true
+              - type: divider
               - entity: switch.domofon_automatically_open
-                name: Открывать автоматически
-              - entity: switch.domofon_automatically_open_once
-                name: Открыть автоматически (однократно)
+                type: custom:multiple-entity-row
+                name: Открыть автоматически
+                show_state: false
+                tap_action: []
+                entities:
+                  - entity: switch.domofon_automatically_open
+                    name: Всегда
+                    toggle: true
+                  - entity: switch.domofon_automatically_open_once
+                    name: Один раз
+                    toggle: true
+              - type: divider
               - entity: switch.domofon_automatically_reject
+                type: custom:multiple-entity-row
                 name: Отклонять все вызовы
-                icon: mdi:door-closed-cancel
+                #show_state: false
+                state_header: Всегда
+                toggle: true
+              #- entity: switch.domofon_mute_sound
+              #  name: Выключить звук
+              #- entity: switch.domofon_mute_sound_once
+              #  name: Выключить звук (однократно)
+
+              #- entity: switch.domofon_automatically_open
+              #  name: Открывать автоматически
+              #- entity: switch.domofon_automatically_open_once
+              #  name: Открыть автоматически (однократно)
+              #- entity: switch.domofon_automatically_reject
+              #  name: Отклонять все вызовы
+              #  icon: mdi:door-closed-cancel
+
           - type: horizontal-stack
             cards:
               - type: button

@@ -108,3 +108,39 @@
     unique_id: 6550fe59-3e7f-4aa4-8f60-0900c4d7377b
     state: >-
       {{state_attr('sensor.supervisor_updates','newest_version')}}
+
+  - name: Sunrise Today
+    unique_id: a5a73cdf-4930-4a68-9896-8ed1a0760367
+    icon: mdi:weather-sunset-up
+    state: >-
+      {{ state_attr('sensor.sunrise', 'today').strftime("%H:%M:%S") }}
+
+  - name: Sunset Today
+    unique_id: fe7285e0-5fa6-4005-b152-047623d44a2e
+    icon: mdi:weather-sunset-down
+    state: >-
+      {{ state_attr('sensor.sunset', 'today').strftime("%H:%M:%S") }}
+
+  - name: Dayligh Hours Today
+    unique_id: 93f28090-00cc-4717-baa6-c8b7c780fda9
+    icon: mdi:weather-sunny
+    state: >-
+      {{ state_attr('sensor.daylight', 'today_hms') }}
+
+  - name: Sunrise Tomorrow
+    unique_id: 60e064a5-d822-4f23-b343-abcfcc686477
+    icon: mdi:weather-sunset-up
+    state: >-
+      {{ state_attr('sensor.sunrise', 'tomorrow').strftime("%H:%M:%S") }}
+
+  - name: Sunset Tomorrow
+    unique_id: aca7f03a-8415-401d-85be-6a37fd839789
+    icon: mdi:weather-sunset-down
+    state: >-
+      {{ state_attr('sensor.sunset', 'tomorrow').strftime("%H:%M:%S") }}
+
+  - name: Dayligh Hours Tomorrow
+    unique_id: 6c086249-71fd-47cd-93a1-ca957a77af9d
+    icon: mdi:weather-sunny
+    state: >-
+      {{ state_attr('sensor.daylight', 'tomorrow_hms') }}
