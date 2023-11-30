@@ -19,11 +19,11 @@ git_pack:
   shell_command:
 
     git_commint_and_push: >-
-      git config --add --local core.sshCommand "ssh -o '-i /config/.ssh/id_ecdsa StrictHostKeyChecking=no'" &&
+      git config --add --local core.sshCommand "ssh -i /config/.ssh/id_ecdsa -o 'StrictHostKeyChecking=no'" &&
       git add . &&
       git commit -m "Autocommit: Config at $(date +'%F %T')" &&
       git push origin master &&
-      git config --unset --local core.sshCommand "ssh -o '-i /config/.ssh/id_ecdsa StrictHostKeyChecking=no'"
+      git config --unset --local core.sshCommand "ssh -i /config/.ssh/id_ecdsa -o 'StrictHostKeyChecking=no'"
 
   # Input buttons
   input_button:
