@@ -253,25 +253,6 @@
         title: "Посудомоечная машина:"
         message: Программа *закончена*, посуда вымыта.
 
-- alias: GitHub HA Repo - Stars
-  id: b8a8f7d3-1875-4271-b576-1586f2ab425f
-  trigger:
-    - platform: webhook
-      webhook_id: !secret github_ha_repo_stars_webhook
-      local_only: false
-      allowed_methods:
-        - POST
-  action:
-    - service: telegram_bot.send_message
-      data:
-        target: !secret tlg_group_system
-        parse_mode: html
-        disable_web_page_preview: true
-        title: "<b>GitHub HA Repo</b>:"
-        message: |
-          Star {{ trigger.json.action }}!
-          https://github.com/avbor/HomeAssistantConfig/stargazers
-
 - alias: Yandex Station SW Updated
   id: 3f22e8f0-6f31-49c1-bca1-ce19184c5184
   mode: queued

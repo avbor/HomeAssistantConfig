@@ -289,6 +289,20 @@ cards:
     cards:
       - type: markdown
         content: >
+          ### <center>GitHub</center>
+      - type: entities
+        entities:
+          - entity: sensor.git_number_of_modified_files
+            name: Modified files
+          - entity: input_button.git_commint_and_push
+            name: Commit and Push
+            icon: mdi:bash
+
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
           ### <center>Automations on\off</center>
       - type: entities
         show_header_toggle: false

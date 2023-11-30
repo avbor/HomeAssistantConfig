@@ -1,0 +1,62 @@
+#################################################
+# Package for some Git tasks
+#################################################
+
+git_pack:
+
+  # Command line things
+  command_line:
+
+    - sensor:
+        name: Git - Number of Modified Files
+        unique_id: fd5a1231-9dd9-49c6-9916-2f2eb99947ff
+        state_class: measurement
+        unit_of_measurement: pcs
+        icon: mdi:git
+        command: 'git status -s | wc -l'
+
+  # Shell commands
+  shell_command:
+
+    git_commint_and_push: >-
+      git add . && git commit -m "Autocommit: Config at $(date +'%F %T')" && git push origin master
+
+  # Input buttons
+  input_button:
+
+    git_commint_and_push:
+      name: Commit and push config
+      icon: mdi:git
+
+  # Automations
+  automation:
+
+    - alias: GitHub HA Repo - Push config
+      id: 816f1400-5e51-4e5c-bc3a-f07e1e4202dd
+      trigger:
+        - platform: state
+          entity_id: input_button.git_commint_and_push
+      action:
+        - service: shell_command.git_commint_and_push
+        - service: homeassistant.update_entity
+          target:
+            entity_id: sensor.git_number_of_modified_files
+
+    - alias: GitHub HA Repo - Stars
+      id: b8a8f7d3-1875-4271-b576-1586f2ab425f
+      trigger:
+        - platform: webhook
+          webhook_id: !secret github_ha_repo_stars_webhook
+          local_only: false
+          allowed_methods:
+            - POST
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            parse_mode: html
+            disable_web_page_preview: true
+            title: "<b>GitHub HA Repo</b>:"
+            message: |
+              Star {{ trigger.json.action }}!
+              https://github.com/avbor/HomeAssistantConfig/stargazers

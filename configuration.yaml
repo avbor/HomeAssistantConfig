@@ -217,10 +217,6 @@ zha:
     00:15:8d:00:05:4e:ac:c7-2:
       type: "switch"
 
-conversation:
-  intents:
-    media_player.yandex_station_mini2_gostinaia: [.+]
-
 folder_watcher:
   - folder: /config/video
 
