@@ -45,7 +45,7 @@ git_pack:
           above: 0
           for:
             #hours: 24
-            minutes: 10
+            minutes: 5
       action:
         - service: shell_command.git_commint_and_push
         - service: homeassistant.update_entity
