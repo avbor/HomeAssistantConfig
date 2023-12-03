@@ -44,6 +44,91 @@ nursery_light_pack:
       has_date: false
       has_time: true
 
+  # Scripts
+  script:
+
+    sunrise_in_nursery:
+      sequence:
+      # Start at brightness 1% and color temp 454
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            color_temp: 454
+            brightness_pct: 1
+        - delay: "00:00:05"
+      # Go to brightness 10% in 3 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 180
+            brightness_pct: 10
+        - delay: "00:03:05"
+      # To color temp 400 in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 90
+            color_temp: 400
+        - delay: "00:01:35"
+      # To brightness 20% in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 90
+            brightness_pct: 20
+        - delay: "00:01:35"
+      # Color temp 350 in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 90
+            color_temp: 350
+        - delay: "00:01:35"
+      # Brightness 30% in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 90
+            brightness_pct: 30
+        - delay: "00:01:35"
+      # Color 300 in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 90
+            color_temp: 300
+        - delay: "00:01:35"
+      # Brightness 40% in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 90
+            brightness_pct: 40
+        - delay: "00:01:35"
+      # Color 270 in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 90
+            color_temp: 270
+        - delay: "00:01:35"
+      # Brightness 100 in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_e27_detskaia
+          data:
+            transition: 255
+            brightness_pct: 100
+
   # Automations
   automation:
 
@@ -175,6 +260,11 @@ nursery_light_pack:
           above: input_number.nursery_window_light_illuminance_threshold
           for: "00:10:00"
           id: "lightly"
+        - platform: state
+          entity_id: group.family_persons
+          from: "not_home"
+          to: "home"
+          id: "to_home"
       condition: "{{ is_state('input_boolean.nursery_window_light_auto', 'on') }}"
       action:
         choose:
@@ -200,6 +290,22 @@ nursery_light_pack:
                 entity_id: light.detskaia_podsvetka_na_okne
                 state: "on"
               - service: light.turn_off
+                data:
+                  entity_id: light.detskaia_podsvetka_na_okne
+          - alias: Came Home
+            conditions:
+              - condition: and
+                conditions:
+                  - condition: trigger
+                    id: "to_home"
+                  - condition: numeric_state
+                    entity_id: sensor.outdoor_illuminance
+                    below: input_number.nursery_window_light_illuminance_threshold
+            sequence:
+              - condition: state
+                entity_id: light.detskaia_podsvetka_na_okne
+                state: "off"
+              - service: light.turn_on
                 data:
                   entity_id: light.detskaia_podsvetka_na_okne
 

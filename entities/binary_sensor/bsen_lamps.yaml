@@ -19,6 +19,11 @@
       friendly_name: Бра в Спальне - Лево
       icon_template: mdi:wall-sconce-flat
       value_template: "{{ is_state('light.sonoff_01minizb_47ef08fe_on_off', 'on') }}"
+    lamp_status_spalnia_u_krovati_left:
+      device_class: power
+      friendly_name: Лампа в Спальне у кровати - Лево
+      icon_template: mdi:lamp
+      value_template: "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2', 'on') }}"
     lamp_status_spalnia_liustra:
       device_class: power
       friendly_name: Люстра в Спальне

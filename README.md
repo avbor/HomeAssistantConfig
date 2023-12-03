@@ -4,7 +4,7 @@
 Feel free to contact me by [Telegram](https://t.me/avbor) if you have any further questions.
 
 
-Some **screenshots** from my HA can be found [here](docs/screenshots.md).
+Some **screenshots** (slightly outdated) from my HA can be found [here](docs/screenshots.md).
 
 ---
 
@@ -14,7 +14,8 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
 
 ### Hardware
 
-**Server:**
+**Server:**\
+(Mainly for [Frigate](https://frigate.video/) and [Plex](https://www.plex.tv/))
 - Intel NUC [NUC7PJYH](https://ark.intel.com/content/www/ru/ru/ark/products/126137/intel-nuc-kit-nuc7pjyh.html):
   - CPU: Intel Pentium Silver [J5005](https://ark.intel.com/content/www/ru/ru/ark/products/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz.html)
   - RAM: 8 Gb
@@ -22,7 +23,7 @@ Some **screenshots** from my HA can be found [here](docs/screenshots.md).
   - HDD 500 Gb (Data)
 
 **Storage:**\
-(Also as VM and containers host)
+(As well as VM and containers host, main HA VM also lives here)
 - Synology [DS1621+](https://www.synology.com/en-us/products/DS1621+)
   - RAM: 32 Gb [CT16G4SFRA266](https://www.crucial.com/memory/ddr4/ct16g4sfra266) 16 Gb x2
   - HDD: WD 18 Tb 7200 rpm [HDD WD DC HC550 WUH721818ALE6L4](https://www.westerndigital.com/products/internal-drives/data-center-drives/ultrastar-dc-hc550-hdd#0F38459) x2
@@ -53,28 +54,28 @@ _Remote site (country house):_
 - Huawei E5372 as LTE Modem with 4G Antenna (Baltic Signal [OMEGA](https://baltic-signal.ru/catalog/antennas/antennas-4g/antenna-baltic-signal-omega-3g-4g/))\
   Integration "Huawei LTE"
 
-- Keenetic Giga [KN-1010](https://keenetic.ru/ru/keenetic-giga-kn-1010) as Router, WiFi Mesh Controller, WireGuard VPN Client and Access Point.
+- Keenetic Giga [KN-1010](https://keenetic.ru/ru/keenetic-giga-kn-1010) as Router, WiFi Mesh Controller, WireGuard VPN Client and Access Point
 
 - Keneetic Speedster [KN-3010](https://keenetic.ru/ru/keenetic-speedster-kn-3010) as Access Point in WiFi Mesh Network
 
 **ZigBee/BT Gateways:**
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
-  Integration "Xiaomi Gateway (Aqara)", not used for now.
+  Integration "Xiaomi Gateway (Aqara)", not used for now
 
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
-  Not used for now.
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3), not used for now
 
 - Xiaomi Multi-Mode Gateway 2 (Hub 2) EU (DMWG03LM, lumi.gateway.mgl001)\
   Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) and "Zigbee2MQTT"
 
 - Aqara Hub E1 (ZHWG16LM)\
-  Not used for now.
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3), not used for now
 
 - Phoscon ConBee 2 by Dresden Elektronik\
   Integration "Zigbee Home Automation (ZHA)"
 
 - Sonoff ZBDongle-E\
-  Integration "Zigbee2MQTT" and "Thread" (Milti-PAN firmware & Silicon Labs Multiprotocol add-on)
+  Used by "Zigbee2MQTT" and "Thread" integration ([Milti-PAN firmware](https://github.com/darkxst/silabs-firmware-builder) & Silicon Labs Multiprotocol add-on)
 
 - ESP32 D1 Mini with _bluetooth_proxy_ component x5\
   Integration "ESPHome"
@@ -130,10 +131,10 @@ _Remote site (country house):_
   Integration "Xiaomi Miio"
 
   - Xiaomi Dafang 1080p (ZRM4040RT) flashed to [Xiaomi DaFang Hacks](https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks)\
-  Integrations "Generic Camera" & "MJPEG IP Camera" via [go2rtc](https://github.com/AlexxIT/go2rtc)
+  Via [go2rtc](https://github.com/AlexxIT/go2rtc) and "RTSPtoWebRTC" integration
 
   - Reolink [RLC-510A](https://reolink.com/product/rlc-510a/)\
-    Integration "Generic Camera" via [go2rtc](https://github.com/AlexxIT/go2rtc) and "Reolink IP NVR/camera"
+    Via [go2rtc](https://github.com/AlexxIT/go2rtc), "RTSPtoWebRTC" and "Reolink IP NVR/camera"
 
   - Tuya SmartIR Remote (UFO-R1 and similar) flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
@@ -204,9 +205,9 @@ _Remote site (country house):_
   Integration "ESPHome" (via xiaomi_miscale platform)
 
   - NUT Find3 Smart Tracker\
-  Integration "iBeacon"
+  Integration "iBeacon", not used for now
 
-  - Holyiot iBeacon\Eddystone Trackers\
+  - [Holyiot](http://www.holyiot.com/) iBeacon\Eddystone Trackers\
   Via ESPHome ble_tracker component
 
 #### Media Players:
@@ -217,7 +218,7 @@ _Remote site (country house):_
   Integration "Google Cast"
 
   - Google Home Mini\
-  Integration "Google Cast", not used for now.
+  Integration "Google Cast"
 
   - Yandex Station Lite\
   Integration "Yandex.Station" by [AlexxIT](https://github.com/AlexxIT/YandexStation)
@@ -255,14 +256,14 @@ Integration "Fully Kiosk Browser"
 **Server:**
 - Ubuntu Server 22.04 LTS
 - QEMU + KVM + libvirt
+- Docker
 - Unbound
 - Bind9
 - Nginx
 - Transmission
 - Plex
 - Containers
-  - [Frigate](https://github.com/blakeblackshear/frigate)
-  - [go2rtc](https://github.com/AlexxIT/go2rtc)
+  - [Frigate](https://github.com/blakeblackshear/frigate) with [go2rtc](https://github.com/AlexxIT/go2rtc)
   - hlsproxy
   - xteve
   - Watchtower
@@ -293,6 +294,7 @@ Integration "Fully Kiosk Browser"
 **Used DB:**
 - MariaDB
 - MySQL
+- PostgeSQL
 - InfluxDB
 
 **Used HA Add-ons:**

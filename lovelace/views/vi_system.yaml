@@ -123,6 +123,38 @@ cards:
           entity: sensor.start_time
           hours_to_show: 48
           detail: 2
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: markdown
+            content: >
+              #### GitHub
+          - type: entities
+            entities:
+              - entity: input_boolean.git_autocommit
+                name: GitHub Autocommit
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.git_autocommit
+                    state: "on"
+                row:
+                  entity: timer.git_time_to_push
+                  name: Next push in
+                  icon: []
+#              - type: conditional
+#                condition: "state"
+#                entity: input_boolean.git_autocommit
+#                state: "on"
+#                row:
+#                  - type: attribute
+#                    entity: timer.git_time_to_push
+#                    attribute: finishes_at
+#                    name: Next push
+#                    icon: []
+              - entity: sensor.git_number_of_modified_files
+                name: Modified files
+              - entity: input_button.git_commint_and_push
+                name: Commit and Push
+                icon: mdi:bash
 
   - type: vertical-stack
     cards:
@@ -284,20 +316,6 @@ cards:
   #              service_data:
   #                entity_id: script.mi_gw3_pair_off
   #              entity: script.mi_gw3_pair_off
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>GitHub</center>
-      - type: entities
-        entities:
-          - entity: sensor.git_number_of_modified_files
-            name: Modified files
-          - entity: input_button.git_commint_and_push
-            name: Commit and Push
-            icon: mdi:bash
-
 
   - type: vertical-stack
     cards:
@@ -478,5 +496,8 @@ cards:
               - entity: light.detskaia_girlianda_na_krovati
                 name: Гирлянда на кровати в Детской
                 icon: mdi:string-lights
+              - entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+                name: Лампа слева у кровати в Спальне
+                icon: mdi:lamp
             state_filter:
               - unavailable

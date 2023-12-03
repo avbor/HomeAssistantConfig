@@ -19,6 +19,91 @@ bedroom_light_pack:
       has_date: false
       has_time: true
 
+  # Scripts
+  script:
+
+    sunrise_in_bedroom_left:
+      sequence:
+      # Start at brightness 1% and color temp 454
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            color_temp: 454
+            brightness_pct: 1
+        - delay: "00:00:05"
+      # Go to brightness 10% in 3 min
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 180
+            brightness_pct: 10
+        - delay: "00:03:05"
+      # To color temp 415 in 1.5 min
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            color_temp: 415
+        - delay: "00:01:35"
+      # To brightness 15% in 1.5 min
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            brightness_pct: 15
+        - delay: "00:01:35"
+      # Color temp 384 in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            color_temp: 384
+        - delay: "00:01:35"
+      # Brightness 20% in 1.5 min
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            brightness_pct: 20
+        - delay: "00:01:35"
+      # Color 357 in 1.5 min
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            color_temp: 357
+        - delay: "00:01:35"
+      # Brightness 25% in 1.5 min
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            brightness_pct: 25
+        - delay: "00:01:35"
+      # Color 333 in 1.5 min
+        - service: light.turn_on
+          target: 
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            color_temp: 333
+        - delay: "00:01:35"
+      # Brightness 30 in 1.5 min
+        - service: light.turn_on
+          target:
+            entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+          data:
+            transition: 90
+            brightness_pct: 30
+
   # Automations
   automation:
 
@@ -105,7 +190,29 @@ bedroom_light_pack:
             before: sunrise
             before_offset: "00:30:00"
       action:
-        - service: light.turn_on
-          entity_id: light.spalnia_stol
-          data:
-            effect: SunriseBW_to_25
+        - service: script.turn_on
+          target:
+            entity_id: script.sunrise_in_bedroom_left
+        - alias: "Wait for OnePlus presence at livingroom"
+          wait_for_trigger:
+            - platform: state
+              entity_id: binary_sensor.living_room_oneplus_8t_presence
+          timeout: "00:30:00"
+        - parallel:
+            - if:
+                - "{{ is_state('script.sunrise_in_bedroom_left', 'on') }}"
+              then:
+                - service: script.turn_off
+                  target:
+                    entity_id: script.sunrise_in_bedroom_left
+            - if:
+                - "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2', 'on') }}"
+              then:
+                - service: light.turn_off
+                  target:
+                    entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+
+#        - service: light.turn_on
+#          entity_id: light.spalnia_stol
+#          data:
+#            effect: SunriseBW_to_25

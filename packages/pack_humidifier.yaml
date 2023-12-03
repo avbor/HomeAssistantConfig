@@ -286,10 +286,10 @@ humidifiers_pack:
       action:
         - service: humidifier.turn_on
           entity_id: humidifier.smartmi_humidifier_01_detskaia
-        - service: notify.telegram_group_system
-          data:
-            message: |
-              В *Детской* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
+#        - service: notify.telegram_group_system
+#          data:
+#            message: |
+#              В *Детской* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
 
     - alias: "Увлажнение детской - Стоп [Влажность]"
       id: ce34b5e0-d1d9-45b0-8a66-65eb392383ec
@@ -312,10 +312,10 @@ humidifiers_pack:
       action:
         - service: humidifier.turn_off
           entity_id: humidifier.smartmi_humidifier_01_detskaia
-        - service: notify.telegram_group_system
-          data:
-            message: |
-              В *Детской* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
+#        - service: notify.telegram_group_system
+#          data:
+#            message: |
+#              В *Детской* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
 
     ### Smartmi Humidifier 02 - Спальня #############
 
@@ -377,10 +377,10 @@ humidifiers_pack:
       action:
         - service: humidifier.turn_on
           entity_id: humidifier.smartmi_humidifier_02_spalnia
-        - service: notify.telegram_group_system
-          data:
-            message: |
-              В *Спальне* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%
+#        - service: notify.telegram_group_system
+#          data:
+#            message: |
+#              В *Спальне* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%
 
     - alias: "Увлажнение спальни - Стоп [Влажность]"
       id: ec2f9de0-dacb-4a84-b0c9-0b5eb8e2b4f9
@@ -403,7 +403,7 @@ humidifiers_pack:
       action:
         - service: humidifier.turn_off
           entity_id: humidifier.smartmi_humidifier_02_spalnia
-        - service: notify.telegram_group_system
-          data:
-            message: |
-              В *Спальне* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%
+#        - service: notify.telegram_group_system
+#          data:
+#            message: |
+#              В *Спальне* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%

@@ -4,6 +4,7 @@
 
 usb_sonoff_dongle_e_pack:
 
+  # Shell Commands
   shell_command:
 
     attach_sonoff_dongle_e_to_ha_vm: >-

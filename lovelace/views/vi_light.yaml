@@ -325,6 +325,26 @@ cards:
               icon: mdi:wall-sconce-flat
           - type: conditional
             conditions:
+              - entity: light.sonoff_1001045426
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.sonoff_1001045426
+              name: Бра - Право
+              icon: mdi:wall-sconce-flat
+      - type: horizontal-stack
+        cards:
+          - type: conditional
+            conditions:
+              - entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+                state_not: "unavailable"
+            card:
+              type: light
+              entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+              name: У кровати Слева
+              icon: mdi:lamp
+          - type: conditional
+            conditions:
               - entity: light.spalnia_stol
                 state_not: "unavailable"
             card:
@@ -334,15 +354,6 @@ cards:
                   entity: light.spalnia_stol
                   name: Стол
                   icon: mdi:desk-lamp
-          - type: conditional
-            conditions:
-              - entity: light.sonoff_1001045426
-                state_not: "unavailable"
-            card:
-              type: light
-              entity: light.sonoff_1001045426
-              name: Бра - Право
-              icon: mdi:wall-sconce-flat
       - type: button
         entity: input_boolean.bedroom_light_show_settings
         name: "\U000021E7 Настройки \U000021E9"

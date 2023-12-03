@@ -30,7 +30,20 @@ git_pack:
 
     git_commint_and_push:
       name: Commit and push config
-      icon: mdi:git
+      icon: mdi:github
+
+  # Input booleans
+  input_boolean:
+
+    git_autocommit:
+      icon: mdi:github
+
+  # Timers
+  timer:
+
+    git_time_to_push:
+      duration: "24:00:00"
+      restore: true
 
   # Automations
   automation:
@@ -40,17 +53,65 @@ git_pack:
       trigger:
         - platform: state
           entity_id: input_button.git_commint_and_push
-        - platform: numeric_state
+          id: "button"
+        - platform: event
+          event_type: timer.finished
+          event_data:
+            entity_id: timer.git_time_to_push
+          id: "timer_finished"
+        - platform: state
+          entity_id: input_boolean.git_autocommit
+          from: "off"
+          to: "on"
+          id: "enable"
+        - platform: state
           entity_id: sensor.git_number_of_modified_files
-          above: 0
-          for:
-            #hours: 24
-            minutes: 5
+          not_to:
+            - unavailable
+            - unknown
+          not_from:
+            - unavailable
+            - unknown
+          id: "files"
       action:
-        - service: shell_command.git_commint_and_push
-        - service: homeassistant.update_entity
-          target:
-            entity_id: sensor.git_number_of_modified_files
+        choose:
+          - conditions: "{{ trigger.id == 'button' }}"
+            sequence:
+              - service: shell_command.git_commint_and_push
+              - service: homeassistant.update_entity
+                target:
+                  entity_id: sensor.git_number_of_modified_files
+          - conditions: "{{ trigger.id == 'enable' }}"
+            sequence:
+              - service: timer.start
+                target:
+                  entity_id: timer.git_time_to_push
+          - conditions: "{{ trigger.id == 'timer_finished' }}"
+            sequence:
+              - if:
+                  - "{{ is_state('input_boolean.git_autocommit', 'on') }}"
+                then:
+                  - service: shell_command.git_commint_and_push
+                  - service: homeassistant.update_entity
+                    target:
+                      entity_id: sensor.git_number_of_modified_files
+                else:
+                  - service: timer.start
+                    target:
+                      entity_id: timer.git_time_to_push
+          - conditions: "{{ trigger.id == 'files' }}"
+            sequence:
+              choose:
+                - conditions: "{{ (trigger.to_state.state | int(0)) == 0 }}"
+                  sequence:
+                    - service: timer.cancel
+                      target:
+                        entity_id: timer.git_time_to_push
+                - conditions: "{{ (trigger.to_state.state | int(0)) > (trigger.from_state.state | int(0)) }}"
+                  sequence:
+                    - service: timer.start
+                      target:
+                        entity_id: timer.git_time_to_push
 
     - alias: GitHub HA Repo - Stars
       id: b8a8f7d3-1875-4271-b576-1586f2ab425f

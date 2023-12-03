@@ -97,6 +97,11 @@ livingroom_light_pack:
         - platform: time
           at: "00:30:00"
           id: "time"
+        - platform: state
+          entity_id: group.family_persons
+          from: "not_home"
+          to: "home"
+          id: "to_home"
       condition: "{{ is_state('input_boolean.livingroom_window_light_auto', 'on') }}"
       action:
         choose:
@@ -124,6 +129,22 @@ livingroom_light_pack:
                 entity_id: light.gostinaia_podsvetka_na_okne
                 state: "on"
               - service: light.turn_off
+                data:
+                  entity_id: light.gostinaia_podsvetka_na_okne
+          - alias: Came Home
+            conditions:
+              - condition: and
+                conditions:
+                  - condition: trigger
+                    id: "to_home"
+                  - condition: numeric_state
+                    entity_id: sensor.outdoor_illuminance
+                    below: input_number.livingroom_window_light_illuminance_threshold
+            sequence:
+              - condition: state
+                entity_id: light.gostinaia_podsvetka_na_okne
+                state: "off"
+              - service: light.turn_on
                 data:
                   entity_id: light.gostinaia_podsvetka_na_okne
 

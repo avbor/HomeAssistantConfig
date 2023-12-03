@@ -60,6 +60,7 @@ filter:
     - media_player.ue43ru7470 # Спальня - Телевизор
     - light.spalnia_stol # Спальня - Ламка на столе
     - humidifier.smartmi_humidifier_02_spalnia # Спальня - Увлажнитель
+    - light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2 # Спальня - Лампа у кровати слева
     # Дача
     - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
     - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
@@ -147,6 +148,10 @@ entity_config:
 
   light.sonoff_1001045426:
     name: Бра правое
+    room: Спальня
+
+  light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2:
+    name: Лампа у кровати слева
     room: Спальня
 
   sensor.average_temperature_in_flat:
