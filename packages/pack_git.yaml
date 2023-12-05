@@ -83,9 +83,12 @@ git_pack:
                   entity_id: sensor.git_number_of_modified_files
           - conditions: "{{ trigger.id == 'enable' }}"
             sequence:
-              - service: timer.start
-                target:
-                  entity_id: timer.git_time_to_push
+              - if:
+                  - "{{ (states('sensor.git_number_of_modified_files') | int(0)) > 0 }}"
+                then:
+                  - service: timer.start
+                    target:
+                      entity_id: timer.git_time_to_push
           - conditions: "{{ trigger.id == 'timer_finished' }}"
             sequence:
               - if:

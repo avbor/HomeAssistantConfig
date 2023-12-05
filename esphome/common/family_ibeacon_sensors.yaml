@@ -4,6 +4,8 @@ binary_sensor:
     ibeacon_uuid: "ed5e33eb-0ca3-4263-a681-a68b1045a5e6"
     device_class: "presence"
     icon: mdi:cellphone
+    filters:
+      - delayed_off: 10s
 
   - platform: ble_presence
     name: ${room_name} Amazfit GTR 4 Presence

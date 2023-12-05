@@ -197,6 +197,9 @@ bedroom_light_pack:
           wait_for_trigger:
             - platform: state
               entity_id: binary_sensor.living_room_oneplus_8t_presence
+              from: "off"
+              to: "on"
+              for: "00:03:00"
           timeout: "00:30:00"
         - parallel:
             - if:

@@ -327,7 +327,8 @@
           '^(sensor|number|switch|button|binary_sensor)\.galaxy_tab_a_8_0_2019_.*$|'
           '^camera\.reolinkcam_01_rtsp.*$|'
           '^(sensor|binary_sensor|button|switch)\.shellyem_.*|'
-          '^sensor\.ch_main_energy_.*'
+          '^sensor\.ch_main_energy_.*|'
+          '^sensor\..*_geocoded_location$'
           )
         }}
     - condition: template
