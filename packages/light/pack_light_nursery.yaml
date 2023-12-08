@@ -408,8 +408,3 @@ nursery_light_pack:
                       entity_id: light.ikea_e14_level_light_color_on_off
                       data:
                         brightness: 255
-#                - alias: Flip 180
-#                  conditions: "{{ (trigger.event.data.args.flip_degrees | int) == 180 }}"
-#                  sequence:
-#                    - service: light.toggle
-#                      entity_id: light.sonoff_1000f30a9e

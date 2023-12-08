@@ -129,7 +129,6 @@ ble_presence_pack:
         - condition: state
           entity_id: binary_sensor.holy_iot_green_1_presence
           state: "on"
-        #- "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor['0x158d000309920a_motion'].last_changed)) <= 120 }}"
       action:
         - wait_template: "{{ is_state('binary_sensor.holy_iot_green_1_presence', 'off') }}"
           timeout: "00:00:30"

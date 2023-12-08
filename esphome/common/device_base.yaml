@@ -16,9 +16,6 @@ api:
 ota:
   password: !secret esphome_ota_password
 
-#web_server:
-#  port: 80
-
 time:
   - platform: homeassistant
     id: homeassistant_time

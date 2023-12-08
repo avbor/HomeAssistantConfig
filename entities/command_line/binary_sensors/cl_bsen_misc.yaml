@@ -1,6 +1,7 @@
 #################################################
 # Miscellaneous command line binary sensors
 #################################################
+
 - binary_sensor:
     name: "Mount mnt nas check"
     unique_id: ca84ff43-7789-40f8-bd1e-651ec8fd101f

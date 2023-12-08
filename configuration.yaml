@@ -11,7 +11,6 @@ homeassistant:
       trusted_users:
         172.16.16.0/23: 5eb99a825ace48779fad323aac28014d
   name: Home, Sweet Home...
-  #  external_url: !secret external_url
   internal_url: "http://172.16.16.245:8123"
   time_zone: !secret home_timezone
   unit_system: metric
@@ -43,7 +42,6 @@ wake_on_lan:
 
 
 http:
-  #base_url: !secret external_url
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.16.16.5
@@ -54,19 +52,6 @@ logger:
   default: warn
   #logs:
   #  homeassistant.components.rest: debug
-  #  aiohttp: info
-  #  homeassistant.components.zha: debug
-  #  zigpy: debug
-  #  homeassistant.components.shell_command: debug
-  #  custom_components.electrolux_remote: debug
-  #  homeassistant.components.tuya: debug
-  #  homeassistant.components.http.ban: warning
-  #  homeassistant.components.device_tracker: debug
-  #  homeassistant.components.dlna_dms: debug
-  #  homeassistant.components.dlna_dms.config_flow: info
-  #  async_upnp_client: info
-  #  async_upnp_client.profiles.profile: debug
-  #  async_upnp_client.profiles.dlna: debug
   filters:
     homeassistant.loader:
       - "We found a custom integration .* which has not been tested by Home Assistant.*"
@@ -91,7 +76,6 @@ lovelace: !include lovelace/lovelace.yaml
 recorder:
   db_url: !secret mysql_url
   purge_keep_days: 7
-  #  commit_interval: 60
   exclude:
     domains:
       - updater
@@ -172,11 +156,8 @@ tts:
     language: "ru"
 
 telegram_bot:
-  - platform: webhooks # or "polling"
-    #    url: !secret tlg_webhook_proxy_url
+  - platform: webhooks
     api_key: !secret telegram_bot_token
-    #    trusted_networks:
-    #      - !secret tlg_webhook_proxy_ip
     allowed_chat_ids:
       - !secret tlg_stall_id
       - !secret tlg_iborisochka_id
@@ -232,15 +213,6 @@ calendar:
       - name: "Vacation"
         calendar: "Семья (Alexander Borsiov)"
         search: "Отпуск"
-
-#xbox:
-#  client_id: !secret xbox_client_id
-#  client_secret: !secret xbox_client_secret
-
-#zabbix:
-#  host: home.intra
-#  username: !secret zbx_user
-#  password: !secret zbx_pass
 
 yandex_station:
   include:

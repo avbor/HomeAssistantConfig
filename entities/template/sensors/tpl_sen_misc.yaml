@@ -1,18 +1,8 @@
 #################################################
 # Miscellaneous template sensors
 #################################################
+
 - sensor:
-
-#  - name: ym_dom_dacha_hr
-#    state: >
-#      {{ as_datetime(states('sensor.do_dachi') | int(0) * 60).strftime('%-H ч. %M мин.') }}
-
-#  - name: ym_dacha_dom_hr
-#    state: >
-#      {{ as_datetime(states('sensor.do_doma_ot_dachi') | int(0) * 60).strftime('%-H ч. %M мин.') }}
-
-#  - name: Xiaomi Gas Density
-#    state: "{{ state_attr('sensor.0x158d000413b210_gas_density', 'Density') }}"
 
   - name: Entrance Door Status
     unique_id: 496b73c7-79a3-48b6-baad-ea419f995279

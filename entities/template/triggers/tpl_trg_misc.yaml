@@ -1,6 +1,7 @@
 #################################################
 # Miscellaneous template trigger-based sensors
 #################################################
+
 - trigger:
   - platform: time_pattern
     hours: "/1"

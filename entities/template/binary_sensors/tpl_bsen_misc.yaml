@@ -1,6 +1,7 @@
 #################################################
 # Miscellaneous template binary sensors
 #################################################
+
 - binary_sensor:
 
     - name: updater_supervisor

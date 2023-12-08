@@ -2,30 +2,6 @@
 # System
 #################################################
 
-#- alias: "Restart FFmpeg process"
-#  initial_state: false
-#  trigger:
-#    platform: state
-#    entity_id: binary_sensor.dvizhenie_v_detskoi
-#    to: 'unavailable'
-#  action:
-#    - service: ffmpeg.restart
-#    - service: notify.telegram_group_system
-#      data:
-#        message: "_INFO:_ Перезапущен процесс ffmpeg"
-#    - delay:
-#        seconds: 10
-
-#- alias: "Temporary - Dismiss Discovery Notifications"
-#  initial_state: true
-#  trigger:
-#    - platform: event
-#      event_type: config_entry_discovered
-#  action:
-#    - service: persistent_notification.dismiss
-#      data:
-#        notification_id: config_entry_discovery
-
 - alias: "HA: Mount NFS Share from NAS03 [/nmt/nas]"
   id: eb3ef8ea-e19a-4b1e-b7ff-482089a346b5
   trigger:
@@ -35,34 +11,12 @@
     - service: switch.turn_on
       entity_id: switch.mount_mnt_nas
 
-#- alias: "HA: Create Weekly Backup"
-#  id: 03e8310d-cabf-4988-896b-f4a9a3f2f723
-#  initial_state: true
-#  trigger:
-#    - platform: time
-#      at: "02:45:00"
-#  condition:
-#    - condition: time
-#      weekday:
-#        - thu
-#  action:
-#    - service: auto_backup.backup_full
-#      data_template:
-#        name: >
-#          ha_weekly_backup_{{ now().strftime('%Y%m%d') }}
-#        keep_days: 13
-#        download_path: "/mnt/nas/ha_backups/weekly"
-
 - alias: "HA: Create Daily Backup"
   id: acac055e-ea1e-41cd-9f46-62e7a8c006aa
   initial_state: true
   trigger:
     - platform: time
       at: "01:00:00"
-  #  condition:
-  #    - condition: state
-  #      entity_id: binary_sensor.mount_mnt_nas_check
-  #      state: "on"
   action:
     - service: auto_backup.backup_full
       data:
@@ -115,19 +69,6 @@
           {{ state.entity_id }}{%- if not loop.last -%}, {%- endif -%}
           {%- endfor %}
 
-#- alias: "Mirror Notifications from Android's to Telegram"
-#  trigger:
-#    - platform: state
-#      entity_id:
-#        - sensor.kb2003_poslednee_uvedomlenie
-#        - sensor.mi_8_poslednee_uvedomlenie
-#  action:
-#    - service: notify.telegram_group_system
-#      data:
-#        message: |
-#          {{ trigger.to_state.attributes.package }}
-#          {{ trigger.to_state.state }}
-
 - alias: Fix for reload automations
   id: 4c7a9752-b7d2-4c41-acf6-7d175f6b9d39
   trigger:
@@ -146,46 +87,6 @@
             automation.turn_on
         {% endif -%}
       entity_id: automation.device_needs_attention_notify_to_group_system
-
-#- alias: Restart go2rtc addon
-#  id: 928847e4-3bd6-4d95-ba15-90c5b023b8a4
-#  trigger:
-#    - platform: time_pattern
-#      hours: "/2"
-#      minutes: "44"
-#  action:
-#    #- service: hassio.addon_restart
-#    #  data:
-#    #    addon: a889bffc_go2rtc
-#    - service: rest_command.restart_go2rtc
-#    - delay: "00:00:10"
-#    - service: homeassistant.update_entity
-#      target:
-#        entity_id:
-#          - camera.reolinkcam_01_rtsp
-#          - camera.reolinkcam_02_rtsp
-#    - delay: "00:00:05"
-#    - choose:
-#        - alias: Screen On
-#          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'on') }}"
-#          sequence:
-#            - service: button.press
-#              target:
-#                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
-#        - alias: Screen Off
-#          conditions: "{{ is_state('switch.galaxy_tab_a_8_0_2019_screen', 'off') }}"
-#          sequence:
-#            - service: switch.turn_on
-#              target:
-#                entity_id: switch.galaxy_tab_a_8_0_2019_screen
-#            - delay: "00:00:05"
-#            - service: button.press
-#              target:
-#                entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
-#            - delay: "00:00:15"
-#            - service: switch.turn_off
-#              target:
-#                entity_id: switch.galaxy_tab_a_8_0_2019_screen
 
 - alias: Update HA DB SQL sensors
   id: e41348f5-2915-4a51-8d88-e5f00e7c0b67
@@ -213,27 +114,10 @@
       after: "07:00:00"
       before: "22:50:00"
   action:
-    #    - service: homeassistant.update_entity
-    #      target:
-    #        entity_id:
-    #          - sensor.mes_07762_153_47_account
-    #          - binary_sensor.mes_07762_153_47_last_payment
-    #          - sensor.mes_07762_153_47_last_invoice
-    #          - sensor.mes_07762_153_47_meter_04915359
     - service: homeassistant.update_entity
       target:
         entity_id:
-          #          - sensor.mes_55384_014_37_account
-          #          - binary_sensor.mes_55384_014_37_last_payment
-          #          - sensor.mes_55384_014_37_last_invoice
           - sensor.mes_55384_014_37_meter_44259893
-#    - service: homeassistant.update_entity
-#      target:
-#        entity_id:
-#          - sensor.mes_82102_113_19_account
-#          - binary_sensor.mes_82102_113_19_last_payment
-#          - sensor.mes_82102_113_19_last_invoice
-#          - sensor.mes_82102_113_19_meter_52105841
 
 - alias: Update Ping sensors for TV
   id: a164b9f1-bd13-465e-a76b-7831cdfc63d9

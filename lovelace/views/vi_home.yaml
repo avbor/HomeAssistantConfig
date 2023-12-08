@@ -242,7 +242,6 @@ cards:
       # --- Карта:
       - type: conditional
         conditions:
-#          - entity: group.devices_to_map
           - entity: group.persons_to_map
             state: "not_home"
           - entity: binary_sensor.coutry_house_presence
@@ -346,21 +345,8 @@ cards:
               - entity: switch.domofon_automatically_reject
                 type: custom:multiple-entity-row
                 name: Отклонять все вызовы
-                #show_state: false
                 state_header: Всегда
                 toggle: true
-              #- entity: switch.domofon_mute_sound
-              #  name: Выключить звук
-              #- entity: switch.domofon_mute_sound_once
-              #  name: Выключить звук (однократно)
-
-              #- entity: switch.domofon_automatically_open
-              #  name: Открывать автоматически
-              #- entity: switch.domofon_automatically_open_once
-              #  name: Открыть автоматически (однократно)
-              #- entity: switch.domofon_automatically_reject
-              #  name: Отклонять все вызовы
-              #  icon: mdi:door-closed-cancel
 
           - type: horizontal-stack
             cards:
@@ -396,8 +382,6 @@ cards:
           - entity: input_boolean.doorbell_mute
             name: Выключить звук
       # --- Газ
-      #  - type: vertical-stack
-      #    cards:
       - type: markdown
         content: >
           ### <center>Датчик газа</center>
@@ -431,26 +415,20 @@ cards:
             align_state: center
             entities:
               - entity: sensor.lumi_th_kitchen_stove_temperature
-                #                - entity: sensor.kitchen_stove_temperature_min_max_mean
                 name: Текущая
-                #show_state: false
                 show_fill: false
                 color: orange
               - entity: sensor.kitchen_stove_temperature_median_zb
-                #                - entity: sensor.kitchen_stove_temperature_median_min_max_mean
                 name: Медиана
-                #show_state: false
                 show_fill: false
                 color: tomato
 
               - entity: sensor.kitchen_stove_temperature_min_max_bt
                 name: Текущая BT
-                #show_state: false
                 show_fill: false
                 color: orange
               - entity: sensor.kitchen_stove_temperature_median_bt
                 name: Медиана BT
-                #show_state: false
                 show_fill: false
                 color: tomato
 
@@ -470,41 +448,6 @@ cards:
               labels_secondary: false
               fill: fade
               state: false
-
-  #          - type: 'custom:mini-graph-card'
-  #            cache: false
-  #            hours_to_show: 8
-  #            points_per_hour: 20
-  #            line_width: 2
-  #            font_size: 75
-  #            font_size_header: 12
-  #            height: 80
-  #            decimals: 1
-  #            hour24: true
-  #            align_state: center
-  #            entities:
-  #                - entity: sensor.kitchen_stove_temperature_min_max_bt
-  #                  name: Текущая
-  #                - entity: sensor.kitchen_stove_temperature_median_bt
-  #                  name: Медиана
-  #                  show_state: true
-  #                  show_fill: false
-  #                  color: indianred
-  #                - entity: sensor.kitchen_stove_status_int
-  #                  y_axis: secondary
-  #                  aggregate_func: max
-  #                  smoothing: false
-  #                  show_legend: false
-  #                  show_line: false
-  #                  show_points: false
-  #                  color: salmon
-  #            show:
-  #              name: false
-  #              icon: false
-  #              labels: false
-  #              legend: false
-  #              labels_secondary: false
-  #              fill: fade
 
   # --- Свет
   - type: vertical-stack
@@ -644,6 +587,5 @@ cards:
             name: Aqara (Гостиная)
           - entity: sensor.openweathermap_moskva_danilovskii_pressure_mmhg
             name: OpenWeatherMap
-            #show_fill: false
         show:
           fill: false

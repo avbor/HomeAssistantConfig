@@ -264,7 +264,6 @@
         - sensor.yandex_station_lite_prikhozhaya_sw_version
         - sensor.yandex_station_mini2_gostinaia_sw_version
         - sensor.yandex_station_mini2_spalnia_sw_version
-  #condition: "{{ trigger.to_state.state != trigger.from_state.state }}"
   condition:
     - "{{ trigger.to_state.state != trigger.from_state.state }}"
     - >

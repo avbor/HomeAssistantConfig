@@ -63,14 +63,6 @@ cards:
           - entity: switch.sonoff_basic_04_switch
             name: Фильтр бассейна
             icon: mdi:pool
-          #          - type: section
-          #          - entity: sensor.gosund_sp111_02_watt
-          #            type: custom:multiple-entity-row
-          #            name: "Потребление"
-          #            icon: []
-          #            entities:
-          #              - entity: sensor.gosund_sp111_02_ampere
-          #                name: false
           - type: section
           - entity: switch.gosund_sp111_08_switch
             name: Обогреватель - Дети
@@ -121,8 +113,6 @@ cards:
             attribute: value_set_at_dt
             name: Дата снятия показаний
             icon: []
-          #- entity: input_number.country_house_enegry_meter_predicted_value
-          #  name: Прогноз
           - entity: sensor.ch_energy_meter_predicted_value
             name: Текущий прогноз
             icon: mdi:meter-electric-outline

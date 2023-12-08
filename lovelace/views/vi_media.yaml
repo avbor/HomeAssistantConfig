@@ -37,8 +37,6 @@ cards:
       - type: markdown
         content: >
           ### <center>Радио</center>
-      #- type: custom:vertical-stack-in-card
-      #  cards:
       - type: entities
         entities:
           - input_select.radio_station
@@ -71,8 +69,6 @@ cards:
       - type: markdown
         content: >
           ### <center>Yandex</center>
-      #- type: custom:vertical-stack-in-card
-      #  cards:
       - type: markdown
         content: >
           #### Произнести текс Алисой
@@ -367,32 +363,12 @@ cards:
           ### <center>Google</center>
       - type: conditional
         conditions:
-#          - entity: media_player.gostinaia
-#            state: "off"
-#          - entity: media_player.detskaia
-#            state: "off"
           - entity: media_player.mini_v_vannoi
             state: "off"
-#          - entity: media_player.kukhnia
-#            state: "off"
         card:
           type: markdown
           content: >
             *Все устройства бездействуют...*
-#      - type: conditional
-#        conditions:
-#          - entity: media_player.gostinaia
-#            state_not: "off"
-#        card:
-#          type: media-control
-#          entity: media_player.gostinaia
-#      - type: conditional
-#        conditions:
-#          - entity: media_player.detskaia
-#            state_not: "off"
-#        card:
-#          type: media-control
-#          entity: media_player.detskaia
       - type: conditional
         conditions:
           - entity: media_player.mini_v_vannoi
@@ -400,17 +376,3 @@ cards:
         card:
           type: media-control
           entity: media_player.mini_v_vannoi
-#      - type: conditional
-#        conditions:
-#          - entity: media_player.kukhnia
-#            state_not: "off"
-#        card:
-#          type: media-control
-#          entity: media_player.kukhnia
-      #    - type: conditional
-      #      conditions:
-      #        - entity: media_player.googlehome3792
-      #          state_not: "off"
-      #      card:
-      #        type: media-control
-      #        entity: media_player.googlehome3792

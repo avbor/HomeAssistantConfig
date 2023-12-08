@@ -89,21 +89,18 @@ ch_cctv_pack:
             sequence:
               - service: switch.turn_off
                 target:
-#                  entity_id: switch.sss_reolinkcam_02
                   entity_id: switch.frigate_srv01_reolinkcam_02
           - alias: Presence Sensor To Off
             conditions: "{{ trigger.to_state.state == 'off' }}"
             sequence:
               - service: switch.turn_on
                 target:
-#                  entity_id: switch.sss_reolinkcam_02
                   entity_id: switch.frigate_srv01_reolinkcam_02
 
     - alias: "Country House CCTV - Person detected"
       id: a0d9386b-ecf4-46f1-92d8-6ad1a777d1d9
       trigger:
         - platform: state
-#          entity_id: binary_sensor.sss_reolinkcam_02_motion
           entity_id: binary_sensor.reolinkcam_02_person_occupancy
           from: "off"
           to: "on"

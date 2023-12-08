@@ -4,117 +4,139 @@
 
 - platform: template
   sensors:
+
     lamp_status_spalnia_stol:
       device_class: power
       friendly_name: Лампа на столе в Спальне
       icon_template: mdi:desk-lamp
       value_template: "{{ is_state('light.spalnia_stol', 'on') }}"
+
     lamp_status_spalnia_bra_right:
       device_class: power
       friendly_name: Бра в Спальне - Право
       icon_template: mdi:wall-sconce-flat
       value_template: "{{ is_state('light.sonoff_1001045426', 'on') }}"
+
     lamp_status_spalnia_bra_left:
       device_class: power
       friendly_name: Бра в Спальне - Лево
       icon_template: mdi:wall-sconce-flat
       value_template: "{{ is_state('light.sonoff_01minizb_47ef08fe_on_off', 'on') }}"
+
     lamp_status_spalnia_u_krovati_left:
       device_class: power
       friendly_name: Лампа в Спальне у кровати - Лево
       icon_template: mdi:lamp
       value_template: "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2', 'on') }}"
+
     lamp_status_spalnia_liustra:
       device_class: power
       friendly_name: Люстра в Спальне
       icon_template: mdi:ceiling-light
       value_template: "{{ is_state('light.sonoff_1001053235', 'on') }}"
+
     lamp_status_detskaia:
       device_class: power
       friendly_name: Люстра в Детской
       icon_template: mdi:ceiling-light
       value_template: "{{ is_state('light.ikea_e27_detskaia', 'on') }}"
+
     lamp_status_detskaia_okno:
       device_class: power
       friendly_name: Подсветка окна в Детской
       icon_template: mdi:string-lights
       value_template: "{{ is_state('light.detskaia_podsvetka_na_okne', 'on') }}"
+
     lamp_status_gostinaia_okno:
       device_class: power
       friendly_name: Подсветка окна в Гостиной
       icon_template: mdi:string-lights
       value_template: "{{ is_state('light.gostinaia_podsvetka_na_okne', 'on') }}"
+
     lamp_status_gostinaya_bra:
       device_class: power
       friendly_name: Бра в Гостиной
       icon_template: mdi:wall-sconce-flat
       value_template: "{{ is_state('light.sonoff_1000ab3c28', 'on') }}"
+
     lamp_status_gostinaya_liustra:
       device_class: power
       friendly_name: Люстра в Гостиной
       icon_template: mdi:ceiling-light
       value_template: "{{ is_state('light.sonoff_1000f3035d', 'on') }}"
+
     lamp_status_gostinaya_spots:
       device_class: power
       friendly_name: Споты в Гостиной
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_1000f30a9e', 'on') }}"
+
     lamp_status_kukhnia_lenta:
       device_class: power
       friendly_name: Подсветка Кухни
       icon_template: mdi:led-strip-variant
       value_template: "{{ is_state('light.kukhnia_lenta', 'on') }}"
+
     lamp_status_kukhnia_liustra:
       device_class: power
       friendly_name: Люстра на Кухне
       icon_template: mdi:ceiling-light
-      #      value_template: "{{ is_state('light.kukhnia_liustra', 'on') }}"
       value_template: "{{ is_state('light.ikea_e27_kukhnia', 'on') }}"
+
     lamp_status_kukhnia_spots:
       device_class: power
       friendly_name: Споты на Кухне
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_1000b72483', 'on') }}"
+
     lamp_status_kladovaya:
       device_class: power
       friendly_name: Люстра в Кладовой
       icon_template: mdi:vanity-light
       value_template: "{{ is_state('light.sonoff_1000b6831b', 'on') }}"
+
     lamp_status_workdesk_gostinaya:
       device_class: power
       friendly_name: Лампа на столе в Гостиной
       icon_template: mdi:desk-lamp
       value_template: "{{ is_state('light.ikea_e27_level_light_color_on_off', 'on') }}"
+
     lamp_status_workdesk_detskaia_left:
       device_class: power
       friendly_name: Лампа на столе в Детской слева
       icon_template: mdi:desk-lamp
       value_template: "{{ is_state('light.ikea_e14_level_light_color_on_off', 'on') }}"
+
     lamp_status_workdesk_detskaia_right:
       device_class: power
       friendly_name: Лампа на столе в Детской справа
       icon_template: mdi:desk-lamp
       value_template: "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light', 'on') }}"
+
     lamp_status_prikhozhaya:
       device_class: power
       friendly_name: Споты в Прихожей
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_1000f2f14a', 'on') }}"
+
     lamp_status_koridor:
       device_class: power
       friendly_name: Споты в Коридоре
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_1000f2a500', 'on') }}"
+
     lamp_status_toilet:
       device_class: power
       friendly_name: Споты в Туалете
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
+
     lamp_status_bathroom:
       device_class: power
       friendly_name: Споты в Ванной
       icon_template: mdi:light-recessed
       value_template: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
+
     lamp_status_girlianda_detskaia:
       device_class: power
       friendly_name: Гирлянда на кровати в Детской

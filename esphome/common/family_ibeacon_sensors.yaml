@@ -1,4 +1,5 @@
 binary_sensor:
+
   - platform: ble_presence
     name: ${room_name} OnePlus 8T Presence
     ibeacon_uuid: "ed5e33eb-0ca3-4263-a681-a68b1045a5e6"

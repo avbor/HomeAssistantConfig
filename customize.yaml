@@ -56,8 +56,6 @@ switch.sonoff_1000b68886:
   friendly_name: Нептун - Питание
 binary_sensor.lumi_lumi_sensor_magnet_opening:
   friendly_name: Датчик протечки - Нептун
-#binary_sensor.0x158d000309920a_motion:
-#  occupancy_timeout: [120, 180, 240]
 sensor.start_time:
   unit_of_measurement: "s"
 sensor.average_voltage_in_flat:

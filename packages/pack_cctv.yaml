@@ -149,7 +149,6 @@ cctv_pack:
       id: 56d572c7-3750-4988-8294-aa241a4f4b31
       trigger:
         - platform: state
-#          entity_id: binary_sensor.sss_reolinkcam_01_motion
           entity_id: binary_sensor.reolinkcam_01_person_occupancy
           from: "off"
           to: "on"
@@ -174,22 +173,10 @@ cctv_pack:
                   data:
                     target: !secret tlg_group_staircase
                     url: !secret go2rtc_reolinkcam_01_mp4_7s
-#            - service: shell_command.delete_staircase_movement_record
-#            - service: camera.record
-#              data:
-#                entity_id: camera.reolinkcam_01_rtsp_mp4
-#                filename: "/config/video/staircase_movement.mp4"
-#                duration: 7
-#                lookback: 3
 
     - alias: "Staircase - Send recorded video"
       id: 692afba6-c94d-477f-9ac4-d064643898ce
       trigger:
-        #platform: event
-        #event_type: folder_watcher
-        #event_data:
-        #  event_type: moved
-        #  dest_path: /config/video/staircase_movement.mp4
         platform: event
         event_type: folder_watcher
         event_data:

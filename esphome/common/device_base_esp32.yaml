@@ -9,7 +9,6 @@ esp32:
 improv_serial:
 
 logger:
-#  level: VERY_VERBOSE
 
 captive_portal:
 
@@ -42,4 +41,3 @@ button:
 
   - platform: safe_mode
     name: ${board_name} Restart (Safe Mode)
-#    entity_category: diagnostic

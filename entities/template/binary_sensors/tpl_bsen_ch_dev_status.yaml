@@ -1,6 +1,7 @@
 #################################################
 # CH Device status sensors
 #################################################
+
 - binary_sensor:
 
   - name: CH Water Pump Status

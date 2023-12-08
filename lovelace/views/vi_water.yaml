@@ -105,16 +105,6 @@ cards:
           type: "custom:simple-thermostat"
           entity: climate.vodonagrevatel
           header: false
-          #header:
-          #  name: Centurio IQ 2.0
-          #  icon: false
-          #  name: false
-          #  icon: mdi:water-boiler
-          #  toggle:
-          #    entity: switch.tplink_smartplug_01
-          #    name: Питание
-          #    faults:
-          #      - entity: switch.tplink_smartplug_01
           decimals: 0
           step_size: 1
           layout:

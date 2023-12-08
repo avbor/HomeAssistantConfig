@@ -1,24 +1,3 @@
 #################################################
 # Media Players, TV...
 #################################################
-
-#- platform: samsungtv_tizen
-#  name: SamsungTV-UE43RU7470
-#  host: 172.16.16.205
-#  mac: 8c:79:f5:51:2f:d1
-#  app_list: '{"Plex": "3201512006963","YouTube": "111299001912", "ivi": "FD7JrMU4L1.ivi"}'
-#  api_key: !secret smartthings_token
-#  $device_id: !secret smartthings_ue43ru7470_id
-#- platform: samsungtv_custom
-#  name: SamsungTV-UE40C5100
-#  host: 172.16.16.206
-#  port: 5601
-#  mac: e4:7c:f9:89:49:99
-#- platform: samsungtv_custom
-#  name: SamsungTV-UE32ES5500
-#  host: 172.16.16.207
-#  mac: 48:44:f7:f7:b5:fa
-#- platform: samsungtv_custom
-#  name: SamsungTV-UE46ES5507
-#  host: 172.16.16.208
-#  mac: 1c:5a:3e:a6:d4:a6

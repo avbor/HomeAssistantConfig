@@ -27,17 +27,6 @@ common_light_pack:
               {{ states('sensor.lumi_lumi_sen_ill_mgl01_illuminance') }}
             {% endif %}
 
-  # Sensors
-#  sensor:
-#
-#    # Avg Outdoor Illuminance
-#    - platform: min_max
-#      name: Average Outdoor Illuminance
-#      unique_id: af5a2d40-61c1-4f48-8db0-e252485f15d8
-#      type: median
-#      entity_ids:
-#        - sensor.lumi_lumi_sen_ill_mgl01_illuminance
-
   # Automations
   automation:
 

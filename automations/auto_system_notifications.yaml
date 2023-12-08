@@ -169,8 +169,6 @@
           trigger.event.data.message | regex_search('Error while executing automation') or
           trigger.event.data.message | regex_search('Error executing script')
         }}
-  #    - condition: template
-  #      value_template: "{{ not 'automation.system_automation_error' in trigger.event.data.message }}"
   action:
     - service: telegram_bot.send_message
       data:
@@ -389,11 +387,6 @@
     platform: event
     event_type: device_tracker_new_device
   action:
-    #    service: notify.telegram_group_system
-    #    data_template:
-    #      title: "*Найдено новое устройство в сети!*"
-    #      message: |
-    #        MAC: {{ trigger.event.data.mac }}
     - service: telegram_bot.send_message
       data:
         target: !secret tlg_group_system

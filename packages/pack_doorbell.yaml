@@ -69,12 +69,6 @@ doorbell_pack:
                     media_content_type: text
                     extra:
                       volume_level: "{% set time = now().hour %}{% if time >= 21 or time < 9 %}0.5{% else %}0.7{% endif %}"
-#                - service: camera.record
-#                  data:
-#                    entity_id: camera.reolinkcam_01
-#                    filename: "/config/video/doorbel.mp4"
-#                    duration: 10
-#                    lookback: 0
             - alias: Mute Off
               conditions: >
                 {{
@@ -101,12 +95,6 @@ doorbell_pack:
                   data:
                     target: !secret tlg_group_flat_1
                     message: !secret look_at_cam_reolinkcam_01
-    #                - service: camera.record
-    #                  data:
-    #                    entity_id: camera.reolinkcam_01
-    #                    filename: "/config/video/doorbel.mp4"
-    #                    duration: 10
-    #                    lookback: 0
 
     - alias: "Doorbell - Mute and UnMute by Time"
       id: 325f3e23-39b1-47f5-a415-e5da5e4845e3

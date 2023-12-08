@@ -10,20 +10,9 @@
     service: switch.turn_on
     entity_id: switch.smartir_02_tv_samsung_power
 
-#- platform: xiaomi_miio
-#  host: 172.16.16.235
-#  token: !secret xiaomi_smartplug_wifi_01_token
-#  model: chuangmi.plug.hmi206
-#  name: Mi-SmartPlugWiFi-01
-
-#- platform: xiaomi_miio
-#  host: 172.16.16.236
-#  token: !secret xiaomi_smartplug_wifi_02_token
-#  model: chuangmi.plug.hmi206
-#  name: Mi-SmartPlugWiFi-02
-
 - platform: template
   switches:
+
     samsungtv_40c5100:
       value_template: "{{ is_state('binary_sensor.samsungtv_40c5100', 'on') }}"
       availability_template: "{{ is_state('binary_sensor.smartir_01_status', 'on') }}"
@@ -41,6 +30,7 @@
         {% else %}
           mdi:television-off
         {% endif %}
+
     samsungtv_46es5507:
       value_template: "{{ is_state('media_player.ue46es5507', 'on') }}"
       turn_on:

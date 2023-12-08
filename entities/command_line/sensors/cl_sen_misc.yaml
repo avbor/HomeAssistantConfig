@@ -1,6 +1,7 @@
 #################################################
 # Miscellaneous command line sensors
 #################################################
+
 - sensor:
     name: Supervisor updates
     unique_id: dd7f56f4-0f40-4e02-be6f-9b4c0f4b11a7

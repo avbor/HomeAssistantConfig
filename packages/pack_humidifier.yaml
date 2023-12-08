@@ -23,7 +23,6 @@ humidifiers_pack:
         - Medium
         - High
         - Auto
-#      initial: Auto
       icon: mdi:speedometer
 
     smartmi_humidifier_02_spalnia_mode:
@@ -33,7 +32,6 @@ humidifiers_pack:
         - Medium
         - High
         - Auto
-#      initial: Auto
       icon: mdi:speedometer
 
   # Input Number

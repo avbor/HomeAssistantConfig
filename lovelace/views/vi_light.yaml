@@ -246,12 +246,10 @@ cards:
         cards:
           - type: conditional
             conditions:
-              #              - entity: light.kukhnia_liustra
               - entity: light.ikea_e27_kukhnia
                 state_not: "unavailable"
             card:
               type: light
-              #              entity: light.kukhnia_liustra
               entity: light.ikea_e27_kukhnia
               name: Люстра
               icon: mdi:ceiling-light
@@ -469,14 +467,3 @@ cards:
               service: light.turn_off
               service_data:
                 entity_id: group.all_lamps
-#      - type: button
-#        entity: group.all_lamps
-#        name: Выключить весь свет
-#        icon: mdi:lightbulb-group-off
-#        icon_height: 64px
-#        show_state: false
-#        tap_action:
-#          action: call-service
-#          service: homeassistant.turn_off
-#          service_data:
-#            entity_id: group.all_lamps

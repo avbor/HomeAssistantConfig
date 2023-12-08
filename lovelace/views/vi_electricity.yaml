@@ -11,14 +11,7 @@ cards:
       - type: gauge
         entity: sensor.average_voltage_in_flat
         name: ""
-        #unit: V
         needle: true
-#        min: 205
-#        max: 245
-#        severity:
-#          yellow: 0
-#          green: 215
-#          red: 235
         min: 170
         max: 280
         segments:
@@ -44,9 +37,7 @@ cards:
           - mean
           - max
 
-  # Графики потребления
-#  - type: vertical-stack
-#    cards:
+      # Графики потребления
       - type: markdown
         content: >
           ### <center>Потребление (kWh, W)</center>
@@ -107,22 +98,6 @@ cards:
                   show_state: true
                   show_graph: false
                   fixed_value: true
-#          - type: 'custom:mini-graph-card'
-#            name: Серверная
-#            show:
-#              icon: false
-#              labels: false
-#            font_size_header: 12
-#            font_size: 80
-#            line_color: '#00b4d8'
-#            hours_to_show: 24
-#            points_per_hour: 12
-#            decimals: 0
-#            hour24: true
-#            aggregate_func: max
-#            align_state: right
-#            entities:
-#                - entity: sensor.gosund_sp111_03_watt
           - type: 'custom:mini-graph-card'
             name: Холодильник
             show:

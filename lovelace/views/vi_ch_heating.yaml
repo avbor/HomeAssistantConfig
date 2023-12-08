@@ -7,22 +7,6 @@ cards:
       - type: markdown
         content: >
           ### <center>Терраса</center>
-      #- type: custom:vertical-stack-in-card
-      #  cards:
-#          - type: entity
-#            state_color: true
-#            entity: switch.gosund_sp111_02_switch
-#            name: "Инфракрасный обогреватель"
-#            icon: mdi:heat-wave
-      #    - type: entities
-      #      entities:
-      #        - entity: switch.gosund_sp111_02_switch
-      #          name: "Инфракрасный обогреватель"
-      #          icon: mdi:heat-wave
-      #        - entity: sensor.ch_heater_terrace_power
-      #          name: Режим
-      #          icon: mdi:tune-variant
-
       - type: custom:simple-thermostat
         entity: climate.country_house_terrace
         layout:
@@ -60,7 +44,6 @@ cards:
           - entity: sensor.a4c1384e2b64_humidity
             name: Влажность
             show_state: true
-            #show_graph: false
             y_axis: secondary
             smoothing: true
             show_fill: false
@@ -189,7 +172,6 @@ cards:
           - entity: sensor.a4c138d358e9_humidity
             name: Влажность
             show_state: true
-            #show_graph: false
             y_axis: secondary
             smoothing: true
             show_fill: false
@@ -318,7 +300,6 @@ cards:
           - entity: sensor.country_house_avg_humidity_kids_rooms
             name: Влажность
             show_state: true
-            #show_graph: false
             y_axis: secondary
             smoothing: true
             show_fill: false

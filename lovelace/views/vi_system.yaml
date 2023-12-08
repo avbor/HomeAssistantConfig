@@ -103,13 +103,6 @@ cards:
                 icon: mdi:database
                 styles:
                   font-weight: bold
-      #        - type: history-graph
-      #          hours_to_show: 168
-      #          entities:
-      #            - entity: sensor.hass_db_size
-      #              name: "MariaDB"
-      #            - entity: sensor.influxdb_database_size
-      #              name: "InfluxDB"
       - type: entities
         entities:
           - entity: sensor.yaml_code_lines_count
@@ -140,16 +133,6 @@ cards:
                   entity: timer.git_time_to_push
                   name: Next push in
                   icon: []
-#              - type: conditional
-#                condition: "state"
-#                entity: input_boolean.git_autocommit
-#                state: "on"
-#                row:
-#                  - type: attribute
-#                    entity: timer.git_time_to_push
-#                    attribute: finishes_at
-#                    name: Next push
-#                    icon: []
               - entity: sensor.git_number_of_modified_files
                 name: Modified files
               - entity: input_button.git_commint_and_push
@@ -266,57 +249,6 @@ cards:
                       border-color: #303030;
                     }
 
-  #      - type: markdown
-  #        content: >
-  #          ### <center>Xiaomi Gateway 3 Control</center>
-  #      - type: entities
-  #        entities:
-  #          - input_select.xiaomi_gateway3_name
-  #      - type: horizontal-stack
-  #        cards:
-  #          - type: button
-  #            name: "Reboot"
-  #            icon: mdi:restart
-  #            icon_height: 64px
-  #            tap_action:
-  #              action: call-service
-  #              confirmation:
-  #                text: Перезагрузить Xiaomi Gateway?
-  #              service: script.turn_on
-  #              service_data:
-  #                entity_id: script.mi_gw3_reboot
-  #            entity: script.mi_gw3_reboot
-  #          - type: button
-  #            name: "Enable FTP"
-  #            icon: mdi:file-tree
-  #            icon_height: 64px
-  #            tap_action:
-  #              action: call-service
-  #              service: script.turn_on
-  #              service_data:
-  #                entity_id: script.mi_gw3_enable_ftp
-  #            entity: script.mi_gw3_enable_ftp
-  #          - type: button
-  #            name: "ZB Pair On"
-  #            icon: mdi:leak
-  #            icon_height: 64px
-  #            tap_action:
-  #              action: call-service
-  #              service: script.turn_on
-  #              service_data:
-  #                entity_id: script.mi_gw3_pair_on
-  #              entity: script.mi_gw3_pair_on
-  #          - type: button
-  #            name: "ZB Pair Off"
-  #            icon: mdi:leak-off
-  #            icon_height: 64px
-  #            tap_action:
-  #              action: call-service
-  #              service: script.turn_on
-  #              service_data:
-  #                entity_id: script.mi_gw3_pair_off
-  #              entity: script.mi_gw3_pair_off
-
   - type: vertical-stack
     cards:
       - type: markdown
@@ -333,8 +265,6 @@ cards:
             label: Общее
           - entity: automation.poweroff_all_media_when_nobody_at_home
             name: Выключать ТВ когда никого нет дома
-          #          - entity: automation.podsvetka_na_kukhne_sensor_dvizheniia_vykl
-          #            name: Выкл подсветку кухни [сенсор] (23:30 - 06:30)
           - type: section
             label: Уборка
           - entity: automation.opoveshchenie_o_zabytom_pylesose_notify_to_group_flat

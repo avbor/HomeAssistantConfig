@@ -115,7 +115,6 @@ kitchen_stove_pack:
         - name: Kitchen Stove Status
           unique_id: a1d808ae-acc8-4912-b1be-6548f478c161
           device_class: heat
-#          state: "{{ is_state('binary_sensor.kitchen_stove_status_bt','on') }}"
           state: >-
             {%- if is_state('binary_sensor.kitchen_stove_status_bt','on') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}true
             {%- elif is_state('binary_sensor.kitchen_stove_status_bt','off') and is_state('binary_sensor.kitchen_stove_status_zb','on') -%}false

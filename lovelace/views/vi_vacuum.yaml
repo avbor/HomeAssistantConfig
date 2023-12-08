@@ -169,7 +169,6 @@ cards:
       content: >
         ### <center>Карта</center>
     - type: picture-glance
-  #    title: Карта
       show_state: false
       camera_image: camera.mi_vacuum_cleaner_1s_cam
       entities:

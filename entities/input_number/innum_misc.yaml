@@ -1,6 +1,7 @@
 #################################################
 # Input numbers
 #################################################
+
 low_battery_alert_threshold:
   name: Low Battery Alert Threshold in Percent
   icon: mdi:battery-alert

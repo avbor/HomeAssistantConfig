@@ -8,7 +8,6 @@ cards:
         title: Подъезд
         entities: []
         camera_image: camera.reolinkcam_01_rtsp
-      #        camera_image: camera.nas03_reolinkcam_01
       - type: button
         entity: input_boolean.staircase_show_last_person
         name: "\U000021E7 Последнее обнаружение \U000021E9"
