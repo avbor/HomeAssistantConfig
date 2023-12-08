@@ -234,3 +234,13 @@
 #          - binary_sensor.mes_82102_113_19_last_payment
 #          - sensor.mes_82102_113_19_last_invoice
 #          - sensor.mes_82102_113_19_meter_52105841
+
+- alias: Update Ping sensors for TV
+  id: a164b9f1-bd13-465e-a76b-7831cdfc63d9
+  trigger:
+    - platform: time_pattern
+      seconds: "10"
+  action:
+    - service: homeassistant.update_entity
+      target:
+        entity_id: binary_sensor.samsungtv_40c5100
