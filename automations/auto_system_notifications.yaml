@@ -326,7 +326,8 @@
           '^camera\.reolinkcam_01_rtsp.*$|'
           '^(sensor|binary_sensor|button|switch)\.shellyem_.*|'
           '^sensor\.ch_main_energy_.*|'
-          '^sensor\..*_geocoded_location$'
+          '^sensor\..*_geocoded_location$|'
+          '^sensor\.double_take_.*'
           )
         }}
     - condition: template

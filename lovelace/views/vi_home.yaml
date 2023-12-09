@@ -16,11 +16,14 @@ cards:
               - entity: sensor.th_kukhnia_za_oknom_temperature
                 type: custom:multiple-entity-row
                 name: За окном
+                show_state: false
                 tap_action: []
                 entities:
                   - entity: sensor.outdoor_illuminance
                     name: false
                   - entity: sensor.th_kukhnia_za_oknom_humidity
+                    name: false
+                  - entity: sensor.th_kukhnia_za_oknom_temperature
                     name: false
               - entity: sensor.sunset_today
                 type: custom:multiple-entity-row
