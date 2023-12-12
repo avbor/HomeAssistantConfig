@@ -14,13 +14,19 @@ Some **screenshots** (slightly outdated) from my HA can be found [here](docs/scr
 
 ### Hardware
 
-**Server:**\
+**Servers:**\
 (Mainly for [Frigate](https://frigate.video/) and [Plex](https://www.plex.tv/))
-- Intel NUC [NUC7PJYH](https://ark.intel.com/content/www/ru/ru/ark/products/126137/intel-nuc-kit-nuc7pjyh.html):
-  - CPU: Intel Pentium Silver [J5005](https://ark.intel.com/content/www/ru/ru/ark/products/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz.html)
-  - RAM: 8 Gb
+
+- Intel NUC [BXNUC10i5FNHN](https://www.intel.com/content/www/us/en/products/sku/214591/intel-nuc-10-performance-kit-nuc10i5fnhn/specifications.html):
+  - CPU: Intel 10th Gen [i5](https://www.intel.com/content/www/us/en/products/sku/195436/intel-core-i510210u-processor-6m-cache-up-to-4-20-ghz/specifications.html)
+  - RAM: 64 Gb [CT32G4SFD832A](https://www.crucial.com/memory/ddr4/ct32g4sfd832a) 32 Gb x2
   - SD 64 Gb A2 (OS)
   - HDD 500 Gb (Data)
+  - NVME 512 Gb (VM & Data)
+
+- Intel NUC [BOXNUC7PJYH2](https://www.intel.com/content/www/us/en/products/sku/126137/intel-nuc-kit-nuc7pjyh/specifications.html) (not used for now):
+  - CPU: Intel Pentium Silver [J5005](https://www.intel.com/content/www/us/en/products/sku/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz/specifications.html)
+  - RAM: 8 Gb
 
 **Storage:**\
 (As well as VM and containers host, main HA VM also lives here)
