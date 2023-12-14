@@ -1,0 +1,55 @@
+homeassistant: true
+advanced:
+  network_key: '!secrets.yaml zb_network_key'
+  pan_id: 18921
+  ext_pan_id:
+    - 232
+    - 158
+    - 244
+    - 189
+    - 187
+    - 236
+    - 112
+    - 108
+  homeassistant_legacy_entity_attributes: false
+  legacy_api: false
+  legacy_availability_payload: false
+  log_syslog:
+    app_name: Zigbee2MQTT
+    eol: /n
+    host: localhost
+    localhost: localhost
+    path: /dev/log
+    pid: process.pid
+    port: 514
+    protocol: udp4
+    type: '5424'
+  last_seen: ISO_8601
+  log_level: warn
+mqtt:
+  server: mqtt://core-mosquitto:1883
+  user: '!secrets.yaml mqtt_user'
+  password: '!secrets.yaml mqtt_pass'
+  keepalive: 60
+  reject_unauthorized: true
+  version: 4
+  base_topic: zigbee2mqtt_2
+serial:
+  port: tcp://192.168.10.185:8888
+  adapter: ezsp
+frontend:
+  port: 8099
+device_options:
+  legacy: false
+availability: true
+devices:
+  '0x00158d00040e019e':
+    friendly_name: TH Дача Крыльцо
+  '0x00158d00054859d5':
+    friendly_name: Кнопка Aqara 2 Дача Дом
+  '0x00158d000802df91':
+    friendly_name: TH Дача Дом Холодильник
+  '0xa4c138d6c1469ae0':
+    friendly_name: '0xa4c138d6c1469ae0'
+  '0xa4c138cfc5b53729':
+    friendly_name: '0xa4c138cfc5b53729'

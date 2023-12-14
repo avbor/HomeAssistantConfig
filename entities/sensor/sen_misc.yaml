@@ -23,8 +23,8 @@
     - "date"
     - "date_time_iso"
 
-- platform: sun2
-  monitored_conditions:
-    - sunrise
-    - sunset
-    - daylight
+#- platform: sun2
+#  monitored_conditions:
+#    - sunrise
+#    - sunset
+#    - daylight

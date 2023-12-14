@@ -1,0 +1,86 @@
+{
+    "options": {
+        "abort": {
+            "addon_already_running": "Failed to start the {addon_name} add-on because it is already running.",
+            "addon_info_failed": "Failed to get {addon_name} add-on info.",
+            "addon_install_failed": "Failed to install the {addon_name} add-on.",
+            "addon_set_config_failed": "Failed to set {addon_name} configuration.",
+            "addon_start_failed": "Failed to start the {addon_name} add-on.",
+            "not_hassio": "The hardware options can only be configured on HassOS installations.",
+            "zha_migration_failed": "The ZHA migration did not succeed."
+        },
+        "error": {
+            "unknown": "Unexpected error"
+        },
+        "progress": {
+            "install_addon": "Please wait while the {addon_name} add-on installation finishes. This can take several minutes.",
+            "start_addon": "Please wait while the {addon_name} add-on start completes. This may take some seconds."
+        },
+        "step": {
+            "addon_installed_other_device": {
+                "title": "Multiprotocol support is already enabled for another device"
+            },
+            "addon_menu": {
+                "menu_options": {
+                    "reconfigure_addon": "Reconfigure IEEE 802.15.4 radio multiprotocol support",
+                    "uninstall_addon": "Remove IEEE 802.15.4 radio multiprotocol support"
+                }
+            },
+            "addon_not_installed": {
+                "data": {
+                    "enable_multi_pan": "Enable multiprotocol support"
+                },
+                "description": "When multiprotocol support is enabled, the {hardware_name}'s IEEE 802.15.4 radio can be used for both Zigbee and Thread (used by Matter) at the same time. If the radio is already used by the ZHA Zigbee integration, ZHA will be reconfigured to use the multiprotocol firmware.\n\nNote: This is an experimental feature.",
+                "title": "Enable multiprotocol support on the IEEE 802.15.4 radio"
+            },
+            "change_channel": {
+                "data": {
+                    "channel": "Channel"
+                },
+                "description": "Start a channel change for your Zigbee and Thread networks.\n\nNote: this is an advanced operation and can leave your Thread and Zigbee networks inoperable if the new channel is congested. Depending on existing network conditions, many of your devices may not migrate to the new channel and will require re-joining before they start working again. Use with caution.\n\nOnce you have selected **Submit**, the channel change starts quietly in the background and will finish after a few minutes.",
+                "title": "Reconfigure IEEE 802.15.4 radio multiprotocol support"
+            },
+            "configure_flasher_addon": {
+                "title": "The Silicon Labs Flasher add-on installation has started"
+            },
+            "install_addon": {
+                "title": "The Silicon Labs Multiprotocol add-on installation has started"
+            },
+            "install_flasher_addon": {
+                "title": "The Silicon Labs Flasher add-on installation has started"
+            },
+            "notify_channel_change": {
+                "description": "A Zigbee and Thread channel change has been initiated and will finish in {delay_minutes} minutes.",
+                "title": "Channel change initiated"
+            },
+            "notify_unknown_multipan_user": {
+                "description": "Home Assistant can automatically change the channels for otbr and zha. If you have configured another integration to use the radio, for example Zigbee2MQTT, you will have to reconfigure the channel in that integration after completing this guide.",
+                "title": "Manual configuration may be needed"
+            },
+            "reconfigure_addon": {
+                "data": {
+                    "channel": "Channel"
+                },
+                "title": "Reconfigure IEEE 802.15.4 radio multiprotocol support"
+            },
+            "show_revert_guide": {
+                "description": "If you want to change to Zigbee only firmware, please complete the following manual steps:\n\n  * Remove the Silicon Labs Multiprotocol addon\n\n  * Flash the Zigbee only firmware, follow the guide at https://github.com/NabuCasa/silabs-firmware/wiki/Flash-Silicon-Labs-radio-firmware-manually.\n\n  * Reconfigure ZHA to migrate settings to the reflashed radio",
+                "title": "Multiprotocol support is enabled for this device"
+            },
+            "start_addon": {
+                "title": "The Silicon Labs Multiprotocol add-on is starting."
+            },
+            "start_flasher_addon": {
+                "description": "Zigbee firmware is now being installed. This will take a few minutes.",
+                "title": "Installing firmware"
+            },
+            "uninstall_addon": {
+                "data": {
+                    "disable_multi_pan": "Disable multiprotocol support"
+                },
+                "description": "Disabling multiprotocol support will revert your {hardware_name}'s radio back to Zigbee-only firmware and will disable Thread support provided by the {hardware_name}. Your Thread devices will continue working only if you have another Thread border router nearby.\n\nIt will take a few minutes to install the Zigbee firmware and restoring a backup.",
+                "title": "Remove IEEE 802.15.4 radio multiprotocol support"
+            }
+        }
+    }
+}

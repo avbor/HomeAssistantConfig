@@ -1,0 +1,71 @@
+{
+    "options": {
+        "abort": {
+            "addon_info_failed": "\u65e0\u6cd5\u83b7\u53d6{addon_name}\u9644\u52a0\u4fe1\u606f\u3002",
+            "addon_install_failed": "\u65e0\u6cd5\u5b89\u88c5{addon_name}\u9644\u52a0\u7ec4\u4ef6\u3002",
+            "addon_set_config_failed": "\u65e0\u6cd5\u8bbe\u7f6e{addon_name}\u914d\u7f6e\u3002",
+            "addon_start_failed": "\u65e0\u6cd5\u542f\u52a8{addon_name}\u9644\u52a0\u7ec4\u4ef6\u3002",
+            "not_hassio": "\u786c\u4ef6\u9009\u9879\u53ea\u80fd\u5728\u901a\u8fc7 HassOS \u5b89\u88c5\u7684\u5b9e\u4f8b\u4e0a\u914d\u7f6e\u3002",
+            "zha_migration_failed": "ZHA \u8fc1\u79fb\u672a\u6210\u529f\u3002"
+        },
+        "error": {
+            "unknown": "\u975e\u9884\u671f\u7684\u9519\u8bef"
+        },
+        "progress": {
+            "install_addon": "\u8bf7\u7b49\u5f85{addon_name}\u9644\u52a0\u7ec4\u4ef6\u5b89\u88c5\u5b8c\u6210\u3002\u8fd9\u53ef\u80fd\u9700\u8981\u51e0\u5206\u949f\u7684\u65f6\u95f4\u3002",
+            "start_addon": "{addon_name}\u9644\u52a0\u7ec4\u4ef6\u542f\u52a8\u5b8c\u6210\uff0c\u8bf7\u7a0d\u5019\u3002\u8fd9\u53ef\u80fd\u9700\u8981\u51e0\u79d2\u949f\u3002"
+        },
+        "step": {
+            "addon_installed_other_device": {
+                "title": "\u5df2\u4e3a\u53e6\u4e00\u53f0\u8bbe\u5907\u542f\u7528\u591a\u534f\u8bae\u652f\u6301"
+            },
+            "addon_menu": {
+                "menu_options": {
+                    "reconfigure_addon": "\u91cd\u65b0\u914d\u7f6e IEEE 802.15.4 \u65e0\u7ebf\u5c04\u9891\u591a\u534f\u8bae\u652f\u6301",
+                    "uninstall_addon": "\u5220\u9664 IEEE 802.15.4 \u65e0\u7ebf\u5c04\u9891\u591a\u534f\u8bae\u652f\u6301\u3002"
+                }
+            },
+            "addon_not_installed": {
+                "data": {
+                    "enable_multi_pan": "\u542f\u7528\u591a\u534f\u8bae\u652f\u6301"
+                },
+                "description": "\u542f\u7528\u591a\u534f\u8bae\u652f\u6301\u540e\uff0c{hardware_name} \u7684 IEEE 802.15.4 \u65e0\u7ebf\u5c04\u9891\u53ef\u540c\u65f6\u7528\u4e8e Zigbee \u548c Thread\uff08\u7528\u4e8e Matter\uff09\u3002\u5982\u679c ZHA Zigbee \u96c6\u6210\u5df2\u4f7f\u7528\u65e0\u7ebf\u5c04\u9891\uff0cZHA \u5c06\u91cd\u65b0\u914d\u7f6e\u4e3a\u4f7f\u7528\u591a\u534f\u8bae\u56fa\u4ef6\u3002 \n\n\u6ce8\u610f\uff1a\u8fd9\u662f\u4e00\u4e2a\u5b9e\u9a8c\u6027\u529f\u80fd\u3002",
+                "title": "\u5728 IEEE 802.15.4 \u65e0\u7ebf\u5c04\u9891\u4e0a\u542f\u7528\u591a\u534f\u8bae\u652f\u6301"
+            },
+            "change_channel": {
+                "data": {
+                    "channel": "\u4fe1\u9053"
+                },
+                "description": "\u5f00\u59cb\u66f4\u6539 Zigbee \u548c Thread \u7f51\u7edc\u7684\u4fe1\u9053\u3002 \n\n\u6ce8\u610f\uff1a\u8fd9\u662f\u4e00\u9879\u9ad8\u7ea7\u64cd\u4f5c\uff0c\u5982\u679c\u65b0\u4fe1\u9053\u62e5\u585e\uff0c\u53ef\u80fd\u4f1a\u5bfc\u81f4\u60a8\u7684 Thread \u548c Zigbee \u7f51\u7edc\u65e0\u6cd5\u8fd0\u884c\u3002\u6839\u636e\u73b0\u6709\u7f51\u7edc\u6761\u4ef6\uff0c\u60a8\u7684\u8bb8\u591a\u8bbe\u5907\u53ef\u80fd\u65e0\u6cd5\u8fc1\u79fb\u5230\u65b0\u4fe1\u9053\uff0c\u9700\u8981\u91cd\u65b0\u52a0\u5165\u624d\u80fd\u518d\u6b21\u5f00\u59cb\u5de5\u4f5c\u3002\u8c28\u614e\u4f7f\u7528\u3002 \n\n\u9009\u62e9**\u63d0\u4ea4**\u540e\uff0c\u4fe1\u9053\u66f4\u6539\u4f1a\u5728\u540e\u53f0\u5b89\u9759\u5730\u5f00\u59cb\uff0c\u5e76\u5728\u51e0\u5206\u949f\u540e\u5b8c\u6210\u3002",
+                "title": "\u91cd\u65b0\u914d\u7f6e IEEE 802.15.4 \u65e0\u7ebf\u5c04\u9891\u591a\u534f\u8bae\u652f\u6301"
+            },
+            "install_addon": {
+                "title": "Silicon Labs \u591a\u534f\u8bae\u52a0\u8f7d\u9879\u5b89\u88c5\u5df2\u5f00\u59cb"
+            },
+            "notify_channel_change": {
+                "description": "Zigbee \u548c Thread \u4fe1\u9053\u6539\u53d8\u5df2\u542f\u52a8\uff0c\u5c06\u5728{delay_minutes}\u5206\u949f\u5185\u5b8c\u6210\u3002",
+                "title": "\u5df2\u542f\u52a8\u4fe1\u9053\u66f4\u6539"
+            },
+            "notify_unknown_multipan_user": {
+                "description": "Home Assistant \u53ef\u4ee5\u81ea\u52a8\u66f4\u6539 otbr \u548c zha \u7684\u4fe1\u9053\u3002\u5982\u679c\u60a8\u5df2\u914d\u7f6e\u53e6\u4e00\u4e2a\u96c6\u6210\u6765\u4f7f\u7528\u65e0\u7ebf\u5c04\u9891\uff0c\u4f8b\u5982 Zigbee2MQTT\uff0c\u5219\u5fc5\u987b\u5728\u5b8c\u6210\u672c\u6307\u5357\u540e\u91cd\u65b0\u914d\u7f6e\u8be5\u96c6\u6210\u4e2d\u7684\u4fe1\u9053\u3002",
+                "title": "\u53ef\u80fd\u9700\u8981\u624b\u52a8\u914d\u7f6e"
+            },
+            "reconfigure_addon": {
+                "data": {
+                    "channel": "\u4fe1\u9053"
+                },
+                "title": "\u91cd\u65b0\u914d\u7f6e IEEE 802.15.4 \u65e0\u7ebf\u5c04\u9891\u591a\u534f\u8bae\u652f\u6301"
+            },
+            "show_revert_guide": {
+                "description": "\u5982\u679c\u60a8\u60f3\u66f4\u6539\u4e3a\u4ec5\u9650 Zigbee \u7684\u56fa\u4ef6\uff0c\u8bf7\u5b8c\u6210\u4ee5\u4e0b\u624b\u52a8\u6b65\u9aa4\uff1a \n\n * \u5220\u9664 Silicon Labs \u591a\u534f\u8bae\u63d2\u4ef6\n\n * \u5237\u65b0\u4ec5\u9650 Zigbee \u7684\u56fa\u4ef6\uff0c\u8bf7\u6309\u7167 https://github.com/NabuCasa/silabs-firmware/wiki/Flash-Silicon-Labs-radio-firmware-manually \u4e0a\u7684\u6307\u5357\u8fdb\u884c\u64cd\u4f5c\u3002 \n\n * \u91cd\u65b0\u914d\u7f6e ZHA \u4ee5\u5c06\u8bbe\u7f6e\u8fc1\u79fb\u5230\u91cd\u65b0\u5237\u65b0\u7684\u65e0\u7ebf\u5c04\u9891",
+                "title": "\u6b64\u8bbe\u5907\u5df2\u542f\u7528\u591a\u534f\u8bae\u652f\u6301"
+            },
+            "start_addon": {
+                "title": "Silicon Labs \u591a\u534f\u8bae\u52a0\u8f7d\u9879\u6b63\u5728\u542f\u52a8\u3002"
+            },
+            "uninstall_addon": {
+                "title": "\u5220\u9664 IEEE 802.15.4 \u65e0\u7ebf\u5c04\u9891\u591a\u534f\u8bae\u652f\u6301\u3002"
+            }
+        }
+    }
+}

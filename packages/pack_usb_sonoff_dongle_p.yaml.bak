@@ -1,0 +1,137 @@
+#################################################
+# Package Conbee II related things
+#################################################
+
+usb_sonoff_dongle_p_pack:
+
+  # Shell Commands
+  shell_command:
+
+    attach_sonoff_dongle_p_to_ha_vm: >-
+      ssh -i /config/.ssh/id_ecdsa
+      -o 'StrictHostKeyChecking=no'
+      root@nas03.home.intra
+      /volume3/sys_files/vm/attach_sonoff_dongle_p_to_ha_vm.sh
+
+  # Command line
+  command_line:
+
+    - binary_sensor:
+        name: "Sonoff Dongle P USB Stick Exist"
+        unique_id: 8f7d7393-d433-46bf-9f74-a079dcb32f87
+        command: if test -h /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_7e93dcb7b529ec119ab3c99c40c9ce8d-if00-port0; then echo "true"; else echo "false"; fi
+        device_class: connectivity
+        payload_on: "true"
+        payload_off: "false"
+
+  # Automations
+  automation:
+
+    - alias: "Sonoff Dongle P: Persistent Notifications"
+      id: 8bd58dd3-4b8f-4560-a053-4fd1824bf6f2
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.sonoff_dongle_p_usb_stick_exist
+          not_from:
+            - unavailable
+            - unknown
+      action:
+        - choose:
+            - conditions: "{{ trigger.to_state.state == 'off' }}"
+              sequence:
+                - service: persistent_notification.create
+                  data:
+                    title: "Sonoff ZBDongle-P Disconnected"
+                    message: |
+                      Sonoff ZBDongle-P **отключен** от VM,
+                      недоступны все устройства **Zigbee2MQTT**.
+                    notification_id: "zbp_disconnected"
+            - conditions: "{{ trigger.to_state.state == 'on' }}"
+              sequence:
+                - service: persistent_notification.dismiss
+                  data:
+                    notification_id: "zbp_disconnected"
+                - service: persistent_notification.create
+                  data:
+                    title: "Sonoff ZBDongle-P Connected"
+                    message: |
+                      Sonoff ZBDongle-P **подключен**,
+                      проверьте работу **Zigbee2MQTT**.
+                    notification_id: "zbp_connected"
+
+    - alias: "Sonoff Dongle P: Attach USB Stick to HA VM"
+      id: aca5235d-da05-4c20-b1e9-649ad8dae363
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.sonoff_dongle_p_usb_stick_exist
+          to: 'off'
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            title: "*Внимание!*"
+            message: |
+              Sonoff Dongle P отключен от VM, будет запущен процесс автоматического подключения.
+        - repeat:
+            sequence:
+              - service: shell_command.attach_sonoff_dongle_p_to_ha_vm
+              - delay: "00:03:00"
+            until:
+              - condition: state
+                entity_id: binary_sensor.sonoff_dongle_p_usb_stick_exist
+                state: "on"
+
+    - alias: "Sonoff Dongle P: USB Stick Attached to HA VM"
+      id: bfa721e7-5313-4ef5-a35f-d4a90dcd7f4c
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.sonoff_dongle_p_usb_stick_exist
+          from: 'off'
+          to: 'on'
+      action:
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            title: "*Внимание!*"
+            message: |
+              Sonoff Dongle P подключен.
+            inline_keyboard:
+              - "Перезапустить HA:/sdp_ha_restart, Перезагрузить VM:/sdp_vm_reboot"
+
+    - alias: "Sonoff Dongle P - Restart HA"
+      id: 13efa5f8-dbbd-4d5d-b758-eec0d2a5f3e3
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: "/sdp_ha_restart"
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: "{{ trigger.event.data.id }}"
+            message: "Команда отправлена"
+        - service: telegram_bot.edit_replymarkup
+          data:
+            message_id: "{{ trigger.event.data.message.message_id }}"
+            chat_id: "{{ trigger.event.data.chat_id }}"
+            inline_keyboard: []
+        - service: homeassistant.restart
+          
+    - alias: "Sonoff Dongle P - Reboot VM"
+      id: 9656aaf0-ea56-45bd-be42-4280f467d10f
+      trigger:
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: "/sdp_vm_reboot"
+      action:
+        - service: telegram_bot.answer_callback_query
+          data_template:
+            callback_query_id: "{{ trigger.event.data.id }}"
+            message: "Команда отправлена"
+        - service: telegram_bot.edit_replymarkup
+          data:
+            message_id: "{{ trigger.event.data.message.message_id }}"
+            chat_id: "{{ trigger.event.data.chat_id }}"
+            inline_keyboard: []
+        - service: hassio.host_reboot

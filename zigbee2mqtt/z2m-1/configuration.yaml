@@ -1,0 +1,51 @@
+homeassistant: true
+advanced:
+  network_key: '!secrets.yaml zb_network_key'
+  pan_id: 39122
+  ext_pan_id:
+    - 30
+    - 134
+    - 145
+    - 17
+    - 133
+    - 64
+    - 214
+    - 51
+  homeassistant_legacy_entity_attributes: false
+  legacy_api: false
+  legacy_availability_payload: false
+  log_syslog:
+    app_name: Zigbee2MQTT
+    eol: /n
+    host: localhost
+    localhost: localhost
+    path: /dev/log
+    pid: process.pid
+    port: 514
+    protocol: udp4
+    type: '5424'
+  last_seen: ISO_8601
+  log_level: warn
+mqtt:
+  server: mqtt://core-mosquitto:1883
+  user: '!secrets.yaml mqtt_user'
+  password: '!secrets.yaml mqtt_pass'
+  base_topic: zigbee2mqtt_1
+serial:
+  port: >-
+    /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_7e93dcb7b529ec119ab3c99c40c9ce8d-if00-port0
+  adapter: zstack
+frontend:
+  port: 8099
+device_options:
+  legacy: false
+availability: true
+devices:
+  '0x00158d000413b210':
+    friendly_name: Датчик газа на Кухне
+  '0x00158d00054eacc7':
+    friendly_name: Реле Aqara Водопроводные краны
+  '0xa4c138792ba1d268':
+    friendly_name: Датчик присутствия в Ванной
+  '0xa4c138b96f4627bc':
+    friendly_name: Датчик присутствия в Туалете

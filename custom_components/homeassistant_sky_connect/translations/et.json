@@ -1,0 +1,86 @@
+{
+    "options": {
+        "abort": {
+            "addon_already_running": "Pistikprogrammi {addon_name} k\u00e4ivitamine eba\u00f5nnestus kuna see juba t\u00f6\u00f6tab.",
+            "addon_info_failed": "{addon_name} lisandmooduli teabe hankimine nurjus.",
+            "addon_install_failed": "Pistikprogrammi {addon_name} paigaldamine nurjus.",
+            "addon_set_config_failed": "{addon_name} s\u00e4tete m\u00e4\u00e4ramine eba\u00f5nnestus.",
+            "addon_start_failed": "Pistikprogrammi {addon_name} k\u00e4ivitamine nurjus.",
+            "not_hassio": "Riistvaravalikuid saab konfigureerida ainult HassOS-i paigaldustes.",
+            "zha_migration_failed": "ZHA sidumise siirdamine nurjus."
+        },
+        "error": {
+            "unknown": "Ootamatu t\u00f5rge"
+        },
+        "progress": {
+            "install_addon": "Oota kuni Silicon Labsi mitmeprotokolli lisandmooduli installimine l\u00f5peb. Selleks v\u00f5ib kuluda mitu minutit.",
+            "start_addon": "Oota kuni Silicon Labsi mitmeprotokolli lisandmooduli k\u00e4ivitamine on l\u00f5pule viidud. See v\u00f5ib v\u00f5tta m\u00f5ne sekundi."
+        },
+        "step": {
+            "addon_installed_other_device": {
+                "title": "Mitmeprotokolli tugi on m\u00f5ne teise seadme jaoks juba lubatud"
+            },
+            "addon_menu": {
+                "menu_options": {
+                    "reconfigure_addon": "IEEE 802.15.4 raadio multiprotokollide toetuse \u00fcmberseadistamine",
+                    "uninstall_addon": "Eemaldab IEEE 802.15.4 raadio multiprotokollide toe."
+                }
+            },
+            "addon_not_installed": {
+                "data": {
+                    "enable_multi_pan": "Luba multiprotokolli tugi"
+                },
+                "description": "Kui mitme protokolli tugi on lubatud, saab seadme {hardware_name} IEEE 802.15.4 raadiot kasutada samaaegselt nii Zigbee kui ka Threadi jaoks (kasutab Matter). Kui ZHA Zigbee kasutab juba kasutab raadiot, konfigureeritakse ZHA uuesti kasutama mitmeprotokollilist p\u00fcsivara. \n\n M\u00e4rkus. See on eksperimentaalne funktsioon.",
+                "title": "Multiprotokollide toe lubamine IEEE 802.15.4 raadiosides"
+            },
+            "change_channel": {
+                "data": {
+                    "channel": "Kanal"
+                },
+                "description": "Alusta oma Zigbee ja Threadi v\u00f5rkude kanalivahetust. \n\n M\u00e4rkus. See on t\u00e4iustatud toiming ja v\u00f5ib j\u00e4tta Threadi ja Zigbee v\u00f5rgud t\u00f6\u00f6v\u00f5imetuks kui uus kanal on \u00fclekoormatud. Olenevalt olemasolevatest v\u00f5rgutingimustest ei pruugi paljud seadmed uuele kanalile migreeruda ja vajavad uuesti liitumist, enne kui nad uuesti t\u00f6\u00f6le hakkavad. Kasuta ettevaatlikult. \n\n Kui valisid **Esita**, algab kanalivahetus vaikselt taustal ja l\u00f5peb m\u00f5ne minuti p\u00e4rast.",
+                "title": "IEEE 802.15.4 raadio multiprotokollide toetuse \u00fcmberseadistamine"
+            },
+            "configure_flasher_addon": {
+                "title": "Silicon Labs Flasheri pistikprogrammi paigaldamine on alanud"
+            },
+            "install_addon": {
+                "title": "Silicon Labs Multiprotocol add-on paigaldus on alanud"
+            },
+            "install_flasher_addon": {
+                "title": "Silicon Labs Flasheri pistikprogrammi paigaldamine on alanud"
+            },
+            "notify_channel_change": {
+                "description": "Zigbee ja Threadi kanalite muutmine on algatatud ja see l\u00f5peb {delay_minutes} minuti p\u00e4rast.",
+                "title": "Kanalimuutus on algatatud"
+            },
+            "notify_unknown_multipan_user": {
+                "description": "Home Assistant saab automaatselt muuta kanalid otbr ja zha. Kui oled seadistanud m\u00f5ne teise sidumise raadio kasutamiseks, n\u00e4iteks Zigbee2MQTT, pead p\u00e4rast selle juhendi t\u00e4itmist selle sidumise kanali uuesti seadistama.",
+                "title": "Vajalik v\u00f5ib olla k\u00e4sitsi seadistamine"
+            },
+            "reconfigure_addon": {
+                "data": {
+                    "channel": "Kanal"
+                },
+                "title": "IEEE 802.15.4 raadio multiprotokollide toetuse \u00fcmberseadistamine"
+            },
+            "show_revert_guide": {
+                "description": "Kui soovid muuta ainult Zigbee p\u00fcsivara, tee j\u00e4rgmised sammud: \n\n * Eemalda Silicon Labsi mitmeprotokolli lisand \n\n * V\u00e4rskenda ainult Zigbee p\u00fcsivara, j\u00e4rgi juhendit aadressil https://github.com/NabuCasa/silabs-firmware/wiki/Flash-Silicon-Labs-radio-firmware-manually. \n\n * Seadistuste \u00fcleviimiseks v\u00e4rskendatud raadiosse seadista ZHA uuesti",
+                "title": "Selle seadmel on multiprotokolli tugi lubatud"
+            },
+            "start_addon": {
+                "title": "Silicon Labs Multiprotocol lisandmoodul k\u00e4ivitub"
+            },
+            "start_flasher_addon": {
+                "description": "Zigbee p\u00fcsivara paigaldatakse. Selleks kulub m\u00f5ni minut.",
+                "title": "P\u00fcsivara paigaldamine"
+            },
+            "uninstall_addon": {
+                "data": {
+                    "disable_multi_pan": "Keela multiprotokooli tugi"
+                },
+                "description": "Mitmeprotokolli toe keelamine ennistab seadme {hardware_name} raadio tagasi ainult Zigbee p\u00fcsivarale ja keelab Threadi toe mida pakub {hardware_name} . Threadi seadmed j\u00e4tkavad t\u00f6\u00f6tamist ainult siis kui l\u00e4heduses on teine Threadi piiriruuter. \n\n Zigbee p\u00fcsivara paigaldamine ja varukoopia taastamine v\u00f5tab paar minutit.",
+                "title": "Eemaldab IEEE 802.15.4 raadio multiprotokollide toe."
+            }
+        }
+    }
+}

@@ -44,6 +44,8 @@
 !www/community/**
 !www/weather_icons/
 !www/weather_icons/*
+!zigbee2mqtt/
+!zigbee2mqtt/*
 !zigpy_ota/
 !zigpy_ota/*
 #################################

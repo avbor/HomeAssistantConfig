@@ -23,6 +23,36 @@ cctv_pack:
           state: "{{ trigger.data.motion }}"
           auto_off: "00:00:30"
 
+  # Scripts
+  script:
+
+    homecoming_greeting:
+      fields:
+        pers_name:
+          description: "Person Name"
+          example: "Alexander"
+      sequence:
+        - service: media_player.play_media
+          target:
+            entity_id: media_player.yandex_station_lite_prikhozhaya
+          data:
+            media_content_id: >-
+              {% set time = now().hour -%}
+              {% if time >= 21 or time < 9 -%}
+                <speaker is_whisper="true">Добро пожаловать, {{ pers_name }}!
+              {% else -%}
+                Добро пожаловать, {{ pers_name }}!
+              {% endif -%}
+            media_content_type: text
+            extra:
+              volume_level: >-
+                {% set time = now().hour -%}
+                {% if time >= 21 or time < 9 -%}
+                  0.4
+                {% else -%}
+                  0.6
+                {% endif -%}
+
   # Automations
   automation:
 
@@ -238,3 +268,39 @@ cctv_pack:
                   url: >-
                     {{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4
             until: "{{ wait.trigger.payload_json['type'] == 'end' }}"
+
+    - alias: Homecoming Greeting
+      id: 8431232f-319a-4184-94e9-bc070403eec4
+      mode: queued
+      max: 5
+      trigger:
+        - platform: state
+          entity_id: sensor.double_take_alexander_b
+          to: 'dafangcam_02'
+          id: 'alex'
+        - platform: state
+          entity_id: sensor.double_take_irina_b
+          to: 'dafangcam_02'
+          id: 'irina'
+      condition:
+        - condition: template
+          value_template: >-
+            {{ (as_timestamp(now()) - as_timestamp(as_local(states['binary_sensor.0x158d00031c790f_contact'].last_changed))) < 90 }}
+      action:
+        - choose:
+            - conditions: 
+                - "{{ trigger.id == 'alex' }}"
+                - "{{ is_state('person.alexander', 'home') }}"
+                - "{{ (as_timestamp(now()) - as_timestamp(as_local(states.person.alexander.last_changed))) < 600 }}"
+              sequence:
+                - service: script.homecoming_greeting
+                  data:
+                    pers_name: "Александр"
+            - conditions: 
+                - "{{ trigger.id == 'irina' }}"
+                - "{{ is_state('person.irina', 'home') }}"
+                - "{{ (as_timestamp(now()) - as_timestamp(as_local(states.person.irina.last_changed))) < 600 }}"
+              sequence:
+                - service: script.homecoming_greeting
+                  data:
+                    pers_name: "Ирина"

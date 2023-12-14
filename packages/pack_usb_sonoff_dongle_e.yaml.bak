@@ -27,6 +27,38 @@ usb_sonoff_dongle_e_pack:
   # Automations
   automation:
 
+    - alias: "Sonoff Dongle E: Persistent Notifications"
+      id: 2f4e6840-deb7-4629-80f1-8a34347e64e0
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.sonoff_dongle_e_usb_stick_exist
+          not_from:
+            - unavailable
+            - unknown
+      action:
+        - choose:
+            - conditions: "{{ trigger.to_state.state == 'off' }}"
+              sequence:
+                - service: persistent_notification.create
+                  data:
+                    title: "Sonoff ZBDongle-E Disconnected"
+                    message: |
+                      Sonoff ZBDongle-E **отключен** от VM,
+                      недоступны все устройства интеграции **ZHA**.
+                    notification_id: "zbe_disconnected"
+            - conditions: "{{ trigger.to_state.state == 'on' }}"
+              sequence:
+                - service: persistent_notification.dismiss
+                  data:
+                    notification_id: "zbe_disconnected"
+                - service: persistent_notification.create
+                  data:
+                    title: "Sonoff ZBDongle-E Connected"
+                    message: |
+                      Sonoff ZBDongle-E **подключен**,
+                      проверьте работу **ZHA** и **Multiprotocol Add-on**.
+                    notification_id: "zbe_connected"
+
     - alias: "Sonoff Dongle E: Attach USB Stick to HA VM"
       id: 165f7294-7880-4aaf-955c-d5f301bb1e72
       trigger:

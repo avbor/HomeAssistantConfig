@@ -65,23 +65,15 @@ _Remote site (country house):_
 - Keneetic Speedster [KN-3010](https://keenetic.ru/ru/keenetic-speedster-kn-3010) as Access Point in WiFi Mesh Network
 
 **ZigBee/BT Gateways:**
-- Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
-  Integration "Xiaomi Gateway (Aqara)", not used for now
 
-- Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
-  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3), not used for now
+- Sonoff ZBDongle-E\
+  Used by "Zigbee Home Automation (ZHA)" and "Thread" integration ([Milti-PAN firmware](https://github.com/darkxst/silabs-firmware-builder) & Silicon Labs Multiprotocol Add-on)
+
+- Sonoff ZBDongle-P\
+  Used by "Zigbee2MQTT"
 
 - Xiaomi Multi-Mode Gateway 2 (Hub 2) EU (DMWG03LM, lumi.gateway.mgl001)\
   Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) and "Zigbee2MQTT"
-
-- Aqara Hub E1 (ZHWG16LM)\
-  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3), not used for now
-
-- Phoscon ConBee 2 by Dresden Elektronik\
-  Integration "Zigbee Home Automation (ZHA)"
-
-- Sonoff ZBDongle-E\
-  Used by "Zigbee2MQTT" and "Thread" integration ([Milti-PAN firmware](https://github.com/darkxst/silabs-firmware-builder) & Silicon Labs Multiprotocol add-on)
 
 - ESP32 D1 Mini with _bluetooth_proxy_ component x5\
   Integration "ESPHome"
@@ -91,6 +83,18 @@ _Remote site (country house):_
 
 - UGREEN CM109 (CSR8510A10) USB BT 5.0 Dongle\
   Integration "Bluetooth"
+
+- Phoscon ConBee 2 by Dresden Elektronik\
+  Not used for now
+
+- Aqara Hub E1 (ZHWG16LM)\
+  Not used for now
+
+- Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
+  Not used for now
+
+- Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
+  Not used for now
 
 #### WiFi Devices:
 - Relays:
@@ -270,6 +274,7 @@ Integration "Fully Kiosk Browser"
 - Plex
 - Containers
   - [Frigate](https://github.com/blakeblackshear/frigate) with [go2rtc](https://github.com/AlexxIT/go2rtc)
+  - [Double Take](https://github.com/skrashevich/double-take/) with [CodeProject.AI Server](https://www.codeproject.com/AI/docs/index.html) and [CompreFace](https://github.com/exadel-inc/CompreFace)
   - hlsproxy
   - xteve
   - Watchtower

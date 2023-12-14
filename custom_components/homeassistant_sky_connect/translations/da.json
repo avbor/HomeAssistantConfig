@@ -1,0 +1,60 @@
+{
+    "options": {
+        "abort": {
+            "addon_info_failed": "Kunne ikke hente {addon_name} add-on info.",
+            "addon_install_failed": "Kunne ikke installere tilf\u00f8jelsen {addon_name} .",
+            "addon_set_config_failed": "Kunne ikke indstille {addon_name}-konfiguration.",
+            "addon_start_failed": "Det lykkedes ikke at starte tilf\u00f8jelsen {addon_name}.",
+            "not_hassio": "Hardwareindstillingerne kan kun konfigureres p\u00e5 HassOS-installationer.",
+            "zha_migration_failed": "ZHA-migreringen lykkedes ikke."
+        },
+        "error": {
+            "unknown": "Uventet fejl"
+        },
+        "progress": {
+            "install_addon": "Vent venligst, mens installationen af {addon_name}-tilf\u00f8jelsen afsluttes. Det kan tage flere minutter.",
+            "start_addon": "Vent venligst, mens {addon_name} add-on start afsluttes. Det kan tage nogle sekunder."
+        },
+        "step": {
+            "addon_installed_other_device": {
+                "title": "Multiprotokol-underst\u00f8ttelse er allerede aktiveret for en anden enhed"
+            },
+            "addon_menu": {
+                "menu_options": {
+                    "reconfigure_addon": "Genkonfigur\u00e9r multiprotokol-underst\u00f8ttelse af IEEE 802.15.4-radio",
+                    "uninstall_addon": "Fjern multiprotokol-underst\u00f8ttelse af IEEE 802.15.4-radio"
+                }
+            },
+            "addon_not_installed": {
+                "data": {
+                    "enable_multi_pan": "Aktiv\u00e9r underst\u00f8ttelse af multiprotokol"
+                },
+                "description": "N\u00e5r multiprotokolunderst\u00f8ttelse er aktiveret, kan {hardware_name}s IEEE 802.15.4-radio bruges til b\u00e5de Zigbee og Thread (som bruges af Matter) p\u00e5 samme tid. Hvis radioen allerede bruges af ZHA Zigbee-integrationen, vil ZHA blive omkonfigureret til at bruge multiprotokol-firmwaren.\n\nBem\u00e6rk: Dette er en eksperimentel funktion.",
+                "title": "Aktiv\u00e9r underst\u00f8ttelse af multiprotokol p\u00e5 IEEE 802.15.4-radioen"
+            },
+            "install_addon": {
+                "title": "Installationen af Silicon Labs Multiprotocol-tilf\u00f8jelsesprogrammet er startet"
+            },
+            "notify_channel_change": {
+                "description": "Et Zigbee- og Thread-kanalskift er blevet p\u00e5begyndt og afsluttes om {delay_minutes} minutter.",
+                "title": "Kanal\u00e6ndring p\u00e5begyndt"
+            },
+            "reconfigure_addon": {
+                "data": {
+                    "channel": "Kanal"
+                },
+                "title": "Genkonfigur\u00e9r multiprotokol-underst\u00f8ttelse af IEEE 802.15.4-radio"
+            },
+            "show_revert_guide": {
+                "description": "Hvis du \u00f8nsker at skifte til firmware, der kun indeholder Zigbee, skal du udf\u00f8re f\u00f8lgende manuelle trin:\n\n * Fjern Silicon Labs Multiprotocol-tilf\u00f8jelsen\n\n * Flash Zigbee-firmwaren - f\u00f8lg vejledningen p\u00e5 https://github.com/NabuCasa/silabs-firmware/wiki/Flash-Silicon-Labs-radio-firmware-manually.\n\n * Rekonfigurer ZHA for at migrere indstillinger til den reflasede radio",
+                "title": "Multiprotokol-underst\u00f8ttelse er aktiveret for denne enhed"
+            },
+            "start_addon": {
+                "title": "Silicon Labs Multiprotocol-tilf\u00f8jelsesprogrammet starter."
+            },
+            "uninstall_addon": {
+                "title": "Fjern multiprotokol-underst\u00f8ttelse af IEEE 802.15.4-radio"
+            }
+        }
+    }
+}

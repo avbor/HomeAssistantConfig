@@ -1,0 +1,68 @@
+{
+    "options": {
+        "abort": {
+            "addon_info_failed": "Ophalen van de Silicon Labs multi-protocol add-on is mislukt",
+            "addon_install_failed": "Installeren van de Silicon Labs multi-protocol add-on is mislukt",
+            "addon_set_config_failed": "Het instellen van de configuratie van de Silicon Labs multi-protocol add-on is mislukt",
+            "addon_start_failed": "Het starten van de Silicon Labs multi-protocol add-on is mislukt",
+            "not_hassio": "De hardwareopties kunnen alleen worden ingesteld voor HassOS installaties",
+            "zha_migration_failed": "De ZHA migratie is mislukt."
+        },
+        "error": {
+            "unknown": "Onverwachte fout"
+        },
+        "progress": {
+            "install_addon": "Een moment geduld. De installatie van de Sillicon Labs multi-protocol add-on wordt afgerond. Dit kan enkele minuten duren.",
+            "start_addon": "Een moment geduld. De Sillicon Labs multi-protocol add-on wordt gestart. Dit kan enkele seconden duren."
+        },
+        "step": {
+            "addon_installed_other_device": {
+                "title": "Multi-protocol ondersteuning is al ingeschakeld voor een ander apparaat"
+            },
+            "addon_menu": {
+                "menu_options": {
+                    "reconfigure_addon": "Herconfigureer IEEE 802.15.4 radio multiprotocol-ondersteuning",
+                    "uninstall_addon": "Verwijder IEEE 802.15.4 radio multiprotocol-ondersteuning."
+                }
+            },
+            "addon_not_installed": {
+                "description": "Wanneer multi-protocol ondersteuning is ingeschakeld, kan de IEEE 802.15.4 toegangspunt van {hardware_name} gelijktijdig voor zowel Zigbee als Thread (gebruikt door Matter) worden ingezet. Als het toegangspunt al in gebruik is door de ZHA Zigbee integratie, dan zal ZHA worden geconfigureerd om de multi-protocol firmware te gebruiken.\n\nLet op: Dit is een experimentele functionaliteit.",
+                "title": "Inschakelen multi-protocol ondersteuning op het IEEE 802.15.4 toegangspunt"
+            },
+            "change_channel": {
+                "data": {
+                    "channel": "Kanaal"
+                },
+                "description": "Start een kanaalwissel voor je Zigbee en Thread netwerken.\n\nN.B.L Dit is een geavanceerde operatie die je Thread en Zigbee netwerken onbruikbaar kan maken als het nieuwe kanaal overbelast is. Afhankelijk van je bestaande netwerken condities kan het zijn dat sommige apparaten mogelijk niet migreren naar het nieuwe kanaal en zullen in dat geval vereisen om opnieuw te koppelen voordat deze opnieuw gaan werken. Gebruik dit dus met enige voorzichtigheid.\n\nZodra je **Toepassen** hebt geselecteerd, zal de kanaalwijziging stil in de achtergron wijzigen en voltooid zijn na een paar minuten.",
+                "title": "Herconfigureer IEEE 802.15.4 radio multiprotocol-ondersteuning"
+            },
+            "install_addon": {
+                "title": "De Silicon Labs multi-protocol add-on installatie is gestart"
+            },
+            "notify_channel_change": {
+                "description": "Een verandering van Zigbee- en Thread-kanaal is gestart en zal over {delay_minutes} minuten voltooid zijn.",
+                "title": "Kanaalwijziging gestart"
+            },
+            "notify_unknown_multipan_user": {
+                "description": "Home Assistant kan automatisch de kanalen voor otbr en zha wijzigen. Als je een andere integratie hebt geconfigureerd die de radio gebruikt, bijvoorbeeld Zigbee2MQTT dan is het nodig om het kanaal te herconfigureren in deze integratie nadat deze instructie is voltooid.",
+                "title": "Mogelijk is een handmatige configuratie nodig"
+            },
+            "reconfigure_addon": {
+                "data": {
+                    "channel": "Kanaal"
+                },
+                "title": "Herconfigureer IEEE 802.15.4 radio multiprotocol-ondersteuning"
+            },
+            "show_revert_guide": {
+                "description": "Als je wilt overschakelen naar Zigbee-only firmware, volg dan de volgende stappen:\n\n* Verwijder de Silicon Laps multi-protocol add-on\n \n* Flash de Zigbee-only firmware, volg hiervoor de aanwijzingen op https://github.com/NabuCasa/silabs-firmware/wiki/Flash-Silicon-Labs-radio-firmware-manually\n\n* Herconfigureer ZHA om de instellingen te migreren naar het ge-flash-te apparaat",
+                "title": "Multi-protocol ondersteuning is ingeschakeld voor dit apparaat"
+            },
+            "uninstall_addon": {
+                "data": {
+                    "disable_multi_pan": "Multi-protocol-ondersteuning uitschakelen"
+                },
+                "title": "Verwijder IEEE 802.15.4 radio multiprotocol-ondersteuning."
+            }
+        }
+    }
+}
