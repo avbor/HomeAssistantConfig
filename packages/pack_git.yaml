@@ -50,6 +50,8 @@ git_pack:
 
     - alias: GitHub HA Repo - Push config
       id: 816f1400-5e51-4e5c-bc3a-f07e1e4202dd
+      mode: queued
+      max: 5
       trigger:
         - platform: state
           entity_id: input_button.git_commint_and_push
