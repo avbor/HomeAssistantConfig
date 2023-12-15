@@ -252,7 +252,6 @@ climate_pack:
     # Оповещения о долгой работе кондиционеров ######
     - alias: AC - long running [8h]
       id: 09f64418-db04-4327-a714-57d9ea39d1ed
-      initial_state: true
       trigger:
         platform: state
         entity_id:
@@ -271,7 +270,6 @@ climate_pack:
 
     - alias: AC - long running [16h]
       id: 970eef7a-4b66-4186-88ff-a0542c13c10a
-      initial_state: true
       trigger:
         platform: state
         entity_id:
@@ -290,7 +288,6 @@ climate_pack:
 
     - alias: AC - long running [24h]
       id: 106513d8-941c-4bfe-8f42-1fe9c95a77de
-      initial_state: true
       trigger:
         platform: state
         entity_id:

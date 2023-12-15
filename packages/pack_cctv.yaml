@@ -93,7 +93,6 @@ cctv_pack:
 
     - alias: "Вкл контроль движения в детской"
       id: f46ce78b-11b1-42e9-b217-34ed6eabb7bb
-      initial_state: true
       trigger:
         platform: time
         at: "23:30:00"
@@ -103,7 +102,6 @@ cctv_pack:
 
     - alias: "Выкл контроль движения в детской"
       id: 0ffb0c86-cd64-4990-9571-da1799709488
-      initial_state: true
       trigger:
         platform: time
         at: "07:00:00"
@@ -113,7 +111,6 @@ cctv_pack:
 
     - alias: Вход в квартиру
       id: 47a5b56e-5c41-4ae6-a3c2-25984c67b1b5
-      initial_state: true
       trigger:
         platform: state
         entity_id: binary_sensor.0x158d00031c790f_contact
@@ -159,7 +156,6 @@ cctv_pack:
 
     - alias: "DafangCam-02 Turn Off Night Mode by Light"
       id: ff6813b7-a4a7-4682-bacb-c28290e43f88
-      initial_state: true
       trigger:
         platform: state
         entity_id: light.sonoff_1000f2f14a

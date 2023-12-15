@@ -290,7 +290,6 @@ water_leak_protection:
 
     - alias: Оповещение о деактивации Нептуна [notify to group flat]
       id: 344fff46-b0f1-41c3-b6e7-6386b5bc1256
-      initial_state: true
       trigger: 
         platform: state
         entity_id: binary_sensor.neptun_water_leakage

@@ -239,7 +239,6 @@ vacuum_cleaner:
 
     - alias: "Оповещение о начале уборки"
       id: 61fb954b-3450-4fc6-9848-cc5304b54a16
-      initial_state: true
       trigger:
         platform: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
@@ -307,7 +306,6 @@ vacuum_cleaner:
 
     - alias: "Оповещение о возращении пылесоса на базу [notify to group flat]"
       id: 68311ec4-1030-4d7d-a2ea-e9cb21f7f40c
-      initial_state: true
       trigger:
         platform: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
@@ -323,7 +321,6 @@ vacuum_cleaner:
 
     - alias: "Оповещение о забытом пылесосе [notify to group flat]"
       id: db76ec80-b5d6-4991-8a6c-9272b25c1a39
-      initial_state: true
       trigger:
         platform: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
@@ -340,7 +337,6 @@ vacuum_cleaner:
 
     - alias: "Оповещение об ошибке [notify to group flat]"
       id: fe6bb5c1-f886-4161-bad7-4bf04be83258
-      initial_state: true
       trigger:
         platform: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
@@ -358,7 +354,6 @@ vacuum_cleaner:
 
     - alias: "Ежедневная уборка по будням [утро]"
       id: 67acac52-bf44-4661-9140-2e40f0006175
-      initial_state: true
       trigger:
         platform: state
         entity_id: group.family_persons
@@ -390,7 +385,6 @@ vacuum_cleaner:
 
     - alias: "Регулярная уборка прихожей"
       id: 6c64060c-0a65-4caf-8064-1d5cdfea50a3
-      initial_state: true
       trigger:
         platform: state
         entity_id: binary_sensor.0x158d00031c790f_contact

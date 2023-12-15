@@ -48,7 +48,6 @@ kitchen_light_pack:
 
     - alias: "Подсветка на кухне (сенсор движения - вкл)"
       id: 72c4f7ac-f72c-47fd-bf06-6e3671d12b1d
-      initial_state: true
       trigger:
         platform: state
         entity_id: binary_sensor.0x158d0003fac0ec_motion
@@ -63,7 +62,6 @@ kitchen_light_pack:
 
     - alias: "Подсветка на кухне (сенсор движения - выкл)"
       id: 47413029-b8c2-4ec1-ad98-7c72b271766d
-      initial_state: true
       trigger:
         platform: state
         entity_id: binary_sensor.0x158d0003fac0ec_motion

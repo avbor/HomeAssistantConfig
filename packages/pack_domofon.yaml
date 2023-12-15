@@ -15,7 +15,6 @@ domofon_pack:
 
     - alias: Domofon - Opened by Button Notification
       id: cb5e25c1-dcb7-4b75-a6c4-6b12eb84f86b
-      initial_state: true
       trigger:
         platform: state
         entity_id: binary_sensor.domofon_button
@@ -31,7 +30,6 @@ domofon_pack:
 
     - alias: Domofon - Incoming Call Notification
       id: 741a9858-1687-4b2d-8afd-73373e8cc8ba
-      initial_state: true
       trigger:
         platform: state
         entity_id: binary_sensor.domofon_incoming_call
@@ -64,7 +62,6 @@ domofon_pack:
 
     - alias: Domofon - Telegram Control - domofon_open
       id: 99d5c580-c382-48b3-bd2d-f6eb00b62c31
-      initial_state: true
       trigger:
         platform: event
         event_type: telegram_callback
@@ -86,7 +83,6 @@ domofon_pack:
 
     - alias: Domofon - Telegram Control - domofon_reject
       id: a50fb75b-0083-4866-8496-bdd013332a88
-      initial_state: true
       trigger:
         platform: event
         event_type: telegram_callback
@@ -202,7 +198,6 @@ domofon_pack:
 
     - alias: Domofon - Telegram Control - domofon_mute_once
       id: 97093f78-f059-4918-b451-ca50f698a49d
-      initial_state: true
       trigger:
         platform: event
         event_type: telegram_callback

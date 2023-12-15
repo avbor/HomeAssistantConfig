@@ -274,9 +274,9 @@ Integration "Fully Kiosk Browser"
 - Plex
 - Containers
   - [Frigate](https://github.com/blakeblackshear/frigate) with [go2rtc](https://github.com/AlexxIT/go2rtc)
-  - [Double Take](https://github.com/skrashevich/double-take/) with [CodeProject.AI Server](https://www.codeproject.com/AI/docs/index.html) and [CompreFace](https://github.com/exadel-inc/CompreFace)
-  - hlsproxy
-  - xteve
+  - [Double Take](https://github.com/skrashevich/double-take/) with [CompreFace](https://github.com/exadel-inc/CompreFace)
+  - HLS-Proxy
+  - xTeVe
   - Watchtower
 
 **Storage:**

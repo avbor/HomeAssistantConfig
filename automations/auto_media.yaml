@@ -4,7 +4,6 @@
 
 - alias: "PowerOff all media when nobody at home"
   id: 0e2312c7-3cab-413a-aefb-20ff5802c718
-  initial_state: true
   trigger:
     platform: state
     entity_id: group.family_persons

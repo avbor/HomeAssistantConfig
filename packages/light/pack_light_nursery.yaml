@@ -358,7 +358,6 @@ nursery_light_pack:
 
     - alias: "Kids must sleep at night"
       id: a2e4ec8e-926f-44bf-96fb-0029bd137f32
-      initial_state: true
       trigger:
         platform: state
         entity_id: light.ikea_e27_detskaia
