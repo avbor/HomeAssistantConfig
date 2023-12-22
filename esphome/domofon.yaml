@@ -59,8 +59,8 @@ ota:
   password: $ota_password
 
 # Blue status led
-status_led:
-  pin: $pin_led_blue
+#status_led:
+#  pin: $pin_led_blue
 
 globals:
   - id: mode_auto_open

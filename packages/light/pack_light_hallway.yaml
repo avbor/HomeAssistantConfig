@@ -40,6 +40,12 @@ hallway_light_pack:
                   conditions: "{{ trigger.to_state.state == 'idle' }}"
                   sequence:
                     choose:
+                      - alias: Frigate Presence On
+                        conditions: "{{ states('binary_sensor.dafangcam_02_person_occupancy') == 'on' }}"
+                        sequence:
+                          - service: timer.start
+                            target:
+                              entity_id: timer.hallway_light
                       - alias: Motion On
                         conditions: "{{ states('binary_sensor.0x158d000309920a_motion') == 'on' }}"
                         sequence:

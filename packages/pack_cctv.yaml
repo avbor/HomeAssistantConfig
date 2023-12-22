@@ -48,9 +48,9 @@ cctv_pack:
               volume_level: >-
                 {% set time = now().hour -%}
                 {% if time >= 21 or time < 9 -%}
-                  0.4
+                  0.5
                 {% else -%}
-                  0.6
+                  0.7
                 {% endif -%}
 
   # Automations
