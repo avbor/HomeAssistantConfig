@@ -45,7 +45,7 @@ status_led:
   pin: GPIO2
 
 bluetooth_proxy:
-  #active: true
+  active: true
 
 number:
   - platform: template

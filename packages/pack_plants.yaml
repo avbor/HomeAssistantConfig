@@ -1,0 +1,22 @@
+#################################################
+# Package Plants
+#################################################
+
+#plants_pack:
+
+#  plant:
+#    poinsettias:
+#      sensors:
+#        moisture: sensor.plant_sensor_659f_moisture
+#        #battery: sensor.my_sensor_battery
+#        temperature: sensor.plant_sensor_659f_temperature
+#        conductivity: sensor.plant_sensor_659f_conductivity
+#        brightness: sensor.plant_sensor_659f_illuminance
+#      min_moisture: 15
+#      max_moisture: 60
+#      min_conductivity: 350
+#      max_conductivity: 2000
+#      min_brightness: 4000
+#      max_brightness: 30000
+#      min_temperature: 8
+#      max_temperature: 35

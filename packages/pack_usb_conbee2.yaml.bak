@@ -9,7 +9,7 @@ usb_conbee2_pack:
     attach_conbee2_to_ha_vm: >-
       ssh -i /config/.ssh/id_ecdsa
       -o 'StrictHostKeyChecking=no'
-      root@nas03.home.intra
+      root@nas01.home.intra
       /volume3/sys_files/vm/attach_conbee2_to_ha_vm.sh
 
   # Command line

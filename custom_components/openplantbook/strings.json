@@ -1,0 +1,36 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Secret"
+        },
+        "description": "Log in to https://open.plantbook.io/apikey/show/ and get you API client id and secret."
+      }
+    },
+    "error": {
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "unknown": "[%key:common::config_flow::error::unknown%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "description": "",
+        "data": {
+          "download_images": "Automatically download plant images",
+          "download_path": "Path to save images"
+        }
+      }
+    },
+    "error": {
+      "invalid_path": "Invalid download path"
+    }
+  }
+}

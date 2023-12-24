@@ -312,7 +312,7 @@
           '^binary_sensor\..*_holy_iot_.*_presence$|'
           '^binary_sensor\..*_nut_gray_1_presence$|'
           '^binary_sensor\..*_amazfit_gtr_4_presence$|'
-          '^.*\.nas03_.*|'
+          '^.*\.nas01_.*|'
           '^vacuum\.xiaomi_vacuum_cleaner$|'
           '^sensor\.esp32_bt_proxy_\d{2}_rssi$|'
           '^sensor\..*_estimated_distance$|'

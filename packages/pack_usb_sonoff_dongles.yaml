@@ -10,13 +10,13 @@ usb_sonoff_dongles_pack:
     attach_sonoff_dongle_e_to_ha_vm: >-
       ssh -i /config/.ssh/id_ecdsa
       -o 'StrictHostKeyChecking=no'
-      root@nas03.home.intra
+      root@nas01.home.intra
       /volume3/sys_files/vm/attach_sonoff_dongle_e_to_ha_vm.sh
 
     attach_sonoff_dongle_p_to_ha_vm: >-
       ssh -i /config/.ssh/id_ecdsa
       -o 'StrictHostKeyChecking=no'
-      root@nas03.home.intra
+      root@nas01.home.intra
       /volume3/sys_files/vm/attach_sonoff_dongle_p_to_ha_vm.sh
 
   # Command line

@@ -1,0 +1,20 @@
+title: Plants
+path: plants
+icon: mdi:flower-tulip
+cards:
+  # Детская
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Детская</center>
+      - type: custom:flower-card
+        entity: plant.poinsettias
+        show_bars:
+          - moisture
+          - conductivity
+          - illuminance
+          - humidity
+          - temperature
+          - dli
+        battery_sensor: sensor.poinsettias_battery

@@ -42,6 +42,8 @@
 !www/community/
 !www/community/*
 !www/community/**
+!www/plants/
+!www/plants/*
 !www/weather_icons/
 !www/weather_icons/*
 !zigbee2mqtt/

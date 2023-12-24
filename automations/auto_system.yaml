@@ -2,7 +2,7 @@
 # System
 #################################################
 
-- alias: "HA: Mount NFS Share from NAS03 [/nmt/nas]"
+- alias: "HA: Mount NFS Share from NAS01 [/nmt/nas]"
   id: eb3ef8ea-e19a-4b1e-b7ff-482089a346b5
   trigger:
     - platform: homeassistant

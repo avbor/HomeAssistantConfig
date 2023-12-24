@@ -24,9 +24,10 @@ Some **screenshots** (slightly outdated) from my HA can be found [here](docs/scr
   - HDD 500 Gb (Data)
   - NVME 512 Gb (VM & Data)
 
-- Intel NUC [BOXNUC7PJYH2](https://www.intel.com/content/www/us/en/products/sku/126137/intel-nuc-kit-nuc7pjyh/specifications.html) (not used for now):
+- Intel NUC [BOXNUC7PJYH2](https://www.intel.com/content/www/us/en/products/sku/126137/intel-nuc-kit-nuc7pjyh/specifications.html):
   - CPU: Intel Pentium Silver [J5005](https://www.intel.com/content/www/us/en/products/sku/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz/specifications.html)
-  - RAM: 8 Gb
+  - RAM: 8 Gb [CT4G4SFS824A](https://www.crucial.com/memory/ddr4/ct4g4sfs824a) 4 Gb x2
+  - SSD 250 Gb [MZ-77E250BW](https://www.samsung.com/ru/memory-storage/sata-ssd/870-evo-250gb-sata-3-2-5-ssd-mz-77e250bw/)
 
 **Storage:**\
 (As well as VM and containers host, main HA VM also lives here)
@@ -209,6 +210,9 @@ _Remote site (country house):_
 
   - Qingping Air Monitor Lite (CGDN1)\
   Integration "Qingping"
+
+  - HHCC Flower Care (HHCCJCY01HHCC)\
+  Integration "Xiaomi BLE"
 
 - Other:
   - Mi Body Composition Scale 2 (NUN4048GL)\
