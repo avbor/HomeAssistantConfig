@@ -236,6 +236,7 @@ automation: !include_dir_merge_list automations
 automation gui: !include automations.yaml
 script: !include_dir_merge_named scripts
 script gui: !include scripts.yaml
+scene: !include_dir_merge_list entities/scene
 group: !include groups.yaml
 camera: !include_dir_merge_list entities/camera
 counter: !include_dir_merge_named entities/counter

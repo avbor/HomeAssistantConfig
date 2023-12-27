@@ -20,14 +20,14 @@ Some **screenshots** (slightly outdated) from my HA can be found [here](docs/scr
 - Intel NUC [BXNUC10i5FNHN](https://www.intel.com/content/www/us/en/products/sku/214591/intel-nuc-10-performance-kit-nuc10i5fnhn/specifications.html):
   - CPU: Intel 10th Gen [i5](https://www.intel.com/content/www/us/en/products/sku/195436/intel-core-i510210u-processor-6m-cache-up-to-4-20-ghz/specifications.html)
   - RAM: 64 Gb [CT32G4SFD832A](https://www.crucial.com/memory/ddr4/ct32g4sfd832a) 32 Gb x2
-  - SD 64 Gb A2 (OS)
-  - HDD 500 Gb (Data)
-  - NVME 512 Gb (VM & Data)
+  - SD Card: SanDisk Extreme [A2](https://www.sdcard.org/developers/sd-standard-overview/application-performance-class/) 64 Gb (OS) [SDSQXAH-064G-GN6GN](https://www.westerndigital.com/ru-ru/products/memory-cards/sandisk-extreme-uhs-i-for-mobile-gaming-microsd?sku=SDSQXAH-064G-GN6GN)
+  - HDD: WD 500 Gb (Data) [WD5000LPLX-75ZNTT0](https://documents.westerndigital.com/content/dam/doc-library/en_us/assets/public/western-digital/product/internal-drives/wd-black-hdd/product-brief-western-digital-wd-black-mobile-hdd.pdf)
+  - NVME: Solidigm 512 Gb (VM & Data) [SSDPFKNU512GZ](https://www.solidigm.com/content/solidigm/us/en/products/client/plus-series/p41.html#form=M.2%202280&cap=512%20GB)
 
 - Intel NUC [BOXNUC7PJYH2](https://www.intel.com/content/www/us/en/products/sku/126137/intel-nuc-kit-nuc7pjyh/specifications.html):
   - CPU: Intel Pentium Silver [J5005](https://www.intel.com/content/www/us/en/products/sku/128984/intel-pentium-silver-j5005-processor-4m-cache-up-to-2-80-ghz/specifications.html)
   - RAM: 8 Gb [CT4G4SFS824A](https://www.crucial.com/memory/ddr4/ct4g4sfs824a) 4 Gb x2
-  - SSD 250 Gb [MZ-77E250BW](https://www.samsung.com/ru/memory-storage/sata-ssd/870-evo-250gb-sata-3-2-5-ssd-mz-77e250bw/)
+  - SSD: 250 Gb [MZ-77E250BW](https://www.samsung.com/ru/memory-storage/sata-ssd/870-evo-250gb-sata-3-2-5-ssd-mz-77e250bw/)
 
 **Storage:**\
 (As well as VM and containers host, main HA VM also lives here)
@@ -267,21 +267,32 @@ Integration "Fully Kiosk Browser"
 
 ### Software
 
-**Server:**
-- Ubuntu Server 22.04 LTS
-- QEMU + KVM + libvirt
-- Docker
-- Unbound
-- Bind9
-- Nginx
-- Containers
-  - [Frigate](https://github.com/blakeblackshear/frigate) with [go2rtc](https://github.com/AlexxIT/go2rtc)
-  - [Double Take](https://github.com/skrashevich/double-take/) with [CompreFace](https://github.com/exadel-inc/CompreFace)
-  - Transmission
-  - Plex
-  - HLS-Proxy
-  - xTeVe
-  - Watchtower
+**Servers:**
+
+- NUC10:
+  - Ubuntu Server 22.04 LTS
+  - QEMU + KVM + libvirt
+  - Docker
+  - Unbound
+  - Bind9
+  - Nginx
+  - Containers:
+    - Watchtower
+    - [Frigate](https://github.com/blakeblackshear/frigate) with [go2rtc](https://github.com/AlexxIT/go2rtc)
+    - [Double Take](https://github.com/skrashevich/double-take/) with [CompreFace](https://github.com/exadel-inc/CompreFace)
+    - Transmission
+    - Plex
+    - [proxy4plex](https://github.com/kadrim/proxy4plex)
+    - HLS-Proxy
+    - xTeVe
+
+- NUC7:
+  - Ubuntu Server 22.04 LTS
+  - QEMU + KVM + libvirt
+  - Docker
+  - Containers:
+    - Watchtower
+    - Minecraft
 
 **Storage:**
 - DSM 7.2
@@ -289,22 +300,20 @@ Integration "Fully Kiosk Browser"
 - Photos
 - Download Station
 - acme.sh
-- Containers
+- Containers:
+  - Watchtower
+  - Portainer
   - Nextcloud
   - PostgeSQL
   - Redis
   - OnlyOffice
   - Imaginary
   - Vaultwarden
-  - Minecraft
-  - Portainer
-  - Torrserver
-  - Watchtower
   - Zabbix
   - MySQL
   - Grafana
+  - Torrserver
   - vlmcsd
-  - proxy4plex
 
 **Used DB:**
 - MariaDB

@@ -72,10 +72,10 @@ switch:
     turn_off_action:
       - switch.turn_off: relay
 
-status_led:
-  pin:
-    number: GPIO13
-    inverted: true
+#status_led:
+#  pin:
+#    number: GPIO13
+#    inverted: true
 
 output:
   - platform: esp8266_pwm

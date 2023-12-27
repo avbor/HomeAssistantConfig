@@ -1,0 +1,55 @@
+#################################################
+# Package for Nursery Scenes
+#################################################
+
+scenes_nursery_pack:
+
+  # Yandex Intents
+  yandex_station_intents:
+    intents:
+      Дети ложатся спать:
+        extra_phrases:
+          - Дети легли спать
+          - Дети в кровати
+          - Дети готовы спать
+        say_phrase: "{{ ['Спокойной ночи!', 'Хороших снов!', 'Спокойной ночи Егор и Кирилл.'] | random }}"
+
+  # Scenes
+  scene:
+
+    - name: Children go to Bed
+      icon: "mdi:sleep"
+      entities:
+        light.ikea_e27_detskaia: "off"
+        light.detskaia_podsvetka_na_okne: "on"
+        light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light: "off"
+        light.ikea_e14_level_light_color_on_off:
+          state: "on"
+          brightness: 40
+          color_mode: "xy"
+          xy_color: [0.526, 0.387]
+        media_player.yandex_station_lite_detskaia: "off"
+
+  # Automations
+  automation:
+
+    - alias: "Scene: Children go to Bed"
+      id: 4ecf7cf0-fc2e-4769-9d95-548dc4d52ba2
+      trigger:
+        - platform: event
+          event_type: yandex_intent
+          event_data:
+            text: Дети ложатся спать
+          id: "sleep"
+      action:
+        choose:
+          - alias: Go to Bed
+            conditions:
+              - condition: trigger
+                id: "sleep"
+            sequence:
+              - service: scene.turn_on
+                target:
+                  entity_id: scene.children_go_to_bed
+                data:
+                  transition: 3
