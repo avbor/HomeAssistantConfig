@@ -52,4 +52,4 @@ scenes_nursery_pack:
                 target:
                   entity_id: scene.children_go_to_bed
                 data:
-                  transition: 3
+                  transition: 2

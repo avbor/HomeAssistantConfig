@@ -44,11 +44,11 @@ filter:
     - cover.tze200_rddyvrci_ts0601_df30bdfe_window_covering # Кухня - Штора Правая
     - media_player.ue32es5500 # кухня - Телевизор
     # Ванная
-    - light.sonoff_zbmini_04_on_off
-    - fan.bathroom_extractor
+    - light.sonoff_zbmini_04_on_off # Ванная - Свет
+    - fan.bathroom_extractor # Ванная - Вытяжка
     # Туалет
-    - light.sonoff_zbmini_03_on_off
-    - fan.toilet_extractor
+    - light.sonoff_zbmini_03_on_off # Туалет - Свет
+    - fan.toilet_extractor # Туалет - Вытяжка
     # Кладовая
     - light.sonoff_1000b6831b # Кладовая - Люстра
     # Спальня

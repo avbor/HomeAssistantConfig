@@ -3,14 +3,12 @@
 #################################################
 
 cctv_pack:
-
   input_boolean:
     staircase_show_last_person:
       icon: mdi:account
 
   # Templates
   template:
-
     - trigger:
         - platform: webhook
           webhook_id: !secret sss_reolinkcam_01_webhook
@@ -25,7 +23,6 @@ cctv_pack:
 
   # Scripts
   script:
-
     homecoming_greeting:
       fields:
         pers_name:
@@ -55,7 +52,6 @@ cctv_pack:
 
   # Automations
   automation:
-
     - alias: Движение в детской
       id: 6166ef07-c478-44e3-a226-24d7737d6646
       initial_state: false
@@ -272,19 +268,19 @@ cctv_pack:
       trigger:
         - platform: state
           entity_id: sensor.double_take_alexander_b
-          to: 'dafangcam_02'
-          id: 'alex'
+          to: "dafangcam_02"
+          id: "alex"
         - platform: state
           entity_id: sensor.double_take_irina_b
-          to: 'dafangcam_02'
-          id: 'irina'
+          to: "dafangcam_02"
+          id: "irina"
       condition:
         - condition: template
           value_template: >-
             {{ (as_timestamp(now()) - as_timestamp(as_local(states['binary_sensor.0x158d00031c790f_contact'].last_changed))) < 90 }}
       action:
         - choose:
-            - conditions: 
+            - conditions:
                 - "{{ trigger.id == 'alex' }}"
                 - "{{ is_state('person.alexander', 'home') }}"
                 - "{{ (as_timestamp(now()) - as_timestamp(as_local(states.person.alexander.last_changed))) < 600 }}"
@@ -292,7 +288,7 @@ cctv_pack:
                 - service: script.homecoming_greeting
                   data:
                     pers_name: "Александр"
-            - conditions: 
+            - conditions:
                 - "{{ trigger.id == 'irina' }}"
                 - "{{ is_state('person.irina', 'home') }}"
                 - "{{ (as_timestamp(now()) - as_timestamp(as_local(states.person.irina.last_changed))) < 600 }}"
@@ -300,3 +296,8 @@ cctv_pack:
                 - service: script.homecoming_greeting
                   data:
                     pers_name: "Ирина"
+        - service: telegram_bot.send_photo
+          data:
+            target: !secret tlg_group_flat_1
+            url: >-
+              http://srv01.home.intra:3000/api/storage/matches/{{ trigger.to_state.attributes.match.filename }}?box=true

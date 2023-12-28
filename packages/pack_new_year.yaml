@@ -1,0 +1,94 @@
+#################################################
+# Package New Year Holidays
+#################################################
+
+new_year_holidays_pack:
+
+# Input Datetime
+  input_datetime:
+
+    new_year_illumination_on:
+      name: Время включения новогодней подсветки
+      icon: mdi:string-lights
+      has_date: false
+      has_time: true
+
+    new_year_illumination_off:
+      name: Время выключения новогодней подсветки
+      icon: mdi:string-lights-off
+      has_date: false
+      has_time: true
+
+  # Scenes
+  scene:
+
+    - name: New Year Light On
+      icon: "mdi:string-lights"
+      entities:
+        # Ёлка в детской
+        #switch.broadlink_smartplug_01_switch: "on"
+        # Ёлка в гостиной
+        switch.mi_smartplugwifi_02: "on"
+
+    - name: New Year Light Off
+      icon: "mdi:string-lights-off"
+      entities:
+        # Ёлка в детской
+        #switch.broadlink_smartplug_01_switch: "off"
+        # Ёлка в гостиной
+        switch.mi_smartplugwifi_02: "off"
+
+# Automations
+  automation:
+
+    - alias: 'New Year Light [Scheduled]'
+      id: 63ea7cdd-f8bc-4a4d-b3ce-72fc493e7392
+      trigger:
+        - platform: time
+          at: input_datetime.new_year_illumination_on
+          id: "on"
+        - platform: time
+          at: input_datetime.new_year_illumination_off
+          id: "off"
+      action:
+        choose:
+          - conditions: "{{ trigger.id == 'on' }}"
+            sequence:
+              - service: scene.turn_on
+                target: 
+                  entity_id: scene.new_year_light_on
+          - conditions: "{{ trigger.id == 'off' }}"
+            sequence:
+              - if: '{{ states("sensor.date")[-5:] != "12-31" }}'
+                then:
+                  - service: scene.turn_on
+                    target: 
+                      entity_id: scene.new_year_light_off
+
+    - alias: 'New Year Light [Home Presence]'
+      id: e0299715-bb22-4667-b4ad-7cf0b72bd433
+      trigger:
+        - platform: state
+          entity_id: group.family_persons
+          from: "not_home"
+          to: "home"
+          id: "home"
+        - platform: state
+          entity_id: group.family_persons
+          to: "not_home"
+          for:
+            minutes: 5
+          id: not_home
+      action:
+        choose:
+          - conditions: "{{ trigger.id == 'home' }}"
+            sequence:
+              - service: scene.turn_on
+                target: 
+                  entity_id: scene.new_year_light_on
+          - conditions: "{{ trigger.id == 'not_home' }}"
+            sequence:
+              - service: scene.turn_on
+                target:
+                  entity_id: scene.new_year_light_off
+
