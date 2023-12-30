@@ -28,27 +28,36 @@ cctv_pack:
         pers_name:
           description: "Person Name"
           example: "Alexander"
+        match_filename:
+          description: "Match Filename"
+          example: "326a677d-cdeb-46b6-bd34-0e8293a1c121.jpg"
       sequence:
-        - service: media_player.play_media
-          target:
-            entity_id: media_player.yandex_station_lite_prikhozhaya
-          data:
-            media_content_id: >-
-              {% set time = now().hour -%}
-              {% if time >= 21 or time < 9 -%}
-                <speaker is_whisper="true">Добро пожаловать, {{ pers_name }}!
-              {% else -%}
-                Добро пожаловать, {{ pers_name }}!
-              {% endif -%}
-            media_content_type: text
-            extra:
-              volume_level: >-
-                {% set time = now().hour -%}
-                {% if time >= 21 or time < 9 -%}
-                  0.5
-                {% else -%}
-                  0.7
-                {% endif -%}
+        - parallel:
+            - service: media_player.play_media
+              target:
+                entity_id: media_player.yandex_station_lite_prikhozhaya
+              data:
+                media_content_id: >-
+                  {% set time = now().hour -%}
+                  {% if time >= 21 or time < 9 -%}
+                    <speaker is_whisper="true">Добро пожаловать, {{ pers_name }}!
+                  {% else -%}
+                    Добро пожаловать, {{ pers_name }}!
+                  {% endif -%}
+                media_content_type: text
+                extra:
+                  volume_level: >-
+                    {% set time = now().hour -%}
+                    {% if time >= 21 or time < 9 -%}
+                      0.5
+                    {% else -%}
+                      0.7
+                    {% endif -%}
+            - service: telegram_bot.send_photo
+              data:
+                target: !secret tlg_group_flat_1
+                url: >-
+                  http://srv01.home.intra:3000/api/storage/matches/{{ match_filename }}?box=true
 
   # Automations
   automation:
@@ -288,6 +297,7 @@ cctv_pack:
                 - service: script.homecoming_greeting
                   data:
                     pers_name: "Александр"
+                    match_filename: "{{ trigger.to_state.attributes.match.filename }}"
             - conditions:
                 - "{{ trigger.id == 'irina' }}"
                 - "{{ is_state('person.irina', 'home') }}"
@@ -296,8 +306,4 @@ cctv_pack:
                 - service: script.homecoming_greeting
                   data:
                     pers_name: "Ирина"
-        - service: telegram_bot.send_photo
-          data:
-            target: !secret tlg_group_flat_1
-            url: >-
-              http://srv01.home.intra:3000/api/storage/matches/{{ trigger.to_state.attributes.match.filename }}?box=true
+                    match_filename: "{{ trigger.to_state.attributes.match.filename }}"
