@@ -14,6 +14,12 @@
     unit_of_measurement: pending update(s)
 
 - sensor:
+    name: Addons Mosquitto State
+    unique_id: 14b4788c-7cbc-402a-8d74-bbf3271e1201
+    command: 'curl -s http://supervisor/addons/core_mosquitto/info -H "Authorization: Bearer $(printenv SUPERVISOR_TOKEN)" | jq -r ''.data.state'''
+    scan_interval: 10
+
+- sensor:
     name: YAML Code Lines Count
     unique_id: 59b3b287-7bcb-481b-b4e0-155eccac0214
     command: find . -name '*.yaml' -not -path "./custom_components/*" -type f -print0 | xargs -0 cat | sed '/^\s*#/d;/^\s*$/d' | wc -l

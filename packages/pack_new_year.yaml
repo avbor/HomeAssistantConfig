@@ -59,7 +59,7 @@ new_year_holidays_pack:
                   entity_id: scene.new_year_light_on
           - conditions: "{{ trigger.id == 'off' }}"
             sequence:
-              - if: '{{ states("sensor.date")[-5:] != "12-31" }}'
+              - if: '{{ states("sensor.date")[-5:] != "01-01" }}'
                 then:
                   - service: scene.turn_on
                     target: 

@@ -128,3 +128,26 @@
     - service: homeassistant.update_entity
       target:
         entity_id: binary_sensor.samsungtv_40c5100
+
+- alias: Restart Stuck Add-on Z2M-2
+  id: 0617529b-bc60-48c0-8954-6936aa95ef50
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.z2m_2_stuck
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: sensor.addons_mostuitto_state
+      state: "started"
+  action:
+    - parallel:
+        - service: hassio.addon_restart
+          data:
+            addon: 4b41db2d_zigbee2mqtt
+        - service: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            parse_mode: html
+            title: "<b>Внимание!</b>"
+            message: "<b>Z2M-2</b> похоже завис, перезапускаем..."

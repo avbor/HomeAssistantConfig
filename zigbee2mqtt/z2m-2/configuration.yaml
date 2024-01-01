@@ -26,6 +26,7 @@ advanced:
     type: '5424'
   last_seen: ISO_8601
   log_level: warn
+  log_symlink_current: true
 mqtt:
   server: mqtt://core-mosquitto:1883
   user: '!secrets.yaml mqtt_user'

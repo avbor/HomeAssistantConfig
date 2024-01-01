@@ -8,3 +8,11 @@
     command: 'grep -c /mnt/nas /proc/mounts || true'
     payload_on: "1"
     payload_off: "0"
+
+- binary_sensor:
+    name: "Z2M-2 Stuck"
+    unique_id: f1422432-7d98-4269-8827-fc213af6b8f4
+    command: 'grep -c -E "error [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}: Not connected to MQTT server!" /config/zigbee2mqtt/z2m-2/log/current/log.txt || true'
+    payload_on: "1"
+    payload_off: "0"
+    scan_interval: 30
