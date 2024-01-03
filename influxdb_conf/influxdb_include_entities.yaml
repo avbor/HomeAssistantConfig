@@ -25,3 +25,4 @@
 - sensor.frigate_detection_fps
 - sensor.frigate_ov_inference_speed
 - sensor.frigate_intel_qsv_gpu_load
+- sensor.frigate_coral_inference_speed

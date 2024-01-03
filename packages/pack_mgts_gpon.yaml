@@ -1,0 +1,36 @@
+#################################################
+# Package for MGTS GPON Terminal
+#################################################
+
+mgts_gpon_pack:
+
+  # Scripts
+  script:
+
+    mgts_gpon_reboot:
+      alias: Reboot MGTS GPON Terminal
+      sequence:
+        - service: switch.turn_off
+          target:
+            entity_id: switch.nas_wr01b_02_switch
+        - delay: "00:00:05"
+        - service: switch.turn_on
+          target:
+            entity_id: switch.nas_wr01b_02_switch
+        - wait_template: "{{ is_state('switch.nas_wr01b_02_switch', 'on') }}"
+          timeout: 5
+        - if:
+            - "{{ not wait.completed }}"
+          then:
+            - service: telegram_bot.send_message
+              data:
+                target: !secret tlg_group_system
+                title: "*Внимание!*"
+                message: |
+                  Перезагрузка терминал МГТС не удалась, устройство обесточено.
+                  Необходимо проверить работоспособность ZB сети и вручную включить терминал.
+          else:
+            - service: telegram_bot.send_message
+              data:
+                target: !secret tlg_group_system
+                message: "Терминал МГТС успешно перезагружен."

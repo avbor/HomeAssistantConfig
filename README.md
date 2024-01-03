@@ -15,7 +15,7 @@ Some **screenshots** (slightly outdated) from my HA can be found [here](docs/scr
 ### Hardware
 
 **Servers:**\
-(Mainly for [Frigate](https://frigate.video/) and [Plex](https://www.plex.tv/))
+(Mostly for work with media and AI ([Frigate](https://frigate.video/), [Double-Take](https://github.com/skrashevich/double-take/), [Plex](https://www.plex.tv/), [PhotoPrism](https://www.photoprism.app/))
 
 - Intel NUC [BXNUC10i5FNHN](https://www.intel.com/content/www/us/en/products/sku/214591/intel-nuc-10-performance-kit-nuc10i5fnhn/specifications.html):
   - CPU: Intel 10th Gen [i5](https://www.intel.com/content/www/us/en/products/sku/195436/intel-core-i510210u-processor-6m-cache-up-to-4-20-ghz/specifications.html)
@@ -285,6 +285,8 @@ Integration "Fully Kiosk Browser"
     - [proxy4plex](https://github.com/kadrim/proxy4plex)
     - HLS-Proxy
     - xTeVe
+    - PhotoPrism
+    - PostgreSQL
 
 - NUC7:
   - Ubuntu Server 22.04 LTS

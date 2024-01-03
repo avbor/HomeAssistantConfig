@@ -3,12 +3,16 @@
 #################################################
 
 cctv_pack:
+
+  # Input Booleans
   input_boolean:
+
     staircase_show_last_person:
       icon: mdi:account
 
   # Templates
   template:
+
     - trigger:
         - platform: webhook
           webhook_id: !secret sss_reolinkcam_01_webhook
@@ -21,8 +25,27 @@ cctv_pack:
           state: "{{ trigger.data.motion }}"
           auto_off: "00:00:30"
 
+    - binary_sensor:
+        - name: Frigate ReolinkCam 02 FFmpeg Problem
+          unique_id: 577c813d-85e2-4a9f-9b2c-f78f39047991
+          device_class: problem
+          state: "{{ is_state('sensor.reolinkcam_02_ffmpeg_cpu_usage', 'unknown') }}"
+          delay_on:
+            minutes: 5
+          availability: "{{is_state('sensor.frigate_status', 'running')}}"
+
+  # Shell Commands
+  shell_command:
+
+    restart_frigate_srv01: >-
+      ssh -i /config/.ssh/id_ecdsa
+      -o 'StrictHostKeyChecking=no'
+      ha@srv01.home.intra
+      "docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
+
   # Scripts
   script:
+
     homecoming_greeting:
       fields:
         pers_name:
@@ -61,6 +84,25 @@ cctv_pack:
 
   # Automations
   automation:
+
+    - alias: Catch Possible Frigate FFmpeg Errors
+      id: ad6c6761-94ba-4edb-b744-b844c5f0d2d6
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.frigate_reolinkcam_02_ffmpeg_problem
+          from: "off"
+          to: "on"
+      action:
+        - parallel:
+            - service: telegram_bot.send_message
+              data:
+                target: !secret tlg_group_system
+                title: "*Frigate Warning!*"
+                message: |
+                  Возможна проблема с камерой Reolink 02,
+                  будет выполнена попытка перезагрузки Frigate.
+            - service: shell_command.restart_frigate_srv01
+
     - alias: Движение в детской
       id: 6166ef07-c478-44e3-a226-24d7737d6646
       initial_state: false
