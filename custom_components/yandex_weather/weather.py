@@ -227,7 +227,7 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
 
         self.async_write_ha_state()
 
-    @WeatherEntity.condition.setter
+#    @WeatherEntity.condition.setter
     def condition(self, new_condition: str):
         """Set new condition and fire event on change."""
         if (
