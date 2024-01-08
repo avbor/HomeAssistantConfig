@@ -19,11 +19,11 @@ from homeassistant.components.weather import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    LENGTH_MILLIMETERS,
-    PRESSURE_HPA,
-    SPEED_METERS_PER_SECOND,
     STATE_UNAVAILABLE,
-    TEMP_CELSIUS,
+    UnitOfPrecipitationDepth,
+    UnitOfPressure,
+    UnitOfSpeed,
+    UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -75,10 +75,10 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
     """Yandex.Weather entry."""
 
     _attr_attribution = ATTRIBUTION
-    _attr_native_wind_speed_unit = SPEED_METERS_PER_SECOND
-    _attr_native_pressure_unit = PRESSURE_HPA
-    _attr_native_temperature_unit = TEMP_CELSIUS
-    _attr_native_precipitation_unit = LENGTH_MILLIMETERS
+    _attr_native_wind_speed_unit = UnitOfSpeed.METERS_PER_SECOND
+    _attr_native_pressure_unit = UnitOfPressure.HPA
+    _attr_native_temperature_unit = UnitOfTemperature.CELSIUS
+    _attr_native_precipitation_unit = UnitOfPrecipitationDepth.MILLIMETERS
     _twice_daily_forecast: list[Forecast] | None
     coordinator: WeatherUpdater
 
@@ -120,7 +120,7 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
             _LOGGER.debug(f"state for restore: {state}")
             self._attr_available = True
             self._attr_condition = state.state
-            for (attribute, converter) in [
+            for attribute, converter in [
                 ("temperature", UNIT_CONVERSIONS[ATTR_WEATHER_TEMPERATURE_UNIT]),
                 ("pressure", UNIT_CONVERSIONS[ATTR_WEATHER_PRESSURE_UNIT]),
                 ("wind_speed", UNIT_CONVERSIONS[ATTR_WEATHER_WIND_SPEED_UNIT]),
@@ -146,7 +146,7 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
             self._attr_entity_picture = state.attributes.get("entity_picture")
             self._twice_daily_forecast = state.attributes.get(ATTR_FORECAST, [])
             for f in self._twice_daily_forecast:
-                for (attribute, converter) in [
+                for attribute, converter in [
                     ("temperature", UNIT_CONVERSIONS[ATTR_WEATHER_TEMPERATURE_UNIT]),
                     ("pressure", UNIT_CONVERSIONS[ATTR_WEATHER_PRESSURE_UNIT]),
                     ("wind_speed", UNIT_CONVERSIONS[ATTR_WEATHER_WIND_SPEED_UNIT]),
@@ -198,7 +198,9 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
 
     def _handle_coordinator_update(self) -> None:
         self._attr_available = True
-        self.condition = self.coordinator.data.get(ATTR_API_CONDITION)
+        self.update_condition_and_fire_event(
+            new_condition=self.coordinator.data.get(ATTR_API_CONDITION)
+        )
         self._attr_entity_picture = get_image(
             image_source=self._image_source,
             condition=self.coordinator.data.get(ATTR_API_ORIGINAL_CONDITION),
@@ -227,8 +229,7 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
 
         self.async_write_ha_state()
 
-#    @WeatherEntity.condition.setter
-    def condition(self, new_condition: str):
+    def update_condition_and_fire_event(self, new_condition: str):
         """Set new condition and fire event on change."""
         if (
             new_condition != self._attr_condition
