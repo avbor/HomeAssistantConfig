@@ -409,7 +409,11 @@ cards:
                     state_not: "unavailable"
                 card:
                   type: entities
+                  state_color: true
                   entities:
+                    - entity: timer.toilet_presence
+                      name: []
+                    - type: divider
                     - entity: fan.toilet_extractor
                       name: []
           - type: vertical-stack
@@ -429,7 +433,11 @@ cards:
                     state_not: "unavailable"
                 card:
                   type: entities
+                  state_color: true
                   entities:
+                    - entity: timer.bathroom_presence
+                      name: []
+                    - type: divider
                     - entity: fan.bathroom_extractor
                       name: []
 

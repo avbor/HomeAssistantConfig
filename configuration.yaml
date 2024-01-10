@@ -59,6 +59,8 @@ logger:
       - "Received invalid packet from .* at offset .* while unpacking .*"
     inter_rao_energosbyt.api.moscow:
       - ".* EnergosbytException..Client error: Cannot connect to host .*"
+    homeassistant.components.systemmonitor.sensor:
+      - "Cannot read CPU / processor temperature information"
 
 system_log:
   max_entries: 50
