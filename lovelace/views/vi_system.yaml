@@ -326,6 +326,8 @@ cards:
             name: Розетка Gosund SP111 10
           - entity: switch.tz3000_zloso4jk_ts011f_switch
             name: Розетка NAS-WR01B 01
+          - entity: switch.nas_wr01b_02_switch
+            name: Розетка NAS-WR01B 02 (МГТС)
       - type: markdown
         content: >
           ### <center>Недоступные розетки</center>
@@ -347,6 +349,7 @@ cards:
           - switch.gosund_sp111_09_switch
           - switch.gosund_sp111_10_switch
           - switch.tz3000_zloso4jk_ts011f_switch
+          - switch.nas_wr01b_02_switch
         state_filter:
           - unavailable
       # Недоступные лампы
