@@ -11,3 +11,9 @@ delete_all_cam_snapshots: "rm -f /config/www/cam_snapshots/*.jpg"
 delete_staircase_movement_record: "rm -f /config/video/staircase_movement.mp4"
 
 mount_mnt_nas: "mkdir -p /mnt/nas; mount -t nfs4 172.16.16.5:/volume1/media-01 /mnt/nas"
+
+restart_addon_core_silabs_multiprotocol: >-
+  ssh -i /config/.ssh/id_ecdsa
+  -o 'StrictHostKeyChecking=no'
+  root@127.0.0.1 -p 2222
+  "docker container addon_core_silabs_multiprotocol restart"

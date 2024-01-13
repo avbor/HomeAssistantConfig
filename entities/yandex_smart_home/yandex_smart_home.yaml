@@ -283,9 +283,9 @@ entity_config:
     room: Детская
     properties:
       - type: temperature
-        entity: sensor.0x158d0003931aec_temperature
+        entity: sensor.for_ysm_temp_in_nursery
       - type: humidity
-        entity: sensor.0x158d0003931aec_humidity
+        entity: sensor.for_ysm_hum_in_nursery
       - type: water_level
         entity: sensor.smartmi_humidifier_01_detskaia_water_level
     custom_ranges:
@@ -306,9 +306,9 @@ entity_config:
     room: Спальня
     properties:
       - type: temperature
-        entity: sensor.0x158d0003931b0e_temperature
+        entity: sensor.for_ysm_temp_in_bedroom
       - type: humidity
-        entity: sensor.0x158d0003931b0e_humidity
+        entity: sensor.for_ysm_hum_in_bedroom
       - type: water_level
         entity: sensor.smartmi_humidifier_02_spalnia_water_level
     custom_ranges:

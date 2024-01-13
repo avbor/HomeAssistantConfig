@@ -18,3 +18,20 @@ cards:
           - temperature
           - dli
         battery_sensor: sensor.poinsettias_battery
+
+  # Детская
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Гостиная</center>
+      - type: custom:flower-card
+        entity: plant.ficus_benjamina
+        show_bars:
+          - moisture
+          - conductivity
+          - illuminance
+          - humidity
+          - temperature
+          - dli
+        battery_sensor: sensor.ficus_benjamina_battery

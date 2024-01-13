@@ -15,12 +15,14 @@
   - name: Local Pressure mmhg
     unique_id: 79c91679-e174-480f-87c5-91e74579bc95
     unit_of_measurement: mmHg
-    state: >
-      {% set pressure = states('sensor.0x158d0003230618_pressure') | float(default=-1) %}
-      {% if pressure != -1 and (((states('sensor.0x158d0003230618_pressure') | float(0)) / 1.333) | round(2)) > 500 %}
-      {{ ((states('sensor.0x158d0003230618_pressure') | float(0)) / 1.333) | round(2) }}
+    state: >-
+      {% set pressure = states('sensor.0x158d0003230618_pressure') | float(default=-1) -%}
+      {% if pressure != -1 and (((states('sensor.0x158d0003230618_pressure') | float(0)) / 1.333) | round(2)) > 500 -%}
+        {{ ((states('sensor.0x158d0003230618_pressure') | float(0)) / 1.333) | round(2) -}}
+      {% elif states('sensor.local_pressure_mmhg') in ['unknown', 'unavailable'] -%}
+        None
       {% else %}
-      {{ states('sensor.local_pressure_mmhg') }}
+        {{ states('sensor.local_pressure_mmhg') }}
       {% endif %}
 
   - name: OpenWeatherMap Moskva Danilovskii Pressure mmhg
