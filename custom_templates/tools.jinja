@@ -1,0 +1,8 @@
+{% macro climate_sensor_filter(entity_id) %}
+    {% set ind = states(entity_id) %}
+    {% if ind in ['unknown', 'unavailable'] %}
+        None
+    {% else %}
+        {{ ind }}
+    {% endif %}
+{% endmacro %}

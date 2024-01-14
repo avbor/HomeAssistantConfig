@@ -23,3 +23,6 @@
 - sensor.ha_vm_disk_sda_*
 - sensor.reolinkcam_0*
 - sensor.*_weight
+- sensor.co2_in_*
+- sensor.pm25_in_*
+- sensor.pm10_in_*

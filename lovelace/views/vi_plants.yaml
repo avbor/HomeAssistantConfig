@@ -17,7 +17,7 @@ cards:
           - humidity
           - temperature
           - dli
-        battery_sensor: sensor.poinsettias_battery
+        battery_sensor: sensor.poinsettias_euphorbia_pulcherrima_battery
 
   # Детская
   - type: vertical-stack
@@ -34,4 +34,4 @@ cards:
           - humidity
           - temperature
           - dli
-        battery_sensor: sensor.ficus_benjamina_battery
+        battery_sensor: sensor.ficus_benjamina_ficus_benjamina_battery

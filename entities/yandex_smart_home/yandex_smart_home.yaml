@@ -22,7 +22,7 @@ filter:
     - light.ikea_e14_level_light_color_on_off # Детская - Лампа на столе слева
     - light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light # Детская - Лампа на столе справа
     - light.detskaia_girlianda_na_krovati # Детская - гирлянда на кровати
-    - sensor.0x158d0003931aec_temperature # Детская - Температура
+    - sensor.temperature_in_nursery # Детская - Температура
     - climate.daikin_nursery # Детская - Кондиционер
     - humidifier.smartmi_humidifier_01_detskaia # Детская - Увлажнитель
     #- switch.broadlink_smartplug_01_switch # Детская - Ёлка
@@ -33,7 +33,7 @@ filter:
     - light.gostinaia_podsvetka_na_okne # Гостиная - Подсветка на окне
     - light.ikea_e27_level_light_color_on_off # Гостиная - Лампа на столе
     - climate.daikin_livingroom # Гостиная - Кондиционер
-    - sensor.0x158d0003230618_temperature # Гостиная - Температура
+    - sensor.temperature_in_livingroom # Гостиная - Температура
     - switch.mi_smartplugwifi_02 # Гостиная - Ёлка
     - media_player.ue46es5507 # Гостиная - Телевизор
     # Кухня
@@ -53,7 +53,7 @@ filter:
     - light.sonoff_1000b6831b # Кладовая - Люстра
     # Спальня
     - light.sonoff_1001053235 # Спальня - Люстра
-    - sensor.0x158d0003931b0e_temperature # Спальня - Температура
+    - sensor.temperature_in_bedroom # Спальня - Температура
     - light.sonoff_01minizb_47ef08fe_on_off # Спальня - Бра слева
     - light.sonoff_1001045426 # Спальня - Бра справа
     - climate.daikin_bedroom # Спальня - Кондиционер
@@ -163,30 +163,30 @@ entity_config:
       - type: humidity
         entity: sensor.average_humidity_in_flat
 
-  sensor.0x158d0003931aec_temperature:
+  sensor.temperature_in_nursery:
     name: Климат в детской
     room: Детская
     properties:
       - type: humidity
-        entity: sensor.0x158d0003931aec_humidity
+        entity: sensor.humidity_in_nursery
       - type: battery_level
         entity: sensor.0x158d0003931aec_battery
 
-  sensor.0x158d0003230618_temperature:
+  sensor.temperature_in_livingroom:
     name: Климат в гостиной
     room: Гостиная
     properties:
       - type: humidity
-        entity: sensor.0x158d0003230618_humidity
+        entity: sensor.humidity_in_livingroom
       - type: battery_level
         entity: sensor.0x158d0003230618_battery
 
-  sensor.0x158d0003931b0e_temperature:
+  sensor.temperature_in_bedroom:
     name: Климат в спальне
     room: Спальня
     properties:
       - type: humidity
-        entity: sensor.0x158d0003931b0e_humidity
+        entity: sensor.humidity_in_bedroom
       - type: battery_level
         entity: sensor.0x158d0003931b0e_battery
 
@@ -283,9 +283,9 @@ entity_config:
     room: Детская
     properties:
       - type: temperature
-        entity: sensor.for_ysm_temp_in_nursery
+        entity: sensor.temperature_in_nursery
       - type: humidity
-        entity: sensor.for_ysm_hum_in_nursery
+        entity: sensor.humidity_in_nursery
       - type: water_level
         entity: sensor.smartmi_humidifier_01_detskaia_water_level
     custom_ranges:
@@ -306,9 +306,9 @@ entity_config:
     room: Спальня
     properties:
       - type: temperature
-        entity: sensor.for_ysm_temp_in_bedroom
+        entity: sensor.temperature_in_bedroom
       - type: humidity
-        entity: sensor.for_ysm_hum_in_bedroom
+        entity: sensor.humidity_in_bedroom
       - type: water_level
         entity: sensor.smartmi_humidifier_02_spalnia_water_level
     custom_ranges:

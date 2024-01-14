@@ -2,10 +2,10 @@ import asyncio
 import logging
 from typing import Optional
 
-from homeassistant.core import HomeAssistant, Event
-from homeassistant.helpers.intent import IntentHandler, Intent, IntentResponse
+from homeassistant.core import Event, HomeAssistant
+from homeassistant.helpers.intent import Intent, IntentHandler, IntentResponse
 
-from . import DOMAIN, DATA_SPEAKERS
+from .core.const import DATA_SPEAKERS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class YandexIntentHandler(IntentHandler):
             {
                 "entity_id": self.intent_type,
                 "media_content_id": intent.text_input,
-                "media_content_type": "question:" + self.request_id,
+                "media_content_type": f"question:{self.request_id}",
             },
         )
 

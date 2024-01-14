@@ -57,13 +57,33 @@ def decode(uid: str) -> Optional[str]:
         return None
 
 
-class YandexQuasar:
+class Dispatcher:
+    dispatcher: dict[str, list] = None
+
+    def __init__(self):
+        self.dispatcher = {}
+
+    def subscribe_update(self, signal: str, target):
+        targets = self.dispatcher.setdefault(signal, [])
+        if target not in targets:
+            targets.append(target)
+        return lambda: targets.remove(target)
+
+    def dispatch_update(self, signal: str, message: dict):
+        if signal not in self.dispatcher:
+            return
+        for target in self.dispatcher[signal]:
+            target(message)
+
+
+class YandexQuasar(Dispatcher):
     # all devices
     devices = None
     online_updated: asyncio.Event = None
     updates_task: asyncio.Task = None
 
     def __init__(self, session: YandexSession):
+        super().__init__()
         self.session = session
         self.online_updated = asyncio.Event()
         self.online_updated.set()
@@ -93,9 +113,7 @@ class YandexQuasar:
     @property
     def speakers(self):
         return [
-            d
-            for d in self.devices
-            if d["type"].startswith("devices.types.smart_speaker.")
+            d for d in self.devices if d.get("quasar_info") and d.get("capabilities")
         ]
 
     @property
@@ -104,10 +122,7 @@ class YandexQuasar:
         return [
             d
             for d in self.devices
-            if "quasar_info" in d
-            and d["quasar_info"]["platform"].startswith(
-                ("yandexmodule", "yandex_tv", "goya", "magritte", "quinglong")
-            )
+            if d.get("quasar_info") and not d.get("capabilities")
         ]
 
     async def load_speakers(self) -> list:
@@ -331,7 +346,18 @@ class YandexQuasar:
         assert resp["status"] == "ok", resp
         return resp
 
-    async def device_action(self, deviceid: str, **kwargs):
+    async def device_action(self, deviceid: str, instance: str, value):
+        action = {
+            "type": IOT_TYPES[instance],
+            "state": {"instance": instance, "value": value},
+        }
+        r = await self.session.post(
+            f"{URL_USER}/devices/{deviceid}/actions", json={"actions": [action]}
+        )
+        resp = await r.json()
+        assert resp["status"] == "ok", resp
+
+    async def device_actions(self, deviceid: str, **kwargs):
         _LOGGER.debug(f"Device action: {kwargs}")
 
         actions = []
@@ -380,13 +406,18 @@ class YandexQuasar:
                 device["online"] = speaker["online"]
                 break
 
-    async def _updates_connection(self, handler):
+    async def connect(self):
         r = await self.session.get("https://iot.quasar.yandex.ru/m/v3/user/devices")
         resp = await r.json()
         assert resp["status"] == "ok", resp
 
+        for house in resp["households"]:
+            if "sharing_info" in house:
+                continue
+            for device in house["all"]:
+                self.dispatch_update(device["id"], device)
+
         ws = await self.session.ws_connect(resp["updates_url"], heartbeat=60)
-        _LOGGER.debug("Start quasar updates connection")
         async for msg in ws:
             if msg.type != WSMsgType.TEXT:
                 break
@@ -396,40 +427,26 @@ class YandexQuasar:
                 continue
             try:
                 resp = json.loads(resp["message"])
-                for upd in resp["updated_devices"]:
-                    if not upd.get("capabilities"):
-                        continue
-                    for cap in upd["capabilities"]:
-                        state = cap.get("state")
-                        if not state:
-                            continue
-                        if cap["type"] == "devices.capabilities.quasar.server_action":
-                            for speaker in self.speakers:
-                                if speaker["id"] == upd["id"]:
-                                    entity = speaker.get("entity")
-                                    if not entity:
-                                        break
-                                    state["entity_id"] = entity.entity_id
-                                    state["name"] = entity.name
-                                    await handler(state)
-                                    break
-            except:
-                _LOGGER.debug(f"Parse quasar update error: {msg.data}")
-
-    async def _updates_loop(self, handler):
-        while True:
-            try:
-                await self._updates_connection(handler)
+                for device in resp["updated_devices"]:
+                    self.dispatch_update(device["id"], device)
             except Exception as e:
-                _LOGGER.debug(f"Quasar update error: {e}")
+                _LOGGER.debug(f"Parse quasar update error: {msg.data}", exc_info=e)
+
+    async def run_forever(self):
+        while not self.session.session.closed:
+            try:
+                await self.connect()
+            except Exception as e:
+                _LOGGER.debug("Quasar update error", exc_info=e)
             await asyncio.sleep(30)
 
-    def handle_updates(self, handler):
-        self.updates_task = asyncio.create_task(self._updates_loop(handler))
+    def start(self):
+        self.updates_task = asyncio.create_task(self.run_forever())
 
     def stop(self):
         if self.updates_task:
             self.updates_task.cancel()
+        self.dispatcher.clear()
 
     async def set_account_config(self, key: str, value):
         kv = ACCOUNT_CONFIG.get(key)
@@ -438,7 +455,7 @@ class YandexQuasar:
         if kv.get("api") == "user/settings":
             # https://iot.quasar.yandex.ru/m/user/settings
             r = await self.session.post(
-                URL_USER + "/settings", json={kv["key"]: kv["values"][value]}
+                f"{URL_USER}/settings", json={kv["key"]: kv["values"][value]}
             )
 
         else:

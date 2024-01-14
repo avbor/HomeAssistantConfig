@@ -11,27 +11,27 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.0x158d0003931aec_temperature
+            entity: sensor.temperature_in_nursery
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.0x158d0003931aec_humidity
+            entity: sensor.humidity_in_nursery
             name: Влажность
             graph: line
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.air_monitor_lite_afb3_carbon_dioxide
+            entity: sensor.co2_in_nursery
             name: CO₂
             graph: line
             detail: 2
           - type: sensor
-            entity: sensor.air_monitor_lite_afb3_pm25
+            entity: sensor.pm25_in_nursery
             name: PM2.5
             graph: line
             detail: 2
           - type: sensor
-            entity: sensor.air_monitor_lite_afb3_pm10
+            entity: sensor.pm10_in_nursery
             name: PM10
             graph: line
             detail: 2
@@ -114,27 +114,27 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.0x158d0003230618_temperature
+            entity: sensor.temperature_in_livingroom
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.0x158d0003230618_humidity
+            entity: sensor.humidity_in_livingroom
             name: Влажность
             graph: line
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.air_monitor_lite_f6a7_carbon_dioxide
+            entity: sensor.co2_in_livingroom
             name: CO₂
             graph: line
             detail: 2
           - type: sensor
-            entity: sensor.air_monitor_lite_f6a7_pm25
+            entity: sensor.pm25_in_livingroom
             name: PM2.5
             graph: line
             detail: 2
           - type: sensor
-            entity: sensor.air_monitor_lite_f6a7_pm10
+            entity: sensor.pm10_in_livingroom
             name: PM10
             graph: line
             detail: 2
@@ -174,27 +174,27 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.0x158d0003931b0e_temperature
+            entity: sensor.temperature_in_bedroom
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.0x158d0003931b0e_humidity
+            entity: sensor.humidity_in_bedroom
             name: Влажность
             graph: line
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.air_monitor_lite_cb3b_carbon_dioxide
+            entity: sensor.co2_in_bedroom
             name: CO₂
             graph: line
             detail: 2
           - type: sensor
-            entity: sensor.air_monitor_lite_cb3b_pm25
+            entity: sensor.pm25_in_bedroom
             name: PM2.5
             graph: line
             detail: 2
           - type: sensor
-            entity: sensor.air_monitor_lite_cb3b_pm10
+            entity: sensor.pm10_in_bedroom
             name: PM10
             graph: line
             detail: 2
@@ -278,11 +278,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.0x158d00039e2ecb_temperature
+            entity: sensor.temperature_in_storeroom
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.0x158d00039e2ecb_humidity
+            entity: sensor.humidity_in_storeroom
             name: Влажность
             graph: line
       - type: "custom:mini-graph-card"
@@ -313,11 +313,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.0x158d0003931a55_temperature
+            entity: sensor.temperature_in_bathroom
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.0x158d0003931a55_humidity
+            entity: sensor.humidity_in_bathroom
             name: Влажность
             graph: line
       - type: entities
@@ -334,11 +334,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.atc_4e9a_temperature
+            entity: sensor.temperature_in_toilet
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.atc_4e9a_humidity
+            entity: sensor.humidity_in_toilet
             name: Влажность
             graph: line
       - type: entities

@@ -233,7 +233,7 @@ humidifiers_pack:
           entity_id: humidifier.smartmi_humidifier_01_detskaia
           state: "off"
         - condition: numeric_state
-          entity_id: sensor.0x158d0003931aec_humidity
+          entity_id: sensor.humidity_in_nursery
           below: input_number.target_humidity_01_detskaia
         - condition: numeric_state
           entity_id: sensor.smartmi_humidifier_01_detskaia_water_level
@@ -263,7 +263,7 @@ humidifiers_pack:
       trigger:
         platform: state
         entity_id:
-          - sensor.0x158d0003931aec_humidity
+          - sensor.humidity_in_nursery
           - input_number.target_humidity_01_detskaia
           - input_boolean.smartmi_humidifier_01_detskaia_autocontrol
       condition:
@@ -272,7 +272,7 @@ humidifiers_pack:
           state: "on"
         - condition: template
           value_template: >
-            {{ (states('sensor.0x158d0003931aec_humidity') | round(0)) < (states('input_number.target_humidity_01_detskaia') | int) }}
+            {{ (states('sensor.humidity_in_nursery') | round(0)) < (states('input_number.target_humidity_01_detskaia') | int) }}
         - condition: state
           entity_id: humidifier.smartmi_humidifier_01_detskaia
           state: "off"
@@ -285,14 +285,14 @@ humidifiers_pack:
 #        - service: notify.telegram_group_system
 #          data:
 #            message: |
-#              В *Детской* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
+#              В *Детской* включен увлажнитель, текущая влажность {{ states('sensor.humidity_in_nursery') }}%
 
     - alias: "Увлажнение детской - Стоп [Влажность]"
       id: ce34b5e0-d1d9-45b0-8a66-65eb392383ec
       trigger:
         platform: state
         entity_id:
-          - sensor.0x158d0003931aec_humidity
+          - sensor.humidity_in_nursery
           - input_number.target_humidity_01_detskaia
           - input_boolean.smartmi_humidifier_01_detskaia_autocontrol
       condition:
@@ -301,7 +301,7 @@ humidifiers_pack:
           state: "on"
         - condition: template
           value_template: >
-            {{ (states('sensor.0x158d0003931aec_humidity') | round(0)) >= (states('input_number.target_humidity_01_detskaia') | int) }}
+            {{ (states('sensor.humidity_in_nursery') | round(0)) >= (states('input_number.target_humidity_01_detskaia') | int) }}
         - condition: state
           entity_id: humidifier.smartmi_humidifier_01_detskaia
           state: "on"
@@ -311,7 +311,7 @@ humidifiers_pack:
 #        - service: notify.telegram_group_system
 #          data:
 #            message: |
-#              В *Детской* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931aec_humidity') }}%
+#              В *Детской* выключен увлажнитель, текущая влажность {{ states('sensor.humidity_in_nursery') }}%
 
     ### Smartmi Humidifier 02 - Спальня #############
 
@@ -354,7 +354,7 @@ humidifiers_pack:
       trigger:
         platform: state
         entity_id:
-          - sensor.0x158d0003931b0e_humidity
+          - sensor.humidity_in_bedroom
           - input_number.target_humidity_02_spalnia
           - input_boolean.smartmi_humidifier_02_spalnia_autocontrol
       condition:
@@ -363,7 +363,7 @@ humidifiers_pack:
           state: "on"
         - condition: template
           value_template: >
-            {{ (states('sensor.0x158d0003931b0e_humidity') | round(0)) < (states('input_number.target_humidity_02_spalnia') | int) }}
+            {{ (states('sensor.humidity_in_bedroom') | round(0)) < (states('input_number.target_humidity_02_spalnia') | int) }}
         - condition: state
           entity_id: humidifier.smartmi_humidifier_02_spalnia
           state: "off"
@@ -376,14 +376,14 @@ humidifiers_pack:
 #        - service: notify.telegram_group_system
 #          data:
 #            message: |
-#              В *Спальне* включен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%
+#              В *Спальне* включен увлажнитель, текущая влажность {{ states('sensor.humidity_in_bedroom') }}%
 
     - alias: "Увлажнение спальни - Стоп [Влажность]"
       id: ec2f9de0-dacb-4a84-b0c9-0b5eb8e2b4f9
       trigger:
         platform: state
         entity_id:
-          - sensor.0x158d0003931b0e_humidity
+          - sensor.humidity_in_bedroom
           - input_number.target_humidity_02_spalnia
           - input_boolean.smartmi_humidifier_02_spalnia_autocontrol
       condition:
@@ -392,7 +392,7 @@ humidifiers_pack:
           state: "on"
         - condition: template
           value_template: >
-            {{ (states('sensor.0x158d0003931b0e_humidity') | round(0)) >= (states('input_number.target_humidity_02_spalnia') | int) }}
+            {{ (states('sensor.humidity_in_bedroom') | round(0)) >= (states('input_number.target_humidity_02_spalnia') | int) }}
         - condition: state
           entity_id: humidifier.smartmi_humidifier_02_spalnia
           state: "on"
@@ -402,4 +402,4 @@ humidifiers_pack:
 #        - service: notify.telegram_group_system
 #          data:
 #            message: |
-#              В *Спальне* выключен увлажнитель, текущая влажность {{ states('sensor.0x158d0003931b0e_humidity') }}%
+#              В *Спальне* выключен увлажнитель, текущая влажность {{ states('sensor.humidity_in_bedroom') }}%

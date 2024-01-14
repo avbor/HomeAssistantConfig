@@ -161,12 +161,12 @@
       target: "{{ trigger.event.data.user_id }}"
       message: |
         *Климат*
-        Гостинная: *{{ states('sensor.0x158d0003230618_temperature') }}°C*, {{ states('sensor.0x158d0003230618_humidity') }}%
-        Детская: *{{ states('sensor.0x158d0003931aec_temperature') }}°C*, {{ states('sensor.0x158d0003931aec_humidity') }}%
-        Спальня: *{{ states('sensor.0x158d0003931b0e_temperature') }}°C*, {{ states('sensor.0x158d0003931b0e_humidity') }}%
-        Ванная: *{{ states('sensor.0x158d0003931a55_temperature') }}°C*, {{ states('sensor.0x158d0003931a55_humidity') }}%
-        Туалет: *{{ states('sensor.atc_4e9a_temperature') }}°C*, {{ states('sensor.atc_4e9a_humidity') }}%
-        Кладовая: *{{ states('sensor.0x158d00039e2ecb_temperature') }}°C*, {{ states('sensor.0x158d00039e2ecb_humidity') }}%
+        Гостинная: *{{ states('sensor.temperature_in_livingroom') }}°C*, {{ states('sensor.humidity_in_livingroom') }}%
+        Детская: *{{ states('sensor.temperature_in_nursery') }}°C*, {{ states('sensor.humidity_in_nursery') }}%
+        Спальня: *{{ states('sensor.temperature_in_bedroom') }}°C*, {{ states('sensor.humidity_in_bedroom') }}%
+        Ванная: *{{ states('sensor.temperature_in_bathroom') }}°C*, {{ states('sensor.humidity_in_bathroom') }}%
+        Туалет: *{{ states('sensor.temperature_in_toilet') }}°C*, {{ states('sensor.humidity_in_toilet') }}%
+        Кладовая: *{{ states('sensor.temperature_in_storeroom') }}°C*, {{ states('sensor.humidity_in_storeroom') }}%
 
         *Статус устройств*
         `-= Датчики протечки =-`

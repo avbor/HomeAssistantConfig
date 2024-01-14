@@ -37,7 +37,7 @@ remote_transmitter:
 sensor:
   - platform: homeassistant
     name: "Current temperature"
-    entity_id: sensor.for_esphome_temp_in_${room_name}
+    entity_id: sensor.temperature_in_${room_name}
     id: ha_temp_${room_name}
     internal: true
     unit_of_measurement: °C

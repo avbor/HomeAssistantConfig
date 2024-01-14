@@ -1,29 +1,32 @@
 import asyncio
 import logging
-from typing import Iterable, Any
+from typing import Any, Iterable
 
 from homeassistant.components.remote import (
-    RemoteEntity,
     ATTR_DELAY_SECS,
     ATTR_NUM_REPEATS,
+    RemoteEntity,
 )
+from homeassistant.const import CONF_INCLUDE
 
-from . import DOMAIN, DATA_CONFIG, CONF_INCLUDE, YandexQuasar
+from .core import utils
+from .core.const import DATA_CONFIG, DOMAIN
+from .core.yandex_quasar import YandexQuasar
 
 _LOGGER = logging.getLogger(__name__)
 
-DEVICES = ["devices.types.other"]
+INCLUDE_TYPES = ["devices.types.other"]
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     include = hass.data[DOMAIN][DATA_CONFIG][CONF_INCLUDE]
     quasar = hass.data[DOMAIN][entry.unique_id]
-    devices = [
+    entities = [
         YandexOther(quasar, device)
         for device in quasar.devices
-        if device["name"] in include and device["type"] in DEVICES
+        if utils.device_include(device, include, INCLUDE_TYPES)
     ]
-    async_add_entities(devices, True)
+    async_add_entities(entities, True)
 
 
 # noinspection PyAbstractClass
@@ -63,8 +66,7 @@ class YandexOther(RemoteEntity):
         return True
 
     async def async_send_command(self, command: Iterable[str], **kwargs: Any) -> None:
-        num_repeats = kwargs.get(ATTR_NUM_REPEATS)
-        if num_repeats:
+        if num_repeats := kwargs.get(ATTR_NUM_REPEATS):
             command *= num_repeats
 
         delay = kwargs.get(ATTR_DELAY_SECS, 0)
@@ -78,4 +80,4 @@ class YandexOther(RemoteEntity):
                 await asyncio.sleep(delay)
 
             payload = {self.buttons[cmd]: True}
-            await self.quasar.device_action(self.device["id"], **payload)
+            await self.quasar.device_actions(self.device["id"], **payload)

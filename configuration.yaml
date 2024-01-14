@@ -91,12 +91,16 @@ recorder:
       - sensor.*_rssi
       - sensor.keenetic_gateway_*
       - sensor.*_poslednee_uvedomlenie
+      - sensor.*_last_notification
       - sensor.gosund_sp111_*_volt
       - button.*_identify
       - sensor.watchman_*
       - sensor.tplink_smartplug_*_voltage
       - binary_sensor.*_nut_gray_1_presence
       - sensor.air_monitor_lite_*_humidity
+      - sensor.air_monitor_lite_*_carbon_dioxide
+      - sensor.air_monitor_lite_*_pm25
+      - sensor.air_monitor_lite_*_pm10
       - sensor.*_last_seen
       - input_number.*_window_light_illuminance_threshold
       - input_number.*_covers_illuminance_threshold

@@ -128,3 +128,55 @@ sensor.0x00158d000413b210_gas_density:
   unit_of_measurement: "% LEL"
 sensor.nas_wr01b_02_summation_delivered:
   friendly_name: Терминал МГТС
+
+# Temp
+sensor.temperature_in_nursery:
+  friendly_name: Температура в Детской
+sensor.temperature_in_livingroom:
+  friendly_name: Температура в Гостиной
+sensor.temperature_in_bathroom:
+  friendly_name: Температура в Ванной
+sensor.temperature_in_toilet:
+  friendly_name: Температура в Туалете
+sensor.temperature_in_storeroom:
+  friendly_name: Температура в Кладовой
+sensor.temperature_in_bedroom:
+  friendly_name: Температура в Спальне
+
+# Hum
+sensor.humidity_in_nursery:
+  friendly_name: Влажность в Детской
+sensor.humidity_in_livingroom:
+  friendly_name: Влажность в Гостиной
+sensor.humidity_in_bathroom:
+  friendly_name: Влажность в Ванной
+sensor.humidity_in_toilet:
+  friendly_name: Влажность в Туалете
+sensor.humidity_in_storeroom:
+  friendly_name: Влажность в Кладовой
+sensor.humidity_in_bedroom:
+  friendly_name: Влажность в Спальне
+
+# CO2
+sensor.co2_in_nursery:
+  friendly_name: Концентрация CO₂ в Детской
+sensor.co2_in_livingroom:
+  friendly_name: Концентрация CO₂ в Гостиной
+sensor.co2_in_bedroom:
+  friendly_name: Концентрация CO₂ в Спальне
+
+# PM25
+sensor.pm25_in_nursery:
+  friendly_name: Концентрация частиц PM 2.5 в Детской
+sensor.pm25_in_livingroom:
+  friendly_name: Концентрация частиц PM 2.5 в Гостиной
+sensor.pm25_in_bedroom:
+  friendly_name: Концентрация частиц PM 2.5 в Спальне
+
+# PM10
+sensor.pm10_in_nursery:
+  friendly_name: Концентрация частиц PM 10 в Детской
+sensor.pm10_in_livingroom:
+  friendly_name: Концентрация частиц PM 10 в Гостиной
+sensor.pm10_in_bedroom:
+  friendly_name: Концентрация частиц PM 10 в Спальне

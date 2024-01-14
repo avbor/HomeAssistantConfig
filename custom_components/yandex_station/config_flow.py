@@ -15,8 +15,8 @@ from homeassistant.config_entries import ConfigFlow
 from homeassistant.data_entry_flow import AbortFlow
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
-from . import DOMAIN
-from .core.yandex_session import YandexSession, LoginResponse
+from .core.const import DOMAIN
+from .core.yandex_session import LoginResponse, YandexSession
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -184,7 +184,7 @@ class YandexStationFlowHandler(ConfigFlow, domain=DOMAIN):
                 )
 
         elif resp.error_captcha_required:
-            _LOGGER.debug(f"Captcha required")
+            _LOGGER.debug("Captcha required")
             return self.async_show_form(
                 step_id="captcha",
                 data_schema=vol.Schema(

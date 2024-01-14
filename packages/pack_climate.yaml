@@ -4,6 +4,7 @@
 
 climate_pack:
 
+  # Templates
   template:
 
     - binary_sensor:
@@ -61,12 +62,234 @@ climate_pack:
         - name: bathroom_high_humidity
           unique_id: 12881078-dca2-4d14-81fc-ba83a56116b1
           device_class: moisture
-          state: "{{ (int(states('sensor.0x158d0003931a55_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
+          state: "{{ (int(states('sensor.humidity_in_bathroom'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
 
         - name: toilet_high_humidity
           unique_id: 8d8f45f2-28b9-442e-be91-6b22490c7da9
           device_class: moisture
-          state: "{{ (int(states('sensor.atc_4e9a_humidity'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
+          state: "{{ (int(states('sensor.humidity_in_toilet'), 0)) - (int(states('sensor.average_humidity_in_flat'), 0)) >= 8 }}"
+
+    - sensor:
+    
+      # Entire flat
+      - name: Local Pressure mmhg
+        unique_id: 79c91679-e174-480f-87c5-91e74579bc95
+        unit_of_measurement: mmHg
+        device_class: atmospheric_pressure
+        state_class: measurement
+        state: >-
+          {% set ind = states('sensor.0x158d0003230618_pressure') %}
+          {% if ind in ['unknown', 'unavailable'] -%}
+            None
+          {% else %}
+            {{ ((ind | float(0)) / 1.333) | round(2) }}
+          {% endif %}
+
+#          {% set pressure = states('sensor.0x158d0003230618_pressure') | float(default=-1) -%}
+#          {% if pressure != -1 and (((pressure | float(0)) / 1.333) | round(2)) > 500 -%}
+#            {{ ((pressure | float(0)) / 1.333) | round(2) -}}
+#          {% elif states('sensor.local_pressure_mmhg') in ['unknown', 'unavailable'] -%}
+#            None
+#          {% else %}
+#            {{ states('sensor.local_pressure_mmhg') }}
+#          {% endif %}
+        
+      # Nursery
+      - name: temperature_in_nursery
+        unique_id: bd81495a-372f-41e9-9cfb-afac2c4f73da
+        unit_of_measurement: °C
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003931aec_temperature') }}
+
+      - name: humidity_in_nursery
+        unique_id: bc51c191-45d4-4ff5-8729-e36e3a4ce197
+        unit_of_measurement: '%'
+        device_class: humidity
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003931aec_humidity') }}
+
+      - name: co2_in_nursery
+        unique_id: 6ee9cc1f-bfd9-4eca-8e63-2d7dd11eac94
+        unit_of_measurement: 'ppm'
+        device_class: carbon_dioxide
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_afb3_carbon_dioxide') }}
+
+      - name: pm25_in_nursery
+        unique_id: 4691db33-4286-4382-83ff-596cbdf0058e
+        unit_of_measurement: 'µg/m³'
+        device_class: pm25
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_afb3_pm25') }}
+
+      - name: pm10_in_nursery
+        unique_id: 69766a85-1d7a-4e90-8c30-2d9078427249
+        unit_of_measurement: 'µg/m³'
+        device_class: pm10
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_afb3_pm10') }}
+
+      # Living Room
+      - name: temperature_in_livingroom
+        unique_id: f08a42b6-82f4-4a8b-8d0d-212ce6fe6607
+        unit_of_measurement: °C
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003230618_temperature') }}
+
+      - name: humidity_in_livingroom
+        unique_id: 65e98290-7594-4503-a9d5-8c0122f65927
+        unit_of_measurement: '%'
+        device_class: humidity
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003230618_humidity') }}
+
+      - name: co2_in_livingroom
+        unique_id: cefa55f6-0cb8-4103-934e-c71cb64e0306
+        unit_of_measurement: 'ppm'
+        device_class: carbon_dioxide
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_f6a7_carbon_dioxide') }}
+
+      - name: pm25_in_livingroom
+        unique_id: afae5d32-51ff-466a-9a71-3b19b5037499
+        unit_of_measurement: 'µg/m³'
+        device_class: pm25
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_f6a7_pm25') }}
+
+      - name: pm10_in_livingroom
+        unique_id: 38f1ddde-a258-4586-913a-7455bf513ae6
+        unit_of_measurement: 'µg/m³'
+        device_class: pm10
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_f6a7_pm10') }}
+
+      # Kitchen
+        
+      # Bathroom
+      - name: temperature_in_bathroom
+        unique_id: 691a08d8-deec-4e28-abbd-cf7023438982
+        unit_of_measurement: °C
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003931a55_temperature') }}
+
+      - name: humidity_in_bathroom
+        unique_id: 9ccb079c-5377-4461-8862-e9b7dea88d86
+        unit_of_measurement: '%'
+        device_class: humidity
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003931a55_humidity') }}
+
+      # Toilet
+      - name: temperature_in_toilet
+        unique_id: 7da0907c-a6c3-48e5-8a5f-b0cb91706b7f
+        unit_of_measurement: °C
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.atc_4e9a_temperature') }}
+
+      - name: humidity_in_toilet
+        unique_id: 37fd2a19-94b4-4c07-9e40-3c0c480b4204
+        unit_of_measurement: '%'
+        device_class: humidity
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.atc_4e9a_humidity') }}
+
+      # Storeroom
+      - name: temperature_in_storeroom
+        unique_id: 8892656e-9433-4559-be5d-f80856b4fe1e
+        unit_of_measurement: °C
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d00039e2ecb_temperature') }}
+
+      - name: humidity_in_storeroom
+        unique_id: 2966651d-3ed3-4fcd-adc4-7f98a6404336
+        unit_of_measurement: '%'
+        device_class: humidity
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d00039e2ecb_humidity') }}
+
+      # Bedroom
+      - name: temperature_in_bedroom
+        unique_id: 49afd5f1-e196-480b-9ccd-dc8f630c6e23
+        unit_of_measurement: °C
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003931b0e_temperature') }}
+
+      - name: humidity_in_bedroom
+        unique_id: 726a6b65-71e2-47f7-9a38-80bf9a7ef096
+        unit_of_measurement: '%'
+        device_class: humidity
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.0x158d0003931b0e_humidity') }}
+
+      - name: co2_in_bedroom
+        unique_id: 72254e38-8fc4-4974-aabf-4ccdb0881be1
+        unit_of_measurement: 'ppm'
+        device_class: carbon_dioxide
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_cb3b_carbon_dioxide') }}
+
+      - name: pm25_in_bedroom
+        unique_id: d2e1653a-3f02-4823-bb14-2aa78a805834
+        unit_of_measurement: 'µg/m³'
+        device_class: pm25
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_cb3b_pm25') }}
+
+      - name: pm10_in_bedroom
+        unique_id: 9f328500-e857-4403-a701-28f267ebea07
+        unit_of_measurement: 'µg/m³'
+        device_class: pm10
+        state_class: measurement
+        state: >-
+          {% from 'tools.jinja' import climate_sensor_filter %}
+          {{ climate_sensor_filter('sensor.air_monitor_lite_cb3b_pm10') }}
 
   # Sensors
   sensor:
@@ -77,22 +300,22 @@ climate_pack:
       unique_id: afbb2215-8004-4c61-ada1-92d47bacbb40
       type: median
       entity_ids:
-        - sensor.0x158d0003931aec_temperature
-        - sensor.0x158d0003230618_temperature
-        - sensor.0x158d0003931b0e_temperature
-        - sensor.0x158d00039e2ecb_temperature
-        - sensor.atc_4e9a_temperature
+        - sensor.temperature_in_nursery
+        - sensor.temperature_in_livingroom
+        - sensor.temperature_in_toilet
+        - sensor.temperature_in_storeroom
+        - sensor.temperature_in_bedroom
 
     - platform: min_max
       name: Average Humidity In Flat
       unique_id: c4ca2177-95d2-4f5f-a6e1-394ecc403a08
       type: median
       entity_ids:
-        - sensor.0x158d0003931aec_humidity
-        - sensor.0x158d0003230618_humidity
-        - sensor.0x158d0003931b0e_humidity
-        - sensor.0x158d00039e2ecb_humidity
-        - sensor.atc_4e9a_humidity
+        - sensor.humidity_in_nursery
+        - sensor.humidity_in_livingroom
+        - sensor.humidity_in_toilet
+        - sensor.humidity_in_storeroom
+        - sensor.humidity_in_bedroom
 
     # Air quality
     - platform: min_max
@@ -101,9 +324,9 @@ climate_pack:
       type: median
       round_digits: 0
       entity_ids:
-        - sensor.air_monitor_lite_afb3_carbon_dioxide
-        - sensor.air_monitor_lite_cb3b_carbon_dioxide
-        - sensor.air_monitor_lite_f6a7_carbon_dioxide
+        - sensor.co2_in_nursery
+        - sensor.co2_in_livingroom
+        - sensor.co2_in_bedroom
 
     - platform: min_max
       name: Average pm25 In Flat
@@ -111,9 +334,9 @@ climate_pack:
       type: median
       round_digits: 0
       entity_ids:
-        - sensor.air_monitor_lite_cb3b_pm25
-        - sensor.air_monitor_lite_afb3_pm25
-        - sensor.air_monitor_lite_f6a7_pm25
+        - sensor.pm25_in_nursery
+        - sensor.pm25_in_livingroom
+        - sensor.pm25_in_bedroom
 
     - platform: min_max
       name: Average pm10 In Flat
@@ -121,9 +344,9 @@ climate_pack:
       type: median
       round_digits: 0
       entity_ids:
-        - sensor.air_monitor_lite_afb3_pm10
-        - sensor.air_monitor_lite_cb3b_pm10
-        - sensor.air_monitor_lite_f6a7_pm10
+        - sensor.pm10_in_nursery
+        - sensor.pm10_in_livingroom
+        - sensor.pm10_in_bedroom
 
   automation:
 
@@ -190,11 +413,11 @@ climate_pack:
       id: bb3a7df3-3e20-4ebe-8b49-bc9ba69ad2b6
       trigger:
         - platform: template
-          value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float(0)) < 22 }}"
+          value_template: "{{ (states('sensor.temperature_in_nursery') | float(0)) < 22 }}"
           for:
             minutes: 5
         - platform: template
-          value_template: "{{ (states('sensor.0x158d0003931aec_temperature') | float(0)) > 25 }}"
+          value_template: "{{ (states('sensor.temperature_in_nursery') | float(0)) > 25 }}"
           for:
             minutes: 5
       action:
@@ -211,11 +434,11 @@ climate_pack:
       id: 0e135e8d-3ad5-40cb-9d8f-9ab3df6b91bd
       trigger:
         - platform: template
-          value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float(0)) < 22 }}"
+          value_template: "{{ (states('sensor.temperature_in_livingroom') | float(0)) < 22 }}"
           for:
             minutes: 5
         - platform: template
-          value_template: "{{ (states('sensor.0x158d0003230618_temperature') | float(0)) > 25 }}"
+          value_template: "{{ (states('sensor.temperature_in_livingroom') | float(0)) > 25 }}"
           for:
             minutes: 5
       action:
@@ -232,11 +455,11 @@ climate_pack:
       id: 524b5b92-0f5d-4429-88d2-9903ec325389
       trigger:
         - platform: template
-          value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float(0)) < 21 }}"
+          value_template: "{{ (states('sensor.temperature_in_bedroom') | float(0)) < 21 }}"
           for:
             minutes: 5
         - platform: template
-          value_template: "{{ (states('sensor.0x158d0003931b0e_temperature') | float(0)) > 24.5 }}"
+          value_template: "{{ (states('sensor.temperature_in_bedroom') | float(0)) > 24.5 }}"
           for:
             minutes: 5
       action:
@@ -311,15 +534,15 @@ climate_pack:
       max: 10
       trigger:
         - platform: template
-          value_template: "{{ (states('sensor.air_monitor_lite_afb3_carbon_dioxide') | int(0)) >= 1000 }}" # Детская
+          value_template: "{{ (states('sensor.co2_in_nursery') | int(0)) >= 1000 }}" # Детская
           for:
             minutes: 10
         - platform: template
-          value_template: "{{ (states('sensor.air_monitor_lite_f6a7_carbon_dioxide') | int(0)) >= 1000 }}" # Гостиная
+          value_template: "{{ (states('sensor.co2_in_livingroom') | int(0)) >= 1000 }}" # Гостиная
           for:
             minutes: 10
         - platform: template
-          value_template: "{{ (states('sensor.air_monitor_lite_cb3b_carbon_dioxide') | int(0)) >= 1000 }}" # Спальня
+          value_template: "{{ (states('sensor.co2_in_bedroom') | int(0)) >= 1000 }}" # Спальня
           for:
             minutes: 10
       action:

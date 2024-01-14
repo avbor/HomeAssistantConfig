@@ -13,6 +13,8 @@
 !custom_components/
 !custom_components/*
 !custom_components/**
+!custom_templates/
+!custom_templates/*.jinja
 !docs/
 !docs/*
 !docs/**
