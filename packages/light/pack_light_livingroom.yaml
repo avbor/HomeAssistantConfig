@@ -230,7 +230,9 @@ livingroom_light_pack:
                     sequence:
                       - service: light.turn_on
                         data:
-                          color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) - 10 }}"
+                          color_temp: >-
+                            {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
+                            {{ iif ((color_t - 10) > 172, color_t - 10, 172) }}
                         target:
                           entity_id: "{{ target_lamp }}"
                   - alias: right button
@@ -238,7 +240,9 @@ livingroom_light_pack:
                     sequence:
                       - service: light.turn_on
                         data:
-                          color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) + 10 }}"
+                          color_temp: >-
+                            {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
+                            {{ iif ((color_t + 10 ) < 454, color_t + 10, 454) }}
                         target:
                           entity_id: "{{ target_lamp }}"
             - alias: hold
@@ -253,7 +257,9 @@ livingroom_light_pack:
                         sequence:
                           - service: light.turn_on
                             data:
-                              color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) - 10 }}"
+                              color_temp: >-
+                                {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
+                                {{ iif ((color_t - 10) > 172, color_t - 10, 172) }}
                             target:
                               entity_id: "{{ target_lamp }}"
                           - wait_for_trigger:
@@ -272,7 +278,9 @@ livingroom_light_pack:
                         sequence:
                           - service: light.turn_on
                             data:
-                              color_temp: "{{ (state_attr(target_lamp, 'color_temp') | int(0)) + 10 }}"
+                              color_temp: >-
+                                {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
+                                {{ iif ((color_t + 10) < 454, color_t + 10, 454) }}
                             target:
                               entity_id: "{{ target_lamp }}"
                           - wait_for_trigger:

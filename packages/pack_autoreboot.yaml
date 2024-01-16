@@ -59,8 +59,6 @@ autoreboot_pack:
                     service: hassio.addon_restart
                     data:
                       addon: core_silabs_multiprotocol
-                  #- alias: Wait 1 second
-                  #  delay: "00:00:01"
               - alias: Restart HA
                 service: homeassistant.restart
           - alias: If Auto Reboot Counter > 2

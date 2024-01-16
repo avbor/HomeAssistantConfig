@@ -6,7 +6,6 @@ from homeassistant.components.climate import (
     HVACMode,
 )
 from homeassistant.const import CONF_INCLUDE, UnitOfTemperature
-from homeassistant.helpers.template import Template
 
 from .core import utils
 from .core.const import DATA_CONFIG, DOMAIN
@@ -16,7 +15,6 @@ from .core.yandex_quasar import YandexQuasar
 _LOGGER = logging.getLogger(__name__)
 
 INCLUDE_TYPES = [
-    "devices.types.humidifier",
     "devices.types.purifier",
     "devices.types.thermostat",
     "devices.types.thermostat.ac",
@@ -48,8 +46,6 @@ class YandexClimate(ClimateEntity, YandexEntity):
     preset_instance: str = None
     on_value: bool = None
     hvac_value: str = None
-    temperature_template: Template = None
-    humidity_template: Template = None
 
     def __init__(self, quasar: YandexQuasar, device: dict, config: dict):
         super().__init__(quasar, device)
@@ -74,8 +70,6 @@ class YandexClimate(ClimateEntity, YandexEntity):
 
         if item := capabilities.get(self.hvac_instance):
             self._attr_hvac_modes = [HVACMode(i["value"]) for i in item["modes"]]
-        elif self.device["type"] == "devices.types.humidifier":
-            self._attr_hvac_modes = [HVACMode.DRY]
         elif self.device["type"] == "devices.types.purifier":
             self._attr_hvac_modes = [HVACMode.FAN_ONLY]
         elif "heat" in capabilities:
@@ -107,7 +101,7 @@ class YandexClimate(ClimateEntity, YandexEntity):
 
     def internal_update(self, capabilities: dict, properties: dict):
         if "on" in capabilities:
-            self.on_value = capabilities['on']
+            self.on_value = capabilities["on"]
         if self.hvac_instance in capabilities:
             self.hvac_value = capabilities[self.hvac_instance]
 
@@ -130,22 +124,22 @@ class YandexClimate(ClimateEntity, YandexEntity):
         if "temperature" in capabilities:
             self._attr_target_temperature = capabilities["temperature"]
 
-        if self.temperature_template:
-            self._attr_current_temperature = self.temperature_template.async_render()
-        elif "temperature" in properties:
+        if "temperature" in properties:
             self._attr_current_temperature = properties["temperature"]
-
-        if self.humidity_template:
-            self._attr_current_humidity = self.humidity_template.async_render()
-        elif "humidity" in properties:
+        if "humidity" in properties:
             self._attr_current_humidity = properties["humidity"]
 
     async def async_added_to_hass(self):
         if item := self.config.get("current_temperature"):
-            self.temperature_template = Template(item, self.hass)
+            on_remove = utils.track_template(self.hass, item, self.on_track_template)
+            self.async_on_remove(on_remove)
 
-        if item := self.config.get("current_humidity"):
-            self.humidity_template = Template(item, self.hass)
+    def on_track_template(self, value):
+        try:
+            self._attr_current_temperature = float(value)
+        except:
+            self._attr_current_temperature = None
+        self._async_write_ha_state()
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode):
         if hvac_mode == HVACMode.OFF:

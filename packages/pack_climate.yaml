@@ -25,6 +25,7 @@ climate_pack:
           device_class: power
           state: "{{ is_state('binary_sensor.0x158d0004073b67_contact', 'on') }}"
 
+        # Central Heating
         - name: Central Heating - Nursery
           unique_id: 3350b831-ce3b-4e08-b165-2a3e0f36b87e
           state: >
@@ -33,7 +34,6 @@ climate_pack:
           delay_off:
             hours: 1
 
-        # Central Heating
         - name: Central Heating - Livingroom
           unique_id: a050a979-fdef-47ef-a233-d881d1909a9d
           state: >
@@ -552,8 +552,8 @@ climate_pack:
             title: "*Внимание!*"
             message: |
               Повышенное содержание углекислого газа в 
-              {%- if 'afb3' in trigger.entity_id %} *Детской*
-              {%- elif 'f6a7' in trigger.entity_id %} *Гостиной*
-              {%- elif 'cb3b' in trigger.entity_id %} *Спальне*
+              {%- if 'nursery' in trigger.entity_id %} *Детской*
+              {%- elif 'livingroom' in trigger.entity_id %} *Гостиной*
+              {%- elif 'bedroom' in trigger.entity_id %} *Спальне*
               {%- endif %} (*{{ states(trigger.entity_id) }}* ppm).
               Необходимо проветрить комнату.

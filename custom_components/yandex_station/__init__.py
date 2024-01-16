@@ -2,7 +2,7 @@ import json
 import logging
 
 import voluptuous as vol
-from homeassistant.components.api import HomeAssistant  # important for tests
+from homeassistant.components.binary_sensor import HomeAssistant  # important for tests
 from homeassistant.components.media_player import (
     ATTR_MEDIA_CONTENT_ID,
     ATTR_MEDIA_CONTENT_TYPE,
@@ -50,6 +50,7 @@ MAIN_DOMAINS = ["media_player", "select"]
 SUB_DOMAINS = [
     "climate",
     "light",
+    "humidifier",
     "number",
     "remote",
     "switch",

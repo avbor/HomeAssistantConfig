@@ -6,7 +6,7 @@ import re
 import uuid
 from datetime import datetime
 from logging import Logger
-from typing import List
+from typing import Callable, List
 
 from aiohttp import ClientSession, web
 from homeassistant.components import frontend
@@ -16,6 +16,12 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import network
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_component import EntityComponent
+from homeassistant.helpers.event import (
+    async_track_template_result,
+    TrackTemplate,
+    TrackTemplateResult,
+)
+from homeassistant.helpers.template import Template
 from homeassistant.helpers.typing import HomeAssistantType
 from yarl import URL
 
@@ -428,7 +434,8 @@ def device_include(
             if item == device["name"]:
                 return {"name": item}
         elif isinstance(item, dict):
-            if all(item[k] == device.get(k) for k in INCLUDE_KEYS if k in item):
+            # one and more INCLUDE_KEYS should match
+            if sum(item[k] == device.get(k) for k in INCLUDE_KEYS if k in item):
                 return item
 
     return None
@@ -440,6 +447,19 @@ def instance_include(instance: dict, include: list[str], types: list[str]) -> bo
     if include is None:
         return True
     return instance["parameters"].get("instance", "on") in include
+
+
+def track_template(hass: HomeAssistant, template: str, update: Callable) -> Callable:
+    template = Template(template, hass)
+    update(template.async_render())
+
+    def action(event, updates: list[TrackTemplateResult]):
+        update(next(i.result for i in updates))
+
+    track = async_track_template_result(
+        hass, [TrackTemplate(template=template, variables=None)], action
+    )
+    return track.async_remove
 
 
 class StreamingView(HomeAssistantView):

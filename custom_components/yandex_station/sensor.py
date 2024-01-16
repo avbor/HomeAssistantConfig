@@ -24,8 +24,27 @@ from .core.entity import YandexCustomEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-INCLUDE_TYPES = ["devices.types.sensor"]
-INCLUDE_PROPERTIES = ["devices.properties.float"]
+# https://yandex.ru/dev/dialogs/smart-home/doc/concepts/device-type-sensor.html
+INCLUDE_TYPES = [
+    "devices.types.sensor",
+    "devices.types.sensor.button",
+    "devices.types.sensor.climate",
+    "devices.types.sensor.gas",
+    "devices.types.sensor.illumination",
+    "devices.types.sensor.motion",
+    "devices.types.sensor.open",
+    "devices.types.sensor.smoke",
+    "devices.types.sensor.vibration",
+    "devices.types.sensor.water_leak",
+    "devices.types.smart_meter",
+    "devices.types.smart_meter.cold_water",
+    "devices.types.smart_meter.electricity",
+    "devices.types.smart_meter.gas",
+    "devices.types.smart_meter.heat",
+    "devices.types.smart_meter.heat.hot_water",
+    "devices.types.socket",
+]
+INCLUDE_PROPERTIES = ["devices.properties.float", "devices.properties.event"]
 
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
@@ -82,6 +101,15 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
+    SensorEntityDescription(key="vibration", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="open", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="button", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="motion", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="smoke", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="gas", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="food_level", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="water_level", device_class=SensorDeviceClass.ENUM),
+    SensorEntityDescription(key="water_leak", device_class=SensorDeviceClass.ENUM),
 )
 
 INCLUDE_INSTANCES: list[str] = [desc.key for desc in SENSOR_TYPES]
