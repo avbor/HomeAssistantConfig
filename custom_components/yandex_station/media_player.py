@@ -6,6 +6,7 @@ from homeassistant.components.media_player import (
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
     MediaPlayerState,
+    MediaType,
 )
 from homeassistant.const import CONF_INCLUDE
 
@@ -20,7 +21,11 @@ _LOGGER = logging.getLogger(__name__)
 # update speaker online state once per 5 minutes
 SCAN_INTERVAL = timedelta(minutes=5)
 
-INCLUDE_TYPES = ["devices.types.media_device.tv"]
+INCLUDE_TYPES = [
+    "devices.types.media_device.receiver",
+    "devices.types.media_device.tv",
+    "devices.types.media_device.tv_box"
+]
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -119,6 +124,7 @@ class YandexMediaPlayer(MediaPlayerEntity, YandexEntity):
         if "channel" in capabilities:
             self._attr_supported_features |= MediaPlayerEntityFeature.NEXT_TRACK
             self._attr_supported_features |= MediaPlayerEntityFeature.PREVIOUS_TRACK
+            self._attr_supported_features |= MediaPlayerEntityFeature.PLAY_MEDIA
 
         if item := capabilities.get("input_source"):
             self.sources = {i["name"]: i["value"] for i in item["modes"]}
@@ -152,9 +158,16 @@ class YandexMediaPlayer(MediaPlayerEntity, YandexEntity):
     async def async_media_previous_track(self):
         await self.quasar.device_actions(self.device["id"], channel=-1)
 
+    async def async_media_play(self):
+        await self.quasar.device_actions(self.device["id"], pause=False)
+
     async def async_media_pause(self):
         await self.quasar.device_actions(self.device["id"], pause=True)
 
     async def async_select_source(self, source: str):
         source = self.sources[source]
         await self.quasar.device_actions(self.device["id"], input_source=source)
+
+    async def async_play_media(self, media_type: MediaType, media_id: str, **kwargs):
+        if media_type == MediaType.CHANNEL:
+            await self.quasar.device_action(self.device["id"], "channel", int(media_id))

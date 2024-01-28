@@ -3,6 +3,7 @@
 #################################################
 
 shopping_list_pack:
+
   # Automations
   automation:
     - alias: Sync Shopping List with Yandex

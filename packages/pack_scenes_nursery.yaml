@@ -28,13 +28,47 @@ scenes_nursery_pack:
           brightness: 40
           color_mode: "xy"
           xy_color: [0.526, 0.387]
-        media_player.yandex_station_lite_detskaia: "off"
+#        media_player.yandex_station_lite_detskaia: "off"
+
+  # Scripts
+  script:
+
+    nursery_alice_stop_watchdog_1h:
+      mode: single
+      sequence:
+        - if: "{{ is_state('media_player.yandex_station_lite_detskaia', 'playing') }}"
+          then:
+            - service: media_player.turn_off
+              target:
+                entity_id:
+                  - media_player.yandex_station_lite_detskaia
+        - repeat:
+            sequence:
+              - wait_for_trigger:
+                  - platform: state
+                    entity_id: media_player.yandex_station_lite_detskaia
+                    to: "playing"
+                timeout: "01:00:00"
+              - if: "{{ wait.trigger is not none }}"
+                then:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id:
+                        - media_player.yandex_station_lite_detskaia
+            until:
+              - condition: state
+                entity_id: media_player.yandex_station_lite_detskaia
+                state: "paused"
+                for:
+                  hours: 1
+
 
   # Automations
   automation:
 
     - alias: "Scene: Children go to Bed"
       id: 4ecf7cf0-fc2e-4769-9d95-548dc4d52ba2
+      mode: restart
       trigger:
         - platform: event
           event_type: yandex_intent
@@ -53,3 +87,14 @@ scenes_nursery_pack:
                   entity_id: scene.children_go_to_bed
                 data:
                   transition: 2
+              - wait_for_trigger:
+                  - platform: state
+                    entity_id: media_player.yandex_station_lite_detskaia
+                    to:
+                      - "off"
+                      - "paused"
+                timeout: "01:00:00"
+                continue_on_timeout: false
+              - service: script.turn_on
+                target:
+                  entity_id: script.nursery_alice_stop_watchdog_1h
