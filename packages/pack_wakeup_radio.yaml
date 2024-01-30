@@ -36,24 +36,58 @@ wakeup_radio_pack:
           entity_id: calendar.semia_alexander_borsiov_school_vacation_egor
           state: "off"
       action:
-        - service: media_player.volume_mute
-          target:
-            entity_id: media_player.yandex_station_lite_detskaia
-          data:
-            is_volume_muted: "true"
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') != 0.1 }}"
+          then:
+            - repeat:
+                sequence:
+                  - service: media_player.volume_set
+                    data:
+                      entity_id: media_player.yandex_station_lite_detskaia
+                      volume_level: 0.1
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') == 0.1 }}"
+                    timeout: "00:00:01"
+                until:
+                  - "{{ state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') == 0.1 }}"
+                  - "{{ repeat.index <= 3 }}"
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_detskaia', 'is_volume_muted') != true }}"
+          then:
+            - repeat:
+                sequence:
+                  - service: media_player.volume_mute
+                    target:
+                      entity_id: media_player.yandex_station_lite_detskaia
+                    data:
+                      is_volume_muted: true
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_detskaia', 'is_volume_muted') == true }}"
+                    timeout: "00:00:01"
+                until:
+                  - "{{ state_attr('media_player.yandex_station_lite_detskaia', 'is_volume_muted') == true }}"
+                  - "{{ repeat.index <= 3 }}"
+
         - delay: "00:00:01"
+
         - service: yandex_station.send_command
           data:
             entity_id: media_player.yandex_station_lite_detskaia
             command: sendText
             text: >-
               Включи {{ states('input_text.wakeup_radio_in_nursery_query') }}
+
         - delay: "00:00:10"
-        - service: media_player.volume_set
-          target:
-            entity_id: media_player.yandex_station_lite_detskaia
-          data:
-            volume_level: "0.1"
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') != 0.1 }}"
+          then:
+            - service: media_player.volume_set
+              target:
+                entity_id: media_player.yandex_station_lite_detskaia
+              data:
+                volume_level: "0.1"
+
         - alias: Volume Up 4 times
           repeat:
             while:
@@ -64,6 +98,7 @@ wakeup_radio_pack:
               - service: media_player.volume_up
                 target:
                   entity_id: media_player.yandex_station_lite_detskaia
+
         - service: yandex_station.send_command
           data:
             entity_id: media_player.yandex_station_lite_detskaia

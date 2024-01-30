@@ -87,6 +87,9 @@ scenes_nursery_pack:
                   entity_id: scene.children_go_to_bed
                 data:
                   transition: 2
+              - service: script.turn_off
+                target:
+                  entity_id: script.nursery_alice_stop_watchdog_1h
               - wait_for_trigger:
                   - platform: state
                     entity_id: media_player.yandex_station_lite_detskaia
