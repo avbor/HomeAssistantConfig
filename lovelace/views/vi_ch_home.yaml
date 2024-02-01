@@ -50,11 +50,11 @@ cards:
           type: vertical-stack
           cards:
             - type: picture-entity
-              entity: camera.reolinkcam_02_person
+              entity: image.reolinkcam_02_person
               show_name: false
               show_state: false
             - type: picture-entity
-              entity: camera.reolinkcam_02_car
+              entity: image.reolinkcam_02_car
               show_name: false
               show_state: false
   # Свет

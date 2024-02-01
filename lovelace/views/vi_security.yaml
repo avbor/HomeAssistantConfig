@@ -21,7 +21,7 @@ cards:
             state: "on"
         card:
           type: picture-entity
-          entity: camera.reolinkcam_01_person
+          entity: image.reolinkcam_01_person
           show_name: false
           show_state: false
   - type: vertical-stack
