@@ -52,9 +52,12 @@ _Main site (city apartment):_
   2 WAN with automatic failover\
   Also as Device Tracker via "Keenetic NDMS2 Routers"
 
-- Keenetic Voyager Pro ([KN-3510](https://keenetic.ru/ru/keenetic-voyager-pro)) as Access Points in WiFi Mesh Network x3
+- Keenetic Voyager Pro ([KN-3510](https://keenetic.ru/ru/keenetic-voyager-pro)) as Access Points in WiFi Mesh Network x3\
+  with Keenetic PoE+ Adapters ([KN-4510](https://keenetic.ru/ru/keenetic-poe-plus-adapter))
 
 - Switch TP-Link [TL-SG116E](https://www.tp-link.com/ru/business-networking/easy-smart-switch/tl-sg116e/)
+
+- Switch D-Link [DGS-1008A/B1](https://www.dlink.ru/ru/products/1/1625.html) for slow clients
 
 _Remote site (country house):_
 
@@ -295,6 +298,7 @@ Integration "Fully Kiosk Browser"
   - Containers:
     - Watchtower
     - Minecraft
+    - NetBox
 
 **Storage:**
 - DSM 7.2
@@ -317,7 +321,7 @@ Integration "Fully Kiosk Browser"
   - Torrserver
   - vlmcsd
 
-**Used DB:**
+**Used DBs:**
 - MariaDB
 - MySQL
 - PostgeSQL
