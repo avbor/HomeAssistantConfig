@@ -31,11 +31,38 @@ shopping_list_pack:
               id: "event"
           then:
             - delay: "00:05:00"
-        - service: media_player.volume_mute
-          target:
-            entity_id: media_player.yandex_station_lite_prikhozhaya
-          data:
-            is_volume_muted: true
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'volume_level') != 0.1 }}"
+          then:
+            - repeat:
+                sequence:
+                  - service: media_player.volume_set
+                    data:
+                      entity_id: media_player.yandex_station_lite_prikhozhaya
+                      volume_level: 0.1
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'volume_level') == 0.1 }}"
+                    timeout: "00:00:01"
+                until:
+                  - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'volume_level') == 0.1 }}"
+                  - "{{ repeat.index <= 3 }}"
+
+        - if:
+            - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'is_volume_muted') != true }}"
+          then:
+            - repeat:
+                sequence:
+                  - service: media_player.volume_mute
+                    target:
+                      entity_id: media_player.yandex_station_lite_prikhozhaya
+                    data:
+                      is_volume_muted: true
+                  - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'is_volume_muted') == true }}"
+                    timeout: "00:00:01"
+                until:
+                  - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'is_volume_muted') == true }}"
+                  - "{{ repeat.index <= 3 }}"
+
         - delay: "00:00:01"
         - service: media_player.play_media
           entity_id: media_player.yandex_station_lite_prikhozhaya
