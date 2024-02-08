@@ -31,9 +31,6 @@ mqtt:
   server: mqtt://core-mosquitto:1883
   user: '!secrets.yaml mqtt_user'
   password: '!secrets.yaml mqtt_pass'
-  keepalive: 60
-  reject_unauthorized: true
-  version: 4
   base_topic: zigbee2mqtt_2
 serial:
   port: tcp://192.168.10.185:8888
