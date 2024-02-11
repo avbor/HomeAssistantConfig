@@ -61,6 +61,8 @@ logger:
       - ".* EnergosbytException..Client error: Cannot connect to host .*"
     homeassistant.components.systemmonitor.sensor:
       - "Cannot read CPU / processor temperature information"
+    py.warnings:
+      - ".* UserWarning: python-telegram-bot is using upstream urllib3. .*"
 
 system_log:
   max_entries: 50

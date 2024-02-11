@@ -30,14 +30,14 @@ sysmon_pack:
         unique_id: 4a147f57-3494-47fc-a48a-e2c013f4cc4b
         unit_of_measurement: GB
         scan_interval: 60
-        command: "cat /proc/diskstats |grep '0 sda' | awk '{print $10*512/1024/1024/1024}'"
+        command: "cat /proc/diskstats | grep '0 sda' | awk '{print $10*512/1024/1024/1024}'"
 
     - sensor:
         name: HA VM Disk sda Session Read
         unique_id: 33f0d710-7a99-4a02-bb06-bfe98597a47b
         unit_of_measurement: GB
         scan_interval: 60
-        command: "cat /proc/diskstats |grep '0 sda' | awk '{print $6*512/1024/1024/1024}'"
+        command: "cat /proc/diskstats | grep '0 sda' | awk '{print $6*512/1024/1024/1024}'"
 
   # REST platform
   rest:

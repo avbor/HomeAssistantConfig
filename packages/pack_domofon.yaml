@@ -7,8 +7,8 @@ domofon_pack:
   yandex_station_intents:
     intents:
       Открой домофон:
-        extra_phrases:
-          - Домофон открой
+#        extra_phrases:
+#          - Домофон открой
         say_phrase: "{{ ['Окей', 'Хорошо', 'Открываю']|random }}"
 
   automation:
