@@ -18,6 +18,7 @@ from homeassistant.components import (
     light,
     lock,
     media_player,
+    remote,
     scene,
     script,
     switch,
@@ -178,14 +179,15 @@ class OnOffCapabilityScript(OnlyOnCapability):
         return self.state.domain in (scene.DOMAIN, script.DOMAIN)
 
     async def _set_state(self, data: RequestData, state: dict[str, Any]):
-        await self.hass.services.async_call(
-            self.state.domain,
-            SERVICE_TURN_ON, {
-                ATTR_ENTITY_ID: self.state.entity_id
-            },
-            blocking=self.state.domain != script.DOMAIN,
-            context=data.context
-        )
+        if state['value']:
+            await self.hass.services.async_call(
+                self.state.domain,
+                SERVICE_TURN_ON, {
+                    ATTR_ENTITY_ID: self.state.entity_id
+                },
+                blocking=self.state.domain != script.DOMAIN,
+                context=data.context
+            )
 
 
 @register_capability
@@ -197,14 +199,15 @@ class OnOffCapabilityButton(OnlyOnCapability):
         return self.state.domain == button.DOMAIN
 
     async def _set_state(self, data: RequestData, state: dict[str, Any]):
-        await self.hass.services.async_call(
-            self.state.domain,
-            button.SERVICE_PRESS, {
-                ATTR_ENTITY_ID: self.state.entity_id
-            },
-            blocking=True,
-            context=data.context
-        )
+        if state['value']:
+            await self.hass.services.async_call(
+                self.state.domain,
+                button.SERVICE_PRESS, {
+                    ATTR_ENTITY_ID: self.state.entity_id
+                },
+                blocking=True,
+                context=data.context
+            )
 
 
 @register_capability
@@ -216,14 +219,15 @@ class OnOffCapabilityInputButton(OnlyOnCapability):
         return self.state.domain == input_button.DOMAIN
 
     async def _set_state(self, data: RequestData, state: dict[str, Any]):
-        await self.hass.services.async_call(
-            self.state.domain,
-            input_button.SERVICE_PRESS, {
-                ATTR_ENTITY_ID: self.state.entity_id
-            },
-            blocking=True,
-            context=data.context
-        )
+        if state['value']:
+            await self.hass.services.async_call(
+                self.state.domain,
+                input_button.SERVICE_PRESS, {
+                    ATTR_ENTITY_ID: self.state.entity_id
+                },
+                blocking=True,
+                context=data.context
+            )
 
 
 @register_capability
@@ -270,6 +274,34 @@ class OnOffCapabilityCover(OnOffCapability):
                 ATTR_ENTITY_ID: self.state.entity_id
             },
             blocking=True,
+            context=data.context
+        )
+
+
+@register_capability
+class OnOffCapabilityRemote(OnOffCapability):
+    @property
+    def retrievable(self) -> bool:
+        return False
+
+    def get_value(self) -> None:
+        return None
+
+    def supported(self) -> bool:
+        return self.state.domain == remote.DOMAIN
+
+    async def _set_state(self, data: RequestData, state: dict[str, Any]):
+        if state['value']:
+            service = SERVICE_TURN_ON
+        else:
+            service = SERVICE_TURN_OFF
+
+        await self.hass.services.async_call(
+            remote.DOMAIN,
+            service, {
+                ATTR_ENTITY_ID: self.state.entity_id
+            },
+            blocking=False,
             context=data.context
         )
 

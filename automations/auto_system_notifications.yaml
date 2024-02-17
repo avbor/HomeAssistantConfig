@@ -321,7 +321,8 @@
           '^(sensor|binary_sensor|button|switch)\.shellyem_.*|'
           '^sensor\.ch_main_energy_.*|'
           '^sensor\..*_geocoded_location$|'
-          '^sensor\.double_take_.*'
+          '^sensor\.double_take_.*|'
+          '^sensor\.processor_use$'
           )
         }}
     - condition: template

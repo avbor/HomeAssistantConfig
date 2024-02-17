@@ -256,6 +256,7 @@ class ProgramCapabilityHumidifier(ProgramCapability):
         ],
         const.MODE_INSTANCE_MODE_AUTO: [
             humidifier.const.MODE_AUTO,
+            const.XIAOMI_HUMIDIFIER_CONST_HUMIDITY,
         ],
         const.MODE_INSTANCE_MODE_ECO: [
             humidifier.const.MODE_ECO,
@@ -480,6 +481,7 @@ class FanSpeedCapabilityClimate(FanSpeedCapability):
         const.MODE_INSTANCE_MODE_QUIET: [
             climate.const.FAN_OFF,
             climate.const.FAN_DIFFUSE,
+            const.FAN_SPEED_QUIET,
         ],
         const.MODE_INSTANCE_MODE_MIN: [
             const.TION_FAN_SPEED_1,
