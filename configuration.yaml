@@ -63,6 +63,8 @@ logger:
       - "Cannot read CPU / processor temperature information"
     py.warnings:
       - ".* UserWarning: python-telegram-bot is using upstream urllib3. .*"
+    homeassistant.helpers.translation:
+      - "Validation of translation placeholders for localized (ru) string .*"
 
 system_log:
   max_entries: 50
