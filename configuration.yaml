@@ -64,7 +64,7 @@ logger:
     py.warnings:
       - ".* UserWarning: python-telegram-bot is using upstream urllib3. .*"
     homeassistant.helpers.translation:
-      - "Validation of translation placeholders for localized (ru) string .*"
+      - "Validation of translation placeholders for localized .*"
 
 system_log:
   max_entries: 50
