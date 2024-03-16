@@ -27,9 +27,10 @@ def extract_state(items: list[dict]) -> dict:
 
 
 class YandexEntity(Entity):
-    def __init__(self, quasar: YandexQuasar, device: dict):
+    def __init__(self, quasar: YandexQuasar, device: dict, config: dict = None):
         self.quasar = quasar
         self.device = device
+        self.config = config
 
         self._attr_available = device["state"] == "online"
         self._attr_name = device["name"]
@@ -65,11 +66,13 @@ class YandexEntity(Entity):
             extract_state(device["properties"]) if "properties" in device else {},
         )
 
-        if self.hass:
+        if self.hass and self.entity_id:
             self._async_write_ha_state()
 
     def internal_init(self, capabilities: dict, properties: dict):
-        """Will be called on Entity init. Capabilities and properties will have all variants."""
+        """Will be called on Entity init. Capabilities and properties will have all
+        variants.
+        """
         pass
 
     def internal_update(self, capabilities: dict, properties: dict):
@@ -79,6 +82,11 @@ class YandexEntity(Entity):
         - no instance (if it not upated)
         """
         pass
+
+    async def async_update(self):
+        device_id = self.device["id"]
+        device = await self.quasar.get_device(device_id)
+        self.quasar.dispatch_update(device_id, device)
 
 
 class YandexCustomEntity(YandexEntity):
