@@ -6,8 +6,6 @@ from collections.abc import Coroutine
 import re
 from typing import Any, cast
 
-from astral import SunDirection
-
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import (
     CONF_BINARY_SENSORS,
@@ -25,7 +23,7 @@ from homeassistant.helpers.reload import async_integration_yaml_config
 from homeassistant.helpers.service import async_register_admin_service
 from homeassistant.helpers.typing import ConfigType
 
-from .const import CONF_DIRECTION, CONF_TIME_AT_ELEVATION, DOMAIN, SIG_HA_LOC_UPDATED
+from .const import DOMAIN, SIG_HA_LOC_UPDATED
 from .helpers import LocData, LocParams, Sun2Data
 
 PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
@@ -105,7 +103,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
                 )
             else:
                 reload = True
-            if reload:
+            if reload and entry.state.recoverable:
                 await hass.config_entries.async_reload(entry.entry_id)
 
     update_local_loc_data()
@@ -130,30 +128,12 @@ async def entry_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:
         # Only sensors that were added via the UI have UUID type unique IDs.
         if _UUID_UNIQUE_ID.fullmatch(unique_id) and unique_id not in unqiue_ids:
             ent_reg.async_remove(entity.entity_id)
-    await hass.config_entries.async_reload(entry.entry_id)
+    if entry.state.recoverable:
+        await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up config entry."""
-    # From 3.0.0b8 or older: Convert config direction from -1, 1 -> "setting", "rising"
-    options = dict(entry.options)
-    for sensor in options.get(CONF_SENSORS, []):
-        if CONF_TIME_AT_ELEVATION not in sensor:
-            continue
-        if isinstance(direction := sensor[CONF_DIRECTION], str):
-            continue
-        sensor[CONF_DIRECTION] = SunDirection(direction).name.lower()
-    if options != entry.options:
-        hass.config_entries.async_update_entry(entry, options=options)
-
-    # From 3.0.0b9 or older: Convert unique_id from entry.entry_id-unique_id -> unique_id
-    ent_reg = er.async_get(hass)
-    for entity in ent_reg.entities.values():
-        if entity.platform != DOMAIN:
-            continue
-        if m := _OLD_UNIQUE_ID.fullmatch(entity.unique_id):
-            ent_reg.async_update_entity(entity.entity_id, new_unique_id=m.group(1))
-
     entry.async_on_unload(entry.add_update_listener(entry_updated))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
