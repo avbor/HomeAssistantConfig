@@ -4,31 +4,28 @@ from homeassistant.components.water_heater import (
     WaterHeaterEntity,
     WaterHeaterEntityFeature,
 )
-from homeassistant.const import CONF_INCLUDE, UnitOfTemperature
+from homeassistant.const import UnitOfTemperature
 
-from .core import utils
-from .core.const import DATA_CONFIG, DOMAIN
 from .core.entity import YandexEntity
+from .hass import hass_utils
 
 _LOGGER = logging.getLogger(__name__)
 
-INCLUDE_TYPES = ["devices.types.cooking.kettle"]
+INCLUDE_TYPES = ("devices.types.cooking.kettle",)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    include = hass.data[DOMAIN][DATA_CONFIG][CONF_INCLUDE]
-    quasar = hass.data[DOMAIN][entry.unique_id]
-    entities = [
-        YandexKettle(quasar, device)
-        for device in quasar.devices
-        if utils.device_include(device, include, INCLUDE_TYPES)
-    ]
-    async_add_entities(entities, True)
+    async_add_entities(
+        YandexKettle(quasar, device, config)
+        for quasar, device, config in hass_utils.incluce_devices(hass, entry)
+        if device["type"] in INCLUDE_TYPES
+    )
 
 
 # noinspection PyAbstractClass
 class YandexKettle(WaterHeaterEntity, YandexEntity):
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
+    _attr_translation_key = "kettle"
 
     def internal_init(self, capabilities: dict, properties: dict):
         self._attr_operation_list = ["on", "off"] if "on" in capabilities else []

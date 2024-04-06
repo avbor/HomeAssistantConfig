@@ -154,13 +154,13 @@ cards:
           - data: friendly_name
             name: Friendly Name
             modify: 'x.replace(/ BLE$/,"")'
-          - data: mac
+          - data: device.extra.mac
             name: MAC
-            modify: (x+'').replace(/(.{2}(?!$))/g,"$1:")
+#            modify: (x+'').replace(/(.{2}(?!$))/g,"$1:")
           - data: msg_received
             name: Received
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
-          - data: available
+          - data: device.available
             name: Available
             modify: 'x === true ? "✓" : "✗"'
           - data: state

@@ -34,6 +34,7 @@ IOT_TYPES = {
     # don't work
     "hsv": "devices.capabilities.color_setting",
     "rgb": "devices.capabilities.color_setting",
+    "scene": "devices.capabilities.color_setting",
     "temperature_k": "devices.capabilities.color_setting",
 }
 
@@ -391,29 +392,22 @@ class YandexQuasar(Dispatcher):
             _LOGGER.exception("Load local speakers")
             return None
 
-    async def get_device_config(self, device: dict) -> dict:
-        payload = {
-            "device_id": device["quasar_info"]["device_id"],
-            "platform": device["quasar_info"]["platform"],
-        }
+    async def get_device_config(self, device: dict) -> (dict, str):
+        did = device["id"]
         r = await self.session.get(
-            "https://quasar.yandex.ru/get_device_config", params=payload
+            f"https://iot.quasar.yandex.ru/m/v2/user/devices/{did}/configuration"
         )
         resp = await r.json()
         assert resp["status"] == "ok", resp
-        return resp["config"]
+        return resp["quasar_config"], resp["quasar_config_version"]
 
-    async def set_device_config(self, device: dict, device_config: dict):
-        _LOGGER.debug(f"Меняем конфиг станции: {device_config}")
+    async def set_device_config(self, device: dict, config: dict, version: str):
+        _LOGGER.debug(f"Меняем конфиг станции: {config}")
 
-        payload = {
-            "device_id": device["quasar_info"]["device_id"],
-            "platform": device["quasar_info"]["platform"],
-        }
+        did = device["id"]
         r = await self.session.post(
-            "https://quasar.yandex.ru/set_device_config",
-            params=payload,
-            json=device_config,
+            f"https://iot.quasar.yandex.ru/m/v3/user/devices/{did}/configuration/quasar",
+            json={"config": config, "version": version},
         )
         resp = await r.json()
         assert resp["status"] == "ok", resp
@@ -425,10 +419,15 @@ class YandexQuasar(Dispatcher):
         return resp
 
     async def device_action(self, deviceid: str, instance: str, value):
-        action = {
-            "type": IOT_TYPES[instance],
-            "state": {"instance": instance, "value": value},
-        }
+        action = {"state": {"instance": instance, "value": value}}
+
+        if instance in IOT_TYPES:
+            action["type"] = IOT_TYPES[instance]
+        elif instance.isdecimal():
+            action["type"] = "devices.capabilities.custom.button"
+        else:
+            return
+
         r = await self.session.post(
             f"{URL_USER}/devices/{deviceid}/actions", json={"actions": [action]}
         )
@@ -531,11 +530,11 @@ class YandexQuasar(Dispatcher):
             raw = await r.json()
 
             # 2. Search latest scenario with voice trigger
-            scenario = next(
-                s
-                for s in raw["scenarios"]
-                if s["trigger_type"] == "scenario.trigger.voice"
-            )
+            for scenario in raw["scenarios"]:
+                if scenario["trigger_type"] == "scenario.trigger.voice":
+                    break
+            else:
+                return
 
             # 3. Check if scenario too old
             d1 = datetime.strptime(r.headers["Date"], "%a, %d %b %Y %H:%M:%S %Z")
@@ -649,6 +648,20 @@ ACCOUNT_CONFIG = {
     "рассказывать о навыках": {
         "key": "aliceProactivity",  # /get_account_config
         "values": BOOL_CONFIG,
+    },
+    "адаптивная громкость": {
+        "key": "aliceAdaptiveVolume",  # /get_account_config
+        "values": {
+            "да": {"enabled": True},
+            "нет": {"enabled": False},
+        },
+    },
+    "кроссфейд": {
+        "key": "audio_player",  # /get_account_config
+        "values": {
+            "да": {"crossfadeEnabled": True},
+            "нет": {"crossfadeEnabled": False},
+        },
     },
     "взрослый голос": {
         "key": "contentAccess",  # /get_account_config

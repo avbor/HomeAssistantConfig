@@ -5,31 +5,27 @@ from homeassistant.components.climate import (
     ClimateEntityFeature,
     HVACMode,
 )
-from homeassistant.const import CONF_INCLUDE, UnitOfTemperature
+from homeassistant.const import MAJOR_VERSION, MINOR_VERSION, UnitOfTemperature
 
 from .core import utils
-from .core.const import DATA_CONFIG, DOMAIN
 from .core.entity import YandexEntity
-from .core.yandex_quasar import YandexQuasar
+from .hass import hass_utils
 
 _LOGGER = logging.getLogger(__name__)
 
-INCLUDE_TYPES = [
+INCLUDE_TYPES = (
     "devices.types.purifier",
     "devices.types.thermostat",
     "devices.types.thermostat.ac",
-]
+)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    include = hass.data[DOMAIN][DATA_CONFIG][CONF_INCLUDE]
-    quasar = hass.data[DOMAIN][entry.unique_id]
-    entities = [
+    async_add_entities(
         YandexClimate(quasar, device, config)
-        for device in quasar.devices
-        if (config := utils.device_include(device, include, INCLUDE_TYPES))
-    ]
-    async_add_entities(entities, True)
+        for quasar, device, config in hass_utils.incluce_devices(hass, entry)
+        if device["type"] in INCLUDE_TYPES
+    )
 
 
 def check_hvac_modes(item: dict) -> bool:
@@ -46,6 +42,13 @@ class YandexClimate(ClimateEntity, YandexEntity):
     preset_instance: str = None
     on_value: bool = None
     hvac_value: str = None
+
+    # https://developers.home-assistant.io/blog/2024/01/24/climate-climateentityfeatures-expanded
+    if (MAJOR_VERSION, MINOR_VERSION) >= (2024, 2):
+        _attr_supported_features = (
+            ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
+        )
+        _enable_turn_on_off_backwards_compatibility = False
 
     def internal_init(self, capabilities: dict, properties: dict):
         # instance candidates for hvac and preset modes

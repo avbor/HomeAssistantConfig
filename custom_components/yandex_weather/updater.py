@@ -11,7 +11,6 @@ import os
 
 import aiohttp
 from homeassistant.components.weather import (
-    ATTR_FORECAST,
     ATTR_FORECAST_CONDITION,
     ATTR_FORECAST_IS_DAYTIME,
     ATTR_FORECAST_NATIVE_PRECIPITATION,
@@ -23,7 +22,7 @@ from homeassistant.components.weather import (
     ATTR_FORECAST_WIND_BEARING,
     Forecast,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -44,6 +43,7 @@ from .const import (
     ATTR_API_WIND_GUST,
     ATTR_API_WIND_SPEED,
     ATTR_API_YA_CONDITION,
+    ATTR_FORECAST_DATA,
     ATTR_MIN_FORECAST_TEMPERATURE,
     CONDITION_ICONS,
     DOMAIN,
@@ -250,7 +250,7 @@ class WeatherUpdater(DataUpdateCoordinator):
                     tz=self.get_timezone(r["now_dt"], r["now"]),
                 ),
                 ATTR_API_FORECAST_ICONS: [],
-                ATTR_FORECAST: [],
+                ATTR_FORECAST_DATA: [],
             }
             self.process_data(result, r["fact"], CURRENT_WEATHER_ATTRIBUTE_TRANSLATION)
 
@@ -260,11 +260,11 @@ class WeatherUpdater(DataUpdateCoordinator):
                 forecast = Forecast(datetime=f_datetime.isoformat())
                 self.process_data(forecast, f, FORECAST_ATTRIBUTE_TRANSLATION)
                 forecast[ATTR_FORECAST_IS_DAYTIME] = f["daytime"] == "d"
-                result[ATTR_FORECAST].append(forecast)
+                result[ATTR_FORECAST_DATA].append(forecast)
                 result[ATTR_API_FORECAST_ICONS].append(f.get("icon", "no_image"))
 
             result[ATTR_MIN_FORECAST_TEMPERATURE] = self.get_min_forecast_temperature(
-                result[ATTR_FORECAST]
+                result[ATTR_FORECAST_DATA]
             )
 
             return result
@@ -335,8 +335,26 @@ class WeatherUpdater(DataUpdateCoordinator):
             int(self.hass.loop.time()) + self._microsecond + offset.total_seconds()
         )
         self._unsub_refresh = self.hass.loop.call_at(
-            next_refresh, self.hass.async_run_hass_job, self._job
+            next_refresh, self.__wrap_handle_refresh_interval
         ).cancel
+
+    @callback
+    def __wrap_handle_refresh_interval(self) -> None:
+        """Handle a refresh interval occurrence."""
+        # We need this private callback from parent class
+        if self.config_entry:
+            self.config_entry.async_create_background_task(
+                self.hass,
+                self._handle_refresh_interval(),
+                name=f"{self.name} - {self.config_entry.title} - refresh",
+                eager_start=True,
+            )
+        else:
+            self.hass.async_create_background_task(
+                self._handle_refresh_interval(),
+                name=f"{self.name} - refresh",
+                eager_start=True,
+            )
 
     @property
     def device_id(self) -> str:

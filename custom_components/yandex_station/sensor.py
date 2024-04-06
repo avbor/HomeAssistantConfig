@@ -7,7 +7,6 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import (
-    CONF_INCLUDE,
     LIGHT_LUX,
     PERCENTAGE,
     UnitOfElectricCurrent,
@@ -18,14 +17,13 @@ from homeassistant.const import (
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
 )
 
-from .core import utils
-from .core.const import DATA_CONFIG, DOMAIN
 from .core.entity import YandexCustomEntity
+from .hass import hass_utils
 
 _LOGGER = logging.getLogger(__name__)
 
 # https://yandex.ru/dev/dialogs/smart-home/doc/concepts/device-type-sensor.html
-INCLUDE_TYPES = [
+INCLUDE_TYPES = (
     "devices.types.sensor",
     "devices.types.sensor.button",
     "devices.types.sensor.climate",
@@ -43,8 +41,8 @@ INCLUDE_TYPES = [
     "devices.types.smart_meter.heat",
     "devices.types.smart_meter.heat.hot_water",
     "devices.types.socket",
-]
-INCLUDE_PROPERTIES = ["devices.properties.float", "devices.properties.event"]
+)
+INCLUDE_PROPERTIES = ("devices.properties.float", "devices.properties.event")
 
 SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
@@ -116,17 +114,9 @@ INCLUDE_INSTANCES: list[str] = [desc.key for desc in SENSOR_TYPES]
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up sensor from a config entry."""
-    include = hass.data[DOMAIN][DATA_CONFIG][CONF_INCLUDE]
-    quasar = hass.data[DOMAIN][entry.unique_id]
-
     entities = []
 
-    for device in quasar.devices:
-        # compare device name/id/room/etc
-        if not (config := utils.device_include(device, include)):
-            continue
-
+    for quasar, device, config in hass_utils.incluce_devices(hass, entry):
         if "properties" in config:
             instances = config["properties"]
         elif device["type"] in INCLUDE_TYPES:
@@ -134,11 +124,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
         else:
             continue
 
-        for config in device["properties"]:
-            if utils.instance_include(config, instances, INCLUDE_PROPERTIES):
-                entities.append(YandexCustomSensor(quasar, device, config))
+        for instance in device["properties"]:
+            if instance["type"] not in INCLUDE_PROPERTIES:
+                continue
+            if instance["parameters"]["instance"] in instances:
+                entities.append(YandexCustomSensor(quasar, device, instance))
 
-    async_add_entities(entities, True)
+    async_add_entities(entities)
 
 
 # noinspection PyAbstractClass

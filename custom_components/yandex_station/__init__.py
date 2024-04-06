@@ -43,21 +43,24 @@ from .core.const import (
 from .core.yandex_glagol import YandexIOListener
 from .core.yandex_quasar import YandexQuasar
 from .core.yandex_session import YandexSession
+from .hass import hass_utils
 
 _LOGGER = logging.getLogger(__name__)
 
-MAIN_DOMAINS = ["media_player", "select"]
-SUB_DOMAINS = [
+PLATFORMS = [
+    "button",
     "climate",
     "light",
     "humidifier",
+    "media_player",
     "number",
-    "remote",
+    "select",
     "switch",
     "vacuum",
     "sensor",
     "water_heater",
 ]
+PLATFORMS2 = ["media_player", "select"]  # only for speakers
 
 CONF_TTS_NAME = "tts_service_name"
 CONF_DEBUG = "debug"
@@ -144,6 +147,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     quasar = YandexQuasar(yandex)
     await quasar.init()
 
+    hass_utils.load_fake_devies(hass, quasar)
+
     # entry.unique_id - user login
     hass.data[DOMAIN][entry.unique_id] = quasar
 
@@ -156,27 +161,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         speakers[did] = device
 
     await _setup_intents(hass, quasar)
-    await _setup_include(hass, entry)
     await _setup_devices(hass, quasar)
+
+    if not entry.update_listeners:
+        entry.add_update_listener(async_update_options)
 
     quasar.start()
 
-    for domain in MAIN_DOMAINS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, domain)
-        )
+    platforms = PLATFORMS if hass_utils.incluce_devices(hass, entry) else PLATFORMS2
+    setattr(quasar, "platforms", platforms)
+    await hass.config_entries.async_forward_entry_setups(entry, platforms)
+
     return True
+
+
+async def async_update_options(hass: HomeAssistant, config_entry: ConfigEntry):
+    await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     quasar: YandexQuasar = hass.data[DOMAIN][entry.unique_id]
     quasar.stop()
-    
-    domains = MAIN_DOMAINS
-    if CONF_INCLUDE in hass.data[DOMAIN][DATA_CONFIG]:
-        domains += SUB_DOMAINS  
 
-    return await hass.config_entries.async_unload_platforms(entry, domains)
+    platforms = getattr(quasar, "platforms")
+    return await hass.config_entries.async_unload_platforms(entry, platforms)
 
 
 async def _init_local_discovery(hass: HomeAssistant):
@@ -329,18 +337,6 @@ async def _setup_devices(hass: HomeAssistant, quasar: YandexQuasar):
         did = device["quasar_info"]["device_id"]
         if upd := confdevices.get(did) or confdevices.get(did.lower()):
             device.update(upd)
-
-
-async def _setup_include(hass: HomeAssistant, entry: ConfigEntry):
-    """Setup additional devices from Yandex account."""
-    config = hass.data[DOMAIN][DATA_CONFIG]
-    if CONF_INCLUDE not in config:
-        return
-
-    for domain in SUB_DOMAINS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, domain)
-        )
 
 
 async def async_remove_config_entry_device(

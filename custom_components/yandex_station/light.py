@@ -1,22 +1,17 @@
 from homeassistant.components.light import ColorMode, LightEntity, LightEntityFeature
-from homeassistant.const import CONF_INCLUDE
 
-from .core import utils
-from .core.const import DATA_CONFIG, DOMAIN
 from .core.entity import YandexEntity
+from .hass import hass_utils
 
-INCLUDE_TYPES = ["devices.types.light"]
+INCLUDE_TYPES = ("devices.types.light",)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    include = hass.data[DOMAIN][DATA_CONFIG][CONF_INCLUDE]
-    quasar = hass.data[DOMAIN][entry.unique_id]
-    entities = [
-        YandexLight(quasar, device)
-        for device in quasar.devices
-        if utils.device_include(device, include, INCLUDE_TYPES)
-    ]
-    async_add_entities(entities, True)
+    async_add_entities(
+        YandexLight(quasar, device, config)
+        for quasar, device, config in hass_utils.incluce_devices(hass, entry)
+        if device["type"] in INCLUDE_TYPES
+    )
 
 
 def conv(value: int, src_min: int, src_max: int, dst_min: int, dst_max: int) -> int:
@@ -37,19 +32,19 @@ class YandexLight(LightEntity, YandexEntity):
     effects: list
 
     def internal_init(self, capabilities: dict, properties: dict):
-        self._attr_supported_color_modes = set()
+        self._attr_color_mode = ColorMode.ONOFF
 
         if item := capabilities.get("brightness"):
             self.max_brightness = item["range"]["max"]
             self.min_brightness = item["range"]["min"]
-            self._attr_supported_color_modes.add(ColorMode.BRIGHTNESS)
+            self._attr_color_mode = ColorMode.BRIGHTNESS
 
         if item := capabilities.get("color"):
             self.effects = []
 
             if items := item["palette"]:
                 self.effects += items
-                self._attr_supported_color_modes.add(ColorMode.HS)
+                self._attr_color_mode = ColorMode.HS
 
             if items := item["scenes"]:
                 self.effects += items
@@ -58,6 +53,8 @@ class YandexLight(LightEntity, YandexEntity):
                 self._attr_effect_list = [i["name"] for i in self.effects]
                 self._attr_supported_features = LightEntityFeature.EFFECT
 
+        self._attr_supported_color_modes = {self._attr_color_mode}
+
     def internal_update(self, capabilities: dict, properties: dict):
         if "on" in capabilities:
             self._attr_is_on = capabilities["on"]
@@ -65,30 +62,21 @@ class YandexLight(LightEntity, YandexEntity):
         if "brightness" in capabilities:
             value = capabilities["brightness"]
             self._attr_brightness = (
-                conv(
-                    value,
-                    self.min_brightness,
-                    self.max_brightness,
-                    1,
-                    255,
-                )
+                conv(value, self.min_brightness, self.max_brightness, 1, 255)
                 if value
                 else None
             )
 
         # check if color exists in update
         if "color" in capabilities:
-            # check if color not null
-            if item := capabilities["color"]:
+            try:
+                # fix https://github.com/AlexxIT/YandexStation/issues/465
+                item = capabilities["color"]
+                self._attr_hs_color = (item["value"]["h"], item["value"]["s"])
                 self._attr_effect = item["name"]
-                # check if color value exists
-                if value := item.get("value"):
-                    self._attr_hs_color = (value["h"], value["s"])
-                else:
-                    self._attr_hs_color = None
-            else:
-                self._attr_effect = None
+            except:
                 self._attr_hs_color = None
+                self._attr_effect = None
 
     async def async_turn_on(
         self,
