@@ -8,6 +8,7 @@ from homeassistant.core import HomeAssistant
 from ..climate import INCLUDE_TYPES as CLIMATE
 from ..core.const import DOMAIN, DATA_CONFIG
 from ..core.yandex_quasar import YandexQuasar
+from ..cover import INCLUDE_TYPES as COVER
 from ..humidifier import INCLUDE_TYPES as HUMIDIFIER
 from ..light import INCLUDE_TYPES as LIGHT
 from ..media_player import INCLUDE_TYPES as MEDIA_PLAYER
@@ -24,7 +25,6 @@ INCLUDE_TYPES_UNKNOWN = (
     "devices.types.dishwasher",
     "devices.types.iron",
     "devices.types.openable",
-    "devices.types.openable.curtain",
     "devices.types.other",
     "devices.types.pet_drinking_fountain",
     "devices.types.pet_feeder",
@@ -41,6 +41,7 @@ INCLUDE_SKIP_INSTANCES = {
         "humidity",
         "fan_speed",
     ],
+    COVER: ["on", "open", "pause"],
     HUMIDIFIER: ["on", "fan_speed", "work_speed", "humidity"],
     LIGHT: ["on", "brightness", "color"],
     MEDIA_PLAYER: ["on", "pause", "volume", "mute", "channel", "input_source"],
@@ -55,12 +56,15 @@ def incluce_devices(
 ) -> list[tuple[YandexQuasar, dict, dict]]:
     quasar: YandexQuasar = hass.data[DOMAIN][config_entry.unique_id]
     config: dict = hass.data[DOMAIN][DATA_CONFIG]
-    includes = config.get(CONF_INCLUDE, []) + config_entry.options.get(CONF_INCLUDE, [])
+    # config_entry has more priority
+    includes = config_entry.options.get(CONF_INCLUDE, []) + config.get(CONF_INCLUDE, [])
 
     devices = []
 
-    for conf in includes:
-        for device in quasar.devices:
+    # первый цикл по devices, второй по include, чтоб одинаковые include работали на
+    # разные devices
+    for device in quasar.devices:
+        for conf in includes:
             if isinstance(conf, str):
                 if conf == device["id"] or conf == device["name"]:
                     conf = build_include_config(device)

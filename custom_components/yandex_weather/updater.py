@@ -26,6 +26,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.util.dt import get_time_zone
 
 from .const import (
     ATTR_API_CONDITION,
@@ -113,7 +114,9 @@ FORECAST_ATTRIBUTE_TRANSLATION: list[AttributeMapper] = [
         "wind_dir", ATTR_FORECAST_WIND_BEARING, mapping=WIND_DIRECTION_MAPPING
     ),
     AttributeMapper("temp_avg", ATTR_FORECAST_NATIVE_TEMP),
+    AttributeMapper("temp_avg", "temperature"),
     AttributeMapper("temp_min", ATTR_FORECAST_NATIVE_TEMP_LOW),
+    AttributeMapper("temp_min", "templow"),
     AttributeMapper("pressure_pa", ATTR_FORECAST_NATIVE_PRESSURE),
     AttributeMapper("wind_speed", ATTR_FORECAST_NATIVE_WIND_SPEED, default=0),
     AttributeMapper("prec_mm", ATTR_FORECAST_NATIVE_PRECIPITATION, default=0),
@@ -229,7 +232,7 @@ class WeatherUpdater(DataUpdateCoordinator):
             microsecond=0
         )
         server_unix_time = datetime.fromtimestamp(nowi)
-        return timezone(server_utc_time - server_unix_time)
+        return timezone(server_unix_time - server_utc_time)
 
     async def update(self):
         """Update weather information.
@@ -238,23 +241,23 @@ class WeatherUpdater(DataUpdateCoordinator):
         """
         result = {}
         timeout = aiohttp.ClientTimeout(total=20)
+        local_tz = get_time_zone(self.hass.config.time_zone)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             response = await self.request(
                 session, self.__api_key, self._lat, self._lon, "en_US"
             )
             r = json.loads(response)
-
             result = {
                 ATTR_API_WEATHER_TIME: datetime.fromtimestamp(
                     r["fact"][ATTR_API_WEATHER_TIME],
                     tz=self.get_timezone(r["now_dt"], r["now"]),
-                ),
+                ).astimezone(tz=local_tz),
                 ATTR_API_FORECAST_ICONS: [],
                 ATTR_FORECAST_DATA: [],
             }
             self.process_data(result, r["fact"], CURRENT_WEATHER_ATTRIBUTE_TRANSLATION)
 
-            f_datetime = datetime.utcnow()
+            f_datetime = datetime.now(tz=local_tz)
             for f in r["forecast"]["parts"]:
                 f_datetime += timedelta(hours=24 / 4)
                 forecast = Forecast(datetime=f_datetime.isoformat())

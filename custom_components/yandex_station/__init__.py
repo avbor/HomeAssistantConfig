@@ -50,10 +50,12 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORMS = [
     "button",
     "climate",
-    "light",
+    "cover",
     "humidifier",
+    "light",
     "media_player",
     "number",
+    "remote",
     "select",
     "switch",
     "vacuum",
