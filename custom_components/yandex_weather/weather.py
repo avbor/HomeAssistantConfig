@@ -168,7 +168,9 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
                     except TypeError:
                         pass
 
-            self._attr_extra_state_attributes = {}
+            self._attr_extra_state_attributes = {
+                ATTR_FORECAST_DATA: self._twice_daily_forecast,
+            }
             for attribute in [
                 "feels_like",
                 "wind_gust",
@@ -267,7 +269,7 @@ class YandexWeather(WeatherEntity, CoordinatorEntity, RestoreEntity):
                     native_pressure=self.native_pressure,
                     native_wind_speed=self.native_wind_speed,
                     condition=self.condition,
-                    # is_daytime=self.is_daytime,
+                    is_daytime=self.coordinator.data.get("daytime") == "d",
                 ),
             )
         return result
