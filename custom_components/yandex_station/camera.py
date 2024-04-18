@@ -8,7 +8,7 @@ from homeassistant.components.camera import Camera
 from homeassistant.components.media_player import MediaPlayerState, MediaType
 from homeassistant.const import CONTENT_TYPE_MULTIPART
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import DeviceInfo
 
 from .core.const import DOMAIN
 from .core.image import draw_cover, draw_lyrics, draw_none
@@ -116,7 +116,7 @@ class YandexLyrics(Camera):
                     image = draw_lyrics(None, lines[0])  # before first
                 elif media_position > times[-1]:
                     lyric_pos = times[-1]
-                    lyric_pos_next = entity.media_duration
+                    lyric_pos_next = entity.media_duration or 65535
                     image = draw_lyrics(lines[-1], None)  # last
                 else:
                     for i, ts in enumerate(times):
@@ -172,7 +172,7 @@ class YandexLyrics(Camera):
             return None
 
         if self.lyrics_content_id != entity.media_content_id:
-            if entity.media_content_type in (MediaType.TRACK, MediaType.PLAYLIST):
+            if entity.media_content_type == MediaType.MUSIC:
                 self.lyrics = await get_lyrics(
                     self.quasar.session, entity.media_content_id
                 )

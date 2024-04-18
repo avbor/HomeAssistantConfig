@@ -1,3 +1,4 @@
+import asyncio
 import binascii
 import json
 import logging
@@ -15,6 +16,7 @@ from homeassistant.components.media_player import (
     MediaPlayerEntityFeature,
     MediaType,
     MediaPlayerState,
+    RepeatMode,
 )
 from homeassistant.components.media_source.models import BrowseMediaSource
 from homeassistant.core import callback
@@ -481,14 +483,20 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
 
             self._attr_assumed_state = True
             self._attr_media_artist = None
+            self._attr_media_channel = None
+            self._attr_media_content_id = None
             self._attr_media_content_type = None
             self._attr_media_duration = None
             self._attr_media_image_url = None
+            self._attr_media_playlist = None
             self._attr_media_position = None
             self._attr_media_position_updated_at = None
+            self._attr_media_series_title = None
             self._attr_media_title = None
-            self._attr_supported_features = CLOUD_FEATURES
+            self._attr_repeat = None
             self._attr_should_poll = True
+            self._attr_shuffle = None
+            self._attr_supported_features = CLOUD_FEATURES
 
             self.async_write_ha_state()
             return
@@ -512,52 +520,85 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         if self.alice_volume:
             self._process_alice_volume(state["aliceState"])
 
+        # default attributes for local mode
         self._attr_assumed_state = False
         self._attr_available = True
         self._attr_should_poll = False
         self._attr_supported_features = LOCAL_FEATURES
 
+        # optional attributes for local mode
+        self._attr_media_artist = None
+        self._attr_media_channel = None
+        self._attr_media_content_type = None
+        self._attr_media_image_url = None
+        self._attr_media_playlist = None
+        self._attr_media_series_title = None
+        self._attr_repeat = None
+        self._attr_shuffle = None
+
         if player_state := state.get("playerState"):
-            if player_state["liveStreamText"] == "Прямой эфир":
-                self._attr_media_content_type = "tv"
-            elif player_state["playerType"] == "ru.yandex.quasar.app":
-                self._attr_media_content_type = MediaType.VIDEO
-            elif player_state["playlistType"] == "Track":
-                self._attr_media_content_type = MediaType.TRACK
-            elif player_state["playlistType"] == "FmRadio":
-                self._attr_media_content_type = "radio"
-            elif player_state["playlistType"] == "Playlist":
-                self._attr_media_content_type = MediaType.PLAYLIST
-
-            if extra := player_state["extra"]:
-                if url := extra.get("coverURI"):
-                    url = "https://" + url.replace("%%", "400x400")
-                    self._attr_media_image_url = url
-
-            self._attr_media_artist = player_state["subtitle"] or None
-            self._attr_media_content_id = player_state["id"]
-            self._attr_media_duration = player_state["duration"] or None
-            self._attr_media_position = player_state["progress"]
-            self._attr_media_position_updated_at = datetime.now(UTC)
-            self._attr_media_title = player_state["title"]
-
-            self._attr_state = (
-                MediaPlayerState.PLAYING
-                if state["playing"]
-                else MediaPlayerState.PAUSED
-            )
-
             if player_state["hasPrev"]:
                 self._attr_supported_features |= MediaPlayerEntityFeature.PREVIOUS_TRACK
             if player_state["hasNext"]:
                 self._attr_supported_features |= MediaPlayerEntityFeature.NEXT_TRACK
             if player_state["duration"]:
                 self._attr_supported_features |= MediaPlayerEntityFeature.SEEK
+
+            # https://github.com/home-assistant/frontend/blob/dev/src/data/media-player.ts
+            # supported computeMediaDescription: music/image/playlist/tvshow/channel
+            if player_state["type"] == "Track":
+                self._attr_media_artist = player_state["subtitle"] or None
+                self._attr_media_content_type = MediaType.MUSIC
+            elif player_state["type"] == "FmRadio":
+                self._attr_media_content_type = "radio"
+            elif player_state["liveStreamText"] == "Прямой эфир":
+                self._attr_media_channel = player_state["subtitle"] or None
+                self._attr_media_content_type = MediaType.CHANNEL
+            elif player_state["playerType"] == "ru.yandex.quasar.app":
+                self._attr_media_content_type = MediaType.TVSHOW
+                self._attr_media_series_title = player_state["subtitle"] or None
+
+            if player_state["playlistType"] == "Track":
+                self._attr_media_playlist = MediaType.TRACK
+            elif player_state["playlistType"] == "Artist":
+                self._attr_media_playlist = MediaType.ARTIST
+            elif player_state["playlistType"] == "Album":
+                self._attr_media_playlist = MediaType.ALBUM
+            elif player_state["playlistType"] == "Playlist":
+                self._attr_media_playlist = MediaType.PLAYLIST
+            elif player_state["playlistType"] == "FmRadio":
+                self._attr_media_playlist = "radio"
+
+            if extra := player_state["extra"]:
+                if url := extra.get("coverURI"):
+                    url = "https://" + url.replace("%%", "400x400")
+                    self._attr_media_image_url = url
+
+            if repeat := player_state["entityInfo"].get("repeatMode"):
+                if repeat == "None":
+                    self._attr_repeat = RepeatMode.OFF
+                elif repeat == "All":
+                    self._attr_repeat = RepeatMode.ALL
+                elif repeat == "One":
+                    self._attr_repeat = RepeatMode.ONE
+
+            if "shuffled" in player_state["entityInfo"]:
+                self._attr_shuffle = player_state["entityInfo"]["shuffled"]
+
+            # main attributes for local mode
+            self._attr_media_content_id = player_state["id"]
+            self._attr_media_duration = player_state["duration"] or None
+            self._attr_media_position = player_state["progress"]
+            self._attr_media_position_updated_at = datetime.now(UTC)
+            self._attr_media_title = player_state["title"]
+            self._attr_state = (
+                MediaPlayerState.PLAYING
+                if state["playing"]
+                else MediaPlayerState.PAUSED
+            )
         else:
-            self._attr_media_artist = None
             self._attr_media_content_id = None
             self._attr_media_duration = None
-            self._attr_media_image_url = None
             self._attr_media_position = None
             self._attr_media_position_updated_at = None
             self._attr_media_title = None
@@ -782,9 +823,6 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             elif media_type == "json":
                 payload = json.loads(media_id)
 
-            elif RE_MUSIC_ID.match(media_id):
-                payload = {"command": "playMusic", "id": media_id, "type": media_type}
-
             elif media_type == "shopping_list":
                 coro = shopping_list.shopping_sync(self.hass, self.glagol)
                 await self.hass.async_create_background_task(coro, self.name)
@@ -795,6 +833,15 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
                 request_id = media_type.split(":", 1)[1] if ":" in media_type else None
                 await self.response(card, request_id)
                 return
+
+            elif media_type == "restart":
+                await self.glagol.stop()
+                await asyncio.sleep(float(media_id))
+                await self.glagol.start_or_restart()
+                return
+
+            elif RE_MUSIC_ID.match(media_id):
+                payload = {"command": "playMusic", "id": media_id, "type": media_type}
 
             else:
                 _LOGGER.warning(f"Unsupported local media: {media_id}")
