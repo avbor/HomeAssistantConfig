@@ -17,8 +17,6 @@ from .base import SIGNAL_CONNECTED, SIGNAL_UPDATE, XDevice, XRegistryBase
 
 _LOGGER = logging.getLogger(__name__)
 
-RETRY_DELAYS = [15, 30, 60, 5 * 60, 15 * 60, 30 * 60, 60 * 60]
-
 # https://coolkit-technologies.github.io/eWeLink-API/#/en/APICenterV2?id=interface-domain-name
 API = {
     "cn": "https://cn-apia.coolkit.cn",
@@ -378,7 +376,7 @@ class XRegistryCloud(ResponseWaiter, XRegistryBase):
             "X-CK-Appid": appid,
         }
         r = await self.session.post(
-            self.host + "/v2/user/login", data=data, headers=headers, timeout=10
+            self.host + "/v2/user/login", data=data, headers=headers, timeout=5
         )
         resp = await r.json()
 
@@ -386,7 +384,7 @@ class XRegistryCloud(ResponseWaiter, XRegistryBase):
         if resp["error"] == 10004:
             self.region = resp["data"]["region"]
             r = await self.session.post(
-                self.host + "/v2/user/login", data=data, headers=headers, timeout=10
+                self.host + "/v2/user/login", data=data, headers=headers, timeout=5
             )
             resp = await r.json()
 
@@ -402,7 +400,7 @@ class XRegistryCloud(ResponseWaiter, XRegistryBase):
         appid = APP[app][0]
         headers = {"Authorization": "Bearer " + token, "X-CK-Appid": appid}
         r = await self.session.get(
-            self.host + "/v2/user/profile", headers=headers, timeout=30
+            self.host + "/v2/user/profile", headers=headers, timeout=5
         )
         resp = await r.json()
         if resp["error"] != 0:
@@ -416,7 +414,7 @@ class XRegistryCloud(ResponseWaiter, XRegistryBase):
 
     async def get_homes(self) -> dict:
         r = await self.session.get(
-            self.host + "/v2/family", headers=self.headers, timeout=30
+            self.host + "/v2/family", headers=self.headers, timeout=10
         )
         resp = await r.json()
         return {i["id"]: i["name"] for i in resp["data"]["familyList"]}
@@ -427,7 +425,7 @@ class XRegistryCloud(ResponseWaiter, XRegistryBase):
             r = await self.session.get(
                 self.host + "/v2/device/thing",
                 headers=self.headers,
-                timeout=30,
+                timeout=10,
                 params={"num": 0, "familyid": home} if home else {"num": 0},
             )
             resp = await r.json()
@@ -516,13 +514,17 @@ class XRegistryCloud(ResponseWaiter, XRegistryBase):
             if fails:
                 self.set_online(False)
 
-                delay = RETRY_DELAYS[min(fails, len(RETRY_DELAYS)) - 1]
+                # 15s 30s 1m 2m 4m 8m 16m 32m 64m
+                delay = 15 * 2 ** min(fails - 1, 8)
                 _LOGGER.debug(f"Cloud connection retrying in {delay} seconds")
                 await asyncio.sleep(delay)
 
-            if not self.auth and not await self.login(**kwargs):
-                fails += 1
-                continue
+            if not self.auth:
+                try:
+                    assert await self.login(**kwargs)
+                except:
+                    fails += 1
+                    continue
 
             if not await self.connect():
                 fails += 1

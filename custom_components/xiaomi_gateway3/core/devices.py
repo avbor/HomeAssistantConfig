@@ -425,6 +425,7 @@ DEVICES += [{
     "spec": [
         ConstConv("motion", "binary_sensor", mi="2.e.1", value=True),
         BaseConv("illuminance", "sensor", mi="2.e.1.p.1"),
+        BaseConv("illuminance", mi="2.p.1"),
         BatVoltConv("battery", "sensor", mi="3.p.2"),  # voltage, mV
         MapConv("battery_low", "binary_sensor", mi="3.p.1", map={1: False, 2: True}),  # diagnostic
     ],
@@ -1395,7 +1396,7 @@ DEVICES += [{
         BLEMathConv("formaldehyde", "sensor", mi=4112, multiply=0.01),  # uint16
     ],
 }, {
-    1161: ["Xiaomi", "Toothbrush T500", "MES601"],
+    1161: ["Xiaomi", "Toothbrush T500", "MES601", "soocare.toothbrush.m1s"],
     "spec": [
         BaseConv("action", "sensor"),
         BLEByteConv("battery", "sensor", mi=4106),  # uint8
@@ -1410,14 +1411,18 @@ DEVICES += [{
     # "ttl": "7d",  # don't send any data
 }, {
     1694: ["Aqara", "Door Lock N100 (Bluetooth)", "ZNMS16LM", "lumi.lock.bzacn2"],  # 6,7,8,11,4106,4110,4111
+    1695: ["Aqara", "Door Lock N200", "ZNMS17LM", "lumi.lock.bzacn1"],  # 6,7,8,11,4106,4110,4111
+    7735: ["Lockin", "Smart Door Lock S50M", "loock.lock.fvl109"],  # 6,7,8,11,4106,4110,4111
     "spec": [
         BaseConv("action", "sensor"),
+        BaseConv("contact", "binary_sensor"),  # from mi=7
         BLEFinger("fingerprint", mi=6),
         BLEDoor("door", mi=7),
         BLEMapConv("action", mi=8, map={"00": "disarmed", "01": "armed"}),
         BLELock("lock", mi=11),
-        BaseConv("contact", "binary_sensor"),  # from mi=7
         BLEByteConv("battery", "sensor", mi=4106),
+        BLEMapConv("lock", "binary_sensor", mi=4110, map={"00": True, "01": False}),  # reverse
+        BLEMapConv("door", "binary_sensor", mi=4111, map={"00": True, "01": False}),  # reverse
     ]
 }, {
     1809: ["Xiaomi", "Air Quality Monitor", "PTH-1", "fbs.airmonitor.pth02"],
@@ -1735,7 +1740,7 @@ DEVICES += [{
     ],
     # "ttl": "7d"
 }, {
-    12183: ["Xiaomi", "Door Lock M20 Pro", "loock.lock.r2"],
+    12183: ["Lockin", "Door Lock M20 Pro", "loock.lock.r2"],
     "spec": [
         # lock action
         BaseConv("action", "sensor"),
@@ -1808,18 +1813,17 @@ DEVICES += [{
     # https://github.com/AlexxIT/XiaomiGateway3/issues/1001
     1203: ["Dessmann ", "Q3", "dsm.lock.q3"],
     1433: ["Xiaomi", "Door Lock", "MJZNMS03LM", "lumi.lock.bzacn2"],
-    1695: ["Aqara", "Door Lock N200", "ZNMS17LM", "lumi.lock.bzacn1"],
     2054: ["Xiaomi", "Toothbrush T700", "MES604", "k0918.toothbrush.t700"],
     # https://github.com/AlexxIT/XiaomiGateway3/issues/657
-    2444: ["Xiaomi", "Door Lock", "XMZNMST02YD", "loock.lock.t1"],
-    2480: ["Xiaomi", "Safe Box", "BGX-5/X1-3001", "loock.safe.v1"],
+    2444: ["Lockin", "Door Lock", "XMZNMST02YD", "loock.lock.t1"],
+    2480: ["Lockin", "Safe Box", "BGX-5/X1-3001", "loock.safe.v1"],
     3051: ["Aqara", "Door Lock D100", "ZNMS20LM", "lumi.lock.bacn01"],
-    3343: ["Loock", "Door Lock Classic 2X Pro", "loock.lock.cc2xpro"],
+    3343: ["Lockin", "Door Lock Classic 2X Pro", "loock.lock.cc2xpro"],
     3641: ["Xiaomi", "Door Lock 1S", "XMZNMS08LM", "lumi.lock.bmcn04"],
     # https://github.com/AlexxIT/XiaomiGateway3/issues/776
     3685: ["Xiaomi", "Face Recognition Smart Door Lock X", "XMZNMS06LM", "lumi.lock.bmcn05"],
     # https://github.com/AlexxIT/XiaomiGateway3/issues/1156
-    3899: ["Xiaomi", "Door Lock", "XMZNMSTO3YD", "loock.lock.t1pro"],
+    3899: ["Lockin", "Door Lock", "XMZNMSTO3YD", "loock.lock.t1pro"],
     6032: ["Xiaomi", "Toothbrush T700i", "MES604", "k0918.toothbrush.t700i"],
     "spec": [
         # https://iot.mi.com/new/doc/accesses/direct-access/embedded-development/ble/object-definition
@@ -2100,12 +2104,6 @@ DEVICES += [{
         BaseConv("channel_2", "switch", mi="3.p.1"),
         BaseConv("channel_3", "switch", mi="4.p.1"),
         BaseConv("channel_4", "switch", mi="12.p.1"),
-    ],
-}, {
-    9609: ["Bean", "Mesh Switch", "bean.switch.bl01"],
-    "spec": [
-        BaseConv("switch", "switch", mi="2.p.1"),
-        BaseConv("action", "sensor", entity=ENTITY_DISABLED),
     ],
 }, {
     2258: ["PTX", "Mesh Single Wall Switch", "PTX-SK1M", "090615.switch.mesw1"],
@@ -2678,13 +2676,6 @@ DEVICES += [{
         BaseConv("backlight", "switch", mi="6.p.1"),
         BaseConv("led", "switch", mi="6.p.2"),
     ]
-},{
-    9610: ["Unknown", "Double Wall Switch", "bean.switch.bl02"],
-    "spec": [
-        BaseConv("channel_1", "switch", mi="2.p.1"),
-        BaseConv("channel_2", "switch", mi="3.p.1"),
-        BaseConv("led", "switch", mi="8.p.1"),
-    ],
 }, {
     9804: ["Yeelight", "Magnetic Track Array Spotlight", "yeelink.light.ml6"],
     9811: ["Yeelight", "Magnetic Track Light Bar", "yeelink.light.ml7"],
@@ -2930,7 +2921,40 @@ DEVICES += [{
         MapConv("mode_4", "select", mi="5.p.2", map={0: "normal_switch", 1: "wireless_switch", 2: "smart_switch", 3: "toggle_switch"}),  # config
     ]
 }, {
-    9612: ["Unkown", "Mesh Singel Wall Switch", "bean.switch.bl01"],
+    9609: ["Bean", "Mesh Single Wall Switch (L)", "bean.switch.bl01"],
+    "spec": [
+        BaseConv("switch", "switch", mi="2.p.1"),
+        MapConv("mode", "select", mi="2.p.2", map={0: "off", 1: "wireless", 2: "flex", 3: "scene"}),  # config
+        BaseConv("action", "sensor", entity=ENTITY_DISABLED),
+        ConstConv("action", mi="3.e.1", value=BUTTON_SINGLE),
+    ],
+}, {
+    9610: ["Bean", "Mesh Double Wall Switch (L)", "bean.switch.bl02"],
+    "spec": [
+        BaseConv("switch_1", "switch", mi="2.p.1"),
+        BaseConv("switch_2", "switch", mi="3.p.1"),
+        MapConv("mode_1", "select", mi="2.p.2", map={0: "off", 1: "wireless", 2: "flex", 3: "scene"}),  # config
+        MapConv("mode_2", "select", mi="3.p.2", map={0: "off", 1: "wireless", 2: "flex", 3: "scene"}),  # config
+        BaseConv("action", "sensor", entity=ENTITY_DISABLED),
+        ConstConv("action", mi="4.e.1", value=BUTTON_1_SINGLE),
+        ConstConv("action", mi="5.e.1", value=BUTTON_2_SINGLE),
+    ],
+}, {
+    9611: ["Bean", "Mesh Triple Wall Switch (L)", "bean.switch.bl03"],
+    "spec": [
+        BaseConv("switch_1", "switch", mi="2.p.1"),
+        BaseConv("switch_2", "switch", mi="3.p.1"),
+        BaseConv("switch_3", "switch", mi="4.p.1"),
+        MapConv("mode_1", "select", mi="2.p.2", map={0: "off", 1: "wireless", 2: "flex", 3: "scene"}),
+        MapConv("mode_2", "select", mi="3.p.2", map={0: "off", 1: "wireless", 2: "flex", 3: "scene"}),
+        MapConv("mode_3", "select", mi="4.p.2", map={0: "off", 1: "wireless", 2: "flex", 3: "scene"}),
+        BaseConv("action", "sensor"),
+        ConstConv("action", mi="5.e.1", value=BUTTON_1_SINGLE),
+        ConstConv("action", mi="6.e.1", value=BUTTON_2_SINGLE),
+        ConstConv("action", mi="7.e.1", value=BUTTON_3_SINGLE),
+    ],
+}, {
+    9612: ["Bean", "Mesh Single Wall Switch (LN)", "bean.switch.bl01"],
     "spec": [
         BaseConv("switch", "switch", mi="2.p.1"),
         MapConv("mode", "select", mi="2.p.2", map={0: "off", 1: "wireless", 2: "flex", 3: "scene"}),  # config
@@ -2938,7 +2962,7 @@ DEVICES += [{
         ConstConv("action", mi="3.e.1", value=BUTTON_SINGLE),
     ]
 }, {
-    9613: ["Unkown", "Mesh Double Wall Switch", "bean.switch.bl02"],
+    9613: ["Bean", "Mesh Double Wall Switch (LN)", "bean.switch.bl02"],
     "spec": [
         BaseConv("switch_1", "switch", mi="2.p.1"),
         BaseConv("switch_2", "switch", mi="3.p.1"),
@@ -2949,7 +2973,7 @@ DEVICES += [{
         ConstConv("action", mi="5.e.1", value=BUTTON_2_SINGLE),
     ]
 }, {
-    9614: ["Unkown", "Mesh Triple Wall Switch", "bean.switch.bl03"],
+    9614: ["Bean", "Mesh Triple Wall Switch (LN)", "bean.switch.bl03"],
     "spec": [
         BaseConv("switch_1", "switch", mi="2.p.1"),
         BaseConv("switch_2", "switch", mi="3.p.1"),

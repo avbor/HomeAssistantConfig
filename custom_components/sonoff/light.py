@@ -1041,7 +1041,7 @@ class XLightGroup(XEntity, LightEntity):
 
 
 # noinspection PyAbstractClass, UIID22
-class XFanLight(XEntity, LightEntity):
+class XFanLight(XOnOffLight):
     params = {"switches", "light"}
     uid = "1"  # backward compatibility
 
@@ -1070,7 +1070,7 @@ class XFanLight(XEntity, LightEntity):
 
 
 # noinspection PyAbstractClass, UIID25
-class XDiffuserLight(XEntity, LightEntity):
+class XDiffuserLight(XOnOffLight):
     params = {"lightswitch", "lightbright", "lightmode", "lightRcolor"}
 
     _attr_effect_list = ["Color Light", "RGB Color", "Night Light"]
@@ -1137,7 +1137,7 @@ class XDiffuserLight(XEntity, LightEntity):
         await self.ewelink.send(self.device, {"lightswitch": 0})
 
 
-class XT5Light(XEntity, LightEntity):
+class XT5Light(XOnOffLight):
     params = {"lightSwitch", "lightMode"}
 
     _attr_effect_list = [
@@ -1157,7 +1157,10 @@ class XT5Light(XEntity, LightEntity):
             self._attr_is_on = params["lightSwitch"] == "on"
 
         if "lightMode" in params:
-            self._attr_effect = self._attr_effect_list[int(params["lightMode"])]
+            i = int(params["lightMode"])
+            self._attr_effect = (
+                self._attr_effect_list[i] if i < len(self._attr_effect_list) else None
+            )
 
     async def async_turn_on(
         self, brightness: int = None, effect: str = None, **kwargs
