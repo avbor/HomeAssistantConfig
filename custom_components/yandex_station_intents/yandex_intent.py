@@ -1,13 +1,14 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import logging
 
 from homeassistant.components import media_player
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_ENTITY_ID
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import InvalidStateError, ServiceNotFound
 from homeassistant.helpers.template import Template
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import dt
 
 from .const import (
@@ -35,8 +36,8 @@ class Intent:
     execute_command: Template | None = None
 
     @property
-    def scenario_name(self):
-        return f'{INTENT_ID_MARKER} {self.name}'
+    def scenario_name(self) -> str:
+        return f"{INTENT_ID_MARKER} {self.name}"
 
     @property
     def scenario_step_value(self) -> str:
@@ -48,17 +49,17 @@ class Intent:
         rv += BaseConverter.encode(self.id)
 
         if len(rv) > 100:
-            raise ValueError(f'Слишком длинная произносимая фраза: {rv!r}')
+            raise ValueError(f"Слишком длинная произносимая фраза: {rv!r}")
 
         return rv
 
 
 class BaseConverter:
-    _base_chars = ',.:'
-    _digits = '01234567890'
+    _base_chars = ",.:"
+    _digits = "01234567890"
 
     @classmethod
-    def _convert(cls, number: int | str, from_digits: str, to_digits: str):
+    def _convert(cls, number: int | str, from_digits: str, to_digits: str) -> str | int:
         x = 0
         for digit in str(number):
             x = x * len(from_digits) + from_digits.index(digit)
@@ -66,17 +67,16 @@ class BaseConverter:
         if x == 0:
             rv = to_digits[0]
         else:
-            rv = ''
+            rv = ""
             while x > 0:
-                digit = x % len(to_digits)
-                rv = to_digits[digit] + rv
+                rv = to_digits[x % len(to_digits)] + rv
                 x = int(x // len(to_digits))
 
         return rv
 
     @classmethod
     def encode(cls, number: int) -> str:
-        return cls._convert(number, cls._digits, cls._base_chars)
+        return str(cls._convert(number, cls._digits, cls._base_chars))
 
     @classmethod
     def decode(cls, number: str) -> int:
@@ -84,17 +84,16 @@ class BaseConverter:
 
 
 class IntentManager:
-    def __init__(self, hass: HomeAssistant, intents_config: dict | None):
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, intents_config: ConfigType) -> None:
         self._hass = hass
+        self._entry = entry
         self._last_command_at: datetime | None = None
         self._command_execution_loop_count: int = 0
 
         self.intents: list[Intent] = []
 
-        if not intents_config:
-            return
-
-        for idx, (name, config) in enumerate(intents_config.items(), 0):
+        for idx, name in enumerate(sorted(intents_config.keys(), key=lambda k: k.lower()), 0):
+            config = intents_config[name]
             say_phrase = config.get(CONF_INTENT_SAY_PHRASE)
             intent = Intent(
                 id=idx,
@@ -106,26 +105,41 @@ class IntentManager:
             )
             self.intents.append(intent)
 
-    def event_from_id(self, intent_id: int):
+    def event_from_id(self, intent_id: int) -> None:
         if intent_id < len(self.intents):
             text = self.intents[intent_id].name
-            _LOGGER.debug(f'Получена команда: {text}')
-            self._hass.bus.async_fire(EVENT_NAME, {'text': text})
+            _LOGGER.debug(f"Получена команда: {text}")
+            self._hass.bus.async_fire(EVENT_NAME, {"text": text, "account": self._entry.unique_id})
 
-    async def async_handle_phrase(self, phrase: str, event_data: dict, yandex_station_entity_id: str):
+    async def async_handle_phrase(
+        self, phrase: str, event_data: ConfigType, yandex_station_entity_id: str | None
+    ) -> None:
         intent = self._intent_from_phrase(phrase)
         if intent:
-            event_data['text'] = intent.name
-            _LOGGER.debug(f'Получена команда: {event_data!r}')
+            event_data.update({"text": intent.name, "account": self._entry.unique_id})
+            _LOGGER.debug(f"Получена команда: {event_data!r}")
             self._hass.bus.async_fire(EVENT_NAME, event_data)
 
-            if intent.execute_command:
-                await self._execute_command(intent, event_data, yandex_station_entity_id)
+            try:
+                if not yandex_station_entity_id:
+                    raise InvalidStateError
 
-            if intent.say_phrase_template:
-                await self._tts(intent, event_data, yandex_station_entity_id)
+                if intent.execute_command:
+                    await self._execute_command(intent, event_data, yandex_station_entity_id)
 
-    async def _execute_command(self, intent: Intent, event_data: dict, yandex_station_entity_id: str):
+                if intent.say_phrase_template:
+                    await self._tts(intent, event_data, yandex_station_entity_id)
+            except (ServiceNotFound, InvalidStateError):
+                _LOGGER.warning(
+                    f"В Home Assistant не найдена колонка для события {phrase!r}. "
+                    f"Интеграция Yandex.Station установлена и настроена?"
+                )
+        else:
+            _LOGGER.warning(f"Не найден интент для события {phrase}")
+
+    async def _execute_command(self, intent: Intent, event_data: ConfigType, yandex_station_entity_id: str) -> None:
+        assert intent.execute_command
+
         if self._detect_command_loop():
             return
 
@@ -136,14 +150,16 @@ class IntentManager:
             media_player.SERVICE_PLAY_MEDIA,
             {
                 ATTR_ENTITY_ID: yandex_station_entity_id,
-                media_player.ATTR_MEDIA_CONTENT_TYPE: 'command',
+                media_player.ATTR_MEDIA_CONTENT_TYPE: "command",
                 media_player.ATTR_MEDIA_CONTENT_ID: intent.execute_command.async_render(
-                    variables={'event': event_data}
+                    variables={"event": event_data}
                 ),
             },
         )
 
-    async def _tts(self, intent: Intent, event_data: dict, yandex_station_entity_id: str):
+    async def _tts(self, intent: Intent, event_data: ConfigType, yandex_station_entity_id: str) -> None:
+        assert intent.say_phrase_template
+
         intent.say_phrase_template.hass = self._hass
 
         await self._hass.services.async_call(
@@ -151,9 +167,9 @@ class IntentManager:
             media_player.SERVICE_PLAY_MEDIA,
             {
                 ATTR_ENTITY_ID: yandex_station_entity_id,
-                media_player.ATTR_MEDIA_CONTENT_TYPE: 'text',
+                media_player.ATTR_MEDIA_CONTENT_TYPE: "text",
                 media_player.ATTR_MEDIA_CONTENT_ID: intent.say_phrase_template.async_render(
-                    variables={'event': event_data}
+                    variables={"event": event_data}
                 ),
             },
         )
@@ -163,14 +179,15 @@ class IntentManager:
             self._command_execution_loop_count += 1
             if self._command_execution_loop_count >= COMMAND_EXECUTION_LOOP_THRESHOLD:
                 _LOGGER.error(
-                    'Обнаружена частая отправка команд на колонку. '
-                    'Похоже, что исполняемая команда совпадает с одной из активационных фраз.'
+                    "Обнаружена частая отправка команд на колонку. "
+                    "Похоже, что исполняемая команда совпадает с одной из активационных фраз."
                 )
                 return True
         else:
             self._command_execution_loop_count = 0
 
         self._last_command_at = dt.now()
+        return False
 
     def _intent_from_phrase(self, phrase: str) -> Intent | None:
         if INTENT_ID_MARKER not in phrase:
@@ -179,3 +196,5 @@ class IntentManager:
         intent_id = BaseConverter.decode(phrase.split(INTENT_ID_MARKER, 1)[1])
         if intent_id < len(self.intents):
             return self.intents[intent_id]
+
+        return None

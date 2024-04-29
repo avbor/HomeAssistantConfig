@@ -1,5 +1,5 @@
-from __future__ import annotations
-
+import asyncio
+from dataclasses import dataclass
 import logging
 import re
 from typing import Final
@@ -7,42 +7,41 @@ from typing import Final
 from homeassistant.components import media_player
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, SERVICE_RELOAD
-from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryNotReady, HomeAssistantError
-from homeassistant.helpers import config_validation as cv, template as template_helper
+from homeassistant.helpers import config_validation as cv, issue_registry as ir, template as template_helper
 from homeassistant.helpers.reload import async_integration_yaml_config
+from homeassistant.helpers.service import async_register_admin_service
 from homeassistant.helpers.typing import ConfigType
 import voluptuous as vol
 
 from .const import (
     CLEAR_CONFIRM_KEY,
     CLEAR_CONFIRM_TEXT,
+    CONF_ACCOUNTS,
     CONF_AUTOSYNC,
     CONF_INTENT_EXECUTE_COMMAND,
     CONF_INTENT_EXTRA_PHRASES,
     CONF_INTENT_SAY_PHRASE,
     CONF_INTENTS,
     CONF_MODE,
-    DATA_EVENT_STREAM,
-    DATA_INTENT_MANAGER,
-    DATA_QUASAR,
+    CONF_UID,
     DOMAIN,
-    INTENT_PLAYER_NAME,
-    MODE_DEVICE,
-    MODE_WEBSOCKET,
-    NOTIFICATION_TITLE,
+    ConnectionMode,
 )
+from .entry_data import ConfigEntryData
 from .yandex_intent import Intent, IntentManager
-from .yandex_quasar import EventStream, YandexQuasar
-from .yandex_session import YandexSession
+from .yandex_quasar import Device, EventStream, YandexQuasar
+from .yandex_session import AuthException, YandexSession
 
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: Final[list[str]] = [media_player.DOMAIN]
+ISSUE_ID_MISSING_INTENT_PLAYER = "missing_intent_player"
 
 
-def intents_config_validate(intents_config: dict) -> dict:
-    names = set(map(str.lower, intents_config.keys()))
+def intents_config_validate(intents_config: ConfigType) -> ConfigType:
+    names = set(map(lambda s: s.lower(), intents_config.keys()))
     execute_commands = set(
         [
             c[CONF_INTENT_EXECUTE_COMMAND].template.lower()
@@ -53,19 +52,19 @@ def intents_config_validate(intents_config: dict) -> dict:
 
     forbidden_phrases = execute_commands & names
     if forbidden_phrases:
-        raise vol.Invalid(f'Недопустимо использовать команды в активационных фразах: {forbidden_phrases}')
+        raise vol.Invalid(f"Недопустимо использовать команды в активационных фразах: {forbidden_phrases}")
 
     for name, intent_config in intents_config.items():
         if (
             isinstance(intent_config.get(CONF_INTENT_SAY_PHRASE), template_helper.Template)
             and CONF_INTENT_EXECUTE_COMMAND in intent_config
         ):
-            raise vol.Invalid(f'Недопустимо совместное использование execute_command и шаблонной say_phrase в {name!r}')
+            raise vol.Invalid(f"Недопустимо совместное использование execute_command и шаблонной say_phrase в {name!r}")
 
     return intents_config
 
 
-def intent_item_validate(intent_item):
+def intent_item_validate(intent_item: str | ConfigType | None) -> ConfigType:
     if intent_item is None:
         return {}
     elif isinstance(intent_item, str):
@@ -75,9 +74,9 @@ def intent_item_validate(intent_item):
 
 
 def intent_name_validate(name: str) -> str:
-    if not re.search(r'^[а-яё0-9 ]+$', name, re.IGNORECASE):
-        _LOGGER.error(f'Недопустимая фраза {name!r}: разрешены только кириллица, цифры и пробелы')
-        raise vol.Invalid('Разрешены только кириллица, цифры и пробелы')
+    if not re.search(r"^[а-яё0-9 ]+$", name, re.IGNORECASE):
+        _LOGGER.error(f"Недопустимая фраза {name!r}: разрешены только кириллица, цифры и пробелы")
+        raise vol.Invalid("Разрешены только кириллица, цифры и пробелы")
 
     return name
 
@@ -106,6 +105,7 @@ CONFIG_SCHEMA = vol.Schema(
                                         ],
                                         vol.Optional(CONF_INTENT_SAY_PHRASE): string_or_template,
                                         vol.Optional(CONF_INTENT_EXECUTE_COMMAND): cv.template,
+                                        vol.Optional(CONF_ACCOUNTS): vol.All(cv.ensure_list, [cv.string]),
                                     }
                                 ),
                             ),
@@ -113,7 +113,9 @@ CONFIG_SCHEMA = vol.Schema(
                         intents_config_validate,
                     )
                 ),
-                vol.Optional(CONF_MODE, default=MODE_WEBSOCKET): vol.In([MODE_WEBSOCKET, MODE_DEVICE]),
+                vol.Optional(CONF_MODE, default=ConnectionMode.WEBSOCKET): vol.In(
+                    [ConnectionMode.WEBSOCKET, ConnectionMode.DEVICE]
+                ),
                 vol.Optional(CONF_AUTOSYNC, default=True): cv.boolean,
             },
             extra=vol.ALLOW_EXTRA,
@@ -123,130 +125,147 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 
-async def async_setup(hass: HomeAssistant, yaml_config: ConfigType):
-    hass.data[DOMAIN] = {}
+@dataclass
+class Component:
+    yaml_config: ConfigType
+    entry_datas: dict[str, ConfigEntryData]
 
-    async def _handle_reload(_: ServiceCall):
-        # неподдерживается несколько аккаунтов, поэтому линейно
+    def get_intents_config(self, entry: ConfigEntry) -> ConfigType:
+        intents_config: ConfigType = {}
+        for name, config in self.yaml_config.get(CONF_INTENTS, {}).items():
+            if accounts := config.get(CONF_ACCOUNTS):
+                if entry.unique_id not in accounts:
+                    continue
+
+            intents_config[name] = config
+
+        return intents_config
+
+
+async def async_setup(hass: HomeAssistant, yaml_config: ConfigType) -> bool:
+    hass.data[DOMAIN] = component = Component(yaml_config.get(DOMAIN, {}), {})
+
+    async def _handle_reload(_: ServiceCall) -> None:
+        component.yaml_config = (await async_integration_yaml_config(hass, DOMAIN) or {}).get(DOMAIN, {})
+
         for entry in hass.config_entries.async_entries(DOMAIN):
-            _reload_config(hass, await async_integration_yaml_config(hass, DOMAIN))
             await hass.config_entries.async_reload(entry.entry_id)
 
-            if not entry.data[CONF_AUTOSYNC]:
-                quasar = hass.data[DOMAIN][entry.entry_id][DATA_QUASAR]
-                manager = hass.data[DOMAIN][entry.entry_id][DATA_INTENT_MANAGER]
-                await _async_setup_intents(manager.intents, quasar)
+        await asyncio.gather(
+            *(
+                _async_setup_intents(
+                    entry_data.intent_manager.intents,
+                    entry_data.quasar,
+                    entry_data.quasar.get_intent_player_device(entry_data.media_player_entity_id),
+                )
+                for entry_data in component.entry_datas.values()
+                if not entry_data.autosync
+            ),
+            return_exceptions=True,
+        )
 
-    hass.helpers.service.async_register_admin_service(DOMAIN, SERVICE_RELOAD, _handle_reload)
+    async_register_admin_service(hass, DOMAIN, SERVICE_RELOAD, _handle_reload)
 
-    async def _clear_scenarios(service: ServiceCall):
-        if service.data.get(CLEAR_CONFIRM_KEY, '').lower() != CLEAR_CONFIRM_TEXT:
-            raise HomeAssistantError('Необходимо подтверждение, ознакомьтесь с документацией')
+    async def _clear_scenarios(service: ServiceCall) -> None:
+        if service.data.get(CLEAR_CONFIRM_KEY, "").lower() != CLEAR_CONFIRM_TEXT:
+            raise HomeAssistantError("Необходимо подтверждение, ознакомьтесь с документацией")
 
-        for entry in hass.config_entries.async_entries(DOMAIN):
-            quasar = hass.data[DOMAIN][entry.entry_id][DATA_QUASAR]
-            await quasar.clear_scenarios()
+        for entry_data in component.entry_datas.values():
+            await entry_data.quasar.clear_scenarios()
 
-    hass.services.async_register(DOMAIN, 'clear_scenarios', _clear_scenarios)
-
-    _reload_config(hass, yaml_config)
+    hass.services.async_register(DOMAIN, "clear_scenarios", _clear_scenarios)
 
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    component: Component = hass.data[DOMAIN]
     session = YandexSession(hass, entry)
     try:
-        if not await session.refresh_cookies():
-            hass.components.persistent_notification.async_create(
-                'Необходимо заново авторизоваться в Яндексе. Для этого удалите интеграцию и [добавьте '
-                'снова](/config/integrations).',
-                title=NOTIFICATION_TITLE,
-            )
-            return False
+        if not await session.async_validate() or CONF_UID not in entry.data:
+            await session.async_refresh()
 
-        manager = IntentManager(hass, hass.data[CONF_INTENTS])
+        manager = IntentManager(hass, entry, component.get_intents_config(entry))
         quasar = YandexQuasar(session)
         await quasar.async_init()
     except Exception as e:
         raise ConfigEntryNotReady(e)
 
-    hass.data[DOMAIN][entry.entry_id] = {DATA_QUASAR: quasar, DATA_INTENT_MANAGER: manager, DATA_EVENT_STREAM: None}
+    entry_data = ConfigEntryData(entry, yaml_config=component.yaml_config, quasar=quasar, intent_manager=manager)
+    component.entry_datas[entry.entry_id] = entry_data
+    intent_player_device = quasar.get_intent_player_device(entry_data.media_player_entity_id)
 
-    if entry.data[CONF_MODE] == MODE_DEVICE:
+    if entry_data.connection_mode == ConnectionMode.DEVICE:
         await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-        device_id = await quasar.async_get_intent_player_device_id()
-        if not device_id:
-            hass.components.persistent_notification.async_create(
-                f'Служебный плеер **{INTENT_PLAYER_NAME}** не найден в УДЯ. Убедитесь, что он разрешён в фильтрах в '
-                f'компоненте Yandex Smart Home, обновите список устройств в УДЯ и перезагрузите эту интеграцию.',
-                title=NOTIFICATION_TITLE,
+        if not intent_player_device:
+            ir.async_create_issue(
+                hass,
+                DOMAIN,
+                f"{ISSUE_ID_MISSING_INTENT_PLAYER}_{entry.entry_id}",
+                is_fixable=False,
+                severity=ir.IssueSeverity.CRITICAL,
+                translation_key=ISSUE_ID_MISSING_INTENT_PLAYER,
+                translation_placeholders={
+                    "entity": entry.title,
+                    "player_entity_id": entry_data.media_player_entity_id,
+                    "player_name": entry_data.media_player_name,
+                },
             )
+            _LOGGER.error(f"В УДЯ не найден служебный плеер {entry_data.media_player_name}")
             return False
 
-        hass.loop.create_task(_async_setup_intents(manager.intents, quasar, device_id))
+        ir.async_delete_issue(hass, DOMAIN, f"{ISSUE_ID_MISSING_INTENT_PLAYER}_{entry.entry_id}")
     else:
         event_stream = EventStream(hass, session, quasar, manager)
-        await event_stream.async_init()
-        hass.data[DOMAIN][entry.entry_id][DATA_EVENT_STREAM] = event_stream
-
+        component.entry_datas[entry.entry_id].event_stream = event_stream
         hass.loop.create_task(event_stream.connect())
         entry.async_on_unload(hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, event_stream.disconnect))
 
-        if entry.data[CONF_AUTOSYNC]:
-            hass.loop.create_task(_async_setup_intents(manager.intents, quasar))
+    if entry_data.autosync:
+        hass.loop.create_task(_async_setup_intents(manager.intents, quasar, intent_player_device))
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    event_stream = hass.data[DOMAIN][entry.entry_id][DATA_EVENT_STREAM]
-    if event_stream:
-        hass.async_create_task(event_stream.disconnect())
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    component: Component = hass.data[DOMAIN]
+    entry_data = component.entry_datas[entry.entry_id]
+    entry_data.quasar.stop()
 
-    if entry.data[CONF_MODE] == MODE_DEVICE:
+    if entry_data.event_stream:
+        hass.async_create_task(entry_data.event_stream.disconnect())
+
+    if entry_data.connection_mode == ConnectionMode.DEVICE:
         unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
         if unload_ok:
-            hass.data[DOMAIN].pop(entry.entry_id)
+            component.entry_datas.pop(entry.entry_id)
 
         return unload_ok
 
     return True
 
 
-def get_config_entry_data_from_yaml_config(data: dict, yaml_config: ConfigType) -> dict:
-    config = yaml_config.get(DOMAIN, {})
-
-    data = data.copy()
-    data.pop(CONF_INTENTS, None)  # legacy
-    data[CONF_MODE] = config.get(CONF_MODE, MODE_WEBSOCKET)
-    data[CONF_AUTOSYNC] = config.get(CONF_AUTOSYNC, True)
-
-    return data
-
-
-@callback
-def _reload_config(hass: HomeAssistant, yaml_config: ConfigType | None):
-    hass.data[CONF_INTENTS] = yaml_config.get(DOMAIN, {}).get(CONF_INTENTS)
-
-    for entry in hass.config_entries.async_entries(DOMAIN):
-        hass.config_entries.async_update_entry(
-            entry, data=get_config_entry_data_from_yaml_config(entry.data, yaml_config)
-        )
-
-
-# noinspection PyBroadException
-async def _async_setup_intents(intents: list[Intent], quasar: YandexQuasar, target_device_id: str | None = None):
+async def _async_setup_intents(
+    intents: list[Intent], quasar: YandexQuasar, target_device: Device | None = None
+) -> None:
     await quasar.delete_stale_intents(intents)
 
     quasar_intents = await quasar.async_get_intents()
 
     for item in intents:
+        if not quasar.running:
+            break
+
         try:
             await quasar.async_add_or_update_intent(
-                intent=item, intent_quasar_id=quasar_intents.get(item.name), target_device_id=target_device_id
+                intent=item, intent_quasar_id=quasar_intents.get(item.name), target_device=target_device
             )
+        except AuthException:
+            _LOGGER.exception(
+                f"Ошибка создания или обновления сценария {item.scenario_name!r}, синхронизация остановлена"
+            )
+            break
         except Exception:
-            _LOGGER.exception(f'Ошибка создания или обновления сценария {item.scenario_name!r}')
+            _LOGGER.exception(f"Ошибка создания или обновления сценария {item.scenario_name!r}")

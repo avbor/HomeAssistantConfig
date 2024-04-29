@@ -1,120 +1,110 @@
-from __future__ import annotations
-
+from enum import StrEnum
 from functools import lru_cache
 import json
 import logging
 
-from homeassistant import data_entry_flow
 from homeassistant.config_entries import ConfigFlow
-from homeassistant.helpers.reload import async_integration_yaml_config
+from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.typing import ConfigType
 import voluptuous as vol
 
-from . import DOMAIN, get_config_entry_data_from_yaml_config
-from .const import CONF_X_TOKEN
-from .yandex_session import AuthException, LoginResponse, YandexSession
+from . import DOMAIN, YandexSession
+from .const import CONF_UID, CONF_X_TOKEN, YANDEX_STATION_DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-METHOD_COOKIES = 'cookies'
-METHOD_TOKEN = 'token'
-METHOD_YANDEX_STATION = 'yandex_station'
+
+class AuthMethod(StrEnum):
+    COOKIES = "cookies"
+    TOKEN = "token"
+    YANDEX_STATION = "yandex_station"
 
 
 class YandexSmartHomeIntentsFlowHandler(ConfigFlow, domain=DOMAIN):
     @property
     @lru_cache()
-    def _session(self):
+    def _session(self) -> YandexSession:
         return YandexSession(self.hass)
 
-    async def async_step_user(self, user_input=None) -> data_entry_flow.FlowResult:
-        if self._async_current_entries():
-            return self.async_abort(reason='single_instance_allowed')
-
+    async def async_step_user(self, user_input: ConfigType | None = None) -> FlowResult:  # type: ignore
         if user_input is None:
             return self.async_show_form(
-                step_id='user',
-                data_schema=vol.Schema({
-                    vol.Required('method', default=METHOD_YANDEX_STATION): vol.In({
-                        METHOD_YANDEX_STATION: 'Через компонент Yandex.Station',
-                        METHOD_COOKIES: 'Cookies',
-                        METHOD_TOKEN: 'Токен'
-                    })
-                })
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required("method", default=AuthMethod.YANDEX_STATION): vol.In(
+                            {
+                                AuthMethod.YANDEX_STATION: "Через компонент Yandex.Station",
+                                AuthMethod.COOKIES: "Cookies",
+                                AuthMethod.TOKEN: "Токен",
+                            }
+                        )
+                    }
+                ),
             )
 
-        if user_input['method'] == METHOD_YANDEX_STATION:
+        if user_input["method"] == AuthMethod.YANDEX_STATION:
             return await self.async_step_yandex_station()
 
-        return await self._show_form(user_input['method'])
+        return await self._show_form(user_input["method"])
 
-    async def async_step_yandex_station(self, user_input=None) -> data_entry_flow.FlowResult:
-        entries = self.hass.config_entries.async_entries('yandex_station')
+    async def async_step_yandex_station(self, user_input: ConfigType | None = None) -> FlowResult:
+        entries = self.hass.config_entries.async_entries(YANDEX_STATION_DOMAIN)
         if not entries:
-            return self.async_abort(reason='install_yandex_station')
+            return self.async_abort(reason="install_yandex_station")
 
         if user_input:
             for entry in entries:
-                if entry.entry_id == user_input['account']:
-                    return await self.async_step_token({METHOD_TOKEN: entry.data[CONF_X_TOKEN]})
+                if entry.entry_id == user_input["account"]:
+                    return await self.async_step_token({AuthMethod.TOKEN: entry.data[CONF_X_TOKEN]})
 
-        entries = {
-            entry.entry_id: entry.title
-            for entry in entries
-        }
+        accounts = {entry.entry_id: entry.title for entry in entries}
 
         return self.async_show_form(
-            step_id='yandex_station',
-            data_schema=vol.Schema({
-                vol.Required('account'): vol.In(entries),
-            }),
+            step_id="yandex_station",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("account"): vol.In(accounts),
+                }
+            ),
         )
 
-    async def async_step_cookies(self, user_input) -> data_entry_flow.FlowResult:
+    async def async_step_cookies(self, user_input: ConfigType) -> FlowResult:
         try:
-            cookies = {p['name']: p['value'] for p in json.loads(user_input[METHOD_COOKIES])}
-        except (TypeError, KeyError, json.decoder.JSONDecodeError):
-            return await self._show_form(METHOD_COOKIES, errors={'base': 'cookies.invalid_format'})
+            raw = json.loads(user_input[AuthMethod.COOKIES])
+            host = next(p["domain"] for p in raw if p["domain"].startswith(".yandex."))
+            cookies = {p["name"]: p["value"] for p in raw}
+        except (StopIteration, TypeError, KeyError, json.decoder.JSONDecodeError):
+            return await self._show_form(str(AuthMethod.COOKIES), error_code="cookies.invalid_format")
 
         try:
-            response = await self._session.login_cookies(cookies)
-        except AuthException as e:
-            _LOGGER.error(f'Ошибка авторизации: {e}')
-            return await self._show_form(METHOD_COOKIES, errors={'base': 'auth.error'})
+            x_token = await self._session.async_get_x_token(host, cookies)
+        except Exception as e:
+            return await self._show_form(str(AuthMethod.COOKIES), error_code="auth.error", error_description=str(e))
 
-        return await self._check_yandex_response(response, METHOD_COOKIES)
+        return await self.async_step_token({AuthMethod.TOKEN: x_token})
 
-    async def async_step_token(self, user_input) -> data_entry_flow.FlowResult:
-        response = await self._session.validate_token(user_input[METHOD_TOKEN])
-        return await self._check_yandex_response(response, METHOD_TOKEN)
+    async def async_step_token(self, user_input: ConfigType) -> FlowResult:
+        x_token = user_input[AuthMethod.TOKEN]
 
-    async def _show_form(self, method: str, errors: dict[str, str] | None = None) -> data_entry_flow.FlowResult:
+        try:
+            account = await self._session.async_get_account_info(x_token)
+        except Exception as e:
+            return await self._show_form(str(AuthMethod.TOKEN), error_code="auth.error", error_description=str(e))
+
+        await self.async_set_unique_id(account.display_login)
+        return self.async_create_entry(title=account.display_login, data={CONF_X_TOKEN: x_token, CONF_UID: account.uid})
+
+    async def _show_form(
+        self, step_id: str, error_code: str | None = None, error_description: str | None = None
+    ) -> FlowResult:
+        errors = {}
+        if error_code:
+            errors["base"] = error_code
+
         return self.async_show_form(
-            step_id=method,
+            step_id=step_id,
             errors=errors,
-            data_schema=vol.Schema({
-                vol.Required(method): str,
-            })
+            description_placeholders={"error_description": error_description},
+            data_schema=vol.Schema({vol.Required(step_id): str}),
         )
-
-    async def _check_yandex_response(self, response: LoginResponse, method: str) -> data_entry_flow.FlowResult:
-        if response.ok:
-            entry = await self.async_set_unique_id(response.display_login)
-            if entry:
-                self.hass.config_entries.async_update_entry(entry, data={
-                    CONF_X_TOKEN: response.x_token
-                })
-
-                return self.async_abort(reason='account_updated')
-            else:
-                config = await async_integration_yaml_config(self.hass, DOMAIN)
-                data = get_config_entry_data_from_yaml_config({
-                    CONF_X_TOKEN: response.x_token
-                }, config)
-
-                return self.async_create_entry(title=response.display_login, data=data)
-
-        elif response.error:
-            _LOGGER.error(f'Ошибка авторизации: {response.error}')
-            return await self._show_form(method, errors={'base': 'auth.error'})
-
-        raise NotImplementedError
