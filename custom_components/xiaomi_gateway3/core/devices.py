@@ -386,6 +386,7 @@ DEVICES += [{
         MathConv("pressure", "sensor", mi="0.3.85", multiply=0.01),
         BatVoltConv("battery", "sensor", mi="8.0.2008"),
         BaseConv("battery_original", mi="8.0.2001"),  # diagnostic
+        BaseConv("battery_voltage", "sensor"),  # diagnostic
     ],
 }, {
     # door window sensor
@@ -1516,6 +1517,23 @@ DEVICES += [{
         BaseConv("battery", mi="2.p.1003"),
     ],
 }, {
+    # linp.remote.k9b11
+    5481: ["Linptech", "Wireless Button", "k9b11"],
+    "spec": [  
+        # mibeacon2 spec
+        BLEMapConv("action", "sensor", mi=4097, map={"000000": BUTTON_1_SINGLE, "000001": BUTTON_1_DOUBLE, "000002": BUTTON_1_HOLD, "010000": BUTTON_2_SINGLE, "010001": BUTTON_2_DOUBLE, "010002": BUTTON_2_HOLD}),
+        BLEByteConv("battery", "sensor", mi=18435, entity=ENTITY_LAZY),  # uint8
+        # miot spec
+        ConstConv("action", mi="2.e.1", value=BUTTON_1_SINGLE),
+        ConstConv("action", mi="2.e.2", value=BUTTON_1_DOUBLE),
+        ConstConv("action", mi="2.e.3", value=BUTTON_1_HOLD),
+        ConstConv("action", mi="4.e.1", value=BUTTON_2_SINGLE),
+        ConstConv("action", mi="4.e.2", value=BUTTON_2_DOUBLE),
+        ConstConv("action", mi="4.e.3", value=BUTTON_2_HOLD),
+        BaseConv("battery", mi="3.p.1003"),        
+    ],
+    # "ttl": "6h"  # battery every 6 hours
+}, {
     6473: ["Yeelight", "Double Button", "XMWXKG01YL", "yeelink.remote.contrl"],
     "spec": [
         # miot spec
@@ -1642,6 +1660,8 @@ DEVICES += [{
 }, {
     16143: ["Linptech", "Submersion Sensor", "RS1BB", "linp.flood.rs1bb"],
     "spec": [
+        BLEMapConv("water_leak", "binary_sensor", mi=18438, map={"00": False, "01": True}),
+        BLEByteConv("battery", "sensor", mi=19459),
         BaseConv("water_leak", "binary_sensor", mi="2.p.1006"),  # bool
         BaseConv("battery", "sensor", mi="3.p.1003"),  # uint8
     ],
@@ -2621,6 +2641,61 @@ DEVICES += [{
         ConstConv("action", mi="7.e.2", value=BUTTON_2_SINGLE),
     ],
 }, {
+    15658: ["Linptech", "Single Wall Switch QT1", "linp.switch.qt1db1"],
+    "spec": [
+        BaseConv("switch", "switch", mi="2.p.1"),
+        BoolConv("wireless", "switch", mi="2.p.2"),
+        BaseConv("led", "switch", mi="11.p.1"),
+        BaseConv("action", "sensor"),
+        MapConv("touch", "select", mi="12.p.1", map={0: "Off", 1: "Low", 2:"Medium", 3:"High"}),
+        ConstConv("action", mi="3.e.1", value=BUTTON_SINGLE),  
+    ],
+}, {
+    15659: ["Linptech", "Double Wall Switch QT1", "linp.switch.qt1db2"],
+    "spec": [
+        BaseConv("channel_1", "switch", mi="2.p.1"),
+        BaseConv("channel_2", "switch", mi="3.p.1"),
+        BoolConv("wireless_1", "switch", mi="2.p.2"),
+        BoolConv("wireless_2", "switch", mi="3.p.2"),
+        BaseConv("led", "switch", mi="11.p.1"),
+        BaseConv("action", "sensor"),
+        MapConv("touch", "select", mi="12.p.1", map={0: "Off", 1: "Low", 2:"Medium", 3:"High"}),
+        ConstConv("action", mi="4.e.1", value=BUTTON_1_SINGLE),
+        ConstConv("action", mi="5.e.1", value=BUTTON_2_SINGLE),
+    ],
+}, {
+    15660: ["Linptech", "Triple Wall Switch QT1", "linp.switch.qt1db3"],
+    "spec": [
+        BaseConv("channel_1", "switch", mi="2.p.1"),
+        BaseConv("channel_2", "switch", mi="3.p.1"),
+        BaseConv("channel_3", "switch", mi="4.p.1"),
+        BoolConv("wireless_1", "switch", mi="2.p.2"),
+        BoolConv("wireless_2", "switch", mi="3.p.2"),
+        BoolConv("wireless_3", "switch", mi="4.p.2"),
+        BaseConv("led", "switch", mi="11.p.1"),
+        BaseConv("action", "sensor"),
+        MapConv("touch", "select", mi="12.p.1", map={0: "Off", 1: "Low", 2:"Medium", 3:"High"}),
+        ConstConv("action", mi="5.e.1", value=BUTTON_1_SINGLE),
+        ConstConv("action", mi="6.e.1", value=BUTTON_2_SINGLE),
+        ConstConv("action", mi="7.e.1", value=BUTTON_3_SINGLE),
+    ],
+}, {
+    15661: ["Linptech", "Quadruple Wall Switch QT1", "linp.switch.qt1db4"],
+    "spec": [
+        BaseConv("channel_1", "switch", mi="2.p.1"),
+        BaseConv("channel_2", "switch", mi="3.p.1"),
+        BaseConv("channel_3", "switch", mi="4.p.1"),
+        BaseConv("channel_4", "switch", mi="5.p.1"),
+        BoolConv("wireless_1", "switch", mi="2.p.2"),
+        BoolConv("wireless_2", "switch", mi="3.p.2"),
+        BoolConv("wireless_3", "switch", mi="4.p.2"),
+        BoolConv("wireless_4", "switch", mi="5.p.2"),
+        BaseConv("led", "switch", mi="11.p.1"),
+        BaseConv("action", "sensor"),
+        MapConv("action", mi="6.e.1.p.1", map={1: BUTTON_1_SINGLE, 2: BUTTON_2_SINGLE, 3: BUTTON_3_SINGLE, 4: BUTTON_4_SINGLE}),
+        MapConv("touch", "select", mi="12.p.1", map={0: "Off", 1: "Low", 2:"Medium", 3:"High"}),
+    ],
+}, {
     2274: ["Linptech", "Lingpu Triple Wall Switch", "linp.switch.q3s3"],
     "spec": [
         BaseConv("channel_1", "switch", mi="2.p.1"),
@@ -3171,6 +3246,17 @@ DEVICES += [{
         MapConv("action", mi="5.e.2.p.2", map={1: BUTTON_1_DOUBLE, 2: BUTTON_2_DOUBLE, 3: BUTTON_3_DOUBLE, 4: BUTTON_BOTH_DOUBLE}),
         MapConv("action", mi="5.e.3.p.2", map={1: BUTTON_1_HOLD, 2: BUTTON_2_HOLD, 3: BUTTON_3_HOLD, 4: BUTTON_BOTH_HOLD}),
     ]
+}, {
+    12261: ["Lingju", "Bluetooth Mesh Switch", "linju.switch.sw0a01"],
+    "spec": [
+        BaseConv("switch", "switch", mi="2.p.1"),  # bool
+        MapConv("power_on_state", "select", mi="2.p.2", map={0: "default", 1: "on", 2: "off"}),
+        BoolConv("led", "switch", mi="3.p.2"),
+        MapConv("interactive_switch", "select", mi="3.p.3", map={1: "control", 2: "decontrol"}, entity=ENTITY_CONFIG),
+        BoolConv("flex_switch", "switch", mi="3.p.4", entity=ENTITY_CONFIG),
+        MapConv("icon_style", "select", mi="3.p.5", map={0: "Lamp-bulb", 1: "Cylindrical-spotlight", 2: "Ceiling-light", 3: "Hanging-lamp", 4: "Lamp-belt", 5: "Small-electric-appliance", 6: "Socket", 7: "Valve", 8: "Electrical-machinery"}, entity=ENTITY_CONFIG),
+        BoolConv("pilot_switch", "switch", mi="3.p.6", entity=ENTITY_CONFIG),
+    ],
 }, {
     "default": "mesh",  # default Mesh device
     "spec": [
