@@ -65,6 +65,9 @@ logger:
       - ".* UserWarning: python-telegram-bot is using upstream urllib3. .*"
     homeassistant.helpers.translation:
       - "Validation of translation placeholders for localized .*"
+    homeassistant.components.sensor:
+      - "Error adding entity sensor\\.ficus_benjamina.*"
+      - "Error adding entity sensor\\.poinsettias.*"
 
 system_log:
   max_entries: 50
