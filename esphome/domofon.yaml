@@ -56,7 +56,8 @@ logger:
     light: INFO
 
 ota:
-  password: $ota_password
+  - platform: esphome
+    password: $ota_password
 
 # Blue status led
 #status_led:

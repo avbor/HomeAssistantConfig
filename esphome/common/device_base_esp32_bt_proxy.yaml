@@ -16,7 +16,8 @@ api:
   reboot_timeout: 5min
 
 ota:
-  password: !secret esphome_ota_password
+  - platform: esphome
+    password: !secret esphome_ota_password
 
 time:
   - platform: homeassistant
