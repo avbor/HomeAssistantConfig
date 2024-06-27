@@ -1,0 +1,38 @@
+esphome:
+  name: ${board_name}
+
+esp8266:
+  board: ${esp_board}
+
+captive_portal:
+
+logger:
+  baud_rate: 0
+
+api:
+  encryption:
+    key: !secret esphome_api_key
+  reboot_timeout: 5min
+
+ota:
+  - platform: esphome
+    password: !secret esphome_ota_password
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+sensor:
+  - platform: wifi_signal
+    name: ${board_name} RSSI
+    update_interval: 60s
+    internal: false
+
+binary_sensor:
+  - platform: status
+    name: ${board_name} Status
+    internal: false
+
+button:
+  - platform: restart
+    name: ${board_name} Restart

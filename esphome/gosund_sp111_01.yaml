@@ -1,6 +1,5 @@
 substitutions:
   board_name: gosund_sp111_01
-  esp_platform: ESP8266
   esp_board: esp8285
   room_name: Country House
   # Higher value gives lower watt readout
@@ -10,10 +9,13 @@ substitutions:
 
 packages:
   wifi: !include common/wifi_ch.yaml
-  device_base: !include common/device_base.yaml
+  device_base: !include common/device_base_8266.yaml
 
 wifi:
   use_address: 192.168.10.123
+
+esp8266:
+  restore_from_flash: True
 
 web_server:
   port: 80
@@ -87,6 +89,7 @@ switch:
   - platform: gpio
     pin: GPIO15
     id: relay
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: template
     name: "${board_name} Switch"

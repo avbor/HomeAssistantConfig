@@ -1,16 +1,18 @@
 substitutions:
   board_name: sonoff_basic_04
-  esp_platform: ESP8266
   esp_board: esp01_1m
   room_name: Country House
 
 packages:
   wifi: !include common/wifi_ch.yaml
-  device_base: !include common/device_base.yaml
+  device_base: !include common/device_base_8266.yaml
 
-esphome:
-  on_boot:
-    - switch.turn_off: button_sw
+esp8266:
+  restore_from_flash: True
+
+#esphome:
+#  on_boot:
+#    - switch.turn_off: button_sw
 
 wifi:
   use_address: 192.168.10.117
@@ -34,7 +36,8 @@ switch:
   - platform: gpio
     id: relay
     pin: GPIO12
-    restore_mode: ALWAYS_OFF
+    #restore_mode: ALWAYS_OFF
+    restore_mode: RESTORE_DEFAULT_OFF
 
   # Template switch for button
   - platform: template
