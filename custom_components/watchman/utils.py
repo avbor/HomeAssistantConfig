@@ -1,5 +1,6 @@
 """Miscellaneous support functions for watchman"""
-import glob
+
+import anyio
 import re
 import fnmatch
 import time
@@ -58,12 +59,12 @@ def get_config(hass: HomeAssistant, key, default):
     return hass.data[DOMAIN_DATA].get(key, default)
 
 
-def get_report_path(hass, path):
+async def async_get_report_path(hass, path):
     """if path not specified, create report in config directory with default filename"""
     if not path:
         path = hass.config.path(DEFAULT_REPORT_FILENAME)
     folder, _ = os.path.split(path)
-    if not os.path.exists(folder):
+    if not await anyio.Path(folder).exists():
         raise HomeAssistantError(f"Incorrect report_path: {path}.")
     return path
 
@@ -147,16 +148,25 @@ def text_renderer(hass, entry_type):
         return f"Text render error: unknown entry type: {entry_type}"
 
 
-def get_next_file(folder_list, ignored_files):
+async def async_get_next_file(folder_tuples, ignored_files):
     """Returns next file for scan"""
     if not ignored_files:
         ignored_files = ""
     else:
         ignored_files = "|".join([f"({fnmatch.translate(f)})" for f in ignored_files])
     ignored_files_re = re.compile(ignored_files)
-    for folder in folder_list:
-        for filename in glob.iglob(folder, recursive=True):
-            yield (filename, (ignored_files and ignored_files_re.match(filename)))
+    for folder_name, glob_pattern in folder_tuples:
+        _LOGGER.debug(
+            "Scan folder %s with pattern %s for configuration files",
+            folder_name,
+            glob_pattern,
+        )
+        async for filename in anyio.Path(folder_name).glob(glob_pattern):
+            _LOGGER.debug("Found file %s.", filename)
+            yield (
+                str(filename),
+                (ignored_files and ignored_files_re.match(str(filename))),
+            )
 
 
 def add_entry(_list, entry, yaml_file, lineno):
@@ -231,7 +241,7 @@ def check_entitites(hass):
     return entities_missing
 
 
-def parse(hass, folders, ignored_files, root=None):
+async def parse(hass, folders, ignored_files, root=None):
     """Parse a yaml or json file for entities/services"""
     files_parsed = 0
     entity_pattern = re.compile(
@@ -247,7 +257,7 @@ def parse(hass, folders, ignored_files, root=None):
     service_list = {}
     effectively_ignored = []
     _LOGGER.debug("::parse started")
-    for yaml_file, ignored in get_next_file(folders, ignored_files):
+    async for yaml_file, ignored in async_get_next_file(folders, ignored_files):
         short_path = os.path.relpath(yaml_file, root)
         if ignored:
             effectively_ignored.append(short_path)
@@ -255,19 +265,24 @@ def parse(hass, folders, ignored_files, root=None):
             continue
 
         try:
-            for i, line in enumerate(open(yaml_file, encoding="utf-8")):
-                line = re.sub(comment_pattern, "", line)
-                for match in re.finditer(entity_pattern, line):
-                    typ, val = match.group(1), match.group(2)
-                    if (
-                        typ != "service:"
-                        and "*" not in val
-                        and not val.endswith(".yaml")
-                    ):
-                        add_entry(entity_list, val, short_path, i + 1)
-                for match in re.finditer(service_pattern, line):
-                    val = match.group(1)
-                    add_entry(service_list, val, short_path, i + 1)
+            lineno = 1
+            async with await anyio.open_file(
+                yaml_file, mode="r", encoding="utf-8"
+            ) as f:
+                async for line in f:
+                    line = re.sub(comment_pattern, "", line)
+                    for match in re.finditer(entity_pattern, line):
+                        typ, val = match.group(1), match.group(2)
+                        if (
+                            typ != "service:"
+                            and "*" not in val
+                            and not val.endswith(".yaml")
+                        ):
+                            add_entry(entity_list, val, short_path, lineno)
+                    for match in re.finditer(service_pattern, line):
+                        val = match.group(1)
+                        add_entry(service_list, val, short_path, lineno)
+                    lineno += 1
             files_parsed += 1
             _LOGGER.debug("%s parsed", yaml_file)
         except OSError as exception:
@@ -312,9 +327,9 @@ def fill(data, width, extra=None):
     )
 
 
-def report(hass, render, chunk_size, test_mode=False):
+async def report(hass, render, chunk_size, test_mode=False):
     """generates watchman report either as a table or as a list"""
-    if not DOMAIN in hass.data:
+    if DOMAIN not in hass.data:
         raise HomeAssistantError("No data for report, refresh required.")
 
     start_time = time.time()
@@ -354,7 +369,11 @@ def report(hass, render, chunk_size, test_mode=False):
         rep += "your config are available!\n"
     else:
         rep += "\n-== No entities found in configuration files!\n"
-    timezone = pytz.timezone(hass.config.time_zone)
+
+    def get_timezone(hass):
+        return pytz.timezone(hass.config.time_zone)
+
+    timezone = await hass.async_add_executor_job(get_timezone, hass)
 
     if not test_mode:
         report_datetime = datetime.now(timezone).strftime("%d %b %Y %H:%M:%S")
