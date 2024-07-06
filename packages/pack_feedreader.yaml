@@ -4,13 +4,13 @@
 
 feedreader_pack:
 
-  feedreader:
-    scan_interval:
-      minutes: 15
-    urls:
-      - https://www.home-assistant.io/atom.xml
-      - https://alerts.home-assistant.io/feed.xml
-      - https://moscow.mchs.gov.ru/deyatelnost/press-centr/operativnaya-informaciya/shtormovye-i-ekstrennye-preduprezhdeniya/rss
+#  feedreader:
+#    scan_interval:
+#      minutes: 15
+#    urls:
+#      - https://www.home-assistant.io/atom.xml
+#      - https://alerts.home-assistant.io/feed.xml
+#      - https://moscow.mchs.gov.ru/deyatelnost/press-centr/operativnaya-informaciya/shtormovye-i-ekstrennye-preduprezhdeniya/rss
 
   automation:
 
