@@ -12,27 +12,27 @@
       {% else %}Unavailable
       {% endif %}
 
-  - name: OpenWeatherMap Moskva Danilovskii Pressure mmhg
-    unique_id: 66af03e7-f2c7-4287-84db-93172c77a58c
-    unit_of_measurement: mmHg
-    state: >
-      {% set pressure = states('sensor.openweathermap_moskva_danilovskii_pressure') | float(default=-1) %}
-      {% if pressure != -1 and (((states('sensor.openweathermap_moskva_danilovskii_pressure') | float(0)) / 1.333) | round(2)) > 500 %}
-      {{ ((states('sensor.openweathermap_moskva_danilovskii_pressure') | float(0)) / 1.333) | round(2) }}
-      {% else %}
-      {{ states('sensor.openweathermap_moskva_danilovskii_pressure_mmhg') }}
-      {% endif %}
+#  - name: OpenWeatherMap Moskva Danilovskii Pressure mmhg
+#    unique_id: 66af03e7-f2c7-4287-84db-93172c77a58c
+#    unit_of_measurement: mmHg
+#    state: >
+#      {% set pressure = states('sensor.openweathermap_moskva_danilovskii_pressure') | float(default=-1) %}
+#      {% if pressure != -1 and (((states('sensor.openweathermap_moskva_danilovskii_pressure') | float(0)) / 1.333) | round(2)) > 500 %}
+#      {{ ((states('sensor.openweathermap_moskva_danilovskii_pressure') | float(0)) / 1.333) | round(2) }}
+#      {% else %}
+#      {{ states('sensor.openweathermap_moskva_danilovskii_pressure_mmhg') }}
+#      {% endif %}
 
-  - name: OpenWeatherMap Stupino Nivki-2 Pressure mmhg
-    unique_id: 4f571e6a-19a5-44be-b9d8-0d8041a9afb1
-    unit_of_measurement: mmHg
-    state: >
-      {% set pressure = states('sensor.openweathermap_stupino_nivki_2_pressure') | float(default=-1) %}
-      {% if pressure != -1 and (((states('sensor.openweathermap_stupino_nivki_2_pressure') | float(0)) / 1.333) | round(2)) > 500 %}
-      {{ ((states('sensor.openweathermap_stupino_nivki_2_pressure') | float(0)) / 1.333) | round(2) }}
-      {% else %}
-      {{ states('sensor.openweathermap_stupino_nivki_2_pressure_mmhg') }}
-      {% endif %}
+#  - name: OpenWeatherMap Stupino Nivki-2 Pressure mmhg
+#    unique_id: 4f571e6a-19a5-44be-b9d8-0d8041a9afb1
+#    unit_of_measurement: mmHg
+#    state: >
+#      {% set pressure = states('sensor.openweathermap_stupino_nivki_2_pressure') | float(default=-1) %}
+#      {% if pressure != -1 and (((states('sensor.openweathermap_stupino_nivki_2_pressure') | float(0)) / 1.333) | round(2)) > 500 %}
+#      {{ ((states('sensor.openweathermap_stupino_nivki_2_pressure') | float(0)) / 1.333) | round(2) }}
+#      {% else %}
+#      {{ states('sensor.openweathermap_stupino_nivki_2_pressure_mmhg') }}
+#      {% endif %}
 
   - name: HA Uptime Text
     unique_id: 8dda36db-5b01-4164-a8cd-11af6c36922a

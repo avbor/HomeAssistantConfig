@@ -141,5 +141,5 @@ cards:
         content: >
           ### <center>Погода</center>
       - type: weather-forecast
-        entity: weather.openweathermap_stupino_nivki_2
+        entity: weather.yandex_weather_nivki_2
         name: Нивки-2
