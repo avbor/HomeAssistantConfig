@@ -202,7 +202,9 @@ zha:
   zigpy_config:
     ota:
       otau_directory: /config/zigpy_ota
-      ikea_provider: true
+      extra_providers:
+        - type: ikea
+        - type: z2m
   device_config:
     00:15:8d:00:05:4e:ac:c7-1:
       type: "switch"
