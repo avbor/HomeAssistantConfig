@@ -10,7 +10,7 @@ common_light_pack:
     - trigger:
         - platform: state
           entity_id:
-            - sensor.lumi_lumi_sen_ill_mgl01_illuminance
+            - sensor.xiaomi_lumi_sen_ill_mgl01_illuminance_2
           not_to:
             - unavailable
             - unknown
@@ -24,7 +24,7 @@ common_light_pack:
           icon: mdi:sun-wireless-outline
           state: >-
             {% if trigger.to_state.state != trigger.from_state.state %}
-              {{ states('sensor.lumi_lumi_sen_ill_mgl01_illuminance') }}
+              {{ states('sensor.xiaomi_lumi_sen_ill_mgl01_illuminance_2') }}
             {% endif %}
 
   # Automations

@@ -295,10 +295,10 @@ cards:
       - type: markdown
         content: >
           ### <center>Спальня</center>
-      - type: entities
-        entities:
-          - entity: sensor.xiaomi_lumi_sen_ill_mgl01_illuminance_2
-            name: []
+#      - type: entities
+#        entities:
+#          - entity: sensor.xiaomi_lumi_sen_ill_mgl01_illuminance_2
+#            name: []
       - type: horizontal-stack
         cards:
           - type: conditional
