@@ -64,7 +64,7 @@ cards:
               - entity: sensor.supervisor_updates
                 name: "Обновления Add-ons"
                 icon: mdi:view-module
-              - entity: sensor.hacs
+              - entity: sensor.hacs_updates_count
                 name: "Обновления HACS"
       - type: custom:vertical-stack-in-card
         cards:

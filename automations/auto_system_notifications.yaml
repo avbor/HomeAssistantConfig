@@ -248,22 +248,78 @@
       data_template:
         message: "_INFO:_ Доступна новая версия Supervisor ({{ state_attr('sensor.supervisor_updates', 'newest_version') }})"
 
-- alias: "HACS: New Component Version Available [notify to group system]"
-  id: 4bc5609a-1e8b-4e66-944a-e613bcaad6d2
+#- alias: "HACS: New Component Version Available [notify to group system]"
+#  id: 4bc5609a-1e8b-4e66-944a-e613bcaad6d2
+#  trigger:
+#    platform: state
+#    entity_id: sensor.hacs
+#  condition:
+#    - condition: template
+#      value_template: "{{ (states('sensor.hacs') | int) > 0 }}"
+#  action:
+#    service: notify.telegram_group_system
+#    data_template:
+#      message: |
+#        _INFO:_ Доступны новые версии Custom Components (HACS) ({{ states('sensor.hacs') }}):
+#        {%- for repo in state_attr('sensor.hacs', 'repositories') %}
+#        {{ repo.display_name }} (_{{ repo.installed_version }}_ -> _{{ repo.available_version }}_){% if not loop.last %}, {% endif %}
+#        {%- endfor -%}
+
+- alias: "HA: Update Entities Notifications"
+  id: d69b4310-532c-4cda-9a77-3434e6319fef
+  mode: queued
+  max: 30
+  max_exceeded: silent
   trigger:
-    platform: state
-    entity_id: sensor.hacs
+    - platform: event
+      event_type: state_changed
   condition:
-    - condition: template
-      value_template: "{{ (states('sensor.hacs') | int) > 0 }}"
+    - "{{ trigger.event.data.entity_id.startswith('update.') }}"
+    - "{{ trigger.event.data.old_state is not none and trigger.event.data.new_state is not none }}"
+    - or:
+        - condition: template
+          value_template: >
+            {% set ignore = ['unknown', 'unavailable', 'none', None, null, ''] %}
+              {{ 
+                trigger.event.data.new_state.state == 'on' and
+                (version(trigger.event.data.new_state.attributes.latest_version) != version(trigger.event.data.old_state.attributes.latest_version) or
+                version(trigger.event.data.new_state.attributes.latest_version) > version(trigger.event.data.old_state.attributes.latest_version)) and
+                trigger.event.data.new_state.attributes.latest_version not in ignore and
+                trigger.event.data.new_state.attributes.latest_version is not none
+              }}
+        - condition: template
+          value_template: >
+            {% set ignore = ['unknown', 'unavailable', 'none', None, null, ''] %}
+              {{ 
+                trigger.event.data.old_state.state == 'on' and trigger.event.data.new_state.state == 'off' and
+                (version(trigger.event.data.new_state.attributes.installed_version) != version(trigger.event.data.old_state.attributes.installed_version) or
+                version(trigger.event.data.new_state.attributes.installed_version) > version(trigger.event.data.old_state.attributes.installed_version)) and
+                trigger.event.data.new_state.attributes.installed_version not in ignore and
+                trigger.event.data.new_state.attributes.installed_version is not none
+              }}
   action:
-    service: notify.telegram_group_system
-    data_template:
-      message: |
-        _INFO:_ Доступны новые версии Custom Components (HACS) ({{ states('sensor.hacs') }}):
-        {%- for repo in state_attr('sensor.hacs', 'repositories') %}
-        {{ repo.display_name }} (_{{ repo.installed_version }}_ -> _{{ repo.available_version }}_){% if not loop.last %}, {% endif %}
-        {%- endfor -%}
+    - variables:
+        latest_version: "{{ trigger.event.data.new_state.attributes.latest_version }}"
+        installed_version: "{{ state_attr(trigger.event.data.entity_id, 'installed_version') }}"
+        old_installed_version: "{{ trigger.event.data.old_state.attributes.installed_version }}"
+        friendlyname: "{{- regex_replace('( Update$| Firmware$| Обновление прошивки$)', '', True) -}}"
+    - if:
+        - condition: template
+          value_template: "{{ trigger.event.data.new_state.attributes.installed_version != trigger.event.data.old_state.attributes.installed_version }}"
+      then:
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            parse_mode: html
+            message: |
+              <i>INFO:</i> <b>{{ friendlyname }}</b> обновлен (<i>{{ old_installed_version }}</i> -> <i>{{ latest_version }}</i>).
+      else:
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_system
+            parse_mode: html
+            message: |
+              <i>INFO:</i> <b>{{ friendlyname }}</b> доступно обновление (_{{ installed_version }}_ -> _{{ latest_version }}_).
 
 - alias: "Device Needs Attention [notify to group system]"
   id: 89bb378c-13b5-4051-bd08-3f226dbc8834

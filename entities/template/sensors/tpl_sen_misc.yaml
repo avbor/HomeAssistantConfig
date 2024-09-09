@@ -123,3 +123,9 @@
     icon: mdi:weather-sunny
     state: >-
       {{ state_attr('sensor.home_sun_daylight', 'tomorrow_hms') }}
+
+  - name: HACS Updates Count
+    unique_id: bab4cbb0-10fc-4445-9938-b180fcd8f4d9
+    icon: hacs:hacs
+    state: >-
+      {{ integration_entities("hacs") | select("match", "update\\.") | select("is_state", "on") | list | count }}
