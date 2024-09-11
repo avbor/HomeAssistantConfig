@@ -302,7 +302,7 @@
         latest_version: "{{ trigger.event.data.new_state.attributes.latest_version }}"
         installed_version: "{{ state_attr(trigger.event.data.entity_id, 'installed_version') }}"
         old_installed_version: "{{ trigger.event.data.old_state.attributes.installed_version }}"
-        friendlyname: "{{- regex_replace('( Update$| Firmware$| Обновление прошивки$)', '', True) -}}"
+        friendlyname: "{{- trigger.event.data.new_state.name | regex_replace('( Update$| Firmware$| Обновление прошивки$)', '', True) -}}"
     - if:
         - condition: template
           value_template: "{{ trigger.event.data.new_state.attributes.installed_version != trigger.event.data.old_state.attributes.installed_version }}"
@@ -312,14 +312,14 @@
             target: !secret tlg_group_system
             parse_mode: html
             message: |
-              <i>INFO:</i> <b>{{ friendlyname }}</b> обновлен (<i>{{ old_installed_version }}</i> -> <i>{{ latest_version }}</i>).
+              <i>INFO:</i> <b>{{ friendlyname }}</b> - обновлен (<i>{{ old_installed_version }}</i> -> <i>{{ latest_version }}</i>).
       else:
         - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_system
             parse_mode: html
             message: |
-              <i>INFO:</i> <b>{{ friendlyname }}</b> доступно обновление (_{{ installed_version }}_ -> _{{ latest_version }}_).
+              <i>INFO:</i> <b>{{ friendlyname }}</b> - доступно обновление (<i>{{ installed_version }}</i> -> <i>{{ latest_version }}</i>).
 
 - alias: "Device Needs Attention [notify to group system]"
   id: 89bb378c-13b5-4051-bd08-3f226dbc8834
