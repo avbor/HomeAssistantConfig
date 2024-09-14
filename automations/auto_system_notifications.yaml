@@ -217,36 +217,35 @@
     data_template:
       message: "_INFO:_ Доступна новая версия Home Assistant OS ({{ states('sensor.home_assistant_operating_system_newest_version') }})"
 
-- alias: "HASSIO: New Addons Update Available [notify to group system]"
-  id: 19295cc3-b128-4b64-925a-ffde2688cf9c
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.updater_addons
-      from: "off"
-      to: "on"
-  condition:
-    - condition: template
-      value_template: "{{ states('sensor.supervisor_updates') | int > 0 }}"
-  action:
-    - service: notify.telegram_group_system
-      data_template:
-        message: |
-          _INFO:_ Доступны новые версии Add-ons (Supervisor) ({{ states('sensor.supervisor_updates') }}):
-          {%- for repo in state_attr('sensor.supervisor_updates', 'addons') %}
-          {{ repo.name }} (_{{ repo.version }}_ -> _{{ repo.version_latest }}_){% if not loop.last %}, {% endif %}
-          {%- endfor -%}
+#- alias: "HASSIO: New Addons Update Available [notify to group system]"
+#  id: 19295cc3-b128-4b64-925a-ffde2688cf9c
+#  trigger:
+#    - platform: state
+#      entity_id: binary_sensor.updater_addons
+#      from: "off"
+#      to: "on"
+#  condition:
+#    - condition: template
+#      value_template: "{{ states('sensor.supervisor_updates') | int > 0 }}"
+#  action:
+#    - service: notify.telegram_group_system
+#      data_template:
+#        message: |
+#          _INFO:_ Доступны новые версии Add-ons (Supervisor) ({{ states('sensor.supervisor_updates') }}):
+#          {%- for repo in state_attr('sensor.supervisor_updates', 'addons') %}
+#          {{ repo.name }} (_{{ repo.version }}_ -> _{{ repo.version_latest }}_){% if not loop.last %}, {% endif %}
+#          {%- endfor -%}
 
-- alias: "HASSIO: New Supervisor Version Available [notify to group system]"
-  id: 80b629d2-3441-467b-ad60-dd49de9f8703
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.updater_supervisor
-      from: "off"
-      to: "on"
-  action:
-    - service: notify.telegram_group_system
-      data_template:
-        message: "_INFO:_ Доступна новая версия Supervisor ({{ state_attr('sensor.supervisor_updates', 'newest_version') }})"
+#- alias: "HASSIO: New Supervisor Version Available [notify to group system]"
+#  id: 80b629d2-3441-467b-ad60-dd49de9f8703
+#  trigger:
+#    - platform: state
+#     from: "off"
+#      to: "on"
+#  action:
+#    - service: notify.telegram_group_system
+#      data_template:
+#        message: "_INFO:_ Доступна новая версия Supervisor ({{ state_attr('sensor.supervisor_updates', 'newest_version') }})"
 
 #- alias: "HACS: New Component Version Available [notify to group system]"
 #  id: 4bc5609a-1e8b-4e66-944a-e613bcaad6d2
