@@ -6,12 +6,18 @@ substitutions:
 
 packages:
   wifi: !include common/wifi_ch.yaml
-  device_base: !include common/device_base.yaml
+  device_base: !include common/device_base_8266.yaml
+
+esp8266:
+  restore_from_flash: True
 
 esphome:
   on_boot:
     then:
-      - switch.turn_off: relay
+      - switch.turn_off: button_switch
+
+wifi:
+  use_address: 192.168.10.149
 
 web_server:
   port: 80
@@ -62,10 +68,10 @@ switch:
     turn_off_action:
       - switch.turn_off: relay
 
-status_led:
-  pin:
-    number: GPIO13
-    inverted: true
+#status_led:
+#  pin:
+#    number: GPIO13
+#    inverted: true
 
 output:
   - platform: esp8266_pwm

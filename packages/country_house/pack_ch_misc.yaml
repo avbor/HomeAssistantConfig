@@ -86,6 +86,8 @@ ch_misc_pack:
             value_template: "{{ is_state('climate.country_house_kids_rooms', 'heat') }}"
           - condition: template
             value_template: "{{ is_state('light.dacha_dvor', 'on') }}"
+          - condition: template
+            value_template: "{{ is_state('light.dacha_parkovka', 'on') }}"
       action:
         - service: telegram_bot.send_message
           data:
@@ -102,6 +104,8 @@ ch_misc_pack:
               {% if is_state('climate.country_house_kids_rooms', 'heat') %}Обогреватель в детской
               {% endif -%}
               {% if is_state('light.dacha_dvor', 'on') %}Освещение двора
+              {% endif -%}
+              {% if is_state('light.dacha_parkovka', 'on') %}Освещение парковки
               {% endif -%}
             inline_keyboard:
               - 'Выключить:/ch_turn_off_all_when_leave'
@@ -145,6 +149,12 @@ ch_misc_pack:
               - service: light.turn_off
                 target:
                   entity_id: light.dacha_dvor
+          - if:
+              - "{{ is_state('light.dacha_parkovka', 'on') }}"
+            then:
+              - service: light.turn_off
+                target:
+                  entity_id: light.dacha_parkovka
         - service: telegram_bot.answer_callback_query
           data_template:
             callback_query_id: '{{ trigger.event.data.id }}'

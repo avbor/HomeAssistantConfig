@@ -63,11 +63,34 @@ cards:
       - type: markdown
         content: >
           ### <center>Свет</center>
-      - type: entities
-        entities:
-          - entity: light.dacha_dvor
-            name: Освещение двора
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: light.dacha_parkovka
+            name: Парковка
             icon: mdi:light-flood-down
+            #hide_state: true
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+          - type: tile
+            entity: light.dacha_dvor
+            name: Двор
+            icon: mdi:light-flood-down
+            #hide_state: true
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+#      - type: entities
+#        entities:
+#          - entity: light.dacha_parkovka
+#            name: Освещение парковки
+#            icon: mdi:light-flood-down
+#          - entity: light.dacha_dvor
+#            name: Освещение двора
+#            icon: mdi:light-flood-down
   # Напряжение в сети
   - type: vertical-stack
     cards:
