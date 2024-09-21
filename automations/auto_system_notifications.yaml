@@ -267,7 +267,7 @@
 - alias: "HA: Update Entities Notifications"
   id: d69b4310-532c-4cda-9a77-3434e6319fef
   mode: queued
-  max: 30
+  max: 50
   max_exceeded: silent
   trigger:
     - platform: event
