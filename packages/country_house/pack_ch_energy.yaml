@@ -512,7 +512,7 @@ ch_energy_pack:
     socket_ch_water_pump_energy_daily:
       unique_id: fdd4ae5c-8671-4785-a1f5-664270929cdb
       name: Water Pump Daily Energy
-      source: sensor.gosund_sp111_11_todays_usage
+      source: sensor.sonoff_pow_r3_02_total_daily_energy
       cycle: daily
       tariffs:
         - total
@@ -520,7 +520,7 @@ ch_energy_pack:
     socket_ch_water_pump_energy_monthly:
       unique_id: e1d44185-e5fb-40ae-a7fb-67048f72baaa
       name: Water Pump Monthly Energy
-      source: sensor.gosund_sp111_11_todays_usage
+      source: sensor.sonoff_pow_r3_02_total_daily_energy
       cycle: monthly
       tariffs:
         - total

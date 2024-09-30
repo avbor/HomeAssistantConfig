@@ -35,17 +35,17 @@ ch_misc_pack:
           entity_id: switch.gosund_sp111_01_switch
           from: "off"
           to: "on"
-      condition: "{{ is_state('switch.gosund_sp111_11_switch', 'off') }}"
+      condition: "{{ is_state('switch.sonoff_pow_r3_02', 'off') }}"
       action:
         - service: switch.turn_on
           target:
-            entity_id: switch.gosund_sp111_11_switch
+            entity_id: switch.sonoff_pow_r3_02
 
     - alias: Дача - Насос - Оповещение о состоянии
       id: 5db218dd-eef9-45ab-aa9f-f9e814fdfe62
       trigger:
         - platform: state
-          entity_id: switch.gosund_sp111_11_switch
+          entity_id: switch.sonoff_pow_r3_02
           not_from:
             - unavailable
             - unknown

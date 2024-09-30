@@ -40,15 +40,26 @@ cards:
           ### <center>Розетки</center>
       - type: entities
         entities:
-          - entity: switch.gosund_sp111_11_switch
+          - entity: switch.sonoff_pow_r3_02
             name: Насос
             icon: mdi:water-pump
-          - entity: sensor.gosund_sp111_11_watt
+          - entity: sensor.sonoff_pow_r3_02_power
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             entities:
-              - entity: sensor.gosund_sp111_11_ampere
+              - entity: sensor.sonoff_pow_r3_02_current
+                name: false
+          - entity: switch.sonoff_pow_r3_01
+            name: Септик
+            #icon: mdi:toilet
+            icon: mdi:biohazard
+          - entity: sensor.sonoff_pow_r3_01_power
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.sonoff_pow_r3_01_current
                 name: false
           - entity: switch.gosund_sp111_01_switch
             name: Бойлер

@@ -7,5 +7,5 @@
   - name: CH Water Pump Status
     unique_id: dc675ac6-f4d0-4f64-b575-adf974639020
     device_class: power
-    state: "{{ (states('sensor.gosund_sp111_11_watt') | float(0)) > 1000 }}"
+    state: "{{ (states('sensor.sonoff_pow_r3_02_power') | float(0)) > 1000 }}"
     icon: mdi:water-pump

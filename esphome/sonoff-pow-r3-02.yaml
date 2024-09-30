@@ -2,7 +2,7 @@ substitutions:
   esp_board: nodemcu-32s
   board_name: sonoff-pow-r3-02
   room_name: Country House
-  cse7766_update_interval: 5s
+  cse7766_update_interval: 2s
 
 packages:
   wifi: !include common/wifi_ch.yaml
@@ -12,8 +12,8 @@ esp32:
   framework:
     type: esp-idf
 
-#wifi:
-#  use_address: 192.168.10.149
+wifi:
+  use_address: 192.168.10.154
 
 web_server:
   port: 80
@@ -21,7 +21,8 @@ web_server:
 improv_serial: !remove
 
 logger:
-  baud_rate: 0
+  level: INFO
+  #baud_rate: 0
 
 uart:
   rx_pin: GPIO16
@@ -76,9 +77,9 @@ sensor:
 #    id: power_factor
 #    lambda: return id(w_sensor).state / id(v_sensor).state / id(a_sensor).state;
 
-  - platform: esp32_hall
-    name: ${board_name} ESP32 Hall Sensor
-    update_interval: 60s
+#  - platform: esp32_hall
+#    name: ${board_name} ESP32 Hall Sensor
+#    update_interval: 60s
 
 binary_sensor:
   - platform: gpio
@@ -163,14 +164,8 @@ switch:
     on_turn_off:
       - delay: 500ms
       - light.turn_off: switch_led
-  - platform: restart
-    name: ${board_name} Restart
 
 text_sensor:
-  - platform: template
-    name: ${board_name} Uptime
-    id: uptime_human
-    icon: mdi:clock-start
   - platform: wifi_info
     ip_address:
       name: ${board_name} IP
