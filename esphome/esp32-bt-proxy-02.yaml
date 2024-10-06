@@ -23,7 +23,14 @@ esp32_ble_tracker:
     - mac_address: F9:9D:1D:40:23:40
       service_uuid: "5242"
       then:
-        - lambda: 'id(black1_battery).publish_state(x[1]);'
+#        - lambda: 'id(black1_battery).publish_state(x[1]);' # catch battary %
+        - lambda: |-
+            if (x[11] == 1.0) {
+              id(black1_button).publish_state(true);
+            } else {
+              id(black1_button).publish_state(false);
+            }
+            id(black1_battery).publish_state(x[1]);
 
     - mac_address: E6:9F:37:5B:1D:DA
       service_uuid: "5242"
@@ -46,3 +53,9 @@ sensor:
     unit_of_measurement: "%"
     entity_category: "diagnostic"
     accuracy_decimals: 0
+
+
+binary_sensor:
+  - platform: template
+    name: "Holy-IoT Black-1 Button"
+    id: black1_button
