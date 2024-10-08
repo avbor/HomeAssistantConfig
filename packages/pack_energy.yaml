@@ -825,21 +825,21 @@ energy_pack:
     # --- Set energy tariffs start time ---
     - alias: Energy - Apartment - Set Start Time of Tariffs
       id: 7dc9e636-2951-407e-b50f-31d6b0b22961
-      trigger:
-        - platform: time_pattern
+      triggers:
+        - trigger: time_pattern
           hours: "/1"
           minutes: "15"
-      condition: "{{ not states('sensor.mes_07762_153_47_account') in ('unavailable') }}"
-      action:
+      conditions: "{{ not states('sensor.mes_07762_153_47_account') in ('unavailable') }}"
+      actions:
         # Set Peak Time
-        - service: input_datetime.set_datetime
+        - action: input_datetime.set_datetime
           target:
             entity_id: input_datetime.apartment_enegry_start_time_peak_1
           data:
             time: >
               {% set time = (state_attr('sensor.mes_07762_153_47_account', 'zone_t1_description') | regex_findall_index('^(\d+-\d+)')).replace('-',':') -%}
               {% if (time.split(':')[0] | int) < 10 %}0{{ time }}:00{% else %}{{ time }}:00{% endif %}
-        - service: input_datetime.set_datetime
+        - action: input_datetime.set_datetime
           target:
             entity_id: input_datetime.apartment_enegry_start_time_peak_2
           data:
@@ -847,14 +847,14 @@ energy_pack:
               {% set time = (state_attr('sensor.mes_07762_153_47_account', 'zone_t1_description') | regex_findall_index(',.(\d+-\d+)')).replace('-',':') -%}
               {% if (time.split(':')[0] | int) < 10 -%}0{{ time }}:00{%- else -%}{{ time }}:00{% endif %}
         # Set Halfpeak Time
-        - service: input_datetime.set_datetime
+        - action: input_datetime.set_datetime
           target:
             entity_id: input_datetime.apartment_enegry_start_time_halfpeak_1
           data:
             time: >
               {% set time = (state_attr('sensor.mes_07762_153_47_account', 'zone_t3_description') | regex_findall_index('^(\d+-\d+)')).replace('-',':') -%}
               {% if (time.split(':')[0] | int) < 10 %}0{{ time }}:00{% else %}{{ time }}:00{% endif %}
-        - service: input_datetime.set_datetime
+        - action: input_datetime.set_datetime
           target:
             entity_id: input_datetime.apartment_enegry_start_time_halfpeak_2
           data:
@@ -862,7 +862,7 @@ energy_pack:
               {% set time = (state_attr('sensor.mes_07762_153_47_account', 'zone_t3_description') | regex_findall_index(',.(\d+-\d+)')).replace('-',':') -%}
               {% if (time.split(':')[0] | int) < 10 -%}0{{ time }}:00{%- else -%}{{ time }}:00{% endif %}
         # Set Night Time
-        - service: input_datetime.set_datetime
+        - action: input_datetime.set_datetime
           target:
             entity_id: input_datetime.apartment_enegry_start_time_night
           data:
@@ -875,21 +875,21 @@ energy_pack:
     # --- Set current energy tariff ---
     - alias: Energy - Apartment - Set Current Tariff
       id: 0266f51b-5a79-4c13-b925-f50952cc49ed
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at:
             - input_datetime.apartment_enegry_start_time_peak_1
             - input_datetime.apartment_enegry_start_time_peak_2
           id: "peak"
-        - platform: time
+        - trigger: time
           at:
             - input_datetime.apartment_enegry_start_time_halfpeak_1
             - input_datetime.apartment_enegry_start_time_halfpeak_2
           id: "halfpeak"
-        - platform: time
+        - trigger: time
           at: input_datetime.apartment_enegry_start_time_night
           id: "night"
-      action:
+      actions:
         choose:
           # Set Peak Tariff
           - alias: Set Peak Tariff
@@ -897,12 +897,12 @@ energy_pack:
               - condition: trigger
                 id: "peak"
             sequence:
-              - service: input_number.set_value
+              - action: input_number.set_value
                 target:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_peak') | float(0) }}"
-              - service: select.select_option
+              - action: select.select_option
                 target:
                   entity_id: group.all_energy_utility_meters
                 data:
@@ -913,12 +913,12 @@ energy_pack:
               - condition: trigger
                 id: "halfpeak"
             sequence:
-              - service: input_number.set_value
+              - action: input_number.set_value
                 target:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_halfpeak') | float(0) }}"
-              - service: select.select_option
+              - action: select.select_option
                 target:
                   entity_id: group.all_energy_utility_meters
                 data:
@@ -929,12 +929,12 @@ energy_pack:
               - condition: trigger
                 id: "night"
             sequence:
-              - service: input_number.set_value
+              - action: input_number.set_value
                 target:
                   entity_id: input_number.apartment_enegry_cost_current
                 data:
                   value: "{{ states('sensor.apartment_enegry_cost_night') | float(0) }}"
-              - service: select.select_option
+              - action: select.select_option
                 target:
                   entity_id: group.all_energy_utility_meters
                 data:

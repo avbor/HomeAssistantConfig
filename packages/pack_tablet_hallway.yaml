@@ -10,8 +10,8 @@ tablet_hallway_pack:
       mode: queued
       max: 5
       max_exceeded: silent
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: light.sonoff_1000f2f14a
           not_to:
             - unavailable
@@ -19,15 +19,15 @@ tablet_hallway_pack:
           not_from:
             - unavailable
             - unknown
-      action:
+      actions:
         choose:
           - alias: To On
             conditions: "{{ trigger.from_state.state == 'off' and trigger.to_state.state == 'on' }}"
             sequence:
-              - service: switch.turn_on
-                data:
+              - action: switch.turn_on
+                target:
                   entity_id: switch.galaxy_tab_a_8_0_2019_screen
-              - service: media_player.volume_set
+              - action: media_player.volume_set
                 target:
                   entity_id: media_player.galaxy_tab_a_8_0_2019
                 data:
@@ -40,25 +40,25 @@ tablet_hallway_pack:
           - alias: To Off
             conditions: "{{ trigger.from_state.state == 'on' and trigger.to_state.state == 'off' }}"
             sequence:
-              - service: switch.turn_off
-                data:
+              - action: switch.turn_off
+                target:
                   entity_id: switch.galaxy_tab_a_8_0_2019_screen
-              - service: media_player.volume_set
+              - action: media_player.volume_set
                 target:
                   entity_id: media_player.galaxy_tab_a_8_0_2019
                 data:
                   volume_level: 0
-              - service: fully_kiosk.load_url
-                data:
-                  url: about:blank
+              - action: fully_kiosk.load_url
                 target:
                   device_id: 41638a8b36f2ac6228aed99d142fd286
+                data:
+                  url: about:blank
 
     - alias: "Планшет в Прихожей - поддержание заряда"
       id: 82fb6789-4385-44cc-b721-90b892063447
       max_exceeded: silent
-      trigger:
-        - platform: numeric_state
+      triggers:
+        - trigger: numeric_state
           entity_id:
             - sensor.galaxy_tab_a_8_0_2019_battery
             - sensor.sm_t295_hallway_battery_level
@@ -66,7 +66,7 @@ tablet_hallway_pack:
           for:
             minutes: 5
           id: "low"
-        - platform: numeric_state
+        - trigger: numeric_state
           entity_id:
             - sensor.galaxy_tab_a_8_0_2019_battery
             - sensor.sm_t295_hallway_battery_level
@@ -74,7 +74,7 @@ tablet_hallway_pack:
           for:
             minutes: 5
           id: "hight"
-      action:
+      actions:
         choose:
           - alias: Battery Low
             conditions:
@@ -82,7 +82,7 @@ tablet_hallway_pack:
                 id: "low"
             sequence:
               - condition: "{{ is_state('switch.sonoff_mini_r2_02_switch', 'off') }}"
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.sonoff_mini_r2_02_switch
           - alias: Battery Charged
@@ -91,6 +91,6 @@ tablet_hallway_pack:
                 id: "hight"
             sequence:
               - condition: "{{ is_state('switch.sonoff_mini_r2_02_switch', 'on') }}"
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: switch.sonoff_mini_r2_02_switch

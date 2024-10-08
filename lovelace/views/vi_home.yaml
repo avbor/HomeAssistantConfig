@@ -189,7 +189,8 @@ cards:
           ### <center>Сейчас дома</center>
       - type: conditional
         conditions:
-          - entity: group.family_persons
+          - condition: state
+            entity: group.family_persons
             state: "not_home"
         card:
           type: markdown
@@ -197,7 +198,8 @@ cards:
             *Никого нет...*
       - type: conditional
         conditions:
-          - entity: group.family_persons
+          - condition: state
+            entity: group.family_persons
             state: "home"
         card:
           type: entity-filter
@@ -220,7 +222,8 @@ cards:
           ### <center>Сейчас на даче</center>
       - type: conditional
         conditions:
-          - entity: binary_sensor.coutry_house_presence
+          - condition: state
+            entity: binary_sensor.coutry_house_presence
             state: "off"
         card:
           type: markdown
@@ -228,7 +231,8 @@ cards:
             *Никого нет...*
       - type: conditional
         conditions:
-          - entity: binary_sensor.coutry_house_presence
+          - condition: state
+            entity: binary_sensor.coutry_house_presence
             state: "on"
         card:
           type: entity-filter
@@ -245,9 +249,11 @@ cards:
       # --- Карта:
       - type: conditional
         conditions:
-          - entity: group.persons_to_map
+          - condition: state
+            entity: group.persons_to_map
             state: "not_home"
-          - entity: binary_sensor.coutry_house_presence
+          - condition: state
+            entity: binary_sensor.coutry_house_presence
             state: "off"
         card:
           type: vertical-stack
@@ -265,9 +271,11 @@ cards:
       # --- Время в пути (Утро)
   #      - type: conditional
   #        conditions:
-  #          - entity: binary_sensor.time_between_7_10
+  #          - condition: state
+  #            entity: binary_sensor.time_between_7_10
   #            state: "on"
-  #          - entity: binary_sensor.workday_sensor
+  #          - condition: state
+  #            entity: binary_sensor.workday_sensor
   #            state: "on"
   #        card:
   #          type: vertical-stack
@@ -288,9 +296,11 @@ cards:
   #      # --- Время в пути (Вечер)
   #      - type: conditional
   #        conditions:
-  #          - entity: binary_sensor.time_between_17_21
+  #          - condition: state
+  #            entity: binary_sensor.time_between_17_21
   #            state: "on"
-  #          - entity: binary_sensor.workday_sensor
+  #          - condition: state
+  #            entity: binary_sensor.workday_sensor
   #            state: "on"
   #        card:
   #          type: vertical-stack
@@ -460,7 +470,8 @@ cards:
           ### <center>Освещение</center>
       - type: conditional
         conditions:
-          - entity: group.all_lamps
+          - condition: state
+            entity: group.all_lamps
             state: "on"
         card:
           type: custom:vertical-stack-in-card
@@ -488,7 +499,8 @@ cards:
                       entity_id: group.all_lamps
       - type: conditional
         conditions:
-          - entity: group.all_lamps
+          - condition: state
+            entity: group.all_lamps
             state: "off"
         card:
           type: markdown

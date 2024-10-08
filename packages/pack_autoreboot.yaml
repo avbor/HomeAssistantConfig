@@ -40,7 +40,7 @@ autoreboot_pack:
                 value_template: "{{ (states('counter.auto_reboot') | int) <= 2 }}"
             sequence:
               - alias: Send Notification
-                service: telegram_bot.send_message
+                action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_system
                   title: "*Внимание!*"
@@ -51,23 +51,24 @@ autoreboot_pack:
               - alias: Wait 15 seconds
                 delay: "00:00:15"
               - alias: Increase AutoReboot Counter
-                service: counter.increment
-                entity_id: counter.auto_reboot
+                action: counter.increment
+                target:
+                  entity_id: counter.auto_reboot
               - if: "{{ (states('counter.auto_reboot') | int) <= 1 }}"
                 then:
                   - alias: Silicon Labs Multiprotocol Add-On
-                    service: hassio.addon_restart
+                    action: hassio.addon_restart
                     data:
                       addon: core_silabs_multiprotocol
               - alias: Restart HA
-                service: homeassistant.restart
+                action: homeassistant.restart
           - alias: If Auto Reboot Counter > 2
             conditions:
               - condition: template
                 value_template: "{{ (states('counter.auto_reboot') | int) > 2 }}"
             sequence:
               - alias: Send Notification
-                service: telegram_bot.send_message
+                action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_system
                   title: "*Внимание!*"
@@ -81,15 +82,15 @@ autoreboot_pack:
 
     - alias: "Auto Reboot: Reset Automatic Reboot Counter"
       id: 950840e8-8ef1-4984-8996-6ddee1f56cb7
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.ha_uptime
           to: "10"
-      condition:
+      conditions:
         condition: template
         value_template: "{{ (states('counter.auto_reboot') | int) > 0 }}"
-      action:
-        - service: counter.set_value
+      actions:
+        - action: counter.set_value
           target:
             entity_id: counter.auto_reboot
           data:
@@ -97,19 +98,20 @@ autoreboot_pack:
 
     - alias: "Auto Reboot: Telegram Control - Cancel Auto Reboot"
       id: 5524cadd-7b96-41f8-b489-90782e17af80
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: '/cancel_auto_reboot'
-      action:
-        - service: script.turn_off
-          entity_id: script.auto_reboot_by_errors_after_boot
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: script.turn_off
+          target:
+            entity_id: script.auto_reboot_by_errors_after_boot
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Команда отправлена'
-        - service: telegram_bot.edit_message
+        - action: telegram_bot.edit_message
           data:
             message_id: '{{ trigger.event.data.message.message_id }}'
             chat_id: '{{ trigger.event.data.chat_id }}'

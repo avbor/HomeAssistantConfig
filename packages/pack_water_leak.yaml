@@ -27,18 +27,20 @@ water_leak_protection:
     neptun_state_reset:
       alias: Reset Neptun State in HA (TurnOff)
       sequence:
-        - service: input_boolean.turn_off
-          data:
+        - action: input_boolean.turn_off
+          target:
             entity_id: input_boolean.neptun_activated
 
     water_valves_close:
       alias: "Закрытие водопроводных кранов"
       sequence:
-        - service: switch.turn_on
-          entity_id: switch.rele_aqara_vodoprovodnye_krany_l2
+        - action: switch.turn_on
+          target:
+            entity_id: switch.rele_aqara_vodoprovodnye_krany_l2
         - delay: '00:00:30'
-        - service: switch.turn_off
-          entity_id: switch.rele_aqara_vodoprovodnye_krany_l2
+        - action: switch.turn_off
+          target:
+            entity_id: switch.rele_aqara_vodoprovodnye_krany_l2
 
     water_valves_open:
       alias: "Открытие водопроводных кранов"
@@ -49,23 +51,30 @@ water_leak_protection:
               entity_id: binary_sensor.neptun_water_leakage
               state: 'on'
             sequence:
-              - service: switch.turn_off
-                entity_id: switch.sonoff_1000b68886
-              - service: switch.turn_on
-                entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.sonoff_1000b68886
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
               - delay: '00:00:30'
-              - service: switch.turn_off
-                entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
-              - service: switch.turn_on
-                entity_id: switch.sonoff_1000b68886
-              - service: script.turn_on
-                entity_id: script.neptun_state_reset
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.sonoff_1000b68886
+              - action: script.turn_on
+                target:
+                  entity_id: script.neptun_state_reset
           default:
-            - service: switch.turn_on
-              entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
+            - action: switch.turn_on
+              target:
+                entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
             - delay: '00:00:30'
-            - service: switch.turn_off
-              entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
+            - action: switch.turn_off
+              target:
+                entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
 
 # Automations
   automation:
@@ -73,8 +82,8 @@ water_leak_protection:
     # Защита от протечек - отключение подачи воды по датчикам
     - alias: Water Leak Detected
       id: 2eb96392-3d8a-41b7-87f2-7c6e5c5b6232
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id:
           - binary_sensor.neptun_water_leakage
           - binary_sensor.0x158d000400e77d_moisture
@@ -82,70 +91,69 @@ water_leak_protection:
           - binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone
         from: 'off'
         to: 'on'
-      action:
-        - service: script.turn_on
-          data:
+      actions:
+        - action: script.turn_on
+          target:
             entity_id: script.water_valves_close
 
     # Получение активации Нептуна
     - alias: Catch Neptun Activated
       id: 0e013823-d5f8-4362-b7aa-2be3c25da064
       mode: queued
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.lumi_lumi_sensor_magnet_opening
         from: 'on'
         to: 'off'
         for: "00:00:05"
-      condition:
+      conditions:
         condition: state
         entity_id: input_boolean.neptun_activated
         state: 'off'
-      action:
-        - service: input_boolean.turn_on
-          data:
+      actions:
+        - action: input_boolean.turn_on
+          target:
             entity_id: input_boolean.neptun_activated
 
     # Получение деактивации Нептуна
     - alias: Catch Neptun DeActivated
       id: f17481ec-0be2-4774-b2cb-53fffab68781
       mode: queued
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: switch.sonoff_1000b68886
         from: 'off'
         to: 'on'
-      condition:
+      conditions:
         condition: state
         entity_id: input_boolean.neptun_activated
         state: 'on'
-      action:
-        - service: input_boolean.turn_off
-          data:
+      actions:
+        - action: input_boolean.turn_off
+          target:
             entity_id: input_boolean.neptun_activated
 
     # Перезагрузка контроллера Нептун раз в 2 недели (обход проворота кранов раз в месяц)
     - alias: Restart Neptun [twice a month]
       id: 896b9256-93fc-41d2-8ffc-a4c6503f62e0
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: "11:00:00"
-      condition:
-        condition: and
-        conditions:
+      conditions:
+        - and:
           - condition: time
             weekday: mon
           - condition: template
             value_template: "{{ (as_timestamp(now())|timestamp_custom ('%W') | int % 2) == 1 }}"
-      action:
-        - service: switch.turn_off
-          data:
+      actions:
+        - action: switch.turn_off
+          target:
             entity_id: switch.sonoff_1000b68886
         - delay: 5
-        - service: switch.turn_on
-          data:
+        - action: switch.turn_on
+          target:
             entity_id: switch.sonoff_1000b68886
-        - service: notify.telegram_group_flat_1
+        - action: notify.telegram_group_flat_1
           data:
             message: |
               _INFO:_ Нептун был перезапущен.
@@ -153,31 +161,31 @@ water_leak_protection:
     # Автоматическое отключение напряжения на кранах (работа >60 сек)
     - alias: PowerOff Valves After 60 Seconds
       id: ac6042cd-ab15-4ff2-a0ed-9f873830d221
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - switch.rele_aqara_vodoprovodnye_krany_l1
             - switch.rele_aqara_vodoprovodnye_krany_l2
           to: 'on'
           for: "00:01:00"
-      action:
-        service: switch.turn_off
-        data:
+      actions:
+        action: switch.turn_off
+        target:
           entity_id: "{{ trigger.entity_id }}"
 
     # Software Interlock
     - alias: Valves Relay Software Interlock
       id: f16be388-8c31-43d0-905b-d9c31968414c
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
           to: "on"
           id: open
-        - platform: state
+        - trigger: state
           entity_id: switch.rele_aqara_vodoprovodnye_krany_l2
           to: "on"
           id: close
-      action:
+      actions:
         - choose:
           - alias: "open_channel_to_on"
             conditions:
@@ -187,7 +195,7 @@ water_leak_protection:
               - if:
                   - "{{ is_state('switch.rele_aqara_vodoprovodnye_krany_l2', 'on') }}"
                 then:
-                  - service: switch.turn_off
+                  - action: switch.turn_off
                     target:
                       entity_id: switch.rele_aqara_vodoprovodnye_krany_l2
           - alias: "close_channel_to_on"
@@ -198,41 +206,41 @@ water_leak_protection:
               - if:
                   - "{{ is_state('switch.rele_aqara_vodoprovodnye_krany_l1', 'on') }}"
                 then:
-                  - service: switch.turn_off
+                  - action: switch.turn_off
                     target:
                       entity_id: switch.rele_aqara_vodoprovodnye_krany_l1
 
     # Оповещения
     - alias: Оповещения об активации датчиков [notify to group flat]
       id: 54d437ce-2ec6-4779-93cb-3f36fe99b44c
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.neptun_water_leakage
           to: "on"
           id: "neptun_on"
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.0x158d000400e77d_moisture
           from: "off"
           to: "on"
           id: "aqara_storeroom_on"
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.0x158d0004030d84_moisture
           from: "off"
           to: "on"
           id: "aqara_under_bath_on"
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_ias_zone
           from: "off"
           to: "on"
           id: "aqara_03_near_door"
-      action:
+      actions:
         - choose:
           - alias: "neptun_on"
             conditions:
               - condition: trigger
                 id: "neptun_on"
             sequence:
-              - service: telegram_bot.send_message
+              - action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_flat_1
                   title: "*Внимание!*"
@@ -247,7 +255,7 @@ water_leak_protection:
               - condition: trigger
                 id: "aqara_storeroom_on"
             sequence:
-              - service: telegram_bot.send_message
+              - action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_flat_1
                   title: "*Внимание!*"
@@ -262,7 +270,7 @@ water_leak_protection:
               - condition: trigger
                 id: "aqara_under_bath_on"
             sequence:
-              - service: telegram_bot.send_message
+              - action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_flat_1
                   title: "*Внимание!*"
@@ -277,7 +285,7 @@ water_leak_protection:
               - condition: trigger
                 id: "aqara_03_near_door"
             sequence:
-              - service: telegram_bot.send_message
+              - action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_flat_1
                   title: "*Внимание!*"
@@ -290,25 +298,25 @@ water_leak_protection:
 
     - alias: Оповещение о деактивации Нептуна [notify to group flat]
       id: 344fff46-b0f1-41c3-b6e7-6386b5bc1256
-      trigger: 
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.neptun_water_leakage
         to: "off"
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             message: Нептун деактивирован.
 
     - alias: Оповещение об отключенном Нептуне (>2 мин)
       id: 1a017a47-40b1-4315-892e-36760a8e86ec
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: switch.sonoff_1000b68886
         to: 'off'
         for: "00:02:00"
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             title: "*Внимание!*"
@@ -319,19 +327,20 @@ water_leak_protection:
 
     - alias: 'Neptune - Telegram Control - Open'
       id: d42cd9f6-1a89-4116-8348-d99970407b75
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: '/neptune_poweron'
-      action:
-        - service: switch.turn_on
-          entity_id: switch.sonoff_1000b68886
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.sonoff_1000b68886
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Команда отправлена'
-        - service: telegram_bot.edit_message
+        - action: telegram_bot.edit_message
           data:
             message_id: '{{ trigger.event.data.message.message_id }}'
             chat_id: '{{ trigger.event.data.chat_id }}'
@@ -341,32 +350,33 @@ water_leak_protection:
 
     - alias: 'Water Valves - Telegram Control - Open'
       id: b5321723-bc10-4146-88a5-7080d0fe70a8
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: '/water_valves_open'
-      action:
-        - service: script.turn_on
-          entity_id: script.water_valves_open
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: script.turn_on
+          target:
+            entity_id: script.water_valves_open
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Команда отправлена'
-        - service: telegram_bot.edit_replymarkup
+        - action: telegram_bot.edit_replymarkup
           data:
             message_id: '{{ trigger.event.data.message.message_id }}'
             chat_id: '{{ trigger.event.data.chat_id }}'
             inline_keyboard: []
         - alias: "Wait for script.water_valves_open to stop"
           wait_for_trigger:
-            - platform: state
+            - trigger: state
               entity_id: script.water_valves_open
               from: "on"
               to: "off"
           timeout: "00:00:40"
           continue_on_timeout: false
-        - service: telegram_bot.send_message
+        - action: telegram_bot.send_message
           data:
             target: '{{ trigger.event.data.chat_id }}'
             message: "Водопроводные краны открыты."

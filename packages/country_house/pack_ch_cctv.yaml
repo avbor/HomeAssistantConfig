@@ -21,9 +21,9 @@ ch_cctv_pack:
 
         sss_reolinkcam_02:
           turn_on:
-            service: rest_command.sss_reolinkcam_02_enable
+            action: rest_command.sss_reolinkcam_02_enable
           turn_off:
-            service: rest_command.sss_reolinkcam_02_disable
+            action: rest_command.sss_reolinkcam_02_disable
           icon_template: mdi:cctv
 
   # Input Booleans
@@ -79,43 +79,43 @@ ch_cctv_pack:
 
     - alias: "Country House CCTV - Toggle Camera"
       id: 97f7f60b-61c2-482b-894a-c12704418075
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.coutry_house_presence
-      action:
+      actions:
         choose:
           - alias: Presence Sensor To On
             conditions: "{{ trigger.to_state.state == 'on' }}"
             sequence:
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: switch.frigate_srv01_reolinkcam_02
           - alias: Presence Sensor To Off
             conditions: "{{ trigger.to_state.state == 'off' }}"
             sequence:
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.frigate_srv01_reolinkcam_02
 
     - alias: "Country House CCTV - Person detected"
       id: a0d9386b-ecf4-46f1-92d8-6ad1a777d1d9
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.reolinkcam_02_person_occupancy
           from: "off"
           to: "on"
-      condition:
+      conditions:
         - condition: state
           entity_id: binary_sensor.coutry_house_presence
           state: "off"
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_country_house
             message: |
               {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
               На даче обнаружен человек:
-        - service: telegram_bot.send_photo
+        - action: telegram_bot.send_photo
           data:
             target: !secret tlg_group_country_house
             url: !secret reolinkcam_02_snapshot_url

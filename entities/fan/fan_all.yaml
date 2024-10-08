@@ -11,11 +11,13 @@
       value_template: "{{ states('switch.sonoff_basic_01_switch') }}"
       availability_template: "{{ states('binary_sensor.sonoff_basic_01_status') }}"
       turn_on:
-        service: switch.turn_on
-        entity_id: switch.sonoff_basic_01_switch
+        action: switch.turn_on
+        target:
+          entity_id: switch.sonoff_basic_01_switch
       turn_off:
-        service: switch.turn_off
-        entity_id: switch.sonoff_basic_01_switch
+        action: switch.turn_off
+        target:
+          entity_id: switch.sonoff_basic_01_switch
 
     bathroom_extractor:
       unique_id: 89b94bc8-2c48-4240-b216-a688a9d8585b
@@ -23,8 +25,10 @@
       value_template: "{{ states('switch.sonoff_basic_02_switch') }}"
       availability_template: "{{ states('binary_sensor.sonoff_basic_02_status') }}"
       turn_on:
-        service: switch.turn_on
-        entity_id: switch.sonoff_basic_02_switch
+        action: switch.turn_on
+        target:
+          entity_id: switch.sonoff_basic_02_switch
       turn_off:
-        service: switch.turn_off
-        entity_id: switch.sonoff_basic_02_switch
+        action: switch.turn_off
+        target:
+          entity_id: switch.sonoff_basic_02_switch

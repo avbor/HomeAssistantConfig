@@ -18,10 +18,10 @@ feedreader_pack:
     id: 7acc6aec-3319-44e8-bf1c-dc36109f1b89
     mode: queued
     max: 100
-    trigger:
-      platform: event
+    triggers:
+      trigger: event
       event_type: feedreader
-    action:
+    actions:
       - choose:
         - alias: Home Assistant News and Blog Posts
           conditions:
@@ -29,7 +29,7 @@ feedreader_pack:
             value_template: >
               {{ trigger.event.data.link | regex_search('www.home-assistant.io') and (states('sensor.ha_uptime') | int) > 1 }}
           sequence:
-            - service: telegram_bot.send_message
+            - action: telegram_bot.send_message
               data:
                 target: !secret tlg_group_system
                 disable_web_page_preview: true
@@ -45,7 +45,7 @@ feedreader_pack:
             value_template: >
               {{ trigger.event.data.link | regex_search('alerts.home-assistant.io') }}
           sequence:
-            - service: telegram_bot.send_message
+            - action: telegram_bot.send_message
               data:
                 target: !secret tlg_group_system
                 disable_web_page_preview: true
@@ -61,7 +61,7 @@ feedreader_pack:
             value_template: >
               {{ trigger.event.data.link | regex_search('moscow.mchs.gov.ru') }}
           sequence:
-            - service: telegram_bot.send_message
+            - action: telegram_bot.send_message
               data:
                 target: !secret tlg_group_system
                 parse_mode: html

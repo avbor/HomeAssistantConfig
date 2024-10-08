@@ -64,7 +64,8 @@ cards:
               icon: mdi:shuffle
       - type: conditional
         conditions:
-          - entity: humidifier.smartmi_humidifier_01_detskaia
+          - condition: state
+            entity: humidifier.smartmi_humidifier_01_detskaia
             state_not: "unavailable"
         card:
           type: custom:vertical-stack-in-card
@@ -100,7 +101,8 @@ cards:
                   name: "Автоматичеки"
                 - type: conditional
                   conditions:
-                    - entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
+                    - condition: state
+                      entity: input_boolean.smartmi_humidifier_01_detskaia_autocontrol
                       state: "on"
                   row:
                     entity: input_number.target_humidity_01_detskaia
@@ -227,7 +229,8 @@ cards:
               icon: mdi:shuffle
       - type: conditional
         conditions:
-          - entity: humidifier.smartmi_humidifier_02_spalnia
+          - condition: state
+            entity: humidifier.smartmi_humidifier_02_spalnia
             state_not: "unavailable"
         card:
           type: custom:vertical-stack-in-card
@@ -263,7 +266,8 @@ cards:
                   name: "Автоматически"
                 - type: conditional
                   conditions:
-                    - entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
+                    - condition: state
+                      entity: input_boolean.smartmi_humidifier_02_spalnia_autocontrol
                       state: "on"
                   row:
                     entity: input_number.target_humidity_02_spalnia

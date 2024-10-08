@@ -4,61 +4,64 @@
 
 - alias: "HA: Mount NFS Share from NAS01 [/nmt/nas]"
   id: eb3ef8ea-e19a-4b1e-b7ff-482089a346b5
-  trigger:
-    - platform: homeassistant
+  triggers:
+    - trigger: homeassistant
       event: start
-  action:
-    - service: switch.turn_on
-      entity_id: switch.mount_mnt_nas
+  actions:
+    - action: switch.turn_on
+      target:
+        entity_id: switch.mount_mnt_nas
 
 - alias: "HA: Create Daily Backup"
   id: acac055e-ea1e-41cd-9f46-62e7a8c006aa
   initial_state: true
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: "01:00:00"
-  action:
-    - service: auto_backup.backup_full
+  actions:
+    - action: auto_backup.backup_full
       data:
         name: "Daily Backup {{ now().strftime('%Y-%m-%d') }}"
         keep_days: 7
 
 - alias: "HASS: ERRORs in System Log - Counter"
   id: 3b8230a5-49d5-437b-8bd9-d3f72f95425f
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: system_log_event
     event_data:
       level: ERROR
   mode: parallel
   max: 50
-  action:
-    - service: counter.increment
-      entity_id: counter.syslog_errors
+  actions:
+    - action: counter.increment
+      target:
+        entity_id: counter.syslog_errors
 
 - alias: "HASS: WARNINGs in System Log - Counter"
   id: acdf3489-b611-445c-bd24-2efc9c431124
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: system_log_event
     event_data:
       level: WARNING
   mode: parallel
   max: 50
-  action:
-    - service: counter.increment
-      entity_id: counter.syslog_warnings
+  actions:
+    - action: counter.increment
+      target:
+        entity_id: counter.syslog_warnings
 
 - alias: "HASS: Create Group of Battery Devices"
   id: 823d8378-6723-4e71-93ce-29c59946347a
-  trigger:
-    - platform: homeassistant
+  triggers:
+    - trigger: homeassistant
       event: start
-    - platform: time_pattern
+    - trigger: time_pattern
       hours: "/2"
-  action:
-    - service: group.set
-      data_template:
+  actions:
+    - action: group.set
+      data:
         object_id: battery_devices
         entities: >-
           {%- 
@@ -71,31 +74,32 @@
 
 - alias: Fix for reload automations
   id: 4c7a9752-b7d2-4c41-acf6-7d175f6b9d39
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: call_service
       event_data:
         domain: automation
         service: reload
-    - platform: event
+    - trigger: event
       event_type: automation_reloaded
-  action:
-    - service: >-
+  actions:
+    - action: >-
         {% if trigger.event.event_type == 'call_service' -%}
             automation.turn_off
         {% else -%}
             automation.turn_on
         {% endif -%}
-      entity_id: automation.device_needs_attention_notify_to_group_system
+      target:
+        entity_id: automation.device_needs_attention_notify_to_group_system
 
 - alias: Update HA DB SQL sensors
   id: e41348f5-2915-4a51-8d88-e5f00e7c0b67
-  trigger:
-    - platform: time_pattern
+  triggers:
+    - trigger: time_pattern
       hours: "/1"
       minutes: "22"
-  action:
-    - service: homeassistant.update_entity
+  actions:
+    - action: homeassistant.update_entity
       target:
         entity_id:
           - sensor.hass_db_events_rows_count
@@ -106,46 +110,46 @@
 
 - alias: Update MES sensors
   id: 7f460de3-11dc-4e23-886c-a14b7db8bfeb
-  trigger:
-    - platform: time_pattern
+  triggers:
+    - trigger: time_pattern
       minutes: "33"
-  condition:
+  conditions:
     - condition: time
       after: "07:00:00"
       before: "22:50:00"
-  action:
-    - service: homeassistant.update_entity
+  actions:
+    - action: homeassistant.update_entity
       target:
         entity_id:
           - sensor.mes_55384_014_37_meter_44259893
 
 - alias: Update Ping sensors for TV
   id: a164b9f1-bd13-465e-a76b-7831cdfc63d9
-  trigger:
-    - platform: time_pattern
+  triggers:
+    - trigger: time_pattern
       seconds: "10"
-  action:
-    - service: homeassistant.update_entity
+  actions:
+    - action: homeassistant.update_entity
       target:
         entity_id: binary_sensor.samsungtv_40c5100
 
 - alias: Restart Stuck Add-on Z2M-2
   id: 0617529b-bc60-48c0-8954-6936aa95ef50
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.z2m_2_stuck
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: sensor.addons_mostuitto_state
       state: "started"
-  action:
+  actions:
     - parallel:
-        - service: hassio.addon_restart
+        - action: hassio.addon_restart
           data:
             addon: 4b41db2d_zigbee2mqtt
-        - service: telegram_bot.send_message
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_system
             parse_mode: html

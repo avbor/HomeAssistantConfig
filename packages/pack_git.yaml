@@ -52,21 +52,21 @@ git_pack:
       id: 816f1400-5e51-4e5c-bc3a-f07e1e4202dd
       mode: queued
       max: 5
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: input_button.git_commint_and_push
           id: "button"
-        - platform: event
+        - trigger: event
           event_type: timer.finished
           event_data:
             entity_id: timer.git_time_to_push
           id: "timer_finished"
-        - platform: state
+        - trigger: state
           entity_id: input_boolean.git_autocommit
           from: "off"
           to: "on"
           id: "enable"
-        - platform: state
+        - trigger: state
           entity_id: sensor.git_number_of_modified_files
           not_to:
             - unavailable
@@ -75,12 +75,12 @@ git_pack:
             - unavailable
             - unknown
           id: "files"
-      action:
+      actions:
         choose:
           - conditions: "{{ trigger.id == 'button' }}"
             sequence:
-              - service: shell_command.git_commint_and_push
-              - service: homeassistant.update_entity
+              - action: shell_command.git_commint_and_push
+              - action: homeassistant.update_entity
                 target:
                   entity_id: sensor.git_number_of_modified_files
           - conditions: "{{ trigger.id == 'enable' }}"
@@ -88,7 +88,7 @@ git_pack:
               - if:
                   - "{{ (states('sensor.git_number_of_modified_files') | int(0)) > 0 }}"
                 then:
-                  - service: timer.start
+                  - action: timer.start
                     target:
                       entity_id: timer.git_time_to_push
           - conditions: "{{ trigger.id == 'timer_finished' }}"
@@ -96,12 +96,12 @@ git_pack:
               - if:
                   - "{{ is_state('input_boolean.git_autocommit', 'on') }}"
                 then:
-                  - service: shell_command.git_commint_and_push
-                  - service: homeassistant.update_entity
+                  - action: shell_command.git_commint_and_push
+                  - action: homeassistant.update_entity
                     target:
                       entity_id: sensor.git_number_of_modified_files
                 else:
-                  - service: timer.start
+                  - action: timer.start
                     target:
                       entity_id: timer.git_time_to_push
           - conditions: "{{ trigger.id == 'files' }}"
@@ -109,25 +109,25 @@ git_pack:
               choose:
                 - conditions: "{{ (trigger.to_state.state | int(0)) == 0 }}"
                   sequence:
-                    - service: timer.cancel
+                    - action: timer.cancel
                       target:
                         entity_id: timer.git_time_to_push
                 - conditions: "{{ (trigger.to_state.state | int(0)) > (trigger.from_state.state | int(0)) }}"
                   sequence:
-                    - service: timer.start
+                    - action: timer.start
                       target:
                         entity_id: timer.git_time_to_push
 
     - alias: GitHub HA Repo - Stars
       id: b8a8f7d3-1875-4271-b576-1586f2ab425f
-      trigger:
-        - platform: webhook
+      triggers:
+        - trigger: webhook
           webhook_id: !secret github_ha_repo_stars_webhook
           local_only: false
           allowed_methods:
             - POST
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_system
             parse_mode: html

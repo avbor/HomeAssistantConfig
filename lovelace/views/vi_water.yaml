@@ -99,7 +99,8 @@ cards:
             icon: mdi:water-boiler
       - type: conditional
         conditions:
-          - entity: switch.tplink_smartplug_01
+          - condition: state
+            entity: switch.tplink_smartplug_01
             state_not: "off"
         card:
           type: "custom:simple-thermostat"

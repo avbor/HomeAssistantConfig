@@ -3,7 +3,7 @@
 #################################################
 
 - trigger:
-  - platform: time_pattern
+  - trigger: time_pattern
     hours: "/1"
     minutes: 7
   unique_id: bc9099b4-5f43-4ffb-ab2a-9d259964f87d
@@ -30,13 +30,13 @@
         {{ device_attr('5772d03ba3bdaef053d59d4554654308', 'sw_version') }}
 
 - trigger:
-  - platform: time_pattern
+  - trigger: time_pattern
     seconds: "/30"
-  - platform: homeassistant
+  - trigger: homeassistant
     event: start
-  - platform: event
+  - trigger: event
     event_type: automation_reloaded
-  - platform: event
+  - trigger: event
     event_type: event_template_reloaded
   unique_id: 9ac814d6-71ed-4823-8fb8-8f089785e8e4
   sensor:

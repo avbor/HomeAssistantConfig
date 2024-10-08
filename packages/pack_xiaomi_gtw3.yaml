@@ -35,41 +35,44 @@
 #  script:
 #    mi_gw3_reboot:
 #      sequence:
-#        - service: remote.send_command
-#          data:
+#        - action: remote.send_command
+#          target:
 #            entity_id: "{{ states('input_text.xiaomi_gateway3_id') }}"
+#          data:
 #            command: reboot
     
 #    mi_gw3_enable_ftp:
 #      sequence:
-#        - service: remote.send_command
-#          data:
+#        - action: remote.send_command
+#          target:
 #            entity_id: "{{ states('input_text.xiaomi_gateway3_id') }}"
+#          data:
 #            command: ftp
     
 #    mi_gw3_pair_on:
 #      sequence:
-#        - service: remote.turn_on
-#          data:
+#        - action: remote.turn_on
+#          target:
 #            entity_id: "{{ states('input_text.xiaomi_gateway3_id') }}"
     
 #    mi_gw3_pair_off:
 #      sequence:
-#        - service: remote.turn_off
-#          data:
+#        - action: remote.turn_off
+#          target:
 #            entity_id: "{{ states('input_text.xiaomi_gateway3_id') }}"
 
   # Automations
 #  automation:
 #    - alias: 'Mirror Gtw3 input_select Name to ID'
 #      id: 1431ee14-08ae-4c0b-bb44-d55faa8e406c
-#      trigger:
-#        platform: state
+#      triggers:
+#        trigger: state
 #        entity_id: input_select.xiaomi_gateway3_name
-#      action:
-#        - service: input_text.set_value
-#          data:
+#      actions:
+#        - action: input_text.set_value
+#          target:
 #            entity_id: input_text.xiaomi_gateway3_id
+#          data:
 #            value: >
 #              {% if trigger.to_state.state == 'Gateway 3-1' %}
 #                remote.0x588e81fffedca899_pair

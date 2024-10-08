@@ -34,19 +34,19 @@ kitchen_covers_pack:
 
     - alias: "Kitchen Covers Control by Light"
       id: 24f83b60-8392-4278-8725-6d1a33a0a483
-      trigger:
-        - platform: numeric_state
+      triggers:
+        - trigger: numeric_state
           entity_id: sensor.outdoor_illuminance
           below: input_number.kitchen_covers_illuminance_threshold
           for: "00:10:00"
           id: "dark"
-        - platform: numeric_state
+        - trigger: numeric_state
           entity_id: sensor.outdoor_illuminance
           above: input_number.kitchen_covers_illuminance_threshold
           for: "00:10:00"
           id: "lightly"
-      condition: "{{ is_state('input_boolean.kitchen_covers_auto', 'on') }}"
-      action:
+      conditions: "{{ is_state('input_boolean.kitchen_covers_auto', 'on') }}"
+      actions:
         choose:
           - alias: Darkens (Close)
             conditions:
@@ -54,7 +54,7 @@ kitchen_covers_pack:
                 id: "dark"
             sequence:
               - condition: "{{ states('cover.kitchen_covers') in ['open', 'opening'] }}"
-              - service: cover.close_cover
+              - action: cover.close_cover
                 target:
                   entity_id: cover.kitchen_covers
           - alias: Brightens (Open)
@@ -63,7 +63,7 @@ kitchen_covers_pack:
                 id: "lightly"
             sequence:
               - condition: "{{ states('cover.kitchen_covers') in ['closed', 'closing'] }}"
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.kitchen_covers
   
@@ -72,29 +72,29 @@ kitchen_covers_pack:
       mode: queued
       max: 5
       max_exceeded: silent
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: zha_event
           event_data:
             device_ieee: "50:32:5f:ff:fe:70:d7:69"
           id: "ikea_sw_5"
-      action:
+      actions:
         choose:
           - alias: "command: on or move_with_on_off"
             conditions: "{{ trigger.event.data.command in ('on', 'move_with_on_off') }}"
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.kitchen_covers
           - alias: "command: off or move"
             conditions: "{{ trigger.event.data.command in ('off', 'move') }}"
             sequence:
-              - service: cover.close_cover
+              - action: cover.close_cover
                 target:
                   entity_id: cover.kitchen_covers
           - alias: "command: stop"
             conditions: "{{ trigger.event.data.command == 'stop' }}"
             sequence:
-              - service: cover.stop_cover
+              - action: cover.stop_cover
                 target:
                   entity_id: cover.kitchen_covers

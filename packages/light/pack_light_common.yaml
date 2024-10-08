@@ -8,7 +8,7 @@ common_light_pack:
   template:
 
     - trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - sensor.xiaomi_lumi_sen_ill_mgl01_illuminance_2
           not_to:
@@ -32,18 +32,18 @@ common_light_pack:
 
     - alias: Turn Off All Light When Nobody at Home
       id: b06cbc8a-6488-412b-8842-e6c72b004ff1
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: group.family_persons
         to: "not_home"
         for:
           minutes: 5
-      condition:
+      conditions:
         - condition: state
           entity_id: group.all_lamps
           state: "on"
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             title: "*Внимание!*"
@@ -55,24 +55,25 @@ common_light_pack:
 
     - alias: 'Light - Telegram Control - Turn Off All Lamps'
       id: a395b9eb-6a18-40bd-a7f4-6e3f133049ba
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: '/turn_off_all_lamps'
-      action:
-        - service: homeassistant.turn_off
-          entity_id: group.all_lamps
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: homeassistant.turn_off
+          target:
+            entity_id: group.all_lamps
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: '{{ trigger.event.data.id }}'
             message: 'Команда отправлена'
-        - service: telegram_bot.edit_replymarkup
+        - action: telegram_bot.edit_replymarkup
           data:
             message_id: '{{ trigger.event.data.message.message_id }}'
             chat_id: '{{ trigger.event.data.chat_id }}'
             inline_keyboard: []
-        - service: telegram_bot.send_message
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             message: "Свет выключен."

@@ -18,14 +18,14 @@ hallway_light_pack:
       mode: queued
       max: 5
       max_exceeded: silent
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: timer.hallway_light
           id: "timer"
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.0x158d00031c790f_contact
           id: "magnet"
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.0x158d000309920a_motion
           id: "motion"
       action:
@@ -43,20 +43,21 @@ hallway_light_pack:
                       - alias: Frigate Presence On
                         conditions: "{{ states('binary_sensor.dafangcam_02_person_occupancy') == 'on' }}"
                         sequence:
-                          - service: timer.start
+                          - action: timer.start
                             target:
                               entity_id: timer.hallway_light
                       - alias: Motion On
                         conditions: "{{ states('binary_sensor.0x158d000309920a_motion') == 'on' }}"
                         sequence:
-                          - service: timer.start
+                          - action: timer.start
                             target:
                               entity_id: timer.hallway_light
                       - alias: Motion Off
                         conditions: "{{ states('binary_sensor.0x158d000309920a_motion') == 'off' }}"
                         sequence:
-                          - service: light.turn_off
-                            entity_id: light.sonoff_1000f2f14a
+                          - action: light.turn_off
+                            target:
+                              entity_id: light.sonoff_1000f2f14a
           - alias: Magnet
             conditions:
               - condition: trigger
@@ -66,9 +67,10 @@ hallway_light_pack:
                 - alias: To On
                   conditions: "{{ trigger.from_state.state == 'off' and trigger.to_state.state == 'on' }}"
                   sequence:
-                    - service: light.turn_on
-                      entity_id: light.sonoff_1000f2f14a
-                    - service: timer.start
+                    - action: light.turn_on
+                      target:
+                        entity_id: light.sonoff_1000f2f14a
+                    - action: timer.start
                       target:
                         entity_id: timer.hallway_light
           - alias: Motion
@@ -80,18 +82,19 @@ hallway_light_pack:
                 - alias: To On
                   conditions: "{{ trigger.to_state.state == 'on' }}"
                   sequence:
-                    - service: timer.start
+                    - action: timer.start
                       target:
                         entity_id: timer.hallway_light
                     - condition: state
                       entity_id: light.sonoff_1000f2f14a
                       state: "off"
-                    - service: light.turn_on
-                      entity_id: light.sonoff_1000f2f14a
+                    - action: light.turn_on
+                      target:
+                        entity_id: light.sonoff_1000f2f14a
                 - alias: To Off
                   conditions: "{{ trigger.to_state.state == 'off' }}"
                   sequence:
-                    - service: timer.finish
+                    - action: timer.finish
                       target:
                         entity_id: timer.hallway_light
 
@@ -100,20 +103,20 @@ hallway_light_pack:
       mode: queued
       max: 5
       max_exceeded: silent
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: zha_event
           event_data:
             device_ieee: "00:15:8d:00:04:5a:11:b1"
             command: "click"
           id: "click"
-        - platform: event
+        - trigger: event
           event_type: zha_event
           event_data:
             device_ieee: "00:15:8d:00:04:5a:11:b1"
             command: "hold"
           id: "hold"
-      action:
+      actions:
         choose:
           - alias: Action Click
             conditions:
@@ -124,20 +127,20 @@ hallway_light_pack:
                 - alias: Single click
                   conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
                   sequence:
-                    - service: light.toggle
-                      data:
+                    - action: light.toggle
+                      target:
                         entity_id: light.sonoff_1000f2f14a
                 - alias: Double click
                   conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
                   sequence:
-                    - service: light.toggle
-                      data:
+                    - action: light.toggle
+                      target:
                         entity_id: light.sonoff_1000f2a500
           - alias: Action Hold
             conditions:
               - condition: trigger
                 id: "hold"
             sequence:
-              - service: light.turn_off
-                data:
+              - action: light.turn_off
+                target:
                   entity_id: group.all_lamps

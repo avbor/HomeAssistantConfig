@@ -12,20 +12,20 @@ corridor_light_pack:
       mode: queued
       max: 5
       max_exceeded: silent
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: zha_event
           event_data:
             device_ieee: "00:15:8d:00:04:5a:11:53"
             command: "click"
           id: "click"
-        - platform: event
+        - trigger: event
           event_type: zha_event
           event_data:
             device_ieee: "00:15:8d:00:04:5a:11:53"
             command: "hold"
           id: "hold"
-      action:
+      actions:
         choose:
           - alias: Action Click
             conditions:
@@ -36,22 +36,22 @@ corridor_light_pack:
                 - alias: Single click
                   conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
                   sequence:
-                    - service: light.toggle
-                      data:
+                    - action: light.toggle
+                      target:
                         entity_id: light.sonoff_1000f2a500
                 - alias: Double click
                   conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
                   sequence:
-                    - service: light.toggle
-                      data:
+                    - action: light.toggle
+                      target:
                         entity_id: light.sonoff_1000f2f14a
           - alias: Action Hold
             conditions:
               - condition: trigger
                 id: "hold"
             sequence:
-              - service: light.turn_off
-                data:
+              - action: light.turn_off
+                target:
                   entity_id:
                     - group.light_detskaia
                     - group.light_prikhozhaya

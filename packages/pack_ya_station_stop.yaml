@@ -40,51 +40,51 @@ ya_station_stop_pack:
   automation:
 
     - alias: Stop Yandex Station
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: yandex_intent
           event_data:
             text: Выключи колонку в детской
           id: nursery
-        - platform: event
+        - trigger: event
           event_type: yandex_intent
           event_data:
             text: Выключи колонку в гостиной
           id: livingroom
-        - platform: event
+        - trigger: event
           event_type: yandex_intent
           event_data:
             text: Выключи колонку на кухне
           id: livingroom
-        - platform: event
+        - trigger: event
           event_type: yandex_intent
           event_data:
             text: Выключи колонку в спальне
           id: bedroom
-        - platform: event
+        - trigger: event
           event_type: yandex_intent
           event_data:
             text: Выключи колонку в прихожей
           id: hallway
-      action:
+      actions:
         - choose:
             - conditions: "{{ trigger.id == 'nursery' }}"
               sequence:
-                - service: media_player.turn_off
-                  data:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.yandex_station_lite_detskaia
             - conditions: "{{ trigger.id == 'livingroom' }}"
               sequence:
-                - service: media_player.turn_off
-                  data:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.yandex_station_mini2_gostinaia
             - conditions: "{{ trigger.id == 'bedroom' }}"
               sequence:
-                - service: media_player.turn_off
-                  data:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.yandex_station_mini2_spalnia
             - conditions: "{{ trigger.id == 'hallway' }}"
               sequence:
-                - service: media_player.turn_off
-                  data:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.yandex_station_lite_prikhozhaya

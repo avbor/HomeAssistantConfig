@@ -72,32 +72,32 @@ ble_presence_pack:
 
     - alias: Forgotten car key - Alex
       id: abdaa9e1-cfbc-4c00-b22c-db82f01cd214
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.amazfit_gtr_4_presence
           from: "on"
           to: "off"
-      condition:
+      conditions:
         - condition: state
           entity_id: binary_sensor.holy_iot_white_1_presence
           state: "on"
         - condition: state
           entity_id: binary_sensor.holy_iot_black_1_presence
           state: "off"
-      action:
+      actions:
         - wait_template: "{{ is_state('binary_sensor.holy_iot_white_1_presence', 'off') }}"
           timeout: "00:00:30"
         - if:
             - "{{ not wait.completed }}"
           then:
             - parallel:
-                - service: telegram_bot.send_message
+                - action: telegram_bot.send_message
                   data:
                     target: !secret tlg_stall_id
                     parse_mode: html
                     title: "<b>Внимание!</b>"
                     message: "Возможно, ты забыл ключ от машины!"
-                - service: notify.mobile_app_kb2003
+                - action: notify.mobile_app_kb2003
                   data:
                     title: "Ключ от машины!"
                     message: "Возможно, ты забыл ключ от машины..."
@@ -111,12 +111,12 @@ ble_presence_pack:
 
     - alias: Forgotten school pass reminder - Egor
       id: 0a72e0b9-d7f2-41b9-90b3-5d1a601de887
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.0x158d00031c790f_contact
           from: "on"
           to: "off"
-      condition:
+      conditions:
         - condition: time
           after: "07:30:00"
           before: "08:30:00"
@@ -129,20 +129,20 @@ ble_presence_pack:
         - condition: state
           entity_id: binary_sensor.holy_iot_green_1_presence
           state: "on"
-      action:
+      actions:
         - wait_template: "{{ is_state('binary_sensor.holy_iot_green_1_presence', 'off') }}"
           timeout: "00:00:30"
         - if:
             - "{{ not wait.completed }}"
           then:
             - parallel:
-                - service: telegram_bot.send_message
+                - action: telegram_bot.send_message
                   data:
                     target: !secret tlg_group_flat_1
                     parse_mode: html
                     title: "<b>Внимание!</b>"
                     message: "Возможно, Егор забыл пропуск в школу..."
-                - service: notify.mobile_app_kb2003
+                - action: notify.mobile_app_kb2003
                   data:
                     title: "Пропуск в школу!"
                     message: "Возможно, Егор забыл пропуск в школу..."
@@ -153,8 +153,9 @@ ble_presence_pack:
                       importance: max
                       color: red
                       clickAction: entityId:binary_sensor.holy_iot_green_1_presence
-                - service: media_player.play_media
-                  entity_id: media_player.yandex_station_lite_prikhozhaya
+                - action: media_player.play_media
+                  target:
+                    entity_id: media_player.yandex_station_lite_prikhozhaya
                   data:
                     media_content_id: "Внимание, возможно, Егор забыл пропуск в школу!"
                     media_content_type: text

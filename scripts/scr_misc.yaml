@@ -5,25 +5,25 @@
 reboot_beurer_carecam_01:
   alias: Reboot Beurer CareCam 01
   sequence:
-    - service: shell_command.reboot_beurer_carecam
-      data_template:
+    - action: shell_command.reboot_beurer_carecam
+      data:
         ip_addr: 172.16.16.217
 
 hass_restart:
   alias: Restart Home Assistant
   sequence:
-    - service: homeassistant.restart
+    - action: homeassistant.restart
 
 hass_check_config:
   alias: Check Config
   sequence:
-    - service: homeassistant.check_config
+    - action: homeassistant.check_config
 
 hass_errors_counter_set_at_startup:
   alias: Set Errors Counter at Startup
   sequence:
     - wait_template: "{{ (states('sensor.errors_in_system_log_command_line') | int(-1)) >= 0 }}"
-    - service: counter.set_value
+    - action: counter.set_value
       target:
         entity_id: counter.syslog_errors
       data:
@@ -33,7 +33,7 @@ hass_warnings_counter_set_at_startup:
   alias: Set Warnings Counter at Startup
   sequence:
     - wait_template: "{{ (states('sensor.warnings_in_system_log_command_line') | int(-1)) >= 0 }}"
-    - service: counter.set_value
+    - action: counter.set_value
       target:
         entity_id: counter.syslog_warnings
       data:

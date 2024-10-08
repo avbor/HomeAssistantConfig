@@ -67,7 +67,7 @@ ha_radio:
         - if:
             - "{{ '(TV)' in states('input_select.output_device') }}"
           then:
-            - service: shell_command.chromecast_tv_on
+            - action: shell_command.chromecast_tv_on
               data:
                 ip_addr: >-
                   {% if is_state("input_select.output_device", "Гостинная (TV)") -%}
@@ -75,7 +75,7 @@ ha_radio:
                   {% elif is_state("input_select.output_device", "Детская (TV)") -%}
                     "172.16.16.212"
                   {% endif %}
-        - service: media_player.volume_set
+        - action: media_player.volume_set
           target:
             entity_id: "{{ states('input_text.output_device_to_play') }}"
           data:
@@ -83,24 +83,26 @@ ha_radio:
         - if:
             - "{{ '(Яндекс)' in states('input_select.output_device') }}"
           then:
-            - service: yandex_station.send_command
-              data:
+            - action: yandex_station.send_command
+              target:
                 entity_id: "{{ states('input_text.output_device_to_play') }}"
+              data:
                 command: sendText
                 text: >-
                   Включи радио {{ states('input_select.radio_station') }}
           else:
-            - service: media_player.play_media
-              data:
+            - action: media_player.play_media
+              target:
                 entity_id: "{{ states('input_text.output_device_to_play') }}"
+              data:
                 media_content_id: "{{ states('input_text.radio_url_to_play') }}"
                 media_content_type: music
 
     radio_stop:
       alias: Stop Internet Radio
       sequence:
-        - service: media_player.turn_off
-          data:
+        - action: media_player.turn_off
+          target:
             entity_id: "{{ states('input_text.output_device_to_play') }}"
 
   # Automations
@@ -108,15 +110,16 @@ ha_radio:
 
     - alias: "Radio - Selected Name to URL"
       id: 113d01d2-80b9-4a5e-9745-ad34cb66ea4d
-      trigger:
-        - platform: homeassistant
+      triggers:
+        - trigger: homeassistant
           event: start
-        - platform: state
+        - trigger: state
           entity_id: input_select.radio_station
-      action:
-        - service: input_text.set_value
-          data:
+      actions:
+        - action: input_text.set_value
+          target:
             entity_id: input_text.radio_url_to_play
+          data:
             value: >-
               {% if is_state("input_select.radio_station", "Радио Jazz") -%}
                 http://nashe1.hostingradio.ru/jazz-128.mp3
@@ -140,15 +143,16 @@ ha_radio:
 
     - alias: "Radio - Selected Name to Device"
       id: fda46b3d-2b94-4aeb-b58d-69d537756cd5
-      trigger:
-        - platform: homeassistant
+      triggers:
+        - trigger: homeassistant
           event: start
-        - platform: state
+        - trigger: state
           entity_id: input_select.output_device
       action:
-        - service: input_text.set_value
-          data:
+        - action: input_text.set_value
+          target:
             entity_id: input_text.output_device_to_play
+          data:
             value: >-
               {% if is_state("input_select.output_device", "Гостинная (TV)") -%}
                 media_player.gostinaia
@@ -166,11 +170,12 @@ ha_radio:
 
     - alias: "Radio - Volume Control"
       id: a5915a17-ec28-4adf-a3c3-6ac08f71d11f
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: input_number.volume_radio
-      action:
-        service: media_player.volume_set
-        data:
+      actions:
+        action: media_player.volume_set
+        target:
           entity_id: "{{ states('input_text.output_device_to_play') }}"
+        data:
           volume_level: "{{ states('input_number.volume_radio') }}"

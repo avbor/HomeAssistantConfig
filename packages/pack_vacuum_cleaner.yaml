@@ -94,8 +94,8 @@ vacuum_cleaner:
     start_vacuum_room:
       alias: "Clean Selected Room [Mi Robot]"
       sequence:
-        - service: script.turn_on
-          data_template:
+        - action: script.turn_on
+          target:
             entity_id: >-
               {% if is_state("input_select.room_to_vacuum", "Прихожая") %}
                 script.start_vacuum_hallway
@@ -114,123 +114,138 @@ vacuum_cleaner:
       sequence:
         - delay:
             minutes: 8
-        - service: vacuum.set_fan_speed
-          data:
+        - action: vacuum.set_fan_speed
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
-            fan_speed: Standard
-        - service: script.turn_on
           data:
+            fan_speed: Standard
+        - action: script.turn_on
+          target:
             entity_id: script.start_vacuum_hallway
 
     start_vacuum_hallway:
       alias: "Clean Hallway [Mi Robot]"
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: app_segment_clean
             params: [17]
 
     start_vacuum_nursery:
       alias: "Clean Nursery [Mi Robot]"
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: app_segment_clean
             params: [19]
 
     start_vacuum_living_room:
       alias: "Clean Living Room [Mi Robot]"
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: app_segment_clean
             params: [16]
 
     start_vacuum_kitchen:
       alias: "Clean Kitchen [Mi Robot]"
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: app_segment_clean
             params: [18]
 
     start_vacuum_bedroom:
       alias: "Clean Bedroom [Mi Robot]"
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: app_segment_clean
             params: [20]
 
     set_vacuum_power_silent:
       sequence:
-        service: vacuum.set_fan_speed
-        data:
+        action: vacuum.set_fan_speed
+        target:
           entity_id: vacuum.xiaomi_vacuum_cleaner
+        data:
           fan_speed: Silent
 
     set_vacuum_power_standard:
       sequence:
-        service: vacuum.set_fan_speed
-        data:
+        action: vacuum.set_fan_speed
+        target:
           entity_id: vacuum.xiaomi_vacuum_cleaner
+        data:
           fan_speed: Standard
 
     set_vacuum_power_medium:
       sequence:
-        service: vacuum.set_fan_speed
-        data:
+        action: vacuum.set_fan_speed
+        target:
           entity_id: vacuum.xiaomi_vacuum_cleaner
+        data:
           fan_speed: Medium
 
     set_vacuum_power_turbo:
       sequence:
-        service: vacuum.set_fan_speed
-        data:
+        action: vacuum.set_fan_speed
+        target:
           entity_id: vacuum.xiaomi_vacuum_cleaner
+        data:
           fan_speed: Turbo
 
     set_vacuum_power_gentle:
       sequence:
-        service: vacuum.set_fan_speed
-        data:
+        action: vacuum.set_fan_speed
+        target:
           entity_id: vacuum.xiaomi_vacuum_cleaner
+        data:
           fan_speed: Gentle
 
     reset_main_brush_left:
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: reset_consumable
             params: ["main_brush_work_time"]
 
     reset_side_brush_work_time:
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: reset_consumable
             params: ["side_brush_work_time"]
 
     reset_filter_work_time:
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: reset_consumable
             params: ["filter_work_time"]
 
     reset_sensor_dirty_time:
       sequence:
-        - service: vacuum.send_command
-          data:
+        - action: vacuum.send_command
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
+          data:
             command: reset_consumable
             params: ["sensor_dirty_time"]
 
@@ -239,16 +254,16 @@ vacuum_cleaner:
 
     - alias: "Оповещение о начале уборки"
       id: 61fb954b-3450-4fc6-9848-cc5304b54a16
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
         to: "cleaning"
-      condition:
+      conditions:
         condition: template
         value_template: >
           {{ trigger.from_state.state != 'unavailable'}}
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             message: "_Mi Robot_: начал уборку."
@@ -257,19 +272,20 @@ vacuum_cleaner:
 
     - alias: "Vacuum - Telegram Control - Stop"
       id: 78e4ee4f-d0d7-4d23-9e3c-4ec125f19400
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/vacuum_stop"
-      action:
-        - service: vacuum.pause
-          entity_id: vacuum.xiaomi_vacuum_cleaner
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: vacuum.pause
+          target:
+            entity_id: vacuum.xiaomi_vacuum_cleaner
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "Команда отправлена"
-        - service: telegram_bot.edit_message
+        - action: telegram_bot.edit_message
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
@@ -281,22 +297,24 @@ vacuum_cleaner:
 
     - alias: "Vacuum - Telegram Control - Go to Base"
       id: 0b1fd434-4044-4ce7-ab8a-262d6250407a
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/vacuum_go_home"
-      action:
-        - service: vacuum.pause
-          entity_id: vacuum.xiaomi_vacuum_cleaner
+      actions:
+        - action: vacuum.pause
+          target:
+            entity_id: vacuum.xiaomi_vacuum_cleaner
         - delay: 1
-        - service: vacuum.return_to_base
-          entity_id: vacuum.xiaomi_vacuum_cleaner
-        - service: telegram_bot.answer_callback_query
-          data_template:
+        - action: vacuum.return_to_base
+          target:
+            entity_id: vacuum.xiaomi_vacuum_cleaner
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "Команда отправлена"
-        - service: telegram_bot.edit_message
+        - action: telegram_bot.edit_message
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
@@ -306,63 +324,62 @@ vacuum_cleaner:
 
     - alias: "Оповещение о возращении пылесоса на базу [notify to group flat]"
       id: 68311ec4-1030-4d7d-a2ea-e9cb21f7f40c
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
         to: "docked"
-      condition:
+      conditions:
         condition: template
         value_template: >
           {{ trigger.from_state.state != 'unavailable'}}
-      action:
-        - service: notify.telegram_group_flat_1
+      actions:
+        - action: notify.telegram_group_flat_1
           data:
             message: "_Mi Robot_: вернулся на базу (закончил уборку)."
 
     - alias: "Оповещение о забытом пылесосе [notify to group flat]"
       id: db76ec80-b5d6-4991-8a6c-9272b25c1a39
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
         to: "idle"
         for:
           minutes: 15
-      action:
-        - service: notify.telegram_group_flat_1
+      actions:
+        - action: notify.telegram_group_flat_1
           data:
             message: "_Mi Robot_: потерялся и бездельничает, отправляем на базу."
-        - service: vacuum.return_to_base
-          data:
+        - action: vacuum.return_to_base
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
 
     - alias: "Оповещение об ошибке [notify to group flat]"
       id: fe6bb5c1-f886-4161-bad7-4bf04be83258
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: vacuum.xiaomi_vacuum_cleaner
         to: "error"
-      condition:
+      conditions:
         condition: template
         value_template: >
           {{ trigger.from_state.state != 'unavailable'}}
-      action:
-        - service: notify.telegram_group_flat_1
-          data_template:
+      actions:
+        - action: notify.telegram_group_flat_1
+          data:
             message: |
               _Mi Robot_: Произошла *ошибка*!
               {{ state_attr('vacuum.xiaomi_vacuum_cleaner', "error") }}
 
     - alias: "Ежедневная уборка по будням [утро]"
       id: 67acac52-bf44-4661-9140-2e40f0006175
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: group.family_persons
         to: "not_home"
         for:
           minutes: 20
-      condition:
-        condition: and
-        conditions:
+      conditions:
+        - and:
           - condition: time
             after: "08:30:00"
             before: "10:30:00"
@@ -374,50 +391,49 @@ vacuum_cleaner:
               - fri
           - condition: template
             value_template: "{{ now().day != states.automation.ezhednevnaia_uborka_po_budniam_utro.attributes.last_triggered.day | default(0) }}"
-      action:
-        - service: vacuum.set_fan_speed
-          data:
+      actions:
+        - action: vacuum.set_fan_speed
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
-            fan_speed: Turbo
-        - service: vacuum.start
           data:
+            fan_speed: Turbo
+        - action: vacuum.start
+          target:
             entity_id: vacuum.xiaomi_vacuum_cleaner
 
     - alias: "Регулярная уборка прихожей"
       id: 6c64060c-0a65-4caf-8064-1d5cdfea50a3
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.0x158d00031c790f_contact
         from: "on"
         to: "off"
-      condition:
-        condition: and
-        conditions:
+      conditions:
+        - and:
           - condition: time
             after: "09:30:00"
             before: "21:30:00"
           - condition: template
             value_template: '{{ (as_timestamp(now())-(as_timestamp(state_attr("automation.reguliarnaia_uborka_prikhozhei", "last_triggered")))>480) }}'
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id: vacuum.xiaomi_vacuum_cleaner
-                state: "docked"
-              - condition: state
-                entity_id: vacuum.xiaomi_vacuum_cleaner
-                state: "idle"
-      action:
-        - service: script.turn_on
-          data:
+          - or:
+            - condition: state
+              entity_id: vacuum.xiaomi_vacuum_cleaner
+              state: "docked"
+            - condition: state
+              entity_id: vacuum.xiaomi_vacuum_cleaner
+              state: "idle"
+      actions:
+        - action: script.turn_on
+          target:
             entity_id: script.start_vacuum_hallway_by_door_sensor
 
     - alias: "Set cleaning mode"
       id: 8fef5cc1-030e-4549-91b4-ffe25207672c
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: input_select.vacuum_power
-      action:
-        - service: >
+      actions:
+        - action: >
             {% if trigger.to_state.state == 'Silent' %}
               script.set_vacuum_power_silent
             {% elif trigger.to_state.state == 'Standard' %}

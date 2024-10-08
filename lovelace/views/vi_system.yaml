@@ -127,7 +127,8 @@ cards:
                 name: GitHub Autocommit
               - type: conditional
                 conditions:
-                  - entity: input_boolean.git_autocommit
+                  - condition: state
+                    entity: input_boolean.git_autocommit
                     state: "on"
                 row:
                   entity: timer.git_time_to_push

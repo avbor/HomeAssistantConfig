@@ -46,13 +46,15 @@ ya_music_pack:
         - if:
             - "{{ '(Яндекс)' in states('input_select.yandex_station_start_stream_to') }}"
           then:
-            - service: media_player.volume_set
-              data:
+            - action: media_player.volume_set
+              target:
                 entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
+              data:
                 volume_level: "{{ states('input_number.volume_ya_music') }}"
-            - service: yandex_station.send_command
-              data:
+            - action: yandex_station.send_command
+              target:
                 entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
+              data:
                 command: sendText
                 text: >-
                   Включи {{ states('input_text.yandex_station_start_stream_query') }}
@@ -60,11 +62,12 @@ ya_music_pack:
             - if:
                 - "{{ 'Мини в Ванной' in states('input_text.yandex_station_device_to_play') }}"
               then:
-                - service: media_player.volume_set
-                  data:
+                - action: media_player.volume_set
+                  target:
                     entity_id: media_player.mini_v_vannoi
+                  data:
                     volume_level: "{{ states('input_number.volume_ya_music') }}"
-            - service: script.alice_start_stream_from_prikhozhaya
+            - action: script.alice_start_stream_from_prikhozhaya
 
     ya_music_stop:
       alias: Stop Ya Music
@@ -72,12 +75,12 @@ ya_music_pack:
         - if:
             - "{{ 'Мини в Ванной' in states('input_text.yandex_station_device_to_play') }}"
           then:
-            - service: media_player.turn_off
-              data:
+            - action: media_player.turn_off
+              target:
                 entity_id: media_player.mini_v_vannoi
           else:
-            - service: media_player.turn_off
-              data:
+            - action: media_player.turn_off
+              target:
                 entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
 
     alice_start_stream_from_prikhozhaya:
@@ -89,7 +92,7 @@ ya_music_pack:
           then:
             - repeat:
                 sequence:
-                  - service: media_player.select_source
+                  - action: media_player.select_source
                     target:
                       entity_id: media_player.yandex_station_lite_prikhozhaya
                     data:
@@ -106,9 +109,10 @@ ya_music_pack:
           then:
             - repeat:
                 sequence:
-                  - service: media_player.volume_set
-                    data:
+                  - action: media_player.volume_set
+                    target:
                       entity_id: media_player.yandex_station_lite_prikhozhaya
+                    data:
                       volume_level: 0.1
                   - wait_template: "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'volume_level') == 0.1 }}"
                     timeout: "00:00:01"
@@ -121,7 +125,7 @@ ya_music_pack:
           then:
             - repeat:
                 sequence:
-                  - service: media_player.volume_mute
+                  - action: media_player.volume_mute
                     target:
                       entity_id: media_player.yandex_station_lite_prikhozhaya
                     data:
@@ -132,7 +136,7 @@ ya_music_pack:
                   - "{{ state_attr('media_player.yandex_station_lite_prikhozhaya', 'is_volume_muted') == true }}"
                   - "{{ repeat.index <= 3 }}"
 
-        - service: yandex_station.send_command
+        - action: yandex_station.send_command
           target:
             entity_id: media_player.yandex_station_lite_prikhozhaya
           data:
@@ -145,7 +149,7 @@ ya_music_pack:
         - if:
             - "{{ not wait.completed }}"
           then:
-            - service: media_player.media_pause
+            - action: media_player.media_pause
               target:
                 entity_id: media_player.yandex_station_lite_prikhozhaya
 
@@ -154,15 +158,16 @@ ya_music_pack:
 
     - alias: "Ya Music - Selected Name to Device"
       id: 2a16fa66-67a7-4960-95b0-9b766528f44d
-      trigger:
-        - platform: homeassistant
+      triggers:
+        - trigger: homeassistant
           event: start
-        - platform: state
+        - trigger: state
           entity_id: input_select.yandex_station_start_stream_to
-      action:
-        - service: input_text.set_value
-          data:
+      actions:
+        - action: input_text.set_value
+          target:
             entity_id: input_text.yandex_station_device_to_play
+          data:
             value: >-
               {% if is_state("input_select.yandex_station_start_stream_to", "Ванная (Home Mini)") -%}
                 Мини в Ванной
@@ -176,40 +181,42 @@ ya_music_pack:
 
     - alias: "Ya Music - Volume Control"
       id: 0303b471-3e9c-436a-84c0-cc5784eee706
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: input_number.volume_ya_music
-      action:
+      actions:
         - if:
             - "{{ 'Мини в Ванной' in states('input_text.yandex_station_device_to_play') }}"
           then:
-            - service: media_player.volume_set
-              data:
+            - action: media_player.volume_set
+              target:
                 entity_id: media_player.mini_v_vannoi
+              data:
                 volume_level: "{{ states('input_number.volume_ya_music') }}"
           else:
-            - service: media_player.volume_set
-              data:
+            - action: media_player.volume_set
+              target:
                 entity_id: "{{ states('input_text.yandex_station_device_to_play') }}"
+              data:
                 volume_level: "{{ states('input_number.volume_ya_music') }}"
 
     - alias: Синхронизация состояния Алисы в Прихожей с Мини в Ванной
       id: 82c05e64-0259-4f54-8d17-952d241ef34e
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: media_player.mini_v_vannoi
           from: playing
           to: "off"
-      condition:
+      conditions:
         condition: state
         entity_id: media_player.yandex_station_lite_prikhozhaya
         state: playing
-      action:
-        - service: media_player.media_pause
+      actions:
+        - action: media_player.media_pause
           target:
             entity_id: media_player.yandex_station_lite_prikhozhaya
         - delay: "00:00:01"
-        - service: media_player.select_source
+        - action: media_player.select_source
           target:
             entity_id: media_player.yandex_station_lite_prikhozhaya
           data:

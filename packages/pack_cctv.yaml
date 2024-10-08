@@ -14,7 +14,7 @@ cctv_pack:
   template:
 
     - trigger:
-        - platform: webhook
+        - trigger: webhook
           webhook_id: !secret sss_reolinkcam_01_webhook
           local_only: true
       unique_id: b0db0ecc-27e6-46aa-b157-640f02effd80
@@ -56,7 +56,7 @@ cctv_pack:
           example: "326a677d-cdeb-46b6-bd34-0e8293a1c121.jpg"
       sequence:
         - parallel:
-            - service: media_player.play_media
+            - action: media_player.play_media
               target:
                 entity_id: media_player.yandex_station_lite_prikhozhaya
               data:
@@ -76,7 +76,7 @@ cctv_pack:
                     {% else -%}
                       0.7
                     {% endif -%}
-            - service: telegram_bot.send_photo
+            - action: telegram_bot.send_photo
               data:
                 target: !secret tlg_group_flat_1
                 url: >-
@@ -87,43 +87,43 @@ cctv_pack:
 
     - alias: Catch Possible Frigate FFmpeg Errors
       id: ad6c6761-94ba-4edb-b744-b844c5f0d2d6
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.frigate_reolinkcam_02_ffmpeg_problem
           from: "off"
           to: "on"
-      action:
+      actions:
         - parallel:
-            - service: telegram_bot.send_message
+            - action: telegram_bot.send_message
               data:
                 target: !secret tlg_group_system
                 title: "*Frigate Warning!*"
                 message: |
                   Возможна проблема с камерой Reolink 02,
                   будет выполнена попытка перезагрузки Frigate.
-            - service: shell_command.restart_frigate_srv01
+            - action: shell_command.restart_frigate_srv01
 
     - alias: Движение в детской
       id: 6166ef07-c478-44e3-a226-24d7737d6646
       initial_state: false
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.0x158d00044cea8e_motion
         from: "off"
         to: "on"
-      action:
-        - service: notify.telegram_group_flat_1
+      actions:
+        - action: notify.telegram_group_flat_1
           data:
             message: "В *Детской* обнаружено движение:"
-        - service: notify.telegram_group_flat_1
-          data_template:
+        - action: notify.telegram_group_flat_1
+          data:
             message: "Camera Snapshot 1"
             data:
               photo:
                 - url: !secret dafangcam_03_snapshot_url
         - delay:
             seconds: 1
-        - service: notify.telegram_group_flat_1
+        - action: notify.telegram_group_flat_1
           data:
             message: "Camera Snapshot 2"
             data:
@@ -131,7 +131,7 @@ cctv_pack:
                 - url: !secret dafangcam_03_snapshot_url
         - delay:
             seconds: 1
-        - service: notify.telegram_group_flat_1
+        - action: notify.telegram_group_flat_1
           data:
             message: "Camera Snapshot 3"
             data:
@@ -140,62 +140,64 @@ cctv_pack:
 
     - alias: "Вкл контроль движения в детской"
       id: f46ce78b-11b1-42e9-b217-34ed6eabb7bb
-      trigger:
-        platform: time
+      triggers:
+        trigger: time
         at: "23:30:00"
-      action:
-        - service: automation.turn_on
-          entity_id: automation.dvizhenie_v_detskoi
+      actions:
+        - action: automation.turn_on
+          target:
+            entity_id: automation.dvizhenie_v_detskoi
 
     - alias: "Выкл контроль движения в детской"
       id: 0ffb0c86-cd64-4990-9571-da1799709488
-      trigger:
-        platform: time
+      triggers:
+        trigger: time
         at: "07:00:00"
-      action:
-        - service: automation.turn_off
-          entity_id: automation.dvizhenie_v_detskoi
+      actions:
+        - action: automation.turn_off
+          target:
+            entity_id: automation.dvizhenie_v_detskoi
 
     - alias: Вход в квартиру
       id: 47a5b56e-5c41-4ae6-a3c2-25984c67b1b5
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.0x158d00031c790f_contact
         from: "off"
         to: "on"
-      condition:
+      conditions:
         - condition: state
           entity_id: binary_sensor.0x158d000309920a_motion
           state: "off"
-      action:
+      actions:
         - delay:
             seconds: 3
-        - service: notify.telegram_group_flat_1
-          data_template:
+        - action: notify.telegram_group_flat_1
+          data:
             message: "Camera Snapshot 1"
             data:
               photo:
                 - url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 1
-        - service: notify.telegram_group_flat_1
-          data_template:
+        - action: notify.telegram_group_flat_1
+          data:
             message: "Camera Snapshot 2"
             data:
               photo:
                 - url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 2
-        - service: notify.telegram_group_flat_1
-          data_template:
+        - action: notify.telegram_group_flat_1
+          data:
             message: "Camera Snapshot 3"
             data:
               photo:
                 - url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 3
-        - service: notify.telegram_group_flat_1
-          data_template:
+        - action: notify.telegram_group_flat_1
+          data:
             message: "Camera Snapshot 4"
             data:
               photo:
@@ -203,60 +205,60 @@ cctv_pack:
 
     - alias: "DafangCam-02 Turn Off Night Mode by Light"
       id: ff6813b7-a4a7-4682-bacb-c28290e43f88
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: light.sonoff_1000f2f14a
         to: "on"
-      action:
-        - service: switch.turn_off
-          data:
+      actions:
+        - action: switch.turn_off
+          target:
             entity_id: switch.dafangcam02_night_mode
-        - service: switch.turn_on
-          data:
+        - action: switch.turn_on
+          target:
             entity_id: switch.dafangcam02_ir_filter
-        - service: switch.turn_off
-          data:
+        - action: switch.turn_off
+          target:
             entity_id: switch.dafangcam02_ir_led
 
     - alias: "Staircase - Person detected"
       id: 56d572c7-3750-4988-8294-aa241a4f4b31
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.reolinkcam_01_person_occupancy
           from: "off"
           to: "on"
-      action:
+      actions:
         - parallel:
             - sequence:
                 - delay:
                     seconds: 1
-                - service: telegram_bot.send_message
+                - action: telegram_bot.send_message
                   data:
                     target: !secret tlg_group_staircase
                     message: |
                       {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
                       Обнаружен человек на лестничной клетке:
-                - service: telegram_bot.send_photo
+                - action: telegram_bot.send_photo
                   data:
                     target: !secret tlg_group_staircase
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
             - sequence:
-                - service: telegram_bot.send_video
+                - action: telegram_bot.send_video
                   data:
                     target: !secret tlg_group_staircase
                     url: !secret go2rtc_reolinkcam_01_mp4_7s
 
     - alias: "Staircase - Send recorded video"
       id: 692afba6-c94d-477f-9ac4-d064643898ce
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: folder_watcher
         event_data:
           event_type: deleted
           file: staircase_movement.mp4.tmp
-      action:
-        - service: telegram_bot.send_video
+      actions:
+        - action: telegram_bot.send_video
           data:
             target: !secret tlg_group_staircase
             file: /config/video/staircase_movement.mp4
@@ -267,8 +269,8 @@ cctv_pack:
       id: 1550b036-824f-47d8-9dcf-674b475c5060
       mode: single
       max_exceeded: silent
-      trigger:
-        - platform: mqtt
+      triggers:
+        - trigger: mqtt
           topic: frigate_srv01/events
           payload: "reolinkcam_01"
           value_template: "{{ value_json['after']['camera'] }}"
@@ -278,17 +280,17 @@ cctv_pack:
         target_chat: !secret tlg_group_staircase
         type: "{{ trigger.payload_json['type'] }}"
         base_url: !secret external_url
-      condition:
+      conditions:
         - "{{ type != 'end' }}"
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: "{{ target_chat }}"
             message: |
               {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
               Обнаружено движение на лестничной клетке,
               (ID: {{ id }}):
-        - service: telegram_bot.send_photo
+        - action: telegram_bot.send_photo
           data:
             target: "{{ target_chat }}"
             url: >-
@@ -296,7 +298,7 @@ cctv_pack:
         - repeat:
             sequence:
               - wait_for_trigger:
-                  - platform: mqtt
+                  - trigger: mqtt
                     topic: frigate_srv01/events
                     payload: "{{ id }}"
                     value_template: "{{ value_json['after']['id'] }}"
@@ -305,7 +307,7 @@ cctv_pack:
                 continue_on_timeout: false
               - condition: template
                 value_template: "{{ wait.trigger.payload_json['type'] == 'end' }}"
-              - service: telegram_bot.send_video
+              - action: telegram_bot.send_video
                 data:
                   target: "{{ target_chat }}"
                   url: >-
@@ -316,27 +318,27 @@ cctv_pack:
       id: 8431232f-319a-4184-94e9-bc070403eec4
       mode: queued
       max: 5
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.double_take_alexander_b
           to: "dafangcam_02"
           id: "alex"
-        - platform: state
+        - trigger: state
           entity_id: sensor.double_take_irina_b
           to: "dafangcam_02"
           id: "irina"
-      condition:
+      conditions:
         - condition: template
           value_template: >-
             {{ (as_timestamp(now()) - as_timestamp(as_local(states['binary_sensor.0x158d00031c790f_contact'].last_changed))) < 90 }}
-      action:
+      actions:
         - choose:
             - conditions:
                 - "{{ trigger.id == 'alex' }}"
                 - "{{ is_state('person.alexander', 'home') }}"
                 - "{{ (as_timestamp(now()) - as_timestamp(as_local(states.person.alexander.last_changed))) < 600 }}"
               sequence:
-                - service: script.homecoming_greeting
+                - action: script.homecoming_greeting
                   data:
                     pers_name: "Александр"
                     match_filename: "{{ trigger.to_state.attributes.match.filename }}"
@@ -345,7 +347,7 @@ cctv_pack:
                 - "{{ is_state('person.irina', 'home') }}"
                 - "{{ (as_timestamp(now()) - as_timestamp(as_local(states.person.irina.last_changed))) < 600 }}"
               sequence:
-                - service: script.homecoming_greeting
+                - action: script.homecoming_greeting
                   data:
                     pers_name: "Ирина"
                     match_filename: "{{ trigger.to_state.attributes.match.filename }}"

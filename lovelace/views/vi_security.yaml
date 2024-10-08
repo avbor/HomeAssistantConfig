@@ -17,7 +17,8 @@ cards:
           action: toggle
       - type: conditional
         conditions:
-          - entity: input_boolean.staircase_show_last_person
+          - condition: state
+            entity: input_boolean.staircase_show_last_person
             state: "on"
         card:
           type: picture-entity

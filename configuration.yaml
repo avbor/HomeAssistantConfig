@@ -112,6 +112,10 @@ recorder:
       - input_number.*_window_light_illuminance_threshold
       - input_number.*_covers_illuminance_threshold
       - sensor.*_target_distance
+      - sensor.sonoff_pow_r3_*_voltage
+      - sensor.sonoff_pow_r3_*_total_daily_energy
+      - sensor.sonoff_pow_r3_*_energy
+      - sensor.sonoff_pow_r3_*_apparent_power
     entities:
       - sensor.time
       - sensor.date

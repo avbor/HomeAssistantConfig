@@ -28,12 +28,12 @@ usb_conbee2_pack:
 
     - alias: "ConBee2: Attach USB Stick to HA VM"
       id: 0103f99c-5100-43f5-8c08-b35ef3175ec5
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.conbee2_usb_stick_exist
           to: 'off'
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_system
             title: "*Внимание!*"
@@ -41,7 +41,7 @@ usb_conbee2_pack:
               ConBee II отключен от VM, будет запущен процесс автоматического подключения.
         - repeat:
             sequence:
-              - service: shell_command.attach_conbee2_to_ha_vm
+              - action: shell_command.attach_conbee2_to_ha_vm
               - delay: "00:03:00"
             until:
               - condition: state
@@ -50,13 +50,13 @@ usb_conbee2_pack:
 
     - alias: "ConBee2: USB Stick Attached to HA VM"
       id: 052b6f8e-a580-4470-9efa-4f097fb163aa
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.conbee2_usb_stick_exist
           from: 'off'
           to: 'on'
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_system
             title: "*Внимание!*"
@@ -68,10 +68,10 @@ usb_conbee2_pack:
     - alias: "ConBee2: USB Device Errors in Log"
       id: 5cc751d0-a514-480f-9bdc-6c2bd17a7f0d
       mode: queued
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: system_log_event
-      condition:
+      conditions:
         - condition: template
           value_template: >-
             {{ 
@@ -82,8 +82,8 @@ usb_conbee2_pack:
             {{ 
               trigger.event.data.message | regex_search('Lost connection: SerialException')
             }}
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_system
             parse_mode: html
@@ -96,38 +96,38 @@ usb_conbee2_pack:
             
     - alias: "ConBee2 - Restart HA"
       id: 7ab7e3b6-5674-4ece-a28b-80a96d0239eb
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/cb2_ha_restart"
-      action:
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "Команда отправлена"
-        - service: telegram_bot.edit_replymarkup
+        - action: telegram_bot.edit_replymarkup
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
             inline_keyboard: []
-        - service: homeassistant.restart
+        - action: homeassistant.restart
           
     - alias: "ConBee2 - Reboot VM"
       id: 402ef2b9-e133-4eff-ba96-39a69f046be5
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/cb2_vm_reboot"
-      action:
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "Команда отправлена"
-        - service: telegram_bot.edit_replymarkup
+        - action: telegram_bot.edit_replymarkup
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
             inline_keyboard: []
-        - service: hassio.host_reboot
+        - action: hassio.host_reboot

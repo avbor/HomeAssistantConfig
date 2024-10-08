@@ -69,7 +69,7 @@ water_meters_pack:
   template:
 
     - trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - sensor.saures_water_meter_13193152_hot
           not_to:
@@ -89,7 +89,7 @@ water_meters_pack:
             {% endif %}
 
     - trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - sensor.saures_water_meter_09_104476_cold
           not_to:
@@ -112,11 +112,11 @@ water_meters_pack:
   automation:
     - alias: Update Saures Sensors after HA Start
       id: c0192c64-d64b-45b6-ab2e-91170c12f591
-      trigger:
-        - platform: homeassistant
+      triggers:
+        - trigger: homeassistant
           event: start
-      action:
+      actions:
         - wait_template: "{{ has_value('sensor.saures_api_sid') }}"
-        - service: homeassistant.update_entity
+        - action: homeassistant.update_entity
           target:
             entity_id: sensor.saures_controller_1113513_battery

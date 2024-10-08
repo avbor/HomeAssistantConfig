@@ -8,28 +8,28 @@ samsungtv_pack:
   automation:
     # Turn On actions
     - alias: "Samsung TV ue43ru7470 Turn On"
-      trigger:
-        - platform: samsungtv.turn_on
+      triggers:
+        - trigger: samsungtv.turn_on
           entity_id: media_player.ue43ru7470
-      action:
-        - service: wake_on_lan.send_magic_packet
+      actions:
+        - action: wake_on_lan.send_magic_packet
           data:
             mac: 8c:79:f5:51:2f:d1
 
     - alias: "Samsung TV ue32es5500 Turn On"
-      trigger:
-        - platform: samsungtv.turn_on
+      triggers:
+        - trigger: samsungtv.turn_on
           entity_id: media_player.ue32es5500
-      action:
-        - service: shell_command.chromecast_tv_on
+      actions:
+        - action: shell_command.chromecast_tv_on
           data:
             ip_addr: "172.16.16.194"
 
     - alias: "Samsung TV ue46es5507 Turn On"
-      trigger:
-        - platform: samsungtv.turn_on
+      triggers:
+        - trigger: samsungtv.turn_on
           entity_id: media_player.ue46es5507
-      action:
-        - service: shell_command.chromecast_tv_on
+      actions:
+        - action: shell_command.chromecast_tv_on
           data:
             ip_addr: "172.16.16.211"

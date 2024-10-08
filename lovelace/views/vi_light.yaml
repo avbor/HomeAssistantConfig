@@ -20,7 +20,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.sonoff_1000f2f14a
+              - condition: state
+                entity: light.sonoff_1000f2f14a
                 state_not: "unavailable"
             card:
               type: light
@@ -29,7 +30,8 @@ cards:
               icon: mdi:light-recessed
           - type: conditional
             conditions:
-              - entity: light.sonoff_1000f2a500
+              - condition: state
+                entity: light.sonoff_1000f2a500
                 state_not: "unavailable"
             card:
               type: light
@@ -51,7 +53,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.ikea_e27_detskaia
+              - condition: state
+                entity: light.ikea_e27_detskaia
                 state_not: "unavailable"
             card:
               type: light
@@ -62,7 +65,8 @@ cards:
             cards:
               - type: conditional
                 conditions:
-                  - entity: light.ikea_e14_level_light_color_on_off
+                  - condition: state
+                    entity: light.ikea_e14_level_light_color_on_off
                     state_not: "unavailable"
                 card:
                   type: light
@@ -71,7 +75,8 @@ cards:
                   icon: mdi:desk-lamp
               - type: conditional
                 conditions:
-                  - entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
+                  - condition: state
+                    entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light
                     state_not: "unavailable"
                 card:
                   type: light
@@ -82,7 +87,8 @@ cards:
             cards:
               - type: conditional
                 conditions:
-                  - entity: light.detskaia_podsvetka_na_okne
+                  - condition: state
+                    entity: light.detskaia_podsvetka_na_okne
                     state_not: "unavailable"
                 card:
                   type: light
@@ -91,7 +97,8 @@ cards:
                   icon: mdi:string-lights
               - type: conditional
                 conditions:
-                  - entity: light.detskaia_girlianda_na_krovati
+                  - condition: state
+                    entity: light.detskaia_girlianda_na_krovati
                     state_not: "unavailable"
                 card:
                   type: light
@@ -107,7 +114,8 @@ cards:
               action: toggle
           - type: conditional
             conditions:
-              - entity: input_boolean.nursery_light_show_settings
+              - condition: state
+                entity: input_boolean.nursery_light_show_settings
                 state: "on"
             card:
               type: entities
@@ -123,7 +131,8 @@ cards:
                   icon: mdi:weather-sunset-up
                 - type: conditional
                   conditions:
-                    - entity: automation.sunrise_lighting_nursery
+                    - condition: state
+                      entity: automation.sunrise_lighting_nursery
                       state: "on"
                   row:
                     entity: input_datetime.sunrise_in_nursery
@@ -134,14 +143,16 @@ cards:
                   icon: mdi:radio
                 - type: conditional
                   conditions:
-                    - entity: automation.wakeup_radio_childrens
+                    - condition: state
+                      entity: automation.wakeup_radio_childrens
                       state: "on"
                   row:
                     entity: input_datetime.wakeup_radio_in_nursery
                     name: "Время включения радио"
                 - type: conditional
                   conditions:
-                    - entity: automation.wakeup_radio_childrens
+                    - condition: state
+                      entity: automation.wakeup_radio_childrens
                       state: "on"
                   row:
                     entity: input_text.wakeup_radio_in_nursery_query
@@ -158,7 +169,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.sonoff_1000f30a9e
+              - condition: state
+                entity: light.sonoff_1000f30a9e
                 state_not: "unavailable"
             card:
               type: light
@@ -170,7 +182,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.sonoff_1000f3035d
+              - condition: state
+                entity: light.sonoff_1000f3035d
                 state_not: "unavailable"
             card:
               type: light
@@ -179,7 +192,8 @@ cards:
               icon: mdi:ceiling-light
           - type: conditional
             conditions:
-              - entity: light.sonoff_1000ab3c28
+              - condition: state
+                entity: light.sonoff_1000ab3c28
                 state_not: "unavailable"
             card:
               type: light
@@ -191,7 +205,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.ikea_e27_level_light_color_on_off
+              - condition: state
+                entity: light.ikea_e27_level_light_color_on_off
                 state_not: "unavailable"
             card:
               type: light
@@ -200,7 +215,8 @@ cards:
               icon: mdi:desk-lamp
           - type: conditional
             conditions:
-              - entity: light.gostinaia_podsvetka_na_okne
+              - condition: state
+                entity: light.gostinaia_podsvetka_na_okne
                 state_not: "unavailable"
             card:
               type: light
@@ -217,7 +233,8 @@ cards:
           action: toggle
       - type: conditional
         conditions:
-          - entity: input_boolean.livingroom_light_show_settings
+          - condition: state
+            entity: input_boolean.livingroom_light_show_settings
             state: "on"
         card:
           type: entities
@@ -235,7 +252,8 @@ cards:
           ### <center>Кухня</center>
       - type: conditional
         conditions:
-          - entity: light.sonoff_1000b72483
+          - condition: state
+            entity: light.sonoff_1000b72483
             state_not: "unavailable"
         card:
           type: light
@@ -246,7 +264,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.ikea_e27_kukhnia
+              - condition: state
+                entity: light.ikea_e27_kukhnia
                 state_not: "unavailable"
             card:
               type: light
@@ -255,7 +274,8 @@ cards:
               icon: mdi:ceiling-light
           - type: conditional
             conditions:
-              - entity: light.kukhnia_lenta
+              - condition: state
+                entity: light.kukhnia_lenta
                 state_not: "unavailable"
             card:
               type: light
@@ -271,7 +291,8 @@ cards:
           action: toggle
       - type: conditional
         conditions:
-          - entity: input_boolean.kitchen_light_show_settings
+          - condition: state
+            entity: input_boolean.kitchen_light_show_settings
             state: "on"
         card:
           type: entities
@@ -303,7 +324,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.sonoff_1001053235
+              - condition: state
+                entity: light.sonoff_1001053235
                 state_not: "unavailable"
             card:
               type: light
@@ -314,7 +336,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.sonoff_01minizb_47ef08fe_on_off
+              - condition: state
+                entity: light.sonoff_01minizb_47ef08fe_on_off
                 state_not: "unavailable"
             card:
               type: light
@@ -323,7 +346,8 @@ cards:
               icon: mdi:wall-sconce-flat
           - type: conditional
             conditions:
-              - entity: light.sonoff_1001045426
+              - condition: state
+                entity: light.sonoff_1001045426
                 state_not: "unavailable"
             card:
               type: light
@@ -334,7 +358,8 @@ cards:
         cards:
           - type: conditional
             conditions:
-              - entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
+              - condition: state
+                entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
                 state_not: "unavailable"
             card:
               type: light
@@ -343,7 +368,8 @@ cards:
               icon: mdi:lamp
           - type: conditional
             conditions:
-              - entity: light.spalnia_stol
+              - condition: state
+                entity: light.spalnia_stol
                 state_not: "unavailable"
             card:
               type: vertical-stack
@@ -361,12 +387,14 @@ cards:
           action: toggle
       - type: conditional
         conditions:
-          - entity: input_boolean.bedroom_light_show_settings
+          - condition: state
+            entity: input_boolean.bedroom_light_show_settings
             state: "on"
         card:
           type: conditional
           conditions:
-            - entity: light.spalnia_stol
+            - condition: state
+              entity: light.spalnia_stol
               state_not: "unavailable"
           card:
             type: vertical-stack
@@ -378,7 +406,8 @@ cards:
                     icon: mdi:weather-sunset-up
                   - type: conditional
                     conditions:
-                      - entity: automation.sunrise_lighting_bedroom
+                      - condition: state
+                        entity: automation.sunrise_lighting_bedroom
                         state: "on"
                     row:
                       entity: input_datetime.sunrise_in_bedroom
@@ -396,7 +425,8 @@ cards:
             cards:
               - type: conditional
                 conditions:
-                  - entity: light.sonoff_zbmini_03_on_off
+                  - condition: state
+                    entity: light.sonoff_zbmini_03_on_off
                     state_not: "unavailable"
                 card:
                   type: light
@@ -405,7 +435,8 @@ cards:
                   icon: mdi:light-recessed
               - type: conditional
                 conditions:
-                  - entity: fan.toilet_extractor
+                  - condition: state
+                    entity: fan.toilet_extractor
                     state_not: "unavailable"
                 card:
                   type: entities
@@ -420,7 +451,8 @@ cards:
             cards:
               - type: conditional
                 conditions:
-                  - entity: light.sonoff_zbmini_04_on_off
+                  - condition: state
+                    entity: light.sonoff_zbmini_04_on_off
                     state_not: "unavailable"
                 card:
                   type: light
@@ -429,7 +461,8 @@ cards:
                   icon: mdi:light-recessed
               - type: conditional
                 conditions:
-                  - entity: fan.bathroom_extractor
+                  - condition: state
+                    entity: fan.bathroom_extractor
                     state_not: "unavailable"
                 card:
                   type: entities
@@ -449,7 +482,8 @@ cards:
           ### <center>Кладовая</center>
       - type: conditional
         conditions:
-          - entity: light.sonoff_1000b6831b
+          - condition: state
+            entity: light.sonoff_1000b6831b
             state_not: "unavailable"
         card:
           type: light

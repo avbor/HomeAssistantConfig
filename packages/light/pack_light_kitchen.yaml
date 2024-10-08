@@ -18,14 +18,14 @@ kitchen_light_pack:
       mode: queued
       max: 5
       max_exceeded: silent
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: zha_event
           event_data:
             device_ieee: "00:15:8d:00:03:5f:f6:31"
             command: "click"
           id: "click"
-      action:
+      actions:
         choose:
           - alias: Action Click
             conditions:
@@ -36,38 +36,40 @@ kitchen_light_pack:
                 - alias: Single click
                   conditions: "{{ trigger.event.data.args.click_type == 'single' }}"
                   sequence:
-                    - service: light.toggle
-                      data:
+                    - action: light.toggle
+                      target:
                         entity_id: light.kukhnia_lenta
                 - alias: Double click
                   conditions: "{{ trigger.event.data.args.click_type == 'double' }}"
                   sequence:
-                    - service: light.toggle
-                      data:
+                    - action: light.toggle
+                      target:
                         entity_id: light.ikea_e27_kukhnia
 
     - alias: "Подсветка на кухне (сенсор движения - вкл)"
       id: 72c4f7ac-f72c-47fd-bf06-6e3671d12b1d
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.0x158d0003fac0ec_motion
         to: "on"
-      condition:
+      conditions:
         - condition: numeric_state
           entity_id: sensor.0x158d0003fac0ec_illuminance
           below: 10
-      action:
-        service: light.turn_on
-        entity_id: light.kukhnia_lenta
+      actions:
+        action: light.turn_on
+        target:
+          entity_id: light.kukhnia_lenta
 
     - alias: "Подсветка на кухне (сенсор движения - выкл)"
       id: 47413029-b8c2-4ec1-ad98-7c72b271766d
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.0x158d0003fac0ec_motion
         to: "off"
         for:
           minutes: 3
-      action:
-        service: light.turn_off
-        entity_id: light.kukhnia_lenta
+      actions:
+        action: light.turn_off
+        target:
+          entity_id: light.kukhnia_lenta

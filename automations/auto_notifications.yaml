@@ -5,19 +5,18 @@
 - alias: "Home Presence Alert"
   id: 12b0184c-bb8b-436a-887a-733d0ddac126
   mode: parallel
-  trigger:
-    platform: state
+  triggers:
+    trigger: state
     entity_id: person.alexander, person.irina, person.galina, person.tatiana, person.olga, person.egor
-  condition:
-    condition: and
-    conditions:
+  conditions:
+    - and:
       #      - condition: template
       #        value_template: "{{ states('sensor.uptime') != '0.0' }}"
       - condition: template
         value_template: "{{ trigger.to_state.state != trigger.from_state.state }}"
-  action:
-    - service: notify.telegram_group_flat_1
-      data_template:
+  actions:
+    - action: notify.telegram_group_flat_1
+      data:
         message: >
           {{ trigger.to_state.attributes.friendly_name }}
           {% if trigger.to_state.state == 'home' %}дома!
@@ -27,58 +26,58 @@
 
 - alias: Entrance Door - Opened
   id: 067c832a-9626-4f61-8d19-444d6156e889
-  trigger:
-    platform: state
+  triggers:
+    trigger: state
     entity_id: binary_sensor.0x158d00031c790f_contact
     from: "off"
     to: "on"
-  action:
-    service: notify.telegram_group_flat_1
+  actions:
+    action: notify.telegram_group_flat_1
     data:
       message: Открыта входная дверь!
 
 - alias: Entrance Door - Closed
   id: c6df423a-a1ec-41fb-b600-3874ffef758b
-  trigger:
-    platform: state
+  triggers:
+    trigger: state
     entity_id: binary_sensor.0x158d00031c790f_contact
     from: "on"
     to: "off"
-  action:
-    service: notify.telegram_group_flat_1
+  actions:
+    action: notify.telegram_group_flat_1
     data:
       message: Входная дверь закрыта.
 
 - alias: "Torrent Completed [notify to group system]"
   id: fe45c917-f489-4c38-a3a1-c66e5fedb07f
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: transmission_downloaded_torrent
-  action:
-    service: notify.telegram_group_system
-    data_template:
+  actions:
+    action: notify.telegram_group_system
+    data:
       message: "Загрузка torrent-файла завершена"
 
 - alias: "Полнолуние [notify to group system]"
   id: d698bdcc-4ce9-4954-a118-8a1f29cf327e
-  trigger:
-    platform: state
+  triggers:
+    trigger: state
     entity_id: sensor.moon
     to: "full_moon"
-  action:
-    service: notify.telegram_group_system
-    data_template:
+  actions:
+    action: notify.telegram_group_system
+    data:
       message: "Сегодня полнолуние!"
 
 - alias: Gas Alert
   id: 0ca74008-65a2-4ed1-b860-e27e57b216f2
-  trigger:
-    platform: state
+  triggers:
+    trigger: state
     entity_id: binary_sensor.0x00158d000413b210_gas
     from: "off"
     to: "on"
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_flat_1
         title: "*Внимание!*"
@@ -90,19 +89,20 @@
 
 - alias: Gas Alert - Telegram control - poweroff_gas_sensor
   id: 3254a184-a04f-4b31-bbe9-1a00e403f134
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: telegram_callback
     event_data:
       data: "/poweroff_gas_sensor"
-  action:
-    - service: switch.turn_off
-      entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
-    - service: telegram_bot.answer_callback_query
-      data_template:
+  actions:
+    - action: switch.turn_off
+      target:
+        entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
+    - action: telegram_bot.answer_callback_query
+      data:
         callback_query_id: "{{ trigger.event.data.id }}"
         message: "Команда отправлена"
-    - service: telegram_bot.edit_message
+    - action: telegram_bot.edit_message
       data:
         message_id: "{{ trigger.event.data.message.message_id }}"
         chat_id: "{{ trigger.event.data.chat_id }}"
@@ -113,13 +113,13 @@
 
 - alias: Gas Alert - Sensor Powered Off More Than 30 Min
   id: 3e69fa5f-34f2-4e5e-86e2-467aad2420b6
-  trigger:
-    platform: state
+  triggers:
+    trigger: state
     entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
     to: "off"
     for: "00:30:00"
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_flat_1
         title: "*Внимание!*"
@@ -130,19 +130,20 @@
 
 - alias: Gas Alert - Telegram control - poweroff_gas_sensor
   id: 50892fe7-741c-4b4d-a71c-a498be52d6b7
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: telegram_callback
     event_data:
       data: "/poweron_gas_sensor"
-  action:
-    - service: switch.turn_on
-      entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
-    - service: telegram_bot.answer_callback_query
+  actions:
+    - action: switch.turn_on
+      target:
+        entity_id: switch.blitzwolf_shp13_02_3ad702fe_on_off
+    - action: telegram_bot.answer_callback_query
       data_template:
         callback_query_id: "{{ trigger.event.data.id }}"
         message: "Команда отправлена"
-    - service: telegram_bot.edit_message
+    - action: telegram_bot.edit_message
       data:
         message_id: "{{ trigger.event.data.message.message_id }}"
         chat_id: "{{ trigger.event.data.chat_id }}"
@@ -153,32 +154,32 @@
 
 - alias: Boiler - Low Temperature Alert
   id: fe98880b-2fcd-4b6f-9ded-adc174b9b958
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.boiler_water_temp
       below: 50
-    - platform: numeric_state
+    - trigger: numeric_state
       entity_id: sensor.boiler_water_temp
       below: 40
-    - platform: numeric_state
+    - trigger: numeric_state
       entity_id: sensor.boiler_water_temp
       below: 30
-  condition:
+  conditions:
     condition: template
     value_template: "{{ (trigger.to_state.state | int) != 0 }}"
-  action:
-    - service: notify.telegram_group_flat_1
-      data_template:
+  actions:
+    - action: notify.telegram_group_flat_1
+      data:
         title: "*Внимание!*"
         message: |
           Температура воды в бойлере *{{ trigger.to_state.state }}*°C
 
 - alias: Huawei E5372 - New Unread SMS Alert
   id: a3215213-fe61-43f1-8eb4-ea572a4acee2
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.huawei_e5372_sms_unread
-  condition:
+  conditions:
     - condition: template
       value_template: >
         {% set ignore = ['unknown', 'unavailable', 'none', None, null, '', 'null'] %}
@@ -186,63 +187,63 @@
     - condition: template
       value_template: >
         {{ (trigger.to_state.state | int) > (trigger.from_state.state | int) }}
-  action:
-    - service: notify.telegram_group_system
+  actions:
+    - action: notify.telegram_group_system
       data:
         message: |
           _Huawei E5372_, Непрочитанных SMS: *{{ states('sensor.huawei_e5372_sms_unread') }}*, новых: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*
 
 - alias: Kettle - Boil Finished Notification
   id: c5eaa742-7ea5-4c0b-8d43-d3ce69232a3e
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.kettle_status
       from: "on"
       to: "off"
-  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
-  action:
-    - service: notify.telegram_group_flat_1
+  conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
+  actions:
+    - action: notify.telegram_group_flat_1
       data:
         message: Чайник *вскипел*!
 
 - alias: Washing Machine - Wash Finished Notification
   id: eed153ad-dca8-464d-8cc5-b30421eec1a1
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.washer_status
       from: "on"
       to: "off"
-  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
-  action:
-    - service: notify.telegram_group_flat_1
+  conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
+  actions:
+    - action: notify.telegram_group_flat_1
       data:
         title: "Стиральная машина:"
         message: Стирка *закончена*, не забудьте достать белье.
 
 - alias: Dryer Machine - Drying Finished Notification
   id: e572fd6c-06d2-4c34-a218-4b709734c6e0
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.dryer_status
       from: "on"
       to: "off"
-  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
-  action:
-    - service: notify.telegram_group_flat_1
+  conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
+  actions:
+    - action: notify.telegram_group_flat_1
       data:
         title: "Сушильная машина:"
         message: Сушка *закончена*, не забудьте достать белье.
 
 - alias: Dishwasher - Dishwashing Finished Notification
   id: 9ef4d500-e688-4b70-b565-43ebb754bfe2
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.dishwasher_status
       from: "on"
       to: "off"
-  condition: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
-  action:
-    - service: notify.telegram_group_flat_1
+  conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
+  actions:
+    - action: notify.telegram_group_flat_1
       data:
         title: "Посудомоечная машина:"
         message: Программа *закончена*, посуда вымыта.
@@ -251,20 +252,20 @@
   id: 3f22e8f0-6f31-49c1-bca1-ce19184c5184
   mode: queued
   max: 10
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id:
         - sensor.yandex_station_lite_detskaia_sw_version
         - sensor.yandex_station_lite_prikhozhaya_sw_version
         - sensor.yandex_station_mini2_gostinaia_sw_version
         - sensor.yandex_station_mini2_spalnia_sw_version
-  condition:
+  conditions:
     - "{{ trigger.to_state.state != trigger.from_state.state }}"
     - >
         {% set ignore = ['unknown', 'unavailable', 'none', None, null, '', 'null'] %}
         {{ trigger.to_state.state not in ignore and trigger.from_state.state not in ignore }}
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         message: |

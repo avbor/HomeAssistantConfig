@@ -111,6 +111,9 @@ _Remote site (country house):_
   - eWelink DIN rail Switch with Energy Meter (SMT002, Coolkit PSF-X67)\
   Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN)
 
+  - Sonoff POW R3 16D Elite flashed to [ESPHome](https://esphome.io/)\
+  Integration "ESPHome"
+
 - Plugs:
   - TP-Link HS110\
   Integration "TP-Link Kasa Smart"

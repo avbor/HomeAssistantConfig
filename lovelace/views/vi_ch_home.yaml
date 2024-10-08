@@ -7,7 +7,8 @@ cards:
       ### <center>Сейчас на даче</center>
   - type: conditional
     conditions:
-      - entity: binary_sensor.coutry_house_presence
+      - condition: state
+        entity: binary_sensor.coutry_house_presence
         state: "off"
     card:
       type: markdown
@@ -15,7 +16,8 @@ cards:
         *Никого нет...*
   - type: conditional
     conditions:
-      - entity: binary_sensor.coutry_house_presence
+      - condition: state
+        entity: binary_sensor.coutry_house_presence
         state: "on"
     card:
       type: entity-filter
@@ -44,7 +46,8 @@ cards:
           action: toggle
       - type: conditional
         conditions:
-          - entity: input_boolean.country_house_show_last_detect
+          - condition: state
+            entity: input_boolean.country_house_show_last_detect
             state: "on"
         card:
           type: vertical-stack

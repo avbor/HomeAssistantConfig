@@ -25,26 +25,27 @@ wakeup_radio_pack:
 
     - alias: "Wakeup Radio - Childrens"
       id: 75d1f4fc-c40b-433a-b6bc-ed480b53365e
-      trigger:
-        platform: time
+      triggers:
+        trigger: time
         at: input_datetime.wakeup_radio_in_nursery
-      condition:
+      conditions:
         - condition: state
           entity_id: binary_sensor.workday_sensor
           state: "on"
         - condition: state
           entity_id: calendar.semia_alexander_borsiov_school_vacation_egor
           state: "off"
-      action:
+      actions:
 
         - if:
             - "{{ state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') != 0.1 }}"
           then:
             - repeat:
                 sequence:
-                  - service: media_player.volume_set
-                    data:
+                  - action: media_player.volume_set
+                    target:
                       entity_id: media_player.yandex_station_lite_detskaia
+                    data:
                       volume_level: 0.1
                   - wait_template: "{{ state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') == 0.1 }}"
                     timeout: "00:00:01"
@@ -57,7 +58,7 @@ wakeup_radio_pack:
           then:
             - repeat:
                 sequence:
-                  - service: media_player.volume_mute
+                  - action: media_player.volume_mute
                     target:
                       entity_id: media_player.yandex_station_lite_detskaia
                     data:
@@ -70,9 +71,10 @@ wakeup_radio_pack:
 
         - delay: "00:00:01"
 
-        - service: yandex_station.send_command
-          data:
+        - action: yandex_station.send_command
+          target:
             entity_id: media_player.yandex_station_lite_detskaia
+          data:
             command: sendText
             text: >-
               Включи {{ states('input_text.wakeup_radio_in_nursery_query') }}
@@ -82,7 +84,7 @@ wakeup_radio_pack:
         - if:
             - "{{ state_attr('media_player.yandex_station_lite_detskaia', 'volume_level') != 0.1 }}"
           then:
-            - service: media_player.volume_set
+            - action: media_player.volume_set
               target:
                 entity_id: media_player.yandex_station_lite_detskaia
               data:
@@ -95,12 +97,13 @@ wakeup_radio_pack:
                 value_template: "{{ repeat.index <= 4 }}"
             sequence:
               - delay: "00:03:00"
-              - service: media_player.volume_up
+              - action: media_player.volume_up
                 target:
                   entity_id: media_player.yandex_station_lite_detskaia
 
-        - service: yandex_station.send_command
-          data:
+        - action: yandex_station.send_command
+          target:
             entity_id: media_player.yandex_station_lite_detskaia
+          data:
             command: sendText
             text: Повтори за мной 'Доброе утро дети, пора вставать!'

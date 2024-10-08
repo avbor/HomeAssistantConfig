@@ -323,7 +323,7 @@ ch_energy_pack:
     # Triggers
     # Energy Meter Value with modification time
     - trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - input_number.country_house_enegry_meter_value
           not_to:
@@ -351,7 +351,7 @@ ch_energy_pack:
 
     # Predict Energy Meter Value (last known energy meter value + daily consumption from shelly em)
     - trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - input_number.country_house_enegry_meter_predicted_value
           not_to:
@@ -374,9 +374,9 @@ ch_energy_pack:
 
     # Save Energy Meter Readings for Transfer to MES
     - trigger:
-        #- platform: time_pattern
+        #- trigger: time_pattern
         #  minutes: "/2"
-        - platform: time
+        - trigger: time
           at: "07:15:00"
       unique_id: 0113570c-f663-4427-84d0-04d284c1c8a3
       sensor:
@@ -394,7 +394,7 @@ ch_energy_pack:
 
     # Modification time for sensor.ch_energy_meter_value_saved_for_transfer
     - trigger:
-        - platform: state
+        - trigger: state
           entity_id: sensor.ch_energy_meter_value_saved_for_transfer
           not_to:
             - unavailable
@@ -535,7 +535,7 @@ ch_energy_pack:
           - alias: Submit period active
             conditions: "{{ state_attr('sensor.mes_55384_014_37_meter_44259893','submit_period_active') == true }}"
             sequence:
-              - service: telegram_bot.send_message
+              - action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_country_house
                   title: "*Электроэнергия:*"
@@ -544,13 +544,13 @@ ch_energy_pack:
               - parallel:
                   - sequence:
                       - wait_for_trigger:
-                          platform: event
+                          trigger: event
                           event_type: lkcomu_interrao_push_indications
                         timeout: 180
                       - if:
                           - "{{ wait.trigger == none }}"
                         then:
-                          - service: telegram_bot.send_message
+                          - action: telegram_bot.send_message
                             data:
                               target: !secret tlg_group_country_house
                               title: "*Электроэнергия:*"
@@ -560,14 +560,14 @@ ch_energy_pack:
                           - choose:
                               - conditions: "{{ wait.trigger.event.data['success'] }}"
                                 sequence:
-                                  - service: telegram_bot.send_message
+                                  - action: telegram_bot.send_message
                                     data:
                                       target: !secret tlg_group_country_house
                                       title: "*Электроэнергия:*"
                                       message: |
                                         ✅ Показания успешно переданы.
                             default:
-                              - service: telegram_bot.send_message
+                              - action: telegram_bot.send_message
                                 data:
                                   target: !secret tlg_group_country_house
                                   parse_mode: html
@@ -579,15 +579,15 @@ ch_energy_pack:
                   - sequence:
                     - delay:
                         seconds: 1
-                    - service: lkcomu_interrao.push_indications
-                      data:
-                        indications: "{{ states('sensor.ch_energy_meter_value_saved_for_transfer') | float(0) }}"
+                    - action: lkcomu_interrao.push_indications
                       target:
                         entity_id: sensor.mes_55384_014_37_meter_44259893
+                      data:
+                        indications: "{{ states('sensor.ch_energy_meter_value_saved_for_transfer') | float(0) }}"
           - alias: Submit period not active
             conditions: "{{ state_attr('sensor.mes_55384_014_37_meter_44259893','submit_period_active') == false }}"
             sequence:
-              - service: telegram_bot.send_message
+              - action: telegram_bot.send_message
                 data:
                   target: !secret tlg_group_country_house
                   title: "*Электроэнергия:*"
@@ -601,8 +601,8 @@ ch_energy_pack:
     # Set current cost per kWh
     - alias: CH Set current cost per kWh
       id: 28450e89-7fdf-459d-bcbd-9e3ea9377de7
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.country_house_enegry_cost_mes_t1
           not_to:
             - unavailable
@@ -610,20 +610,21 @@ ch_energy_pack:
           not_from:
             - unavailable
             - unknown
-      condition:
+      conditions:
         - "{{ trigger.to_state.state | is_number() }}"
-      action:
-        - service: input_number.set_value
-          data:
+      actions:
+        - action: input_number.set_value
+          target:
             entity_id: input_number.country_house_enegry_cost_current
+          data:
             value: >-
               {{ trigger.to_state.state | float(0) }}
 
     # Adjusting predicted values for Main Energy Meter
     - alias: CH Set Main Energy Meter values for predict
       id: 3570493e-c074-4d88-b8ce-a196cb1a60a6
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - input_number.country_house_enegry_meter_value
           not_to:
@@ -632,31 +633,33 @@ ch_energy_pack:
           not_from:
             - unavailable
             - unknown
-      action:
-        - service: input_number.set_value
-          data:
+      actions:
+        - action: input_number.set_value
+          target:
             entity_id: input_number.country_house_enegry_meter_predicted_value
+          data:
             value: >-
               {{ trigger.to_state.state | float(0) }}
 
     # Predict Main Energy Meter
     - alias: CH Predict energy meter readings
       id: 36df2266-8486-42de-b42d-d7b956c24e40
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: "23:59:55"
-      action:
-        - service: input_number.set_value
-          data:
+      actions:
+        - action: input_number.set_value
+          target:
             entity_id: input_number.country_house_enegry_meter_predicted_value
+          data:
             value: >-
               {{ ((states('input_number.country_house_enegry_meter_predicted_value') | float(0)) + (states('sensor.ch_main_energy_daily_total') | float(0))) | round(2) }}
 
     # Push an energy meter reading to MES
     - alias: CH Push Energy Meter reading
       id: d20af113-a06c-4eec-a1a0-0a8a4f8f6fa9
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - sensor.ch_energy_meter_value_saved_for_transfer
           not_to:
@@ -665,10 +668,10 @@ ch_energy_pack:
           not_from:
             - unavailable
             - unknown
-      condition:
+      conditions:
         - "{{ (now().strftime('%d') | int(0)) == (states('input_number.country_house_enegry_meter_value_transfer_day') | int(0)) }}"
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_country_house
             title: "*Электроэнергия:*"
@@ -678,23 +681,23 @@ ch_energy_pack:
               Текущее: {{ trigger.to_state.state }}
               Расход: {{ (trigger.to_state.state | int(0)) - (trigger.from_state.state | int(0)) }} кВт⋅ч
               Примерная сумма счета: {{ (((trigger.to_state.state | float(0)) - (trigger.from_state.state | float(0))) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(1) }} руб.
-        - service: script.turn_on
+        - action: script.turn_on
           target:
             entity_id: script.ch_push_energy_readings_to_mes
 
       # MES - energy meter reading accepted
     - alias: CH Energy Meter readings accepted notification
       id: 99ae89c3-a865-4c3b-841c-729bbbc4b447
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - binary_sensor.mes_55384_014_37_meter_44259893_readings_accepted
           to: "on"
           not_from:
             - unavailable
             - unknown
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_country_house
             title: "*Электроэнергия:*"

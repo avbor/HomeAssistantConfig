@@ -5,47 +5,47 @@
 # ---- Mirror all text messages
 - alias: "Telegram Bot - Mirror text"
   id: d35faec4-c949-4358-8aff-00e11b560444
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: telegram_text
-  action:
-    service: notify.telegram_group_system
-    data_template:
+  actions:
+    action: notify.telegram_group_system
+    data:
       message: |
         *{{ trigger.event.data.from_first }} {{ trigger.event.data.from_last }} [{{ trigger.event.data.user_id }}] пишет:*
         {{ trigger.event.data.text }}
 # ---- /start
 - alias: "Telegram Bot - Start"
   id: d50c7e2c-9f67-40f2-9495-41ba1140c9b5
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/start"
-    - platform: event
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/start@HAutoBot"
-  action:
-    service: telegram_bot.send_message
-    data_template:
+  actions:
+    action: telegram_bot.send_message
+    data:
       target: "{{ trigger.event.data.user_id }}"
       message: "Привет! Помощь - /help"
 # ---- /help
 - alias: "Telegram Bot - Help"
   id: 1e265eea-3d26-4a04-8402-f25a828f841d
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/help"
-    - platform: event
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/help@HAutoBot"
-  action:
-    service: telegram_bot.send_message
-    data_template:
+  actions:
+    action: telegram_bot.send_message
+    data:
       target: "{{ trigger.event.data.user_id }}"
       parse_mode: html
       message: |
@@ -58,18 +58,18 @@
 # ---- /ping
 - alias: "Telegram Bot - Ping"
   id: 936c648b-18b6-4636-a941-cc3f3361fdd0
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/ping"
-    - platform: event
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/ping@HAutoBot"
-  action:
-    service: telegram_bot.send_message
-    data_template:
+  actions:
+    action: telegram_bot.send_message
+    data:
       target: "{{ trigger.event.data.user_id }}"
       message: |
         Pong! _{{ now().strftime("%d.%m.%Y %H:%M:%S") }}_
@@ -79,18 +79,18 @@
 # ---- /whoishome
 - alias: "Telegram Bot - Who is home?"
   id: f3af5ecc-3eb8-4542-8207-97f90b6f5abf
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/whoishome"
-    - platform: event
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/whoishome@HAutoBot"
-  action:
-    service: telegram_bot.send_message
-    data_template:
+  actions:
+    action: telegram_bot.send_message
+    data:
       target: "{{ trigger.event.data.chat_id }}"
       message: |
         Сейчас дома:
@@ -100,18 +100,18 @@
 # ---- /weather
 - alias: "Telegram Bot - Weather"
   id: b0b0a539-14fb-440c-b57c-269460961819
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/weather"
-    - platform: event
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/weather@HAutoBot"
-  action:
-    - service: telegram_bot.send_photo
-      data_template:
+  actions:
+    - action: telegram_bot.send_photo
+      data:
         target: "{{ trigger.event.data.user_id }}"
         file: '/config/www/weather_icons/{{ states("weather.yandex_weather_danilovskii") }}.webp'
         caption: |
@@ -122,18 +122,18 @@
 # ---- /weather_ch
 - alias: "Telegram Bot - Weather Country House"
   id: c5ac3f4b-80b8-479f-96bf-45274aeba2ec
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/weather_ch"
-    - platform: event
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/weather_ch@HAutoBot"
-  action:
-    - service: telegram_bot.send_photo
-      data_template:
+  actions:
+    - action: telegram_bot.send_photo
+      data:
         target: "{{ trigger.event.data.user_id }}"
         file: '/config/www/weather_icons/{{ states("weather.yandex_weather_nivki_2") }}.webp'
         caption: |
@@ -144,18 +144,18 @@
 # ---- /status
 - alias: "Telegram Bot - Status"
   id: 51572bf5-4960-4034-b09a-17d202c07c18
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/status"
-    - platform: event
+    - trigger: event
       event_type: telegram_command
       event_data:
         command: "/status@HAutoBot"
-  action:
-    service: telegram_bot.send_message
-    data_template:
+  actions:
+    action: telegram_bot.send_message
+    data:
       target: "{{ trigger.event.data.user_id }}"
       message: |
         *Климат*

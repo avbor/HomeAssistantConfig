@@ -15,65 +15,65 @@ domofon_pack:
 
     - alias: Domofon - Opened by Button Notification
       id: cb5e25c1-dcb7-4b75-a6c4-6b12eb84f86b
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.domofon_button
         to: "on"
-      condition:
+      conditions:
         - condition: state
           entity_id: binary_sensor.domofon_incoming_call
           state: "on"
-      action:
-        service: notify.telegram_group_flat_1
+      actions:
+        action: notify.telegram_group_flat_1
         data:
           message: "_Домофон_: открыт кнопкой"
 
     - alias: Domofon - Incoming Call Notification
       id: 741a9858-1687-4b2d-8afd-73373e8cc8ba
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: binary_sensor.domofon_incoming_call
         to: "on"
-      action:
+      actions:
         - parallel:
-            - service: notify.telegram_group_flat_1
+            - action: notify.telegram_group_flat_1
               data:
                 message: "_Домофон_: входящий звонок... {% if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') %}(*откроется автоматически*){% endif %}"
                 data:
                   inline_keyboard:
                     - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
-            - service: script.domofon_alice_notify
+            - action: script.domofon_alice_notify
 
     - alias: Domofon - Alice Intent control
-      trigger:
-        - platform: event
+      triggers:
+        - trigger: event
           event_type: yandex_intent
           event_data:
             text: Открой домофон
           id: "open"
-      action:
+      actions:
         choose:
           - alias: Open Door
             conditions:
               - condition: trigger
                 id: "open"
             sequence:
-              - service: esphome.domofon_accept_call
+              - action: esphome.domofon_accept_call
 
     - alias: Domofon - Telegram Control - domofon_open
       id: 99d5c580-c382-48b3-bd2d-f6eb00b62c31
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/domofon_open"
-      action:
-        - service: telegram_bot.answer_callback_query
+      actions:
+        - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "{{ 'Открываю...' if is_state('binary_sensor.domofon_incoming_call', 'on') else 'Нет входящего звонка' }}"
-        - service: esphome.domofon_accept_call
-        - service: telegram_bot.edit_message
+        - action: esphome.domofon_accept_call
+        - action: telegram_bot.edit_message
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
@@ -83,18 +83,18 @@ domofon_pack:
 
     - alias: Domofon - Telegram Control - domofon_reject
       id: a50fb75b-0083-4866-8496-bdd013332a88
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/domofon_reject"
-      action:
-        - service: telegram_bot.answer_callback_query
+      actions:
+        - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "{{ 'Отклоняю...' if is_state('binary_sensor.domofon_incoming_call', 'on') else 'Нет входящего звонка' }}"
-        - service: esphome.domofon_reject_call
-        - service: telegram_bot.edit_message
+        - action: esphome.domofon_reject_call
+        - action: telegram_bot.edit_message
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
@@ -104,13 +104,13 @@ domofon_pack:
 
     - alias: Domofon - Mute and UnMute by Time
       id: 97a74c5f-6a9f-4af6-9f8e-2a7fcd0a5070
-      trigger:
+      triggers:
         - platform: time
           at: "21:00:00"
         - platform: time
           at: "08:00:00"
-      action:
-        - service: >-
+      actions:
+        - action: >-
             {% if trigger.now.hour == 21 -%}
               switch.turn_on
             {% elif trigger.now.hour == 8 -%}
@@ -121,8 +121,8 @@ domofon_pack:
 
     - alias: Domofon - ESP Board Lost Connection
       id: 6cac01e7-945c-4f37-8b2d-d75e03107d76
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.domofon_status
           not_to:
             - unavailable
@@ -130,15 +130,15 @@ domofon_pack:
           not_from:
             - unavailable
             - unknown
-      condition:
+      conditions:
         - condition: template
           value_template: >-
             {{ states('input_boolean.ha_shutdown') == 'off' }}
         - condition: template
           value_template: >-
             {{ states('sensor.ha_uptime') > '1' }}
-      action:
-        - service: notify.telegram_group_system
+      actions:
+        - action: notify.telegram_group_system
           data:
             message: |
               *Внимание!*
@@ -150,14 +150,13 @@ domofon_pack:
 
     - alias: Domofon - Open Once for Couriers
       id: c916925d-cd33-4f30-882b-4049e52acf12
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id:
             - sensor.kb2003_last_notification
             - sensor.2109119dg_last_notification
       condition:
-        condition: or
-        conditions:
+        - or:
           - condition: template
             value_template: >-
               {{ trigger.to_state.state | regex_search('Курьер .* будет у вас в течение .*') }}
@@ -185,11 +184,11 @@ domofon_pack:
           - condition: template
             value_template: >-
               {{ trigger.to_state.state | regex_search('И уже спешит доставить его вам') }}
-      action:
-        - service: switch.turn_on
-          data:
+      actions:
+        - action: switch.turn_on
+          target:
             entity_id: switch.domofon_automatically_open_once
-        - service: telegram_bot.send_message
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             message: "_Домофон_: Курьер уже в пути, домофон откроется автоматически."
@@ -198,20 +197,20 @@ domofon_pack:
 
     - alias: Domofon - Telegram Control - domofon_mute_once
       id: 97093f78-f059-4918-b451-ca50f698a49d
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/domofon_mute_once"
-      action:
-        - service: telegram_bot.answer_callback_query
+      actions:
+        - action: telegram_bot.answer_callback_query
           data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "Команда отправлена"
-        - service: switch.turn_on
-          data:
+        - action: switch.turn_on
+          target:
             entity_id: switch.domofon_mute_sound_once
-        - service: telegram_bot.edit_message
+        - action: telegram_bot.edit_message
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
@@ -222,25 +221,25 @@ domofon_pack:
     - alias: Domofon - Open Once at Enter to Home Zone
       id: 40d4a1f6-576c-438a-b20f-ba161d9bd3ee
       max_exceeded: silent
-      trigger:
-        - platform: zone
+      triggers:
+        - trigger: zone
           entity_id:
             - person.alexander
             - person.irina
           zone: zone.domofon
           event: enter
-      action:
-        - service: switch.turn_on
-          data:
+      actions:
+        - action: switch.turn_on
+          target:
             entity_id: switch.domofon_automatically_open_once
-        - service: switch.turn_on
-          data:
+        - action: switch.turn_on
+          target:
             entity_id: switch.domofon_mute_sound_once
-        - service: notify.telegram_group_flat_1
+        - action: notify.telegram_group_flat_1
           data:
             message: "_Домофон_: включен режим однократного авто-открытия."
         - wait_for_trigger:
-            - platform: state
+            - trigger: state
               entity_id: binary_sensor.0x158d00031c790f_contact
               to: "on"
           timeout: "00:10:00"
@@ -248,13 +247,13 @@ domofon_pack:
             - conditions: >-
                 {{ is_state('switch.domofon_automatically_open_once', 'on') }}
               sequence:
-                - service: switch.turn_off
-                  data:
+                - action: switch.turn_off
+                  target:
                     entity_id: switch.domofon_automatically_open_once
-                - service: switch.turn_off
-                  data:
+                - action: switch.turn_off
+                  target:
                     entity_id: switch.domofon_mute_sound_once
-                - service: notify.telegram_group_flat_1
+                - action: notify.telegram_group_flat_1
                   data:
                     message: "_Домофон_: отключен режим однократного авто-открытия."
 
@@ -262,9 +261,10 @@ domofon_pack:
 
     domofon_alice_notify:
       sequence:
-        - service: media_player.volume_set
-          data:
+        - action: media_player.volume_set
+          target:
             entity_id: media_player.yandex_station_mini2_gostinaia
+          data:
             volume_level: >-
               {% set time = now().hour -%}
               {% if time >= 21 or time < 9 -%}
@@ -272,8 +272,9 @@ domofon_pack:
               {% else -%}
                 0.6
               {% endif -%}
-        - service: media_player.play_media
-          entity_id: media_player.yandex_station_mini2_gostinaia
+        - action: media_player.play_media
+          target:
+            entity_id: media_player.yandex_station_mini2_gostinaia
           data:
             media_content_id: >-
               {% set time = now().hour -%}
@@ -284,7 +285,7 @@ domofon_pack:
               {% endif -%}
             media_content_type: dialog:Домашний Ассистент:Домофон
         - wait_for_trigger:
-            platform: event
+            trigger: event
             event_type: yandex_intent
             event_data:
               session:
@@ -296,24 +297,26 @@ domofon_pack:
             - conditions: "{{ wait.trigger.event.data.text in ['да','конечно' ,'открой', 'открыть', 'открывай'] }}"
               sequence:
                 - parallel:
-                    - service: esphome.domofon_accept_call
-                    - service: media_player.play_media
-                      entity_id: media_player.yandex_station_mini2_gostinaia
+                    - action: esphome.domofon_accept_call
+                    - action: media_player.play_media
+                      target:
+                        entity_id: media_player.yandex_station_mini2_gostinaia
                       data:
                         media_content_id: "Открываю"
                         media_content_type: text
-                    - service: notify.telegram_group_flat_1
+                    - action: notify.telegram_group_flat_1
                       data:
                         message: "_Домофон_: открыт Алисой."
             - conditions: "{{ wait.trigger.event.data.text in ['нет'] }}"
               sequence:
                 - parallel:
-                    - service: esphome.domofon_reject_call
-                    - service: media_player.play_media
-                      entity_id: media_player.yandex_station_mini2_gostinaia
+                    - action: esphome.domofon_reject_call
+                    - action: media_player.play_media
+                      target:
+                        entity_id: media_player.yandex_station_mini2_gostinaia
                       data:
                         media_content_id: "Звонок сброшен"
                         media_content_type: text
-                    - service: notify.telegram_group_flat_1
+                    - action: notify.telegram_group_flat_1
                       data:
                         message: "_Домофон_: звонок сброшен Алисой."

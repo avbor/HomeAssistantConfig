@@ -89,13 +89,17 @@ cards:
         entity: script.yanedx_station_tts_to
       - type: conditional
         conditions:
-          - entity: binary_sensor.yandex_station_lite_prikhozhaya_status
+          - condition: state
+            entity: binary_sensor.yandex_station_lite_prikhozhaya_status
             state_not: "on"
-          - entity: binary_sensor.yandex_station_lite_detskaia_status
+          - condition: state
+            entity: binary_sensor.yandex_station_lite_detskaia_status
             state_not: "on"
-          - entity: binary_sensor.yandex_station_mini2_gostinaia_status
+          - condition: state
+            entity: binary_sensor.yandex_station_mini2_gostinaia_status
             state_not: "on"
-          - entity: binary_sensor.yandex_station_mini2_spalnia_status
+          - condition: state
+            entity: binary_sensor.yandex_station_mini2_spalnia_status
             state_not: "on"
         card:
           type: markdown
@@ -103,36 +107,44 @@ cards:
             *Все устройства бездействуют...*
       - type: conditional
         conditions:
-          - entity: media_player.yandex_station_lite_prikhozhaya
+          - condition: state
+            entity: media_player.yandex_station_lite_prikhozhaya
             state_not: "paused"
-          - entity: media_player.yandex_station_lite_prikhozhaya
+          - condition: state
+            entity: media_player.yandex_station_lite_prikhozhaya
             state_not: "idle"
         card:
           type: media-control
           entity: media_player.yandex_station_lite_prikhozhaya
       - type: conditional
         conditions:
-          - entity: media_player.yandex_station_lite_detskaia
+          - condition: state
+            entity: media_player.yandex_station_lite_detskaia
             state_not: "paused"
-          - entity: media_player.yandex_station_lite_detskaia
+          - condition: state
+            entity: media_player.yandex_station_lite_detskaia
             state_not: "idle"
         card:
           type: media-control
           entity: media_player.yandex_station_lite_detskaia
       - type: conditional
         conditions:
-          - entity: media_player.yandex_station_mini2_gostinaia
+          - condition: state
+            entity: media_player.yandex_station_mini2_gostinaia
             state_not: "paused"
-          - entity: media_player.yandex_station_mini2_gostinaia
+          - condition: state
+            entity: media_player.yandex_station_mini2_gostinaia
             state_not: "idle"
         card:
           type: media-control
           entity: media_player.yandex_station_mini2_gostinaia
       - type: conditional
         conditions:
-          - entity: media_player.yandex_station_mini2_spalnia
+          - condition: state
+            entity: media_player.yandex_station_mini2_spalnia
             state_not: "paused"
-          - entity: media_player.yandex_station_mini2_spalnia
+          - condition: state
+            entity: media_player.yandex_station_mini2_spalnia
             state_not: "idle"
         card:
           type: media-control
@@ -159,14 +171,17 @@ cards:
               action: toggle
           - type: conditional
             conditions:
-              - entity: input_boolean.tv_remote_show_bedroom
+              - condition: state
+                entity: input_boolean.tv_remote_show_bedroom
                 state: "on"
             card: !include samsung_tv_remote_ue.yaml
       - type: conditional
         conditions:
-          - entity: media_player.ue43ru7470
+          - condition: state
+            entity: media_player.ue43ru7470
             state_not: "off"
-          - entity: media_player.ue43ru7470
+          - condition: state
+            entity: media_player.ue43ru7470
             state_not: "unavailable"
         card:
           type: media-control
@@ -174,9 +189,11 @@ cards:
       # --- Гостиная
       - type: conditional
         conditions:
-          - entity: media_player.ue46es5507
+          - condition: state
+            entity: media_player.ue46es5507
             state_not: "off"
-          - entity: media_player.ue46es5507
+          - condition: state
+            entity: media_player.ue46es5507
             state_not: "unknown"
         card:
           type: vertical-stack
@@ -189,9 +206,11 @@ cards:
       # --- Кухня
       - type: conditional
         conditions:
-          - entity: media_player.ue32es5500
+          - condition: state
+            entity: media_player.ue32es5500
             state_not: "off"
-          - entity: media_player.ue32es5500
+          - condition: state
+            entity: media_player.ue32es5500
             state_not: "unknown"
         card:
           type: vertical-stack
@@ -207,9 +226,11 @@ cards:
           *Детская:*
       - type: conditional
         conditions:
-          - entity: switch.samsungtv_40c5100
+          - condition: state
+            entity: switch.samsungtv_40c5100
             state_not: "off"
-          - entity: switch.samsungtv_40c5100
+          - condition: state
+            entity: switch.samsungtv_40c5100
             state_not: "unknown"
         card:
           type: vertical-stack
@@ -228,7 +249,8 @@ cards:
               action: toggle
           - type: conditional
             conditions:
-              - entity: input_boolean.tv_remote_show_nursery
+              - condition: state
+                entity: input_boolean.tv_remote_show_nursery
                 state: "on"
             card: !include samsung_tv_remote_c.yaml
 
@@ -240,7 +262,8 @@ cards:
           ### <center>Microsoft</center>
       - type: conditional
         conditions:
-          - entity: media_player.xbox_v_gostinoi
+          - condition: state
+            entity: media_player.xbox_v_gostinoi
             state: "off"
         card:
           type: markdown
@@ -248,7 +271,8 @@ cards:
             *Нет включенных устройств...*
       - type: conditional
         conditions:
-          - entity: media_player.xbox_v_gostinoi
+          - condition: state
+            entity: media_player.xbox_v_gostinoi
             state_not: "off"
         card:
           type: media-control
@@ -262,21 +286,29 @@ cards:
           ### <center>Plex</center>
       - type: conditional
         conditions:
-          - entity: media_player.plex_tv_ue46es5507
+          - condition: state
+            entity: media_player.plex_tv_ue46es5507
             state: "unavailable"
-          - entity: media_player.plex_tv_ue32es5500
+          - condition: state
+            entity: media_player.plex_tv_ue32es5500
             state: "unavailable"
-          - entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
             state: "unavailable"
-          - entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
             state: "unavailable"
-          - entity: media_player.plex_guest_plex_cast_chromecast
+          - condition: state
+            entity: media_player.plex_guest_plex_cast_chromecast
             state: "unavailable"
-          - entity: media_player.plex_guest_plex_for_samsung_tv_2019
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_2019
             state: "unavailable"
-          - entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
+          - condition: state
+            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
             state: "unavailable"
-          - entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+          - condition: state
+            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
             state: "unavailable"
         card:
           type: markdown
@@ -284,72 +316,88 @@ cards:
             *Все выключенно...*
       - type: conditional
         conditions:
-          - entity: media_player.plex_tv_ue46es5507
+          - condition: state
+            entity: media_player.plex_tv_ue46es5507
             state_not: "off"
-          - entity: media_player.plex_tv_ue46es5507
+          - condition: state
+            entity: media_player.plex_tv_ue46es5507
             state_not: "unavailable"
         card:
           type: media-control
           entity: media_player.plex_tv_ue46es5507
       - type: conditional
         conditions:
-          - entity: media_player.plex_tv_ue32es5500
+          - condition: state
+            entity: media_player.plex_tv_ue32es5500
             state_not: "off"
-          - entity: media_player.plex_tv_ue32es5500
+          - condition: state
+            entity: media_player.plex_tv_ue32es5500
             state_not: "unavailable"
         card:
           type: media-control
           entity: media_player.plex_tv_ue32es5500
       - type: conditional
         conditions:
-          - entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
             state_not: "off"
-          - entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
             state_not: "unavailable"
         card:
           type: media-control
           entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
       - type: conditional
         conditions:
-          - entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
             state_not: "off"
-          - entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
             state_not: "unavailable"
         card:
           type: media-control
           entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
       - type: conditional
         conditions:
-          - entity: media_player.plex_guest_plex_cast_chromecast
+          - condition: state
+            entity: media_player.plex_guest_plex_cast_chromecast
             state_not: "off"
-          - entity: media_player.plex_guest_plex_cast_chromecast
+          - condition: state
+            entity: media_player.plex_guest_plex_cast_chromecast
             state_not: "unavailable"
         card:
           type: media-control
           entity: media_player.plex_guest_plex_cast_chromecast
       - type: conditional
         conditions:
-          - entity: media_player.plex_guest_plex_for_samsung_tv_2019
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_2019
             state_not: "off"
-          - entity: media_player.plex_guest_plex_for_samsung_tv_2019
+          - condition: state
+            entity: media_player.plex_guest_plex_for_samsung_tv_2019
             state_not: "unavailable"
         card:
           type: media-control
           entity: media_player.plex_guest_plex_for_samsung_tv_2019
       - type: conditional
         conditions:
-          - entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
+          - condition: state
+            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
             state_not: "off"
-          - entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
+          - condition: state
+            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
             state_not: "unavailable"
         card:
           type: media-control
           entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
       - type: conditional
         conditions:
-          - entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+          - condition: state
+            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
             state_not: "off"
-          - entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+          - condition: state
+            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
             state_not: "unavailable"
         card:
           type: media-control
@@ -363,7 +411,8 @@ cards:
           ### <center>Google</center>
       - type: conditional
         conditions:
-          - entity: media_player.mini_v_vannoi
+          - condition: state
+            entity: media_player.mini_v_vannoi
             state: "off"
         card:
           type: markdown
@@ -371,7 +420,8 @@ cards:
             *Все устройства бездействуют...*
       - type: conditional
         conditions:
-          - entity: media_player.mini_v_vannoi
+          - condition: state
+            entity: media_player.mini_v_vannoi
             state_not: "off"
         card:
           type: media-control

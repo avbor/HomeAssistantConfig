@@ -75,7 +75,8 @@ cards:
               action: toggle
           - type: conditional
             conditions:
-              - entity: input_boolean.ch_energy_show_radiator_terrace
+              - condition: state
+                entity: input_boolean.ch_energy_show_radiator_terrace
                 state: "on"
             card:
               type: entities
@@ -203,7 +204,8 @@ cards:
               action: toggle
           - type: conditional
             conditions:
-              - entity: input_boolean.ch_energy_show_radiator_livingroom
+              - condition: state
+                entity: input_boolean.ch_energy_show_radiator_livingroom
                 state: "on"
             card:
               type: entities
@@ -331,7 +333,8 @@ cards:
               action: toggle
           - type: conditional
             conditions:
-              - entity: input_boolean.ch_energy_show_radiator_kidsrooms
+              - condition: state
+                entity: input_boolean.ch_energy_show_radiator_kidsrooms
                 state: "on"
             card:
               type: entities

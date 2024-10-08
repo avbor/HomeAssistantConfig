@@ -9,25 +9,25 @@ ch_pool_pack:
 
     - alias: Дача - Управление фильтром бассейна
       id: 48bf00c7-ef92-40a9-a724-8628c2004e9d
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: "06:00:00"
           id: start
-        - platform: time
+        - trigger: time
           at: "21:00:00"
           id: stop
-        - platform: state
+        - trigger: state
           entity_id: sensor.0x00158d00054859d5_action
           to: double
           id: aqara_button
-      action:
+      actions:
         choose:
           - alias: Power On Filter
             conditions:
               - condition: trigger
                 id: "start"
             sequence:
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.sonoff_basic_04_switch
           - alias: Power Off Filter
@@ -35,7 +35,7 @@ ch_pool_pack:
               - condition: trigger
                 id: "stop"
             sequence:
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: switch.sonoff_basic_04_switch
           - alias: Toggle Filter
@@ -43,6 +43,6 @@ ch_pool_pack:
               - condition: trigger
                 id: "aqara_button"
             sequence:
-              - service: switch.toggle
+              - action: switch.toggle
                 target:
                   entity_id: switch.sonoff_basic_04_switch

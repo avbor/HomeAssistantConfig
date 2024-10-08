@@ -4,15 +4,14 @@
 
 - alias: "PowerOff all media when nobody at home"
   id: 0e2312c7-3cab-413a-aefb-20ff5802c718
-  trigger:
-    platform: state
+  triggers:
+    trigger: state
     entity_id: group.family_persons
     to: "not_home"
     for:
       minutes: 5
-  condition:
-    condition: or
-    conditions:
+  conditions:
+    - or:
       - condition: state
         entity_id: group.all_tv
         state: "on"
@@ -29,15 +28,15 @@
       - condition: state
         entity_id: group.all_xbox
         state: "on"
-  action:
-    - service: homeassistant.turn_off
-      data:
+  actions:
+    - action: homeassistant.turn_off
+      target:
         entity_id: group.all_tv
-    - service: media_player.media_stop
-      data:
+    - action: media_player.media_stop
+      target:
         entity_id:
           - group.all_chromecasts
-    - service: media_player.turn_off
+    - action: media_player.turn_off
       target:
         entity_id:
           - group.all_yandex_stations

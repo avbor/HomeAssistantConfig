@@ -45,27 +45,27 @@ usb_sonoff_dongles_pack:
       id: 2f4e6840-deb7-4629-80f1-8a34347e64e0
       mode: queued
       max: 5
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.sonoff_dongle_e_usb_stick_exist
           not_from:
             - unavailable
             - unknown
           id: 'e'
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.sonoff_dongle_p_usb_stick_exist
           not_from:
             - unavailable
             - unknown
           id: 'p'
-      action:
+      actions:
         - choose:
             - conditions: "{{ trigger.id == 'e' }}"
               sequence:
                 - choose:
                     - conditions: "{{ trigger.to_state.state == 'off' }}"
                       sequence:
-                        - service: persistent_notification.create
+                        - action: persistent_notification.create
                           data:
                             title: "Sonoff ZBDongle-E Disconnected"
                             message: |
@@ -74,10 +74,10 @@ usb_sonoff_dongles_pack:
                             notification_id: "zbe_disconnected"
                     - conditions: "{{ trigger.to_state.state == 'on' }}"
                       sequence:
-                        - service: persistent_notification.dismiss
+                        - action: persistent_notification.dismiss
                           data:
                             notification_id: "zbe_disconnected"
-                        - service: persistent_notification.create
+                        - action: persistent_notification.create
                           data:
                             title: "Sonoff ZBDongle-E Connected"
                             message: |
@@ -89,7 +89,7 @@ usb_sonoff_dongles_pack:
                 - choose:
                     - conditions: "{{ trigger.to_state.state == 'off' }}"
                       sequence:
-                        - service: persistent_notification.create
+                        - action: persistent_notification.create
                           data:
                             title: "Sonoff ZBDongle-P Disconnected"
                             message: |
@@ -98,10 +98,10 @@ usb_sonoff_dongles_pack:
                             notification_id: "zbp_disconnected"
                     - conditions: "{{ trigger.to_state.state == 'on' }}"
                       sequence:
-                        - service: persistent_notification.dismiss
+                        - action: persistent_notification.dismiss
                           data:
                             notification_id: "zbp_disconnected"
-                        - service: persistent_notification.create
+                        - action: persistent_notification.create
                           data:
                             title: "Sonoff ZBDongle-P Connected"
                             message: |
@@ -113,21 +113,21 @@ usb_sonoff_dongles_pack:
       id: 165f7294-7880-4aaf-955c-d5f301bb1e72
       mode: parallel
       max: 5
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.sonoff_dongle_e_usb_stick_exist
           to: 'off'
           id: 'e'
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.sonoff_dongle_p_usb_stick_exist
           to: 'off'
           id: 'p'
-      action:
+      actions:
         - choose:
             - conditions: "{{ trigger.id == 'e' }}"
               sequence:
                 - parallel:
-                    - service: telegram_bot.send_message
+                    - action: telegram_bot.send_message
                       data:
                         target: !secret tlg_group_system
                         title: "*Внимание!*"
@@ -135,7 +135,7 @@ usb_sonoff_dongles_pack:
                           Sonoff Dongle E отключен от VM, будет запущен процесс автоматического подключения.
                     - repeat:
                         sequence:
-                          - service: shell_command.attach_sonoff_dongle_e_to_ha_vm
+                          - action: shell_command.attach_sonoff_dongle_e_to_ha_vm
                           - delay: "00:03:00"
                         until:
                           - condition: state
@@ -144,7 +144,7 @@ usb_sonoff_dongles_pack:
             - conditions: "{{ trigger.id == 'p' }}"
               sequence:
                 - parallel:
-                    - service: telegram_bot.send_message
+                    - action: telegram_bot.send_message
                       data:
                         target: !secret tlg_group_system
                         title: "*Внимание!*"
@@ -152,7 +152,7 @@ usb_sonoff_dongles_pack:
                           Sonoff Dongle P отключен от VM, будет запущен процесс автоматического подключения.
                     - repeat:
                         sequence:
-                          - service: shell_command.attach_sonoff_dongle_p_to_ha_vm
+                          - action: shell_command.attach_sonoff_dongle_p_to_ha_vm
                           - delay: "00:03:00"
                         until:
                           - condition: state
@@ -163,22 +163,22 @@ usb_sonoff_dongles_pack:
       id: cc1601bd-a416-4fb1-9af9-4a436b7557e9
       mode: queued
       max: 5
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.sonoff_dongle_e_usb_stick_exist
           from: 'off'
           to: 'on'
           id: 'e'
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.sonoff_dongle_p_usb_stick_exist
           from: 'off'
           to: 'on'
           id: 'p'
-      action:
+      actions:
         - choose:
             - conditions: "{{ trigger.id == 'e' }}"
               sequence:
-                - service: telegram_bot.send_message
+                - action: telegram_bot.send_message
                   data:
                     target: !secret tlg_group_system
                     title: "*Внимание!*"
@@ -188,7 +188,7 @@ usb_sonoff_dongles_pack:
                       - "Перезапустить HA:/sd_ha_restart, Перезагрузить VM:/sd_vm_reboot"
             - conditions: "{{ trigger.id == 'p' }}"
               sequence:
-                - service: telegram_bot.send_message
+                - action: telegram_bot.send_message
                   data:
                     target: !secret tlg_group_system
                     title: "*Внимание!*"
@@ -200,38 +200,38 @@ usb_sonoff_dongles_pack:
 
     - alias: "Sonoff Dongles - Restart HA"
       id: a5621d7e-91e5-4f14-a6b2-80c774d415ac
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/sd_ha_restart"
-      action:
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "Команда отправлена"
-        - service: telegram_bot.edit_replymarkup
+        - action: telegram_bot.edit_replymarkup
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
             inline_keyboard: []
-        - service: homeassistant.restart
+        - action: homeassistant.restart
           
     - alias: "Sonoff Dongles - Reboot VM"
       id: 08dfe08a-3901-46f3-b16a-e807edf80986
-      trigger:
-        platform: event
+      triggers:
+        trigger: event
         event_type: telegram_callback
         event_data:
           data: "/sd_vm_reboot"
-      action:
-        - service: telegram_bot.answer_callback_query
-          data_template:
+      actions:
+        - action: telegram_bot.answer_callback_query
+          data:
             callback_query_id: "{{ trigger.event.data.id }}"
             message: "Команда отправлена"
-        - service: telegram_bot.edit_replymarkup
+        - action: telegram_bot.edit_replymarkup
           data:
             message_id: "{{ trigger.event.data.message.message_id }}"
             chat_id: "{{ trigger.event.data.chat_id }}"
             inline_keyboard: []
-        - service: hassio.host_reboot
+        - action: hassio.host_reboot

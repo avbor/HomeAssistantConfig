@@ -19,16 +19,16 @@ ch_light_pack:
   automation:
     - alias: "Дача - Включение подсветки двора - Приехали вечером"
       id: b2d0dfb1-d7c9-42ad-ae66-70e8c8f306c8
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.coutry_house_presence
           from: "off"
           to: "on"
-      condition:
+      conditions:
         - condition: time
           after: "21:00:00"
           before: "03:00:00"
-      action:
+      actions:
         - action: light.turn_on
           target:
             entity_id:
@@ -37,11 +37,11 @@ ch_light_pack:
 
     - alias: "Дача - Включение подсветки двора - Кнопка Aqara 2"
       id: 920540ae-bdaf-46e6-b6e1-3a4c179c8abe
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: sensor.0x00158d00054859d5_action
           to: single
-      action:
-        - service: light.toggle
+      actions:
+        - action: light.toggle
           target:
             entity_id: light.dacha_dvor

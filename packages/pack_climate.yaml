@@ -355,8 +355,8 @@ climate_pack:
       id: a50dc6a0-b2d1-45d9-bab8-7fc62e43fb05
       mode: queued
       max: 10
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.central_heating_nursery
           id: nursery
           not_to:
@@ -365,7 +365,7 @@ climate_pack:
           not_from:
             - unavailable
             - unknown
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.central_heating_livingroom
           id: livingroom
           not_to:
@@ -374,7 +374,7 @@ climate_pack:
           not_from:
             - unavailable
             - unknown
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.central_heating_kitchen
           id: kitchen
           not_to:
@@ -383,7 +383,7 @@ climate_pack:
           not_from:
             - unavailable
             - unknown
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.central_heating_bedroom
           id: bedroom
           not_to:
@@ -392,9 +392,9 @@ climate_pack:
           not_from:
             - unavailable
             - unknown
-      condition: "{{ states('sensor.ha_uptime') != '0' }}"
-      action:
-        - service: telegram_bot.send_message
+      conditions: "{{ states('sensor.ha_uptime') != '0' }}"
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             title: "*Внимание!*"
@@ -411,18 +411,18 @@ climate_pack:
     # Детская #######################################
     - alias: Thermo alert [Nursery]
       id: bb3a7df3-3e20-4ebe-8b49-bc9ba69ad2b6
-      trigger:
-        - platform: template
+      triggers:
+        - trigger: template
           value_template: "{{ (states('sensor.temperature_in_nursery') | float(0)) < 22 }}"
           for:
             minutes: 5
-        - platform: template
+        - trigger: template
           value_template: "{{ (states('sensor.temperature_in_nursery') | float(0)) > 25 }}"
           for:
             minutes: 5
-      action:
-        - service: notify.telegram_group_flat_1
-          data_template:
+      actions:
+        - action: notify.telegram_group_flat_1
+          data:
             message: >-
               В *Детской*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -432,18 +432,18 @@ climate_pack:
     # Гостиная ######################################
     - alias: Thermo alert [Living Room]
       id: 0e135e8d-3ad5-40cb-9d8f-9ab3df6b91bd
-      trigger:
-        - platform: template
+      triggers:
+        - trigger: template
           value_template: "{{ (states('sensor.temperature_in_livingroom') | float(0)) < 22 }}"
           for:
             minutes: 5
-        - platform: template
+        - trigger: template
           value_template: "{{ (states('sensor.temperature_in_livingroom') | float(0)) > 25 }}"
           for:
             minutes: 5
-      action:
-        - service: notify.telegram_group_flat_1
-          data_template:
+      actions:
+        - action: notify.telegram_group_flat_1
+          data:
             message: >-
               В *Гостиной*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -453,18 +453,18 @@ climate_pack:
     # Спальня #######################################
     - alias: Thermo alert [Bedroom]
       id: 524b5b92-0f5d-4429-88d2-9903ec325389
-      trigger:
-        - platform: template
+      triggers:
+        - trigger: template
           value_template: "{{ (states('sensor.temperature_in_bedroom') | float(0)) < 21 }}"
           for:
             minutes: 5
-        - platform: template
+        - trigger: template
           value_template: "{{ (states('sensor.temperature_in_bedroom') | float(0)) > 24.5 }}"
           for:
             minutes: 5
-      action:
-        - service: notify.telegram_group_flat_1
-          data_template:
+      actions:
+        - action: notify.telegram_group_flat_1
+          data:
             message: >-
               В *Спальне*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -475,8 +475,8 @@ climate_pack:
     # Оповещения о долгой работе кондиционеров ######
     - alias: AC - long running [8h]
       id: 09f64418-db04-4327-a714-57d9ea39d1ed
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id:
           - binary_sensor.0x158d00039cf974_contact
           - binary_sensor.0x158d0003d54725_contact
@@ -485,16 +485,16 @@ climate_pack:
         to: "on"
         for:
           hours: 8
-      action:
-        service: notify.telegram_group_flat_1
-        data_template:
+      actions:
+        action: notify.telegram_group_flat_1
+        data:
           message: >
             Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше 8 часов.
 
     - alias: AC - long running [16h]
       id: 970eef7a-4b66-4186-88ff-a0542c13c10a
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id:
           - binary_sensor.0x158d00039cf974_contact
           - binary_sensor.0x158d0003d54725_contact
@@ -503,16 +503,16 @@ climate_pack:
         to: "on"
         for:
           hours: 16
-      action:
-        service: notify.telegram_group_flat_1
-        data_template:
+      actions:
+        action: notify.telegram_group_flat_1
+        data:
           message: >
             Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *16* часов.
 
     - alias: AC - long running [24h]
       id: 106513d8-941c-4bfe-8f42-1fe9c95a77de
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id:
           - binary_sensor.0x158d00039cf974_contact
           - binary_sensor.0x158d0003d54725_contact
@@ -521,9 +521,9 @@ climate_pack:
         to: "on"
         for:
           hours: 24
-      action:
-        service: notify.telegram_group_flat_1
-        data_template:
+      actions:
+        action: notify.telegram_group_flat_1
+        data:
           message: >
             Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *24* часов.
 
@@ -532,21 +532,21 @@ climate_pack:
       id: 5c2a3b8f-9bc7-4c73-a0b7-62f53e2d8d4a
       mode: queued
       max: 10
-      trigger:
-        - platform: template
+      triggers:
+        - trigger: template
           value_template: "{{ (states('sensor.co2_in_nursery') | int(0)) >= 1000 }}" # Детская
           for:
             minutes: 10
-        - platform: template
+        - trigger: template
           value_template: "{{ (states('sensor.co2_in_livingroom') | int(0)) >= 1000 }}" # Гостиная
           for:
             minutes: 10
-        - platform: template
+        - trigger: template
           value_template: "{{ (states('sensor.co2_in_bedroom') | int(0)) >= 1000 }}" # Спальня
           for:
             minutes: 10
-      action:
-        - service: telegram_bot.send_message
+      actions:
+        - action: telegram_bot.send_message
           data:
             target: !secret tlg_group_flat_1
             title: "*Внимание!*"

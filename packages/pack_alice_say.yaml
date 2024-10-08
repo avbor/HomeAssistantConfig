@@ -46,13 +46,14 @@ alice_say_pack:
 
     - alias: "Mirror Yandex Station input_select Name to ID"
       id: 1ec5424e-f770-486c-b4cf-ed29e65dcb36
-      trigger:
-        platform: state
+      triggers:
+        trigger: state
         entity_id: input_select.yandex_station_target_name
-      action:
-        - service: input_text.set_value
-          data:
+      actions:
+        - action: input_text.set_value
+          target:
             entity_id: input_text.yandex_station_target_id
+          data:
             value: >
               {% if trigger.to_state.state == 'Детская' %}
                 media_player.yandex_station_lite_detskaia
@@ -69,7 +70,7 @@ alice_say_pack:
 
     yanedx_station_tts_to:
       sequence:
-        - service: media_player.play_media
+        - action: media_player.play_media
           target:
             entity_id: "{{ states('input_text.yandex_station_target_id') }}"
           data:

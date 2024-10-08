@@ -37,33 +37,34 @@ doorbell_pack:
       id: 420fe43c-f00d-46b6-a787-032b0c58bd47
       mode: single
       max_exceeded: silent
-      trigger:
-        - platform: state
+      triggers:
+        - trigger: state
           entity_id: binary_sensor.doorbell_ringing
           to: "on"
-      action:
+      actions:
         - choose:
             - alias: Mute On
               conditions: "{{ is_state('input_boolean.doorbell_mute', 'on') }}"
               sequence:
-                - service: switch.turn_on
-                  data:
+                - action: switch.turn_on
+                  target:
                     entity_id: switch.galaxy_tab_a_8_0_2019_screen
-                - service: button.press
+                - action: button.press
                   target:
                     entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
-                - service: telegram_bot.send_photo
+                - action: telegram_bot.send_photo
                   data:
                     target: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
                     caption: "*Внимание*, в дверь звонят! _(звонок отключен)_"
-                - service: telegram_bot.send_message
+                - action: telegram_bot.send_message
                   data:
                     target: !secret tlg_group_flat_1
                     message: !secret look_at_cam_reolinkcam_01
-                - service: media_player.play_media
-                  entity_id: media_player.yandex_station_mini2_gostinaia
+                - action: media_player.play_media
+                  target:
+                    entity_id: media_player.yandex_station_mini2_gostinaia
                   data:
                     media_content_id: "Внимание, в дверь звонят!"
                     media_content_type: text
@@ -76,43 +77,43 @@ doorbell_pack:
                   is_state('switch.sonoff_mini_r2_01_doorbell','off')
                 }}
               sequence:
-                - service: switch.turn_on
+                - action: switch.turn_on
                   target:
                     entity_id: switch.sonoff_mini_r2_01_doorbell
-                - service: switch.turn_on
-                  data:
+                - action: switch.turn_on
+                  target:
                     entity_id: switch.galaxy_tab_a_8_0_2019_screen
-                - service: button.press
+                - action: button.press
                   target:
                     entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
-                - service: telegram_bot.send_photo
+                - action: telegram_bot.send_photo
                   data:
                     target: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
                     caption: "*Внимание*, в дверь звонят!"
-                - service: telegram_bot.send_message
+                - action: telegram_bot.send_message
                   data:
                     target: !secret tlg_group_flat_1
                     message: !secret look_at_cam_reolinkcam_01
 
     - alias: "Doorbell - Mute and UnMute by Time"
       id: 325f3e23-39b1-47f5-a415-e5da5e4845e3
-      trigger:
-        - platform: time
+      triggers:
+        - trigger: time
           at: "21:00:00"
           id: "turn_on"
-        - platform: time
+        - trigger: time
           at: "08:00:00"
           id: "turn_off"
-      action:
+      actions:
         choose:
           - alias: Mute On
             conditions:
               - condition: trigger
                 id: "turn_on"
             sequence:
-              - service: input_boolean.turn_on
+              - action: input_boolean.turn_on
                 target:
                   entity_id: input_boolean.doorbell_mute
           - alias: Mute Off
@@ -120,20 +121,20 @@ doorbell_pack:
               - condition: trigger
                 id: "turn_off"
             sequence:
-              - service: input_boolean.turn_off
+              - action: input_boolean.turn_off
                 target:
                   entity_id: input_boolean.doorbell_mute
 
 #    - alias: "Doorbell - Send recorded video"
 #      id: 0d35b362-6bf4-4741-94c0-c5ec852bd8c5
-#      trigger:
-#        platform: event
+#      triggers:
+#        trigger: event
 #        event_type: folder_watcher
 #        event_data:
 #          event_type: moved
 #          dest_path: /config/video/doorbel.mp4
-#      action:
-#        - service: telegram_bot.send_video
+#      actions:
+#        - action: telegram_bot.send_video
 #          data:
 #            target: !secret tlg_group_flat_1
 #            file: /config/video/doorbel.mp4

@@ -8,6 +8,6 @@ power_off_samsungtv_40c5100:
     - condition: state
       entity_id: binary_sensor.samsungtv_40c5100
       state: "on"
-    - service: switch.turn_on
-      data:
+    - action: switch.turn_on
+      target:
         entity_id: switch.smartir_01_tv_samsung_power

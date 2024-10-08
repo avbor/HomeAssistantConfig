@@ -27,7 +27,8 @@ cards:
             icon: mdi:string-lights
           - type: conditional
             conditions:
-              - entity: automation.new_year_light_scheduled
+              - condition: state
+                entity: automation.new_year_light_scheduled
                 state: "on"
             row:
               entity: input_datetime.new_year_illumination_on
@@ -35,7 +36,8 @@ cards:
               icon: mdi:clock-time-seven-outline
           - type: conditional
             conditions:
-              - entity: automation.new_year_light_scheduled
+              - condition: state
+                entity: automation.new_year_light_scheduled
                 state: "on"
             row:
               entity: input_datetime.new_year_illumination_off

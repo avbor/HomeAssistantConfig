@@ -6,14 +6,14 @@
   id: 142e502b-3e63-49e3-b790-9150f155dc6d
   mode: queued
   max: 5
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: persistent_notification.http_login
-  condition:
+  conditions:
     - condition: template
       value_template: "{{ trigger.to_state.state != off }}"
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         disable_web_page_preview: true
@@ -22,7 +22,7 @@
           Неудачная попытка входа, ошибка авторизации!
           Источник: {{ state_attr('persistent_notification.http_login','message') | regex_findall_index('from (.*)\. ') }}
           _http://whatismyipaddress.com/ip/{{ state_attr('persistent_notification.http_login','message') | regex_findall_index('\((.*)\)') }}_
-    - service: persistent_notification.dismiss
+    - action: persistent_notification.dismiss
       data:
         notification_id: http_login
 
@@ -30,11 +30,11 @@
   id: ba2318c5-5c2e-4575-aa13-02f53063793d
   mode: queued
   max: 5
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: persistent_notification.ip_ban
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         disable_web_page_preview: true
@@ -42,104 +42,103 @@
           *Внимание!*
           Заблокирован IP: {{ state_attr('persistent_notification.ip_ban', 'message').split('Too many login attempts from ')[1] }}
           _http://whatismyipaddress.com/ip/{{ state_attr('persistent_notification.ip_ban', 'message').split('Too many login attempts from ')[1] }}_
-    - service: persistent_notification.dismiss
+    - action: persistent_notification.dismiss
       data:
         notification_id: ip_ban
 
 - alias: "HASS: Home Assistant Start"
   id: 60f94d65-93d1-49e5-94d7-ca58471d02c4
-  trigger:
-    - platform: homeassistant
+  triggers:
+    - trigger: homeassistant
       event: start
-  action:
-    - service: homeassistant.update_entity
+  actions:
+    - action: homeassistant.update_entity
       target:
         entity_id: sensor.errors_in_system_log_command_line
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: sensor.errors_in_system_log_command_line
       timeout: "00:00:01"
-    - service: homeassistant.update_entity
+    - action: homeassistant.update_entity
       target:
         entity_id: sensor.warnings_in_system_log_command_line
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: sensor.warnings_in_system_log_command_line
       timeout: "00:00:01"
-    - service: notify.telegram_group_system
+    - action: notify.telegram_group_system
       data:
         message: |
           _INFO:_ Home Assistant *запущен* за {{ states('sensor.start_time') }} сек.
           Ошибок: *{{ states('sensor.errors_in_system_log_command_line') }}*, Предупреждений: *{{ states('sensor.warnings_in_system_log_command_line') }}*
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.hass_errors_counter_set_at_startup
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.hass_warnings_counter_set_at_startup
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.auto_reboot_by_errors_after_boot
 
 - alias: "HASS: Home Assistant Shutdown"
   id: 44bdbc77-2894-4c80-9739-6c690bde13f9
-  trigger:
-    platform: homeassistant
+  triggers:
+    trigger: homeassistant
     event: shutdown
-  action:
-    - service: input_boolean.turn_on
+  actions:
+    - action: input_boolean.turn_on
       data:
         entity_id: input_boolean.ha_shutdown
-    - service: notify.telegram_group_system
+    - action: notify.telegram_group_system
       data:
         message: "_INFO:_ Home Assistant *остановлен*."
 
 - alias: "HASS: ERRORs in System Log [notify to group system]"
   id: e4140626-d5b1-4a6c-abe1-f99ae0547f0b
   initial_state: false
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: system_log_event
     event_data:
       level: ERROR
-  action:
-    - service: notify.telegram_group_system
-      data_template:
+  actions:
+    - action: notify.telegram_group_system
+      data:
         message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: "HASS: WARNINGs in System Log [notify to group system]"
   id: 42541570-874a-46a9-86d0-0db433aaec5b
   initial_state: false
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: system_log_event
     event_data:
       level: WARNING
-  action:
-    - service: notify.telegram_group_system
-      data_template:
+  actions:
+    - action: notify.telegram_group_system
+      data:
         message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: "HASS: System Config Errors [notify to group system]"
   id: 3770bcbf-435a-43b2-bfde-b04711e32b61
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: call_service
       event_data:
         domain: persistent_notification
         service: create
-  condition:
-    - condition: or
-      conditions:
-        - condition: template
-          value_template: >-
-            {{ trigger.event.data.service_data.notification_id == 'homeassistant.check_config' }}
-        - condition: template
-          value_template: >-
-            {{ trigger.event.data.service_data.notification_id == 'invalid_config' }}
-  action:
-    - service: notify.telegram_group_system
-      data_template:
+  conditions:
+    - or:
+      - condition: template
+        value_template: >-
+          {{ trigger.event.data.service_data.notification_id == 'homeassistant.check_config' }}
+      - condition: template
+        value_template: >-
+          {{ trigger.event.data.service_data.notification_id == 'invalid_config' }}
+  actions:
+    - action: notify.telegram_group_system
+      data:
         message: |
           *Внимание, конфигурация содержит ошибки!*
           {% if trigger.event.data.service_data.notification_id == 'homeassistant.check_config' -%}
@@ -147,7 +146,7 @@
           {% elif trigger.event.data.service_data.notification_id == 'invalid_config' -%}
           {{ trigger.event.data.service_data.message }}
           {% endif %}
-    - service: persistent_notification.dismiss
+    - action: persistent_notification.dismiss
       data:
         notification_id: >-
           {{ trigger.event.data.service_data.notification_id }}
@@ -155,20 +154,20 @@
 - alias: "HASS: ERRORs in Automations [notify to group system]"
   id: 67d49afb-cac6-45e2-99b0-0ad5904d84b2
   mode: queued
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: system_log_event
       event_data:
         level: ERROR
-  condition:
+  conditions:
     - condition: template
       value_template: >-
         {{ 
           trigger.event.data.message | regex_search('Error while executing automation') or
           trigger.event.data.message | regex_search('Error executing script')
         }}
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
@@ -179,17 +178,17 @@
 - alias: "HASS: Critical Error [notify to group system]"
   id: d70721b8-e0f2-415a-b917-331781a463ee
   mode: queued
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: system_log_event
       event_data:
         level: FATAL
-    - platform: event
+    - trigger: event
       event_type: system_log_event
       event_data:
         level: CRITICAL
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
@@ -199,37 +198,37 @@
 
 - alias: "HASSIO: New Version Available [notify to group system]"
   id: 4f0d8495-8abd-4513-9348-7630c5576088
-  trigger:
-    platform: template
+  triggers:
+    trigger: template
     value_template: "{{ states('sensor.current_version') < states('sensor.latest_version') }}"
-  action:
-    service: notify.telegram_group_system
-    data_template:
+  actions:
+    action: notify.telegram_group_system
+    data:
       message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
 
 - alias: "HASSIO: New Home Assistant OS Version Available [notify to group system]"
   id: e1febbae-54ca-44b3-b808-83f74f29bf36
-  trigger:
-    platform: template
+  triggers:
+    trigger: template
     value_template: "{{ states('sensor.home_assistant_operating_system_version') < states('sensor.home_assistant_operating_system_newest_version') }}"
-  action:
-    service: notify.telegram_group_system
-    data_template:
+  actions:
+    action: notify.telegram_group_system
+    data:
       message: "_INFO:_ Доступна новая версия Home Assistant OS ({{ states('sensor.home_assistant_operating_system_newest_version') }})"
 
 #- alias: "HASSIO: New Addons Update Available [notify to group system]"
 #  id: 19295cc3-b128-4b64-925a-ffde2688cf9c
-#  trigger:
-#    - platform: state
+#  triggers:
+#    - trigger: state
 #      entity_id: binary_sensor.updater_addons
 #      from: "off"
 #      to: "on"
-#  condition:
+#  conditions:
 #    - condition: template
 #      value_template: "{{ states('sensor.supervisor_updates') | int > 0 }}"
-#  action:
-#    - service: notify.telegram_group_system
-#      data_template:
+#  actions:
+#    - action: notify.telegram_group_system
+#      data:
 #        message: |
 #          _INFO:_ Доступны новые версии Add-ons (Supervisor) ({{ states('sensor.supervisor_updates') }}):
 #          {%- for repo in state_attr('sensor.supervisor_updates', 'addons') %}
@@ -238,26 +237,26 @@
 
 #- alias: "HASSIO: New Supervisor Version Available [notify to group system]"
 #  id: 80b629d2-3441-467b-ad60-dd49de9f8703
-#  trigger:
-#    - platform: state
+#  triggers:
+#    - trigger: state
 #     from: "off"
 #      to: "on"
-#  action:
-#    - service: notify.telegram_group_system
-#      data_template:
+#  actions:
+#    - action: notify.telegram_group_system
+#      data:
 #        message: "_INFO:_ Доступна новая версия Supervisor ({{ state_attr('sensor.supervisor_updates', 'newest_version') }})"
 
 #- alias: "HACS: New Component Version Available [notify to group system]"
 #  id: 4bc5609a-1e8b-4e66-944a-e613bcaad6d2
-#  trigger:
-#    platform: state
+#  triggers:
+#    trigger: state
 #    entity_id: sensor.hacs
-#  condition:
+#  conditions:
 #    - condition: template
 #      value_template: "{{ (states('sensor.hacs') | int) > 0 }}"
-#  action:
-#    service: notify.telegram_group_system
-#    data_template:
+#  actions:
+#    action: notify.telegram_group_system
+#    data:
 #      message: |
 #        _INFO:_ Доступны новые версии Custom Components (HACS) ({{ states('sensor.hacs') }}):
 #        {%- for repo in state_attr('sensor.hacs', 'repositories') %}
@@ -269,10 +268,10 @@
   mode: queued
   max: 50
   max_exceeded: silent
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: state_changed
-  condition:
+  conditions:
     - "{{ trigger.event.data.entity_id.startswith('update.') }}"
     - "{{ trigger.event.data.old_state is not none and trigger.event.data.new_state is not none }}"
     - or:
@@ -296,7 +295,7 @@
                 trigger.event.data.new_state.attributes.installed_version not in ignore and
                 trigger.event.data.new_state.attributes.installed_version is not none
               }}
-  action:
+  actions:
     - variables:
         latest_version: "{{ trigger.event.data.new_state.attributes.latest_version }}"
         installed_version: "{{ state_attr(trigger.event.data.entity_id, 'installed_version') }}"
@@ -324,10 +323,10 @@
   id: 89bb378c-13b5-4051-bd08-3f226dbc8834
   mode: queued
   max: 30
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: state_changed
-  condition:
+  conditions:
     - condition: template
       value_template: >-
         {{ states('input_boolean.ha_shutdown') == 'off' }}
@@ -386,10 +385,10 @@
     - condition: template
       value_template: >-
         {{ trigger.event.data.new_state.state in ['unknown', 'unavailable'] }}
-  action:
+  actions:
     - condition: template
       value_template: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
-    - service: telegram_bot.send_message
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
@@ -401,10 +400,10 @@
   id: 6d87e0a2-8a6b-4b20-bd28-900af1620584
   mode: queued
   max: 30
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: state_changed
-  condition:
+  conditions:
     - condition: template
       value_template: >-
         {{ not trigger.event.data.entity_id | regex_search
@@ -421,8 +420,8 @@
     - condition: template
       value_template: >-
         {{ (trigger.event.data.new_state.state | int) < (states('input_number.low_battery_alert_threshold') | int) }}
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
@@ -433,11 +432,11 @@
 - alias: New Network Device Notification
   id: 7e5b4f9a-eb87-487f-8e1a-4b980de13734
   mode: parallel
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: device_tracker_new_device
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
@@ -447,11 +446,11 @@
 
 - alias: "Auto Backup Completed [notify to group system]"
   id: fef0c4de-e2ba-419b-b49e-ff39449e6481
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: auto_backup.backup_successful
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
@@ -461,11 +460,11 @@
 
 - alias: "Auto Backup Failure [notify to group system]"
   id: 24f2bb2c-3e2c-47b5-ba9a-a92f0f5bf63a
-  trigger:
-    platform: event
+  triggers:
+    trigger: event
     event_type: auto_backup.backup_failed
-  action:
-    - service: telegram_bot.send_message
+  actions:
+    - action: telegram_bot.send_message
       data:
         target: !secret tlg_group_system
         parse_mode: html
