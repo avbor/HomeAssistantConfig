@@ -24,6 +24,8 @@ resources:
     type: js
   - url: /hacsfiles/lovelace-flower-card/flower-card.js
     type: module
+  - url: /hacsfiles/lovelace-card-mod/card-mod.js
+    type: module
 dashboards:
   dash-chouse:
     mode: yaml

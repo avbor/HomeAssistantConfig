@@ -585,6 +585,29 @@ cards:
       - type: markdown
         content: >
           ### <center>Погода</center>
+      - type: markdown
+        card_mod:
+          style: 
+            ha-markdown $: |
+              {% set gm = states('sensor.gismeteo_geomagnitnaia_aktivnost_v_moskve_bally_now') | int(0) %}
+              {% if gm < 4 %}{% set f_color = "rgb(0,0,255)" %}
+              {% elif gm == 4 %}{% set f_color = "rgb(255,255,0)" %}
+              {% elif gm == 5 %}{% set f_color = "rgb(255,215,0)" %}
+              {% elif gm == 6 %}{% set f_color = "rgb(255,165,0)" %}
+              {% elif gm == 7 %}{% set f_color = "rgb(200,63,73)" %}
+              {% elif gm == 8 %}{% set f_color = "rgb(165,42,42)" %}
+              {% elif gm == 9 %}{% set f_color = "rgb(255,0,0)" %}
+              {% else %}{% set f_color = "rgb(0,0,255)" %}
+              {% endif %}
+              h1 {color: {{ f_color }} !important;}
+        content: >
+          #### <center>Геомагнитная активность</center>
+
+          <p>
+          <h1><center>{{ states('sensor.gismeteo_geomagnitnaia_aktivnost_v_moskve_bally_now') | int(0) }}</center></h1>
+          </p>
+
+          <center>{{ states('sensor.gismeteo_geomagnitnaia_aktivnost_v_moskve_now') }}</center>
       - type: weather-forecast
         entity: weather.yandex_weather_danilovskii
         name: Москва

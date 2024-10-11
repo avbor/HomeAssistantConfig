@@ -103,7 +103,7 @@ _Remote site (country house):_
 #### WiFi Devices:
 - Relays:
   - Sonoff MINI & MINI R2\
-  Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN) & "ESPHome"
+  Integration "Sonoff LAN" by [AlexxIT](https://github.com/AlexxIT/SonoffLAN) & [ESPHome](https://esphome.io/)
 
   - Sonoff Basic R2 flashed to [ESPHome](https://esphome.io/)\
   Integration "ESPHome"
@@ -276,7 +276,7 @@ Integration "Fully Kiosk Browser"
 **Servers:**
 
 - NUC10:
-  - Ubuntu Server 22.04 LTS
+  - Ubuntu Server 24.04 LTS
   - QEMU + KVM + libvirt
   - Docker
   - Unbound
@@ -295,7 +295,7 @@ Integration "Fully Kiosk Browser"
     - PostgreSQL
 
 - NUC7:
-  - Ubuntu Server 22.04 LTS
+  - Ubuntu Server 24.04 LTS
   - QEMU + KVM + libvirt
   - Docker
   - Containers:
