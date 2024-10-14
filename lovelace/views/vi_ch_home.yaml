@@ -2,6 +2,34 @@ title: Home
 path: ch-home
 icon: "hass:home-assistant"
 cards:
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: scene.ch_away
+            name: Away Mode
+            icon: mdi:home-export-outline
+            hide_state: true
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Отопление на минимум, бойлер, насос, внешнее освещение - отключаем.
+            hold_action:
+              action: more-info
+            color: amber
+          - type: tile
+            entity: scene.ch_at_home
+            name: Home Mode
+            icon: mdi:home-account
+            hide_state: true
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Греем дом, воду, включаем насос.
+            hold_action:
+              action: more-info
+            color: lime
   - type: markdown
     content: >
       ### <center>Сейчас на даче</center>

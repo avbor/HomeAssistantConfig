@@ -14,6 +14,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
+    DEGREE,
     UnitOfSpeed,
     UnitOfTemperature,
 )
@@ -29,6 +30,7 @@ from .const import (
     ATTR_API_TEMPERATURE,
     ATTR_API_SERVER_TIME,
     ATTR_API_WIND_BEARING,
+    ATTR_WIND_INTERCARDINAL_DIRECTION,
     ATTR_API_WIND_SPEED,
     ATTR_API_WIND_GUST,
     ATTR_API_YA_CONDITION,
@@ -36,9 +38,12 @@ from .const import (
     ATTRIBUTION,
     DOMAIN,
     ENTRY_NAME,
+    HA_WEATHER_STATES,
     TEMPERATURE_CONVERTER,
     UPDATER,
     WIND_SPEED_CONVERTER,
+    YA_CONDITION_STATES,
+    WEATHER_STATES_CONVERSION,
     convert_unit_value,
 )
 from .updater import WeatherUpdater
@@ -87,15 +92,26 @@ WEATHER_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key=ATTR_API_WIND_BEARING,
         name="Wind bearing",
-        entity_registry_enabled_default=True,
+        entity_registry_enabled_default=False,
         icon="mdi:compass-rose",
         translation_key=ATTR_API_WIND_BEARING,
+        native_unit_of_measurement=DEGREE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    SensorEntityDescription(
+        key=ATTR_WIND_INTERCARDINAL_DIRECTION,
+        name="Wind direction",
+        entity_registry_enabled_default=True,
+        icon="mdi:compass-rose",
+        translation_key=ATTR_WIND_INTERCARDINAL_DIRECTION,
     ),
     SensorEntityDescription(
         key=ATTR_API_CONDITION,
         name="Condition HomeAssistant",
         entity_registry_enabled_default=False,
         translation_key=ATTR_API_CONDITION,
+        options=HA_WEATHER_STATES,
+        device_class=SensorDeviceClass.ENUM,
     ),
     SensorEntityDescription(
         key=ATTR_API_SERVER_TIME,
@@ -110,6 +126,8 @@ WEATHER_SENSORS: tuple[SensorEntityDescription, ...] = (
         name="Condition Yandex",
         entity_registry_enabled_default=True,
         translation_key=ATTR_API_YA_CONDITION,
+        options=YA_CONDITION_STATES,
+        device_class=SensorDeviceClass.ENUM,
     ),
     SensorEntityDescription(
         key=ATTR_MIN_FORECAST_TEMPERATURE,
@@ -187,11 +205,16 @@ class YandexWeatherSensor(SensorEntity, CoordinatorEntity, RestoreEntity):
                     convert_unit_value(
                         UNIT_CONVERTOR_TYPE_MAP[self.entity_description.key],
                         float(state.state),
-                        state.attributes.get('unit_of_measurement')
+                        state.attributes.get("unit_of_measurement")
                         or self.unit_of_measurement,
                         self.native_unit_of_measurement,
                     )
                 )
+            elif (
+                self.entity_description.key == ATTR_API_YA_CONDITION
+                and state.state not in YA_CONDITION_STATES
+            ):  # for backward compatibility
+                self._attr_native_value = WEATHER_STATES_CONVERSION.get(state.state)
             else:
                 self._attr_native_value = state.state
 

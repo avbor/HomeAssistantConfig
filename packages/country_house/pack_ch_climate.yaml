@@ -11,9 +11,6 @@ ch_climate_pack:
     ch_energy_show_radiator_kidsrooms:
       icon: mdi:radiator
 
-    ch_energy_show_radiator_terrace:
-      icon: mdi:radiator
-
     ch_energy_show_radiator_cabinet:
       icon: mdi:radiator
 
@@ -32,6 +29,7 @@ ch_climate_pack:
       name: Country House Avg Temp - Kids Rooms
       unique_id: 00ea4868-27d4-44e7-b29c-e205b1b3d740
       type: median
+      round_digits: 1
       entity_ids:
         - sensor.a4c138c7ded2_temperature
         - sensor.a4c1380b3a85_temperature
@@ -40,6 +38,7 @@ ch_climate_pack:
       name: Country House Avg Humidity - Kids Rooms
       unique_id: aac9aa34-da5f-4910-9ab4-00e02063b404
       type: median
+      round_digits: 1
       entity_ids:
         - sensor.a4c138c7ded2_humidity
         - sensor.a4c1380b3a85_humidity
@@ -56,11 +55,6 @@ ch_climate_pack:
           unique_id: 0570de2f-750a-41e4-849c-6a618acbede0
           state: >-
             {{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}
-
-        - name: ch_heater_terrace_status
-          unique_id: 52fb7987-099d-47b6-8c85-ee59f097b5e4
-          state: >-
-            {{ ((state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') | abs) * 100 }}
 
         - name: ch_heater_cabinet_status
           unique_id: 9dde316e-ca73-4a7b-a25e-ddd860ddf3e4
@@ -82,17 +76,17 @@ ch_climate_pack:
           state: >-
             {{ ((state_attr('climate.country_house_toilet_2st_floor', 'hvac_action') == 'heating') | abs) * 100 }}
 
-        - name: ch_heater_terrace_power
-          unique_id: 9c477f38-20b2-42f9-91fc-50b9d0e4da64
-          state: >-
-            {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int(0)) %}
-            {% if heat_power == 0 %}
-              0
-            {% elif heat_power > 500 and heat_power < 1000 %}
-              1
-            {% elif heat_power > 1000 %}
-              2
-            {% endif %}
+#        - name: ch_heater_terrace_power
+#          unique_id: 9c477f38-20b2-42f9-91fc-50b9d0e4da64
+#          state: >-
+#            {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int(0)) %}
+#            {% if heat_power == 0 %}
+#              0
+#            {% elif heat_power > 500 and heat_power < 1000 %}
+#              1
+#            {% elif heat_power > 1000 %}
+#              2
+#            {% endif %}
 
     - binary_sensor:
         - name: ch_heater_living_room_status
@@ -114,18 +108,6 @@ ch_climate_pack:
             {{ (state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') }}
           icon: >-
             {% if state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating' %}
-              mdi:radiator
-            {% else %}
-              mdi:radiator-disabled
-            {% endif %}
-
-        - name: ch_heater_terrace_status
-          unique_id: a2ba01c3-7e44-429a-b792-c0014ecc2f10
-          device_class: heat
-          state: >-
-            {{ (state_attr('climate.country_house_terrace', 'hvac_action') == 'heating') }}
-          icon: >-
-            {% if state_attr('climate.country_house_terrace', 'hvac_action') == 'heating' %}
               mdi:radiator
             {% else %}
               mdi:radiator-disabled
@@ -191,9 +173,12 @@ ch_climate_pack:
       max_temp: 30
       cold_tolerance: 2
       hot_tolerance: 0.5
-      min_cycle_duration:
-        minutes: 1
-      away_temp: 10
+      keep_alive:
+        minutes: 5
+      away_temp: 12
+      comfort_temp: 23
+      eco_temp: 15
+      home_temp: 21
       precision: 0.1
 
     - platform: generic_thermostat
@@ -205,23 +190,12 @@ ch_climate_pack:
       max_temp: 30
       cold_tolerance: 2
       hot_tolerance: 0.5
-      min_cycle_duration:
-        minutes: 1
-      away_temp: 10
-      precision: 0.1
-
-    - platform: generic_thermostat
-      unique_id: aad05c78-6dc3-435a-becc-2e1c2a377fda
-      name: Country House Terrace
-      heater: switch.gosund_sp111_02_switch
-      target_sensor: sensor.a4c1384e2b64_temperature
-      min_temp: 5
-      max_temp: 30
-      cold_tolerance: 2
-      hot_tolerance: 0.5
-      min_cycle_duration:
-        minutes: 1
-      away_temp: 10
+      keep_alive:
+        minutes: 5
+      away_temp: 12
+      comfort_temp: 23
+      eco_temp: 15
+      home_temp: 21
       precision: 0.1
 
     - platform: generic_thermostat
@@ -233,9 +207,12 @@ ch_climate_pack:
       max_temp: 30
       cold_tolerance: 2
       hot_tolerance: 0.5
-      min_cycle_duration:
-        minutes: 1
-      away_temp: 10
+      keep_alive:
+        minutes: 5
+      away_temp: 12
+      comfort_temp: 23
+      eco_temp: 15
+      home_temp: 21
       precision: 0.1
 
     - platform: generic_thermostat
@@ -247,9 +224,12 @@ ch_climate_pack:
       max_temp: 30
       cold_tolerance: 2
       hot_tolerance: 0.5
-      min_cycle_duration:
-        minutes: 1
-      away_temp: 10
+      keep_alive:
+        minutes: 5
+      away_temp: 12
+      comfort_temp: 23
+      eco_temp: 15
+      home_temp: 21
       precision: 0.1
 
     - platform: generic_thermostat
@@ -261,9 +241,12 @@ ch_climate_pack:
       max_temp: 30
       cold_tolerance: 2
       hot_tolerance: 0.5
-      min_cycle_duration:
-        minutes: 1
-      away_temp: 10
+      keep_alive:
+        minutes: 5
+      away_temp: 12
+      comfort_temp: 23
+      eco_temp: 15
+      home_temp: 21
       precision: 0.1
 
     - platform: generic_thermostat
@@ -275,7 +258,10 @@ ch_climate_pack:
       max_temp: 30
       cold_tolerance: 2
       hot_tolerance: 0.5
-      min_cycle_duration:
-        minutes: 1
-      away_temp: 10
+      keep_alive:
+        minutes: 5
+      away_temp: 12
+      comfort_temp: 23
+      eco_temp: 15
+      home_temp: 21
       precision: 0.1

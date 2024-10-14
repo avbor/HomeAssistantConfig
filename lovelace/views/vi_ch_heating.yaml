@@ -2,637 +2,878 @@ title: Heating
 path: ch-heating
 icon: "mdi:radiator"
 cards:
+  # 1 Этаж
   - type: vertical-stack
     cards:
       - type: markdown
         content: >
-          ### <center>Терраса</center>
-      - type: custom:simple-thermostat
-        entity: climate.country_house_terrace
-        layout:
-          step: row
-          mode:
-            names: false
-        header: false
-        sensors:
-          - entity: binary_sensor.ch_heater_terrace_status
-            name: Статус
-        control:
-          hvac:
-            _name: "Режим:"
-        hide:
-          state: true
-          temperature: true
-      - type: "custom:mini-graph-card"
-        name: Температура
-        icon: mdi:thermometer
-        cache: false
-        hours_to_show: 24
-        points_per_hour: 12
-        lower_bound_secondary: 0
-        upper_bound_secondary: 100
-        line_width: 2
-        font_size: 75
-        font_size_header: 12
-        height: 80
-        decimals: 1
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.a4c1384e2b64_temperature
-            name: Температура
-          - entity: sensor.a4c1384e2b64_humidity
-            name: Влажность
-            show_state: true
-            y_axis: secondary
-            smoothing: true
-            show_fill: false
-            color: deepskyblue
-          - entity: sensor.ch_heater_terrace_status
-            y_axis: secondary
-            aggregate_func: max
-            smoothing: false
-            show_legend: false
-            show_line: false
-            show_points: false
-            color: salmon
-        show:
-          name: false
-          icon: false
-          labels: false
-          legend: false
-          labels_secondary: false
-          fill: fade
-
-      - type: custom:vertical-stack-in-card
+          ### <center>1 Этаж</center>
+      - type: vertical-stack
         cards:
-          - type: button
-            entity: input_boolean.ch_energy_show_radiator_terrace
-            name: "\U000021E7 Потребление \U000021E9"
-            show_state: false
-            show_icon: false
-            tap_action:
-              action: toggle
-          - type: conditional
-            conditions:
-              - condition: state
-                entity: input_boolean.ch_energy_show_radiator_terrace
-                state: "on"
-            card:
-              type: entities
-              entities:
-                - entity: sensor.date_current_month
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  show_state: false
-                  secondary_info:
-                    entity: sensor.date_current_month
-                    name: false
-                  entities:
-                    - entity: sensor.socket_ch_radiator_terrace_energy_monthly_total
-                      name: false
-                      unit: "кВт⋅ч"
-                      format: precision2
-                    - entity: sensor.energy_cost_ch_radiator_terrace_monthly
-                      name: false
-                      unit: "₽"
-                      styles:
-                        font-weight: bold
-                - entity: sensor.date_previous_month
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  show_state: false
-                  secondary_info:
-                    entity: sensor.date_previous_month
-                    name: false
-                  entities:
-                    - entity: sensor.socket_ch_radiator_terrace_energy_monthly_total
-                      attribute: last_period
-                      name: false
-                      unit: "кВт⋅ч"
-                      format: precision2
-                    - entity: sensor.energy_cost_ch_radiator_terrace_monthly_prev
-                      name: false
-                      unit: "₽"
-                      styles:
-                        font-weight: bold
-                - type: divider
-                - entity: sensor.energy_cost_ch_radiator_terrace_daily_avg
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  secondary_info: День
-                  unit: "₽"
-                  state_header: в среднем
-                  entities:
-                    - entity: sensor.energy_cost_ch_radiator_terrace_daily_prev
-                      name: вчера
-                      unit: "₽"
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Гостиная</center>
-      - type: custom:simple-thermostat
-        entity: climate.country_house_living_room
-        layout:
-          step: row
-          mode:
-            names: false
-        header: false
-        sensors:
-          - entity: binary_sensor.ch_heater_living_room_status
-            name: Статус
-        control:
-          hvac:
-            _name: "Режим:"
-        hide:
-          state: true
-          temperature: true
-      - type: "custom:mini-graph-card"
-        name: Температура
-        icon: mdi:thermometer
-        cache: false
-        hours_to_show: 24
-        points_per_hour: 12
-        lower_bound_secondary: 0
-        upper_bound_secondary: 100
-        line_width: 2
-        font_size: 75
-        font_size_header: 12
-        height: 80
-        decimals: 1
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.a4c138d358e9_temperature
+          - type: markdown
+            content: >
+              ### <center>Гостиная</center>
+          - type: custom:simple-thermostat
+            entity: climate.country_house_living_room
+            layout:
+              step: row
+              mode:
+                names: false
+            header: false
+            sensors:
+              - entity: binary_sensor.ch_heater_living_room_status
+                name: Статус
+            control:
+              hvac:
+                _name: "Режим:"
+                "off":
+                  icon: mdi:fire-off
+                "on":
+                  icon: mdi:fire
+              preset:
+                _name: " "
+                none: false
+                away:
+                  icon: mdi:home-export-outline
+                eco:
+                  icon: mdi:thermometer-minus
+                comfort:
+                  icon: mdi:thermometer-plus
+                home:
+                  icon: mdi:home-account
+            hide:
+              state: true
+              temperature: true
+          - type: "custom:mini-graph-card"
             name: Температура
-          - entity: sensor.a4c138d358e9_humidity
-            name: Влажность
-            show_state: true
-            y_axis: secondary
-            smoothing: true
-            show_fill: false
-            color: deepskyblue
-          - entity: sensor.ch_heater_living_room_status
-            y_axis: secondary
-            aggregate_func: max
-            smoothing: false
-            show_legend: false
-            show_line: false
-            show_points: false
-            color: salmon
-        show:
-          name: false
-          icon: false
-          labels: false
-          legend: false
-          labels_secondary: false
-          fill: fade
+            icon: mdi:thermometer
+            cache: false
+            hours_to_show: 24
+            points_per_hour: 12
+            lower_bound_secondary: 0
+            upper_bound_secondary: 100
+            line_width: 2
+            font_size: 75
+            font_size_header: 12
+            height: 80
+            decimals: 1
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.a4c138d358e9_temperature
+                name: Температура
+              - entity: sensor.a4c138d358e9_humidity
+                name: Влажность
+                show_state: true
+                y_axis: secondary
+                smoothing: true
+                show_fill: false
+                color: deepskyblue
+              - entity: sensor.ch_heater_living_room_status
+                y_axis: secondary
+                aggregate_func: max
+                smoothing: false
+                show_legend: false
+                show_line: false
+                show_points: false
+                color: salmon
+            show:
+              name: false
+              icon: false
+              labels: false
+              legend: false
+              labels_secondary: false
+              fill: fade
 
-      - type: custom:vertical-stack-in-card
-        cards:
-          - type: button
-            entity: input_boolean.ch_energy_show_radiator_livingroom
-            name: "\U000021E7 Потребление \U000021E9"
-            show_state: false
-            show_icon: false
-            tap_action:
-              action: toggle
-          - type: conditional
-            conditions:
-              - condition: state
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: button
                 entity: input_boolean.ch_energy_show_radiator_livingroom
-                state: "on"
-            card:
-              type: entities
-              entities:
-                - entity: sensor.date_current_month
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  show_state: false
-                  secondary_info:
-                    entity: sensor.date_current_month
-                    name: false
+                name: "\U000021E7 Потребление \U000021E9"
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_boolean.ch_energy_show_radiator_livingroom
+                    state: "on"
+                card:
+                  type: entities
                   entities:
-                    - entity: sensor.socket_ch_radiator_livingroom_energy_monthly_total
-                      name: false
-                      unit: "кВт⋅ч"
-                      format: precision2
-                    - entity: sensor.energy_cost_ch_radiator_livingroom_monthly
-                      name: false
+                    - entity: sensor.date_current_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_current_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_livingroom_energy_monthly_total
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_livingroom_monthly
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - entity: sensor.date_previous_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_previous_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_livingroom_energy_monthly_total
+                          attribute: last_period
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_livingroom_monthly_prev
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - type: divider
+                    - entity: sensor.energy_cost_ch_radiator_livingroom_daily_avg
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      secondary_info: День
                       unit: "₽"
-                      styles:
-                        font-weight: bold
-                - entity: sensor.date_previous_month
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  show_state: false
-                  secondary_info:
-                    entity: sensor.date_previous_month
-                    name: false
-                  entities:
-                    - entity: sensor.socket_ch_radiator_livingroom_energy_monthly_total
-                      attribute: last_period
-                      name: false
-                      unit: "кВт⋅ч"
-                      format: precision2
-                    - entity: sensor.energy_cost_ch_radiator_livingroom_monthly_prev
-                      name: false
-                      unit: "₽"
-                      styles:
-                        font-weight: bold
-                - type: divider
-                - entity: sensor.energy_cost_ch_radiator_livingroom_daily_avg
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  secondary_info: День
-                  unit: "₽"
-                  state_header: в среднем
-                  entities:
-                    - entity: sensor.energy_cost_ch_radiator_livingroom_daily_prev
-                      name: вчера
-                      unit: "₽"
+                      state_header: в среднем
+                      entities:
+                        - entity: sensor.energy_cost_ch_radiator_livingroom_daily_prev
+                          name: вчера
+                          unit: "₽"
 
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Дети</center>
-      - type: custom:simple-thermostat
-        entity: climate.country_house_kids_rooms
-        layout:
-          step: row
-          mode:
-            names: false
-        header: false
-        sensors:
-          - entity: binary_sensor.ch_heater_kids_rooms_status
-            name: Статус
-        control:
-          hvac:
-            _name: "Режим:"
-        hide:
-          state: true
-          temperature: true
-      - type: "custom:mini-graph-card"
-        name: Температура
-        icon: mdi:thermometer
-        cache: false
-        hours_to_show: 24
-        points_per_hour: 12
-        lower_bound_secondary: 0
-        upper_bound_secondary: 100
-        line_width: 2
-        font_size: 75
-        font_size_header: 12
-        height: 80
-        decimals: 1
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.country_house_avg_temp_kids_rooms
-            name: Температура
-          - entity: sensor.country_house_avg_humidity_kids_rooms
-            name: Влажность
-            show_state: true
-            y_axis: secondary
-            smoothing: true
-            show_fill: false
-            color: deepskyblue
-          - entity: sensor.ch_heater_kids_rooms_status
-            y_axis: secondary
-            aggregate_func: max
-            smoothing: false
-            show_legend: false
-            show_line: false
-            show_points: false
-            color: salmon
-        show:
-          name: false
-          icon: false
-          labels: false
-          legend: false
-          labels_secondary: false
-          fill: fade
-
-      - type: custom:vertical-stack-in-card
+      - type: vertical-stack
         cards:
-          - type: button
-            entity: input_boolean.ch_energy_show_radiator_kidsrooms
-            name: "\U000021E7 Потребление \U000021E9"
-            show_state: false
-            show_icon: false
-            tap_action:
-              action: toggle
-          - type: conditional
-            conditions:
-              - condition: state
+          - type: markdown
+            content: >
+              ### <center>Кабинет</center>
+          - type: custom:simple-thermostat
+            entity: climate.country_house_cabinet
+            layout:
+              step: row
+              mode:
+                names: false
+            header: false
+            sensors:
+              - entity: binary_sensor.ch_heater_cabinet_status
+                name: Статус
+            control:
+              hvac:
+                _name: "Режим:"
+                "off":
+                  icon: mdi:fire-off
+                "on":
+                  icon: mdi:fire
+              preset:
+                _name: " "
+                none: false
+                away:
+                  icon: mdi:home-export-outline
+                eco:
+                  icon: mdi:thermometer-minus
+                comfort:
+                  icon: mdi:thermometer-plus
+                home:
+                  icon: mdi:home-account
+            hide:
+              state: true
+              temperature: true
+          - type: "custom:mini-graph-card"
+            name: Температура
+            icon: mdi:thermometer
+            cache: false
+            hours_to_show: 24
+            points_per_hour: 12
+            lower_bound_secondary: 0
+            upper_bound_secondary: 100
+            line_width: 2
+            font_size: 75
+            font_size_header: 12
+            height: 80
+            decimals: 1
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.a4c138962bb6_temperature
+                name: Температура
+              - entity: sensor.a4c138962bb6_humidity
+                name: Влажность
+                show_state: true
+                y_axis: secondary
+                smoothing: true
+                show_fill: false
+                color: deepskyblue
+              - entity: sensor.ch_heater_cabinet_status
+                y_axis: secondary
+                aggregate_func: max
+                smoothing: false
+                show_legend: false
+                show_line: false
+                show_points: false
+                color: salmon
+            show:
+              name: false
+              icon: false
+              labels: false
+              legend: false
+              labels_secondary: false
+              fill: fade
+
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: button
+                entity: input_boolean.ch_energy_show_radiator_cabinet
+                name: "\U000021E7 Потребление \U000021E9"
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_boolean.ch_energy_show_radiator_cabinet
+                    state: "on"
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.date_current_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_current_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_cabinet_energy_monthly_total
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_cabinet_monthly
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - entity: sensor.date_previous_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_previous_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_cabinet_energy_monthly_total
+                          attribute: last_period
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_cabinet_monthly_prev
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - type: divider
+                    - entity: sensor.energy_cost_ch_radiator_cabinet_daily_avg
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      secondary_info: День
+                      unit: "₽"
+                      state_header: в среднем
+                      entities:
+                        - entity: sensor.energy_cost_ch_radiator_cabinet_daily_prev
+                          name: вчера
+                          unit: "₽"
+
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ### <center>Туалет 1 Этаж</center>
+          - type: custom:simple-thermostat
+            entity: climate.country_house_toilet_1st_floor
+            layout:
+              step: row
+              mode:
+                names: false
+            header: false
+            sensors:
+              - entity: binary_sensor.ch_heater_toilet_1st_floor_status
+                name: Статус
+            control:
+              hvac:
+                _name: "Режим:"
+                "off":
+                  icon: mdi:fire-off
+                "on":
+                  icon: mdi:fire
+              preset:
+                _name: " "
+                none: false
+                away:
+                  icon: mdi:home-export-outline
+                eco:
+                  icon: mdi:thermometer-minus
+                comfort:
+                  icon: mdi:thermometer-plus
+                home:
+                  icon: mdi:home-account
+            hide:
+              state: true
+              temperature: true
+          - type: "custom:mini-graph-card"
+            name: Температура
+            icon: mdi:thermometer
+            cache: false
+            hours_to_show: 24
+            points_per_hour: 12
+            lower_bound_secondary: 0
+            upper_bound_secondary: 100
+            line_width: 2
+            font_size: 75
+            font_size_header: 12
+            height: 80
+            decimals: 1
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.a4c13822ae19_temperature
+                name: Температура
+              - entity: sensor.a4c13822ae19_humidity
+                name: Влажность
+                show_state: true
+                y_axis: secondary
+                smoothing: true
+                show_fill: false
+                color: deepskyblue
+              - entity: sensor.ch_heater_toilet_1st_floor_status
+                y_axis: secondary
+                aggregate_func: max
+                smoothing: false
+                show_legend: false
+                show_line: false
+                show_points: false
+                color: salmon
+            show:
+              name: false
+              icon: false
+              labels: false
+              legend: false
+              labels_secondary: false
+              fill: fade
+
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: button
+                entity: input_boolean.ch_energy_show_radiator_toilet_1st_floor
+                name: "\U000021E7 Потребление \U000021E9"
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_boolean.ch_energy_show_radiator_toilet_1st_floor
+                    state: "on"
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.date_current_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_current_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_toilet_1st_floor_monthly
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - entity: sensor.date_previous_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_previous_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total
+                          attribute: last_period
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_toilet_1st_floor_monthly_prev
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - type: divider
+                    - entity: sensor.energy_cost_ch_radiator_toilet_1st_floor_daily_avg
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      secondary_info: День
+                      unit: "₽"
+                      state_header: в среднем
+                      entities:
+                        - entity: sensor.energy_cost_ch_radiator_toilet_1st_floor_daily_prev
+                          name: вчера
+                          unit: "₽"
+
+  # 2 Этаж
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>2 Этаж</center>
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ### <center>Детская</center>
+          - type: custom:simple-thermostat
+            entity: climate.country_house_kids_rooms
+            layout:
+              step: row
+              mode:
+                names: false
+            header: false
+            sensors:
+              - entity: binary_sensor.ch_heater_kids_rooms_status
+                name: Статус
+            control:
+              hvac:
+                _name: "Режим:"
+                "off":
+                  icon: mdi:fire-off
+                "on":
+                  icon: mdi:fire
+              preset:
+                _name: " "
+                none: false
+                away:
+                  icon: mdi:home-export-outline
+                eco:
+                  icon: mdi:thermometer-minus
+                comfort:
+                  icon: mdi:thermometer-plus
+                home:
+                  icon: mdi:home-account
+            hide:
+              state: true
+              temperature: true
+          - type: "custom:mini-graph-card"
+            name: Температура
+            icon: mdi:thermometer
+            cache: false
+            hours_to_show: 24
+            points_per_hour: 12
+            lower_bound_secondary: 0
+            upper_bound_secondary: 100
+            line_width: 2
+            font_size: 75
+            font_size_header: 12
+            height: 80
+            decimals: 1
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.country_house_avg_temp_kids_rooms
+                name: Температура
+              - entity: sensor.country_house_avg_humidity_kids_rooms
+                name: Влажность
+                show_state: true
+                y_axis: secondary
+                smoothing: true
+                show_fill: false
+                color: deepskyblue
+              - entity: sensor.ch_heater_kids_rooms_status
+                y_axis: secondary
+                aggregate_func: max
+                smoothing: false
+                show_legend: false
+                show_line: false
+                show_points: false
+                color: salmon
+            show:
+              name: false
+              icon: false
+              labels: false
+              legend: false
+              labels_secondary: false
+              fill: fade
+
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: button
                 entity: input_boolean.ch_energy_show_radiator_kidsrooms
-                state: "on"
-            card:
-              type: entities
-              entities:
-                - entity: sensor.date_current_month
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  show_state: false
-                  secondary_info:
-                    entity: sensor.date_current_month
-                    name: false
+                name: "\U000021E7 Потребление \U000021E9"
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_boolean.ch_energy_show_radiator_kidsrooms
+                    state: "on"
+                card:
+                  type: entities
                   entities:
-                    - entity: sensor.socket_ch_radiator_kidsrooms_energy_monthly_total
-                      name: false
-                      unit: "кВт⋅ч"
-                      format: precision2
-                    - entity: sensor.energy_cost_ch_radiator_kidsrooms_monthly
-                      name: false
+                    - entity: sensor.date_current_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_current_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_kidsrooms_energy_monthly_total
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_kidsrooms_monthly
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - entity: sensor.date_previous_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_previous_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_kidsrooms_energy_monthly_total
+                          attribute: last_period
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_kidsrooms_monthly_prev
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - type: divider
+                    - entity: sensor.energy_cost_ch_radiator_kidsrooms_daily_avg
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      secondary_info: День
                       unit: "₽"
-                      styles:
-                        font-weight: bold
-                - entity: sensor.date_previous_month
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  show_state: false
-                  secondary_info:
-                    entity: sensor.date_previous_month
-                    name: false
+                      state_header: в среднем
+                      entities:
+                        - entity: sensor.energy_cost_ch_radiator_kidsrooms_daily_prev
+                          name: вчера
+                          unit: "₽"
+
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ### <center>Спальня</center>
+          - type: custom:simple-thermostat
+            entity: climate.country_house_bedroom
+            layout:
+              step: row
+              mode:
+                names: false
+            header: false
+            sensors:
+              - entity: binary_sensor.ch_heater_bedroom_status
+                name: Статус
+            control:
+              hvac:
+                _name: "Режим:"
+                "off":
+                  icon: mdi:fire-off
+                "on":
+                  icon: mdi:fire
+              preset:
+                _name: " "
+                none: false
+                away:
+                  icon: mdi:home-export-outline
+                eco:
+                  icon: mdi:thermometer-minus
+                comfort:
+                  icon: mdi:thermometer-plus
+                home:
+                  icon: mdi:home-account
+            hide:
+              state: true
+              temperature: true
+          - type: "custom:mini-graph-card"
+            name: Температура
+            icon: mdi:thermometer
+            cache: false
+            hours_to_show: 24
+            points_per_hour: 12
+            lower_bound_secondary: 0
+            upper_bound_secondary: 100
+            line_width: 2
+            font_size: 75
+            font_size_header: 12
+            height: 80
+            decimals: 1
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.a4c1384fc124_temperature
+                name: Температура
+              - entity: sensor.a4c1384fc124_humidity
+                name: Влажность
+                show_state: true
+                y_axis: secondary
+                smoothing: true
+                show_fill: false
+                color: deepskyblue
+              - entity: sensor.ch_heater_bedroom_status
+                y_axis: secondary
+                aggregate_func: max
+                smoothing: false
+                show_legend: false
+                show_line: false
+                show_points: false
+                color: salmon
+            show:
+              name: false
+              icon: false
+              labels: false
+              legend: false
+              labels_secondary: false
+              fill: fade
+
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: button
+                entity: input_boolean.ch_energy_show_radiator_bedroom
+                name: "\U000021E7 Потребление \U000021E9"
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_boolean.ch_energy_show_radiator_bedroom
+                    state: "on"
+                card:
+                  type: entities
                   entities:
-                    - entity: sensor.socket_ch_radiator_kidsrooms_energy_monthly_total
-                      attribute: last_period
-                      name: false
-                      unit: "кВт⋅ч"
-                      format: precision2
-                    - entity: sensor.energy_cost_ch_radiator_kidsrooms_monthly_prev
-                      name: false
+                    - entity: sensor.date_current_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_current_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_bedroom_energy_monthly_total
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_bedroom_monthly
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - entity: sensor.date_previous_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_previous_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_bedroom_energy_monthly_total
+                          attribute: last_period
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_bedroom_monthly_prev
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - type: divider
+                    - entity: sensor.energy_cost_ch_radiator_bedroom_daily_avg
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      secondary_info: День
                       unit: "₽"
-                      styles:
-                        font-weight: bold
-                - type: divider
-                - entity: sensor.energy_cost_ch_radiator_kidsrooms_daily_avg
-                  type: custom:multiple-entity-row
-                  name: []
-                  icon: []
-                  secondary_info: День
-                  unit: "₽"
-                  state_header: в среднем
+                      state_header: в среднем
+                      entities:
+                        - entity: sensor.energy_cost_ch_radiator_bedroom_daily_prev
+                          name: вчера
+                          unit: "₽"
+
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ### <center>Туалет 2 Этаж</center>
+          - type: custom:simple-thermostat
+            entity: climate.country_house_toilet_2st_floor
+            layout:
+              step: row
+              mode:
+                names: false
+            header: false
+            sensors:
+              - entity: binary_sensor.ch_heater_toilet_2st_floor_status
+                name: Статус
+            control:
+              hvac:
+                _name: "Режим:"
+                "off":
+                  icon: mdi:fire-off
+                "on":
+                  icon: mdi:fire
+              preset:
+                _name: " "
+                none: false
+                away:
+                  icon: mdi:home-export-outline
+                eco:
+                  icon: mdi:thermometer-minus
+                comfort:
+                  icon: mdi:thermometer-plus
+                home:
+                  icon: mdi:home-account
+            hide:
+              state: true
+              temperature: true
+          - type: "custom:mini-graph-card"
+            name: Температура
+            icon: mdi:thermometer
+            cache: false
+            hours_to_show: 24
+            points_per_hour: 12
+            lower_bound_secondary: 0
+            upper_bound_secondary: 100
+            line_width: 2
+            font_size: 75
+            font_size_header: 12
+            height: 80
+            decimals: 1
+            hour24: true
+            align_state: center
+            entities:
+              - entity: sensor.a4c138169698_temperature
+                name: Температура
+              - entity: sensor.a4c138169698_humidity
+                name: Влажность
+                show_state: true
+                y_axis: secondary
+                smoothing: true
+                show_fill: false
+                color: deepskyblue
+              - entity: sensor.ch_heater_toilet_2st_floor_status
+                y_axis: secondary
+                aggregate_func: max
+                smoothing: false
+                show_legend: false
+                show_line: false
+                show_points: false
+                color: salmon
+            show:
+              name: false
+              icon: false
+              labels: false
+              legend: false
+              labels_secondary: false
+              fill: fade
+
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: button
+                entity: input_boolean.ch_energy_show_radiator_toilet_2st_floor
+                name: "\U000021E7 Потребление \U000021E9"
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_boolean.ch_energy_show_radiator_toilet_2st_floor
+                    state: "on"
+                card:
+                  type: entities
                   entities:
-                    - entity: sensor.energy_cost_ch_radiator_kidsrooms_daily_prev
-                      name: вчера
+                    - entity: sensor.date_current_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_current_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_toilet_2st_floor_monthly
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - entity: sensor.date_previous_month
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      show_state: false
+                      secondary_info:
+                        entity: sensor.date_previous_month
+                        name: false
+                      entities:
+                        - entity: sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total
+                          attribute: last_period
+                          name: false
+                          unit: "кВт⋅ч"
+                          format: precision2
+                        - entity: sensor.energy_cost_ch_radiator_toilet_2st_floor_monthly_prev
+                          name: false
+                          unit: "₽"
+                          styles:
+                            font-weight: bold
+                    - type: divider
+                    - entity: sensor.energy_cost_ch_radiator_toilet_2st_floor_daily_avg
+                      type: custom:multiple-entity-row
+                      name: []
+                      icon: []
+                      secondary_info: День
                       unit: "₽"
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Кабинет</center>
-      - type: custom:simple-thermostat
-        entity: climate.country_house_cabinet
-        layout:
-          step: row
-          mode:
-            names: false
-        header: false
-        sensors:
-          - entity: binary_sensor.ch_heater_cabinet_status
-            name: Статус
-        control:
-          hvac:
-            _name: "Режим:"
-        hide:
-          state: true
-          temperature: true
-      - type: "custom:mini-graph-card"
-        name: Температура
-        icon: mdi:thermometer
-        cache: false
-        hours_to_show: 24
-        points_per_hour: 12
-        lower_bound_secondary: 0
-        upper_bound_secondary: 100
-        line_width: 2
-        font_size: 75
-        font_size_header: 12
-        height: 80
-        decimals: 1
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.a4c138962bb6_temperature
-            name: Температура
-          - entity: sensor.a4c138962bb6_humidity
-            name: Влажность
-            show_state: true
-            y_axis: secondary
-            smoothing: true
-            show_fill: false
-            color: deepskyblue
-          - entity: sensor.ch_heater_cabinet_status
-            y_axis: secondary
-            aggregate_func: max
-            smoothing: false
-            show_legend: false
-            show_line: false
-            show_points: false
-            color: salmon
-        show:
-          name: false
-          icon: false
-          labels: false
-          legend: false
-          labels_secondary: false
-          fill: fade
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Спальня</center>
-      - type: custom:simple-thermostat
-        entity: climate.country_house_bedroom
-        layout:
-          step: row
-          mode:
-            names: false
-        header: false
-        sensors:
-          - entity: binary_sensor.ch_heater_bedroom_status
-            name: Статус
-        control:
-          hvac:
-            _name: "Режим:"
-        hide:
-          state: true
-          temperature: true
-      - type: "custom:mini-graph-card"
-        name: Температура
-        icon: mdi:thermometer
-        cache: false
-        hours_to_show: 24
-        points_per_hour: 12
-        lower_bound_secondary: 0
-        upper_bound_secondary: 100
-        line_width: 2
-        font_size: 75
-        font_size_header: 12
-        height: 80
-        decimals: 1
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.a4c1384fc124_temperature
-            name: Температура
-          - entity: sensor.a4c1384fc124_humidity
-            name: Влажность
-            show_state: true
-            y_axis: secondary
-            smoothing: true
-            show_fill: false
-            color: deepskyblue
-          - entity: sensor.ch_heater_bedroom_status
-            y_axis: secondary
-            aggregate_func: max
-            smoothing: false
-            show_legend: false
-            show_line: false
-            show_points: false
-            color: salmon
-        show:
-          name: false
-          icon: false
-          labels: false
-          legend: false
-          labels_secondary: false
-          fill: fade
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Туалет 1 Этаж</center>
-      - type: custom:simple-thermostat
-        entity: climate.country_house_toilet_1st_floor
-        layout:
-          step: row
-          mode:
-            names: false
-        header: false
-        sensors:
-          - entity: binary_sensor.ch_heater_toilet_1st_floor_status
-            name: Статус
-        control:
-          hvac:
-            _name: "Режим:"
-        hide:
-          state: true
-          temperature: true
-      - type: "custom:mini-graph-card"
-        name: Температура
-        icon: mdi:thermometer
-        cache: false
-        hours_to_show: 24
-        points_per_hour: 12
-        lower_bound_secondary: 0
-        upper_bound_secondary: 100
-        line_width: 2
-        font_size: 75
-        font_size_header: 12
-        height: 80
-        decimals: 1
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.a4c13822ae19_temperature
-            name: Температура
-          - entity: sensor.a4c13822ae19_humidity
-            name: Влажность
-            show_state: true
-            y_axis: secondary
-            smoothing: true
-            show_fill: false
-            color: deepskyblue
-          - entity: sensor.ch_heater_toilet_1st_floor_status
-            y_axis: secondary
-            aggregate_func: max
-            smoothing: false
-            show_legend: false
-            show_line: false
-            show_points: false
-            color: salmon
-        show:
-          name: false
-          icon: false
-          labels: false
-          legend: false
-          labels_secondary: false
-          fill: fade
-
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Туалет 2 Этаж</center>
-      - type: custom:simple-thermostat
-        entity: climate.country_house_toilet_2st_floor
-        layout:
-          step: row
-          mode:
-            names: false
-        header: false
-        sensors:
-          - entity: binary_sensor.ch_heater_toilet_2st_floor_status
-            name: Статус
-        control:
-          hvac:
-            _name: "Режим:"
-        hide:
-          state: true
-          temperature: true
-      - type: "custom:mini-graph-card"
-        name: Температура
-        icon: mdi:thermometer
-        cache: false
-        hours_to_show: 24
-        points_per_hour: 12
-        lower_bound_secondary: 0
-        upper_bound_secondary: 100
-        line_width: 2
-        font_size: 75
-        font_size_header: 12
-        height: 80
-        decimals: 1
-        hour24: true
-        align_state: center
-        entities:
-          - entity: sensor.a4c138169698_temperature
-            name: Температура
-          - entity: sensor.a4c138169698_humidity
-            name: Влажность
-            show_state: true
-            y_axis: secondary
-            smoothing: true
-            show_fill: false
-            color: deepskyblue
-          - entity: sensor.ch_heater_toilet_2st_floor_status
-            y_axis: secondary
-            aggregate_func: max
-            smoothing: false
-            show_legend: false
-            show_line: false
-            show_points: false
-            color: salmon
-        show:
-          name: false
-          icon: false
-          labels: false
-          legend: false
-          labels_secondary: false
-          fill: fade
+                      state_header: в среднем
+                      entities:
+                        - entity: sensor.energy_cost_ch_radiator_toilet_2st_floor_daily_prev
+                          name: вчера
+                          unit: "₽"

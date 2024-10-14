@@ -127,6 +127,96 @@ ch_energy_pack:
               ((state_attr('sensor.socket_ch_radiator_livingroom_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
+        # Radiator - Cabinet
+        - name: energy_cost_ch_radiator_cabinet_monthly
+          unique_id: 7c57d6f4-1197-42c7-87b1-b92261f9fc54
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_radiator_cabinet_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_cabinet_monthly_prev
+          unique_id: 55c3f7be-6f44-4895-bb92-af75eef8c863
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_cabinet_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_cabinet_daily_avg
+          unique_id: 17d5e04e-a8f6-4fab-bbb0-fb50ac42d3c8
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_cabinet_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+
+        - name: energy_cost_ch_radiator_cabinet_daily_prev
+          unique_id: 52385422-20df-4d89-b668-a9c4733b7fd0
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_cabinet_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        # Radiator - Toilet 1st Floor
+        - name: energy_cost_ch_radiator_toilet_1st_floor_monthly
+          unique_id: 759ac451-b3d0-4063-8588-fcae9a852396
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_toilet_1st_floor_monthly_prev
+          unique_id: ace972a3-c37c-470e-84ca-934504546274
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_toilet_1st_floor_daily_avg
+          unique_id: c55dec67-9ecb-4363-96ea-633ebc1ef6ce
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_toilet_1st_floor_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+
+        - name: energy_cost_ch_radiator_toilet_1st_floor_daily_prev
+          unique_id: e9a59419-45c5-4dc8-b833-0971a93f3c99
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_toilet_1st_floor_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
         # Radiator - Kid's Rooms
         - name: energy_cost_ch_radiator_kidsrooms_monthly
           unique_id: 97a5d8b4-0929-41dc-8599-a692f542d39e
@@ -172,29 +262,29 @@ ch_energy_pack:
               ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
-        # Radiator - Terrace
-        - name: energy_cost_ch_radiator_terrace_monthly
-          unique_id: 31ecc367-495a-4cb7-a379-dc03e69e803f
+        # Radiator - Bedroom
+        - name: energy_cost_ch_radiator_bedroom_monthly
+          unique_id: dead6b38-6105-4ab2-83f5-f32b146188a7
           device_class: monetary
           unit_of_measurement: "RUB"
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_terrace_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.socket_ch_radiator_bedroom_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
-        - name: energy_cost_ch_radiator_terrace_monthly_prev
-          unique_id: 6e623fc1-cb7f-4a83-809e-4b4294f59161
+        - name: energy_cost_ch_radiator_bedroom_monthly_prev
+          unique_id: 4a52aa3c-415d-46a1-a502-5ab5ce46e9c8
           device_class: monetary
           unit_of_measurement: "RUB"
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_terrace_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_bedroom_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
-        - name: energy_cost_ch_radiator_terrace_daily_avg
-          unique_id: 9cba39c9-3ff8-4cb5-9be5-bf73f2ad9772
+        - name: energy_cost_ch_radiator_bedroom_daily_avg
+          unique_id: e80d3aa2-f64a-4547-a6a4-27f82f59cc1e
           device_class: monetary
           unit_of_measurement: "RUB"
           icon: mdi:cash
@@ -205,16 +295,61 @@ ch_energy_pack:
               30 if now().month-1 in (4,6,9,11) else 
               29 if now().month-1 == 2 and now().year % 4 == 0 else 28
             %}
-            {{ ((states('sensor.energy_cost_ch_radiator_terrace_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+            {{ ((states('sensor.energy_cost_ch_radiator_bedroom_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
 
-        - name: energy_cost_ch_radiator_terrace_daily_prev
-          unique_id: c5b55af2-5ed0-4159-8091-9fb157df8d58
+        - name: energy_cost_ch_radiator_bedroom_daily_prev
+          unique_id: ff9185af-6f60-45c1-9573-93cb5d95383b
           device_class: monetary
           unit_of_measurement: "RUB"
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_terrace_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.socket_ch_radiator_bedroom_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        # Radiator - Toilet 2st Floor
+        - name: energy_cost_ch_radiator_toilet_2st_floor_monthly
+          unique_id: b8a9cfae-604d-493b-bbc7-01fca79b6899
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_toilet_2st_floor_monthly_prev
+          unique_id: ca75d4a0-5bb2-4303-93ab-49938a2acd1a
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_radiator_toilet_2st_floor_daily_avg
+          unique_id: a99db14c-6e91-4694-a42f-4631c0e738a8
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_radiator_toilet_2st_floor_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+
+        - name: energy_cost_ch_radiator_toilet_2st_floor_daily_prev
+          unique_id: 851f4014-62ae-4eed-ac67-ec0640303f4a
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_radiator_toilet_2st_floor_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Water Pump
@@ -260,6 +395,96 @@ ch_energy_pack:
           state: >
             {{
               ((state_attr('sensor.socket_ch_water_pump_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        # Septic
+        - name: energy_cost_ch_septic_monthly
+          unique_id: f1495d78-8247-4ee1-bfee-ce5cbc1255fb
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_septic_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_septic_monthly_prev
+          unique_id: 8d5210e9-7147-423a-a2a1-063001b8cdc7
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_septic_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_septic_daily_avg
+          unique_id: 9bb7fbb9-de8c-446d-90f1-ffe0bf2bc3fc
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_septic_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+
+        - name: energy_cost_ch_septic_daily_prev
+          unique_id: 58ef85c2-d327-4220-90df-cd3eba040183
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_septic_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        # Water Heating Cable
+        - name: energy_cost_ch_water_heating_cable_monthly
+          unique_id: 725f017d-4232-4e07-a3b6-72b4f61ee490
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((states('sensor.socket_ch_water_heating_cable_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_water_heating_cable_monthly_prev
+          unique_id: b777b68d-e6e8-495d-960e-dd77fc3b5e74
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_septic_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+            }}
+
+        - name: energy_cost_ch_water_heating_cable_daily_avg
+          unique_id: 97fd6bc2-e921-44ac-975c-d00c49b9fb44
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {% 
+              set days =
+              31 if now().month-1 in (1,3,5,7,8,10,12) else 
+              30 if now().month-1 in (4,6,9,11) else 
+              29 if now().month-1 == 2 and now().year % 4 == 0 else 28
+            %}
+            {{ ((states('sensor.energy_cost_ch_water_heating_cable_monthly_prev') | float(0)) / ( days | float(0) )) | round(2) }}
+
+        - name: energy_cost_ch_water_heating_cable_daily_prev
+          unique_id: 810981db-8b03-4127-8420-6bec5113fe9f
+          device_class: monetary
+          unit_of_measurement: "RUB"
+          icon: mdi:cash
+          state: >
+            {{
+              ((state_attr('sensor.socket_ch_water_heating_cable_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # MES Energy Meter 44259893 last accepted readings T1
@@ -474,6 +699,40 @@ ch_energy_pack:
       tariffs:
         - total
 
+    # For Radiator in Cabinet
+    socket_ch_radiator_cabinet_energy_daily:
+      unique_id: 291f17f2-93e5-4ef9-908a-bbbea4a4c7f2
+      name: Cabinet Daily Energy
+      source: sensor.0xa4c1386cd4ee5e2b_energy
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_radiator_cabinet_energy_monthly:
+      unique_id: ac871d9f-b5f2-4b56-ace0-7ac4b8f46d87
+      name: Cabinet Monthly Energy
+      source: sensor.0xa4c1386cd4ee5e2b_energy
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Radiator in Toilet 1st Floor
+    socket_ch_radiator_toilet_1st_floor_energy_daily:
+      unique_id: 727efcea-4f7e-4f63-a6b0-8f6bfd901163
+      name: Toilet 1st Floor Daily Energy
+      source: sensor.0xa4c13806f468cf98_energy
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_radiator_toilet_1st_floor_energy_monthly:
+      unique_id: df6fe6c4-e2a1-41fc-9c57-727aed3a2606
+      name: Toilet 1st Floor Monthly Energy
+      source: sensor.0xa4c13806f468cf98_energy
+      cycle: monthly
+      tariffs:
+        - total
+
     # For Radiator in Kid's Rooms
     socket_ch_radiator_kidsrooms_energy_daily:
       unique_id: 58f81cf4-2828-4550-ab9f-581963158007
@@ -491,19 +750,36 @@ ch_energy_pack:
       tariffs:
         - total
 
-    # For Radiator in Terrace
-    socket_ch_radiator_terrace_energy_daily:
-      unique_id: 9cb474ff-1af6-4186-8c83-21f3ed961ff8
-      name: Terrace Daily Energy
-      source: sensor.gosund_sp111_02_todays_usage
+    # For Radiator in Bedroom
+    socket_ch_radiator_bedroom_energy_daily:
+      unique_id: 0745e1c8-cc1f-4514-9953-d5a69cc6cbf3
+      name: bedroom Daily Energy
+      source: sensor.0xa4c13852453d20d5_energy
       cycle: daily
       tariffs:
         - total
 
-    socket_ch_radiator_terrace_energy_monthly:
-      unique_id: 1a2f47b1-90c6-415c-ba75-c97450333482
-      name: Terrace Monthly Energy
-      source: sensor.gosund_sp111_02_todays_usage
+    socket_ch_radiator_bedroom_energy_monthly:
+      unique_id: e49f9827-b8bb-4f43-a983-8ae5b57356d0
+      name: Kids Room Monthly Energy
+      source: sensor.0xa4c13852453d20d5_energy
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Radiator in Toilet 2st Floor
+    socket_ch_radiator_toilet_2st_floor_energy_daily:
+      unique_id: 33ca5ebb-30ea-4fa5-a889-ed8e17b702ab
+      name: Toilet 2st Floor Daily Energy
+      source: sensor.0xa4c138dd369833b0_energy
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_radiator_toilet_2st_floor_energy_monthly:
+      unique_id: ea93834e-f628-4026-baa5-f15c330a74e8
+      name: Toilet 2st Floor Monthly Energy
+      source: sensor.0xa4c138dd369833b0_energy
       cycle: monthly
       tariffs:
         - total
@@ -521,6 +797,40 @@ ch_energy_pack:
       unique_id: e1d44185-e5fb-40ae-a7fb-67048f72baaa
       name: Water Pump Monthly Energy
       source: sensor.sonoff_pow_r3_02_total_daily_energy
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Septic
+    socket_ch_septic_energy_daily:
+      unique_id: dbd359c1-205b-4a67-a005-68b37d72e769
+      name: Septic Daily Energy
+      source: sensor.sonoff_pow_r3_01_total_daily_energy
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_septic_energy_monthly:
+      unique_id: de3adfa8-3ee0-4629-8542-28b8cc30b28c
+      name: Septic Monthly Energy
+      source: sensor.sonoff_pow_r3_01_total_daily_energy
+      cycle: monthly
+      tariffs:
+        - total
+
+    # For Water Heating Cable
+    socket_ch_water_heating_cable_energy_daily:
+      unique_id: d6d38780-434e-4d34-91ee-93ac80a4b8d2
+      name: Water Heating Cable Daily Energy
+      source: sensor.gosund_sp111_02_todays_usage
+      cycle: daily
+      tariffs:
+        - total
+
+    socket_ch_water_heating_cable_energy_monthly:
+      unique_id: 78f21740-7cb2-4cd1-b552-f6e5c8aa86fe
+      name: Water Heating Cable Monthly Energy
+      source: sensor.gosund_sp111_02_todays_usage
       cycle: monthly
       tariffs:
         - total

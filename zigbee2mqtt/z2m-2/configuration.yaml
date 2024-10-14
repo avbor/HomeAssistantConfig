@@ -45,7 +45,5 @@ devices:
     friendly_name: TH Дача Крыльцо
   '0x00158d00054859d5':
     friendly_name: Кнопка Aqara 2 Дача Дом
-  '0x00158d000802df91':
-    friendly_name: TH Дача Дом Холодильник
   '0xa4c138d6c1469ae0':
     friendly_name: '0xa4c138d6c1469ae0'

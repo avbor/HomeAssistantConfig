@@ -61,6 +61,16 @@ cards:
             entities:
               - entity: sensor.sonoff_pow_r3_01_current
                 name: false
+          - entity: switch.gosund_sp111_02_switch
+            name: Греющий кабель
+            icon: mdi:heating-coil
+          - entity: sensor.gosund_sp111_02_watt
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.gosund_sp111_02_ampere
+                name: false
           - entity: switch.gosund_sp111_01_switch
             name: Бойлер
             icon: mdi:water-boiler
@@ -74,17 +84,9 @@ cards:
           - entity: switch.sonoff_basic_04_switch
             name: Фильтр бассейна
             icon: mdi:pool
+
           - type: section
-          - entity: switch.gosund_sp111_08_switch
-            name: Обогреватель - Дети
-            icon: mdi:radiator
-          - entity: sensor.gosund_sp111_08_watt
-            type: custom:multiple-entity-row
-            name: "Потребление"
-            icon: []
-            entities:
-              - entity: sensor.gosund_sp111_08_ampere
-                name: false
+
           - entity: switch.gosund_sp111_07_switch
             name: Обогреватель - Гостиная
             icon: mdi:radiator
@@ -95,19 +97,62 @@ cards:
             entities:
               - entity: sensor.gosund_sp111_07_ampere
                 name: false
-          - entity: switch.gosund_sp111_02_switch
-            name: Обогреватель - Терраса
+
+          - entity: switch.0xa4c1386cd4ee5e2b_plug
+            name: Обогреватель - Кабинет
             icon: mdi:radiator
-          - entity: sensor.gosund_sp111_02_watt
+          - entity: sensor.0xa4c1386cd4ee5e2b_power
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             entities:
-              - entity: sensor.gosund_sp111_02_ampere
+              - entity: sensor.0xa4c1386cd4ee5e2b_current
                 name: false
-          - entity: sensor.ch_heater_terrace_power
-            name: Режим
+
+          - entity: switch.0xa4c13806f468cf98_plug
+            name: Обогреватель - Туалет 1 Этаж
+            icon: mdi:radiator
+          - entity: switch.0xa4c13806f468cf98_plug
+            type: custom:multiple-entity-row
+            name: "Потребление"
             icon: []
+            entities:
+              - entity: sensor.0xa4c13806f468cf98_current
+                name: false
+
+          - entity: switch.gosund_sp111_08_switch
+            name: Обогреватель - Детская
+            icon: mdi:radiator
+          - entity: sensor.gosund_sp111_08_watt
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.gosund_sp111_08_ampere
+                name: false
+
+          - entity: switch.0xa4c13852453d20d5_plug
+            name: Обогреватель - Спальня
+            icon: mdi:radiator
+          - entity: sensor.0xa4c13852453d20d5_power
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.0xa4c13852453d20d5_current
+                name: false
+
+          - entity: switch.0xa4c138dd369833b0_plug
+            name: Обогреватель - Туалет 2 Этаж
+            icon: mdi:radiator
+          - entity: sensor.0xa4c138dd369833b0_power
+            type: custom:multiple-entity-row
+            name: "Потребление"
+            icon: []
+            entities:
+              - entity: sensor.0xa4c138dd369833b0_current
+                name: false
+
   - type: vertical-stack
     cards:
       - type: markdown

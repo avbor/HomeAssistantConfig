@@ -74,67 +74,67 @@ cards:
           td.left: "padding: 10px 10px 10px 10px"
           th.left: "padding: 0px 0px 10px 10px"
       # ZigBee
-#      - type: markdown
-#        content: "### <center> ZigBee </center>"
-#      - type: "custom:flex-table-card"
-#        clickable: false
-#        entities:
-#          include:
-#            - sensor.*_zigbee
-#        sort_by: ieee
-#        columns:
-#          - data: friendly_name
-#            name: Friendly Name
-#            modify: 'x.replace(/ Zigbee$/,"")'
-#          - data: ieee
-#            name: IEEE
-#            modify: (x+'').toLowerCase()
-#          - data: nwk
-#            name: NWK
-#            modify: (x+'').replace(/^0x/,"")
-#          - data: parent
-#            name: Parent
-#            modify: (x+'').replace(/^0x/,"").toLowerCase()
+      - type: markdown
+        content: "### <center> ZigBee </center>"
+      - type: "custom:flex-table-card"
+        clickable: false
+        entities:
+          include:
+            - sensor.*_zigbee
+        sort_by: ieee
+        columns:
+          - data: friendly_name
+            name: Friendly Name
+            modify: 'x.replace(/ Zigbee$/,"")'
+          - data: device.extra.ieee
+            name: IEEE
+            modify: (x+'').toLowerCase()
+          - data: device.extra.nwk
+            name: NWK
+            modify: (x+'').replace(/^0x/,"")
+          - data: device.extra.nwk_parent
+            name: Parent
+            modify: (x+'').replace(/^0x/,"").toLowerCase()
 #          - data: type
 #            name: Type
 #            modify: 'x == "" ? "-" : (x+"").replace(/^-$/, "device")'
-#          - data: device_fw_ver
-#            name: FW
-#            modify: 'x == "" ? "-" : x+""'
-#          - data: msg_received
-#            name: Received
-#            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-#          - data: msg_missed
-#            name: Missed
-#            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
+          - data: device.extra.fw_ver
+            name: FW
+            modify: 'x == "" ? "-" : x+""'
+          - data: msg_received
+            name: Received
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
+          - data: msg_missed
+            name: Missed
+            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
 #          - data: unresponsive
 #            name: Unresponsive
 #            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
 #          - data: new_resets
 #            name: Resets
 #            modify: 'isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10)'
-#          - data: linkquality
-#            name: LQI
-#            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
-#          - data: rssi
-#            name: RSSI
-#            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+          - data:  device.extra.lqi
+            name: LQI
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
+          - data: device.extra.rssi
+            name: RSSI
+            modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'
 #          - data: last_msg
 #            name: Last Message
 #            modify: x+''
-#          - data: available
-#            name: Available
-#            modify: 'x === true ? "✓" : "✗"'
-#          - data: state
-#            name: Last Seen
-#            modify: >
-#              var dt = new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x)));
-#              isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""
-#        css:
-#          table+: "padding-top: 15px;"
-#          "tbody tr:nth-child(even)": "background-color: #a2542f6;"
-#          td.left: "padding: 10px 10px 10px 10px"
-#          th.left: "padding: 0px 0px 10px 10px"
+          - data: device.available
+            name: Available
+            modify: 'x === true ? "✓" : "✗"'
+          - data: state
+            name: Last Seen
+            modify: >
+              var dt = new Date(0,0,0,0,0,0,(Date.now()-Date.parse(x)));
+              isFinite(dt) ? dt.toTimeString().split(" ")[0] : ""
+        css:
+          table+: "padding-top: 15px;"
+          "tbody tr:nth-child(even)": "background-color: #a2542f6;"
+          td.left: "padding: 10px 10px 10px 10px"
+          th.left: "padding: 0px 0px 10px 10px"
       ###### iframe with the graph of the "last missed" from Grafana ######
       ###### Query example: SELECT "last_missed" FROM "autogen"."state" WHERE ("domain" = 'sensor') AND $timeFilter GROUP BY "friendly_name" ######
 #      - type: iframe
@@ -157,6 +157,9 @@ cards:
           - data: device.extra.mac
             name: MAC
 #            modify: (x+'').replace(/(.{2}(?!$))/g,"$1:")
+          - data: device.extra.cloud_fw
+            name: FW
+            modify: 'x == "" ? "-" : x+""'
           - data: msg_received
             name: Received
             modify: 'isNaN(parseInt(x, 10)) ? "" : parseInt(x, 10)'

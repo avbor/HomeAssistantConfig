@@ -8,14 +8,13 @@ from homeassistant.core import HomeAssistant
 
 from .config_flow import get_value
 from .const import (
-    CONF_LANGUAGE_KEY,
     DOMAIN,
     ENTRY_NAME,
     PLATFORMS,
     UPDATE_LISTENER,
     UPDATER,
 )
-from .updater import WeatherUpdater, read_translation_file
+from .updater import WeatherUpdater
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -24,8 +23,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     api_key = get_value(entry, CONF_API_KEY)
     latitude = get_value(entry, CONF_LATITUDE, hass.config.latitude)
     longitude = get_value(entry, CONF_LONGITUDE, hass.config.longitude)
-    language = get_value(entry, CONF_LANGUAGE_KEY, "EN")
-    translation = await hass.async_add_executor_job(read_translation_file, language)
+
+    hass.data.setdefault(DOMAIN, {})
+    device_data = hass.data[DOMAIN].get(entry.unique_id, {})
+    weather_data = device_data.get("weather_data")
+    device_data["weather_data"] = None
 
     weather_updater = WeatherUpdater(
         latitude=latitude,
@@ -34,18 +36,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass=hass,
         device_id=entry.unique_id,
         name=name,
-        translation=translation,
+        weather_data=weather_data,
     )
-
-    hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {
         ENTRY_NAME: name,
         UPDATER: weather_updater,
     }
-
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     update_listener = entry.add_update_listener(async_update_options)
     hass.data[DOMAIN][entry.entry_id][UPDATE_LISTENER] = update_listener
+
+    if weather_updater.is_first_update_requred:
+        await weather_updater.async_request_refresh()
 
     return True
 

@@ -4,6 +4,66 @@
 
 ch_misc_pack:
 
+  # Scenes
+  scene:
+    - name: ch_away
+      entities:
+        climate.country_house_living_room:
+          state: heat
+          preset_mode: away
+        climate.country_house_kids_rooms:
+          state: heat
+          preset_mode: away
+        climate.country_house_cabinet:
+          state: heat
+          preset_mode: away
+        climate.country_house_bedroom:
+          state: heat
+          preset_mode: away
+        climate.country_house_toilet_1st_floor:
+          state: heat
+          preset_mode: away
+        climate.country_house_toilet_2st_floor:
+          state: heat
+          preset_mode: away
+        # Насос
+        switch.sonoff_pow_r3_02:
+          state: "off"
+        # Бойлер
+        switch.gosund_sp111_01_switch:
+          state: "off"
+        light.dacha_parkovka:
+          state: "off"
+        light.dacha_dvor:
+          state: "off"
+
+    - name: ch_at_home
+      entities:
+        climate.country_house_living_room:
+          state: heat
+          preset_mode: home
+        climate.country_house_kids_rooms:
+          state: heat
+          preset_mode: home
+        climate.country_house_cabinet:
+          state: heat
+          preset_mode: home
+        climate.country_house_bedroom:
+          state: heat
+          preset_mode: home
+        climate.country_house_toilet_1st_floor:
+          state: heat
+          preset_mode: home
+        climate.country_house_toilet_2st_floor:
+          state: heat
+          preset_mode: home
+        # Насос
+        switch.sonoff_pow_r3_02:
+          state: "on"
+        # Бойлер
+        switch.gosund_sp111_01_switch:
+          state: "on"
+
   # Automations
   automation:
 
@@ -79,8 +139,6 @@ ch_misc_pack:
           - condition: template
             value_template: "{{ is_state('switch.gosund_sp111_01_switch', 'on') }}"
           - condition: template
-            value_template: "{{ is_state('climate.country_house_terrace', 'heat') }}"
-          - condition: template
             value_template: "{{ is_state('climate.country_house_living_room', 'heat') }}"
           - condition: template
             value_template: "{{ is_state('climate.country_house_kids_rooms', 'heat') }}"
@@ -96,8 +154,6 @@ ch_misc_pack:
             message: |
               На даче остались включенные приборы:
               {% if is_state('switch.gosund_sp111_01_switch', 'on') %}Бойлер
-              {% endif -%}
-              {% if is_state('climate.country_house_terrace', 'heat') %}Обогреватель террасы
               {% endif -%}
               {% if is_state('climate.country_house_living_room', 'heat') %}Обогреватель в гостиной
               {% endif -%}
@@ -125,12 +181,6 @@ ch_misc_pack:
               - action: switch.turn_off
                 target:
                   entity_id: switch.gosund_sp111_01_switch
-          - if:
-              - "{{ is_state('climate.country_house_terrace', 'heat') }}"
-            then:
-              - action: climate.turn_off
-                target:
-                  entity_id: climate.country_house_terrace
           - if:
               - "{{ is_state('climate.country_house_living_room', 'heat') }}"
             then:

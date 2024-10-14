@@ -24,20 +24,7 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### <center>Дом</center>
-      - type: markdown
-        content: >
-          <center>Терраса</center>
-      - type: horizontal-stack
-        cards:
-          - type: sensor
-            entity: sensor.a4c1384e2b64_temperature
-            name: Температура
-            graph: line
-          - type: sensor
-            entity: sensor.a4c1384e2b64_humidity
-            name: Влажность
-            graph: line
+          ### <center>Дом - 1 Этаж</center>
       - type: markdown
         content: >
           <center>Гостиная</center>
@@ -53,27 +40,73 @@ cards:
             graph: line
       - type: markdown
         content: >
-          <center>Комната Кирилла</center>
+          <center>Кабинет</center>
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c138c7ded2_temperature
+            entity: sensor.a4c138962bb6_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c138c7ded2_humidity
+            entity: sensor.a4c138962bb6_humidity
             name: Влажность
             graph: line
       - type: markdown
         content: >
-          <center>Комната Егора</center>
+          <center>Туалет 1 Этаж</center>
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c1380b3a85_temperature
+            entity: sensor.a4c13822ae19_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c1380b3a85_humidity
+            entity: sensor.a4c13822ae19_humidity
+            name: Влажность
+            graph: line
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Дом - 2 Этаж</center>
+      - type: markdown
+        content: >
+          <center>Детская</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.country_house_avg_temp_kids_rooms
+            name: Температура
+            graph: line
+            icon: mdi:thermometer
+          - type: sensor
+            entity: sensor.country_house_avg_humidity_kids_rooms
+            name: Влажность
+            graph: line
+            icon: mdi:water-percent
+      - type: markdown
+        content: >
+          <center>Спальня</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.a4c1384fc124_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.a4c1384fc124_humidity
+            name: Влажность
+            graph: line
+      - type: markdown
+        content: >
+          <center>Туалет 2 Этаж</center>
+      - type: horizontal-stack
+        cards:
+          - type: sensor
+            entity: sensor.a4c138169698_temperature
+            name: Температура
+            graph: line
+          - type: sensor
+            entity: sensor.a4c138169698_humidity
             name: Влажность
             graph: line
