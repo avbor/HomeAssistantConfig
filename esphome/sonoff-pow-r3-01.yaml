@@ -2,7 +2,7 @@ substitutions:
   esp_board: nodemcu-32s
   board_name: sonoff-pow-r3-01
   room_name: Country House
-  cse7766_update_interval: 2s
+  cse7766_update_interval: 5s
 
 packages:
   wifi: !include common/wifi_ch.yaml

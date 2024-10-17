@@ -51,7 +51,8 @@ http:
 logger:
   default: warn
   #logs:
-  #  homeassistant.components.rest: debug
+    #homeassistant.components.rest: debug
+    #homeassistant.components.rest.switch: debug
   filters:
     homeassistant.loader:
       - "We found a custom integration .* which has not been tested by Home Assistant.*"

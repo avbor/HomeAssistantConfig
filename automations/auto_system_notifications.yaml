@@ -196,25 +196,25 @@
           Критическая ошибка системы:
           {{ trigger.event.data.message }}!
 
-- alias: "HASSIO: New Version Available [notify to group system]"
-  id: 4f0d8495-8abd-4513-9348-7630c5576088
-  triggers:
-    trigger: template
-    value_template: "{{ states('sensor.current_version') < states('sensor.latest_version') }}"
-  actions:
-    action: notify.telegram_group_system
-    data:
-      message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
+#- alias: "HASSIO: New Version Available [notify to group system]"
+#  id: 4f0d8495-8abd-4513-9348-7630c5576088
+#  triggers:
+#    trigger: template
+#    value_template: "{{ states('sensor.current_version') < states('sensor.latest_version') }}"
+#  actions:
+#    action: notify.telegram_group_system
+#    data:
+#      message: "_INFO:_ Доступна новая версия Home Assistant ({{ states('sensor.latest_version') }})"
 
-- alias: "HASSIO: New Home Assistant OS Version Available [notify to group system]"
-  id: e1febbae-54ca-44b3-b808-83f74f29bf36
-  triggers:
-    trigger: template
-    value_template: "{{ states('sensor.home_assistant_operating_system_version') < states('sensor.home_assistant_operating_system_newest_version') }}"
-  actions:
-    action: notify.telegram_group_system
-    data:
-      message: "_INFO:_ Доступна новая версия Home Assistant OS ({{ states('sensor.home_assistant_operating_system_newest_version') }})"
+#- alias: "HASSIO: New Home Assistant OS Version Available [notify to group system]"
+#  id: e1febbae-54ca-44b3-b808-83f74f29bf36
+#  triggers:
+#    trigger: template
+#    value_template: "{{ states('sensor.home_assistant_operating_system_version') < states('sensor.home_assistant_operating_system_newest_version') }}"
+#  actions:
+#    action: notify.telegram_group_system
+#    data:
+#      message: "_INFO:_ Доступна новая версия Home Assistant OS ({{ states('sensor.home_assistant_operating_system_newest_version') }})"
 
 #- alias: "HASSIO: New Addons Update Available [notify to group system]"
 #  id: 19295cc3-b128-4b64-925a-ffde2688cf9c

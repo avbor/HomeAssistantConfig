@@ -68,6 +68,7 @@ filter:
     - switch.keenetic_vpn_xbox_01
     - switch.keenetic_vpn_mi8
     - switch.keenetic_vpn_lenovo_tb128xu
+    - switch.keenetic_vpn_xiaomi_12_lite
 
 entity_config:
   light.sonoff_1000f2a500:
@@ -276,6 +277,10 @@ entity_config:
 
   switch.keenetic_vpn_lenovo_tb128xu:
     name: ВПН для планшета Кирилла
+    room: Квартира
+
+  switch.keenetic_vpn_xiaomi_12_lite:
+    name: ВПН для телефона Егора
     room: Квартира
 
   humidifier.smartmi_humidifier_01_detskaia:

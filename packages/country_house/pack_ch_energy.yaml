@@ -58,7 +58,7 @@ ch_energy_pack:
             {% if t1_tariff != -1 %}
               {{ t1_tariff }}
             {% else %}
-              {{ 6.73 }}
+              {{ 5.13 }}
             {% endif %}
 
         # Main

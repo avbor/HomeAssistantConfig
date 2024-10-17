@@ -44,25 +44,47 @@ keenetic_pack:
     - platform: rest
       name: keenetic_vpn_xbox_01
       unique_id: bd352bf5-0bad-48d8-a57a-4170901434c7
-      resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
-      body_on: '{"mac":"e8:a7:2f:50:04:68", "policy":"Policy4"}'
-      body_off: '{"mac":"e8:a7:2f:50:04:68", "policy": false }'
+      headers:
+        Content-Type: application/json
+      resource: "http://172.16.16.254:81/rci/"
+      state_resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
+      body_on: '[{"ip":{"hotspot":{"host":{"mac": "e8:a7:2f:50:04:68","policy": "Policy4"}}}},{"system": {"configuration": {"save": {}}}}]'
+      body_off: '[{"ip":{"hotspot":{"host":{"mac": "e8:a7:2f:50:04:68","policy": false}}}},{"system": {"configuration": {"save": {}}}}]'
       is_on_template: "{{ 'Policy4' in value_json | selectattr('mac', 'match', 'e8:a7:2f:50:04:68') | join }}"
 
     # Xiaomi Mi8
     - platform: rest
       name: keenetic_vpn_mi8
       unique_id: 888c7caa-4352-446a-8b4b-415a4676fa5a
-      resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
-      body_on: '{"mac":"a4:50:46:d4:9b:d0", "policy":"Policy4"}'
-      body_off: '{"mac":"a4:50:46:d4:9b:d0", "policy": false }'
+      headers:
+        Content-Type: application/json
+      resource: "http://172.16.16.254:81/rci/"
+      state_resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
+      body_on: '[{"ip":{"hotspot":{"host":{"mac": "a4:50:46:d4:9b:d0","policy": "Policy4"}}}},{"system": {"configuration": {"save": {}}}}]'
+      body_off: '[{"ip":{"hotspot":{"host":{"mac": "a4:50:46:d4:9b:d0","policy": false}}}},{"system": {"configuration": {"save": {}}}}]'
       is_on_template: "{{ 'Policy4' in value_json | selectattr('mac', 'match', 'a4:50:46:d4:9b:d0') | join }}"
 
     # Lenovo Tab M10
     - platform: rest
       name: keenetic_vpn_lenovo_tb128xu
       unique_id: 0416ccc6-d05a-4dec-8fec-a5fdc0fda77e
-      resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
-      body_on: '{"mac":"78:d6:dc:f1:50:9a", "policy":"Policy4"}'
-      body_off: '{"mac":"78:d6:dc:f1:50:9a", "policy": false }'
+      headers:
+        Content-Type: application/json
+      resource: "http://172.16.16.254:81/rci/"
+      state_resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
+      body_on: '[{"ip":{"hotspot":{"host":{"mac": "78:d6:dc:f1:50:9a","policy": "Policy4"}}}},{"system": {"configuration": {"save": {}}}}]'
+      body_off: '[{"ip":{"hotspot":{"host":{"mac": "78:d6:dc:f1:50:9a","policy": false}}}},{"system": {"configuration": {"save": {}}}}]'
       is_on_template: "{{ 'Policy4' in value_json | selectattr('mac', 'match', '78:d6:dc:f1:50:9a') | join }}"
+
+
+      # Xiaomi 12 Lite
+    - platform: rest
+      name: keenetic_vpn_xiaomi_12_lite
+      unique_id: 46c181ce-53e0-4467-82ea-babd92c60849
+      headers:
+        Content-Type: application/json
+      resource: "http://172.16.16.254:81/rci/"
+      state_resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
+      body_on: '[{"ip":{"hotspot":{"host":{"mac": "48:87:59:d2:30:37","policy": "Policy4"}}}},{"system": {"configuration": {"save": {}}}}]'
+      body_off: '[{"ip":{"hotspot":{"host":{"mac": "48:87:59:d2:30:37","policy": false}}}},{"system": {"configuration": {"save": {}}}}]'
+      is_on_template: "{{ 'Policy4' in value_json | selectattr('mac', 'match', '48:87:59:d2:30:37') | join }}"

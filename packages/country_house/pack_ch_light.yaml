@@ -17,31 +17,75 @@ ch_light_pack:
 
   # Automations
   automation:
-    - alias: "Дача - Включение подсветки двора - Приехали вечером"
-      id: b2d0dfb1-d7c9-42ad-ae66-70e8c8f306c8
+
+    - alias: "Дача - Освещение Двора"
+      id: 920540ae-bdaf-46e6-b6e1-3a4c179c8abe
+      mode: queued
       triggers:
         - trigger: state
           entity_id: binary_sensor.coutry_house_presence
           from: "off"
           to: "on"
-      conditions:
-        - condition: time
-          after: "21:00:00"
-          before: "03:00:00"
-      actions:
-        - action: light.turn_on
-          target:
-            entity_id:
-              - light.dacha_dvor
-              - light.dacha_parkovka
-
-    - alias: "Дача - Включение подсветки двора - Кнопка Aqara 2"
-      id: 920540ae-bdaf-46e6-b6e1-3a4c179c8abe
-      triggers:
+          id: "by_presence"
+        - platform: time
+          at: "01:00:00"
+          id: "night"
         - trigger: state
           entity_id: sensor.0x00158d00054859d5_action
           to: single
+          id: aqara_button_single
+        - trigger: state
+          entity_id: sensor.0x00158d00054859d5_action
+          to: double
+          id: aqara_button_double
       actions:
-        - action: light.toggle
-          target:
-            entity_id: light.dacha_dvor
+        choose:
+          - alias: Arrived after Sunset
+            conditions:
+              - condition: trigger
+                id: "by_presence"
+            sequence:
+              - condition: "{{ is_state('binary_sensor.country_house_sun_vyshe_gorizonta', 'off') }}"
+              - parallel:
+                  - sequence:
+                      - condition: "{{ is_state('light.dacha_parkovka', 'off') }}"
+                      - action: light.turn_on
+                        target:
+                          entity_id: light.dacha_parkovka
+                  - sequence:
+                      - condition: "{{ is_state('light.dacha_dvor', 'off') }}"
+                      - action: light.turn_on
+                        target:
+                          entity_id: light.dacha_dvor
+          - alias: Night by timer
+            conditions:
+              - condition: trigger
+                id: "night"
+            sequence:
+              - parallel:
+                  - sequence:
+                      - condition: "{{ is_state('light.dacha_parkovka', 'on') }}"
+                      - action: light.turn_off
+                        target:
+                          entity_id: light.dacha_parkovka
+                  - sequence:
+                      - condition: "{{ is_state('light.dacha_dvor', 'on') }}"
+                      - action: light.turn_off
+                        target:
+                          entity_id: light.dacha_dvor
+          - alias: Aqara - Single click
+            conditions:
+              - condition: trigger
+                id: "single"
+            sequence:
+              - action: light.toggle
+                target:
+                  entity_id: light.dacha_parkovka
+          - alias: Aqara - Double click
+            conditions:
+              - condition: trigger
+                id: "double"
+            sequence:
+              - action: light.toggle
+                target:
+                  entity_id: light.dacha_dvor

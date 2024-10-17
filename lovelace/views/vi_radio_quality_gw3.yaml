@@ -51,8 +51,8 @@ cards:
           - data: serial
             name: BT Err
             modify: 'isNaN(parseInt(x.bluetooth_oe, 10)) ? 0 : parseInt(x.bluetooth_oe, 10)'
-#          - data: rssi
-#            name: RSSI
+          - data: rssi
+            name: RSSI
           - data: uptime
             name: Gateway Uptime
             modify: x+''

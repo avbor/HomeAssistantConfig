@@ -31,8 +31,10 @@ class YandexKettle(WaterHeaterEntity, YandexEntity):
         self._attr_operation_list = ["on", "off"] if "on" in capabilities else []
 
         if item := capabilities.get("tea_mode"):
-            self._attr_supported_features |= WaterHeaterEntityFeature.OPERATION_MODE
             self._attr_operation_list += [i["value"] for i in item["modes"]]
+
+        if self._attr_operation_list:
+            self._attr_supported_features |= WaterHeaterEntityFeature.OPERATION_MODE
 
         if item := capabilities.get("temperature"):
             self._attr_supported_features |= WaterHeaterEntityFeature.TARGET_TEMPERATURE
@@ -49,19 +51,17 @@ class YandexKettle(WaterHeaterEntity, YandexEntity):
 
     async def async_set_operation_mode(self, operation_mode):
         if operation_mode == "on":
-            await self.quasar.device_action(self.device["id"], "on", True)
+            await self.quasar.device_action(self.device, "on", True)
         elif operation_mode == "off":
-            await self.quasar.device_action(self.device["id"], "on", False)
+            await self.quasar.device_action(self.device, "on", False)
         else:
-            await self.quasar.device_action(
-                self.device["id"], "tea_mode", operation_mode
-            )
+            await self.quasar.device_action(self.device, "tea_mode", operation_mode)
 
     async def async_set_temperature(self, temperature: float, **kwargs):
-        await self.quasar.device_action(self.device["id"], "temperature", temperature)
+        await self.quasar.device_action(self.device, "temperature", temperature)
 
     async def async_turn_on(self):
-        await self.quasar.device_action(self.device["id"], "on", True)
+        await self.quasar.device_action(self.device, "on", True)
 
     async def async_turn_off(self):
-        await self.quasar.device_action(self.device["id"], "on", False)
+        await self.quasar.device_action(self.device, "on", False)

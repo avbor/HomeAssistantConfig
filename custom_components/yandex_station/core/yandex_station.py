@@ -4,7 +4,7 @@ import json
 import logging
 import re
 import time
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from typing import Optional
 
 import yaml
@@ -589,7 +589,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             self._attr_media_content_id = player_state["id"]
             self._attr_media_duration = player_state["duration"] or None
             self._attr_media_position = player_state["progress"]
-            self._attr_media_position_updated_at = datetime.now(UTC)
+            self._attr_media_position_updated_at = datetime.now(timezone.utc)
             self._attr_media_title = player_state["title"]
             self._attr_state = (
                 MediaPlayerState.PLAYING
@@ -1039,12 +1039,12 @@ class YandexModule(YandexStationBase):
 
     async def async_turn_on(self):
         if self.support_on:
-            await self.quasar.device_actions(self.device["id"], on=True)
+            await self.quasar.device_actions(self.device, on=True)
         else:
             await super().async_turn_on()
 
     async def async_turn_off(self):
         if self.support_on:
-            await self.quasar.device_actions(self.device["id"], on=False)
+            await self.quasar.device_actions(self.device, on=False)
         else:
             await super().async_turn_on()

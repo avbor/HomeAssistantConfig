@@ -4,7 +4,12 @@ from homeassistant.util.color import color_temperature_to_hs
 from .core.entity import YandexEntity
 from .hass import hass_utils
 
-INCLUDE_TYPES = ("devices.types.light",)
+INCLUDE_TYPES = (
+    "devices.types.light",
+    "devices.types.light.ceiling",
+    "devices.types.light.lamp",
+    "devices.types.light.strip",
+)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -111,7 +116,7 @@ class YandexLight(LightEntity, YandexEntity):
         if not payload:
             payload["on"] = True
 
-        await self.quasar.device_actions(self.device["id"], **payload)
+        await self.quasar.device_actions(self.device, **payload)
 
     async def async_turn_off(self, **kwargs):
-        await self.quasar.device_actions(self.device["id"], on=False)
+        await self.quasar.device_actions(self.device, on=False)

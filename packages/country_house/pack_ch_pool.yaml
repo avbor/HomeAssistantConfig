@@ -16,10 +16,6 @@ ch_pool_pack:
         - trigger: time
           at: "21:00:00"
           id: stop
-        - trigger: state
-          entity_id: sensor.0x00158d00054859d5_action
-          to: double
-          id: aqara_button
       actions:
         choose:
           - alias: Power On Filter

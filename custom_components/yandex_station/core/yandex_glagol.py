@@ -7,7 +7,7 @@ import uuid
 from asyncio import Future
 from typing import Callable, Dict, Optional
 
-from aiohttp import ClientConnectorError, ClientWebSocketResponse, WSMsgType
+from aiohttp import ClientConnectorError, ClientWebSocketResponse
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 
 from .yandex_session import YandexSession
@@ -66,7 +66,7 @@ class YandexGlagol:
         # first time
         if not self.url:
             self.url = f"wss://{self.device['host']}:{self.device['port']}"
-            asyncio.create_task(self._connect(0))
+            _ = asyncio.create_task(self._connect(0))
 
         # check IP change
         elif self.device["host"] not in self.url:
@@ -99,16 +99,15 @@ class YandexGlagol:
             #     self.keep_task = self.loop.create_task(self._keep_connection())
 
             async for msg in self.ws:
-                if msg.type == WSMsgType.TEXT:
-                    # _LOGGER.debug("update")
+                # Большая станция в режиме idle шлёт статус раз в 5 секунд,
+                # в режиме playing шлёт чаще раза в 1 секунду
+                # self.next_ping_ts = time.time() + 6
 
-                    # Большая станция в режиме idle шлёт статус раз в 5 секунд,
-                    # в режиме playing шлёт чаще раза в 1 секунду
-                    # self.next_ping_ts = time.time() + 6
+                data = json.loads(msg.data)
 
-                    data = json.loads(msg.data)
-
-                    response = None
+                request_id = data.get("requestId")
+                if request_id in self.waiters:
+                    response = {"status": data["status"]}
 
                     if resp := data.get("vinsResponse"):
                         try:
@@ -117,40 +116,40 @@ class YandexGlagol:
                                 resp = resp["payload"]
 
                             if card := resp["response"].get("card"):
-                                response = card
+                                response.update(card)
                             elif cards := resp["response"].get("cards"):
-                                response = cards[0]
+                                response.update(cards[0])
+                            elif resp["response"].get("is_streaming"):
+                                response["is_streaming"] = True
                             else:
-                                response = resp["voice_response"]["output_speech"]
+                                response.update(resp["voice_response"]["output_speech"])
 
                         except Exception as e:
                             _LOGGER.debug(f"Response error: {e}")
 
-                    request_id = data.get("requestId")
-                    if request_id in self.waiters:
-                        self.waiters[request_id].set_result(response)
+                    self.waiters[request_id].set_result(response)
 
-                    self.update_handler(data)
+                self.update_handler(data)
 
             # TODO: find better place
             self.device_token = None
 
-        except ClientConnectorError as e:
-            self.debug(f"Ошибка подключения: {e.args}")
+        except (ClientConnectorError, ConnectionResetError) as e:
+            self.debug(f"Ошибка подключения: {repr(e)}")
             fails += 1
 
         except (asyncio.CancelledError, RuntimeError) as e:
             # сюда попадаем при остановке HA
             if isinstance(e, RuntimeError):
-                assert e.args[0] == "Session is closed", e.args
+                assert e.args[0] == "Session is closed", repr(e)
 
-            self.debug(f"Останавливаем подключение: {e}")
+            self.debug(f"Останавливаем подключение: {repr(e)}")
             if self.ws and not self.ws.closed:
                 await self.ws.close()
             return
 
-        except:
-            _LOGGER.exception(f"{self.name} | Station connect")
+        except Exception as e:
+            _LOGGER.error(f"{self.name} => local | {repr(e)}")
             fails += 1
 
         # возвращаемся в облачный режим
@@ -161,10 +160,10 @@ class YandexGlagol:
             return
 
         if fails:
-            # 30s, 60s, ... 5 min
-            timeout = 30 * min(fails, 10)
-            self.debug(f"Таймаут до следующего подключения {timeout}")
-            await asyncio.sleep(timeout)
+            # 0s, 30s, 60s, ... 5 min
+            delay = 30 * min(fails - 1, 10)
+            self.debug(f"Таймаут до следующего подключения {delay}")
+            await asyncio.sleep(delay)
 
         _ = asyncio.create_task(self._connect(fails))
 
@@ -213,11 +212,13 @@ class YandexGlagol:
 
             return self.waiters.pop(request_id).result()
 
-        except asyncio.TimeoutError:
+        except asyncio.TimeoutError as e:
             _ = self.waiters.pop(request_id, None)
+            return {"error": repr(e)}
 
         except Exception as e:
-            _LOGGER.error(e)
+            _LOGGER.error(f"{self.name} => local | {repr(e)}")
+            return {"error": repr(e)}
 
     async def reset_session(self):
         payload = {
@@ -254,14 +255,13 @@ class YandexGlagol:
 
 
 class YandexIOListener:
-    add_handlerer = None
+    add_handler = None
     browser = None
 
-    def __init__(self, loop):
-        self.loop = loop
+    def __init__(self, add_handler: Callable):
+        self.add_handler = add_handler
 
-    def start(self, handlerer: Callable, zeroconf: Zeroconf):
-        self.add_handlerer = handlerer
+    def start(self, zeroconf: Zeroconf):
         self.browser = ServiceBrowser(
             zeroconf, "_yandexio._tcp.local.", handlers=[self._zeroconf_handler]
         )
@@ -287,7 +287,7 @@ class YandexIOListener:
                 for k, v in info.properties.items()
             }
 
-            coro = self.add_handlerer(
+            self.add_handler(
                 {
                     "device_id": properties["deviceId"],
                     "platform": properties["platform"],
@@ -295,7 +295,6 @@ class YandexIOListener:
                     "port": info.port,
                 }
             )
-            self.loop.create_task(coro)
 
         except Exception as e:
             _LOGGER.debug("Can't get zeroconf info", exc_info=e)

@@ -130,37 +130,43 @@ class YandexClimate(ClimateEntity, YandexEntity):
 
     async def async_added_to_hass(self):
         if item := self.config.get("current_temperature"):
-            on_remove = utils.track_template(self.hass, item, self.on_track_template)
+            on_remove = utils.track_template(self.hass, item, self.on_track_temperature)
+            self.async_on_remove(on_remove)
+        if item := self.config.get("current_humidity"):
+            on_remove = utils.track_template(self.hass, item, self.on_track_humidity)
             self.async_on_remove(on_remove)
 
-    def on_track_template(self, value):
+    def on_track_temperature(self, value):
         try:
             self._attr_current_temperature = float(value)
         except:
             self._attr_current_temperature = None
         self._async_write_ha_state()
 
+    def on_track_humidity(self, value):
+        try:
+            self._attr_current_humidity = int(value)
+        except:
+            self._attr_current_humidity = None
+        self._async_write_ha_state()
+
     async def async_set_hvac_mode(self, hvac_mode: HVACMode):
         if hvac_mode == HVACMode.OFF:
-            kwargs = {"on": False}
+            await self.quasar.device_action(self.device, "on", False)
         elif self.hvac_instance is None:
-            kwargs = {"on": True}
+            await self.quasar.device_action(self.device, "on", True)
         else:
-            kwargs = (
-                {"on": True, self.hvac_instance: str(hvac_mode)}
-                if self._attr_hvac_mode == HVACMode.OFF
-                else {self.hvac_instance: str(hvac_mode)}
+            if self._attr_hvac_mode == HVACMode.OFF:
+                await self.quasar.device_action(self.device, "on", True)
+            await self.quasar.device_action(
+                self.device, self.hvac_instance, str(hvac_mode)
             )
 
-        await self.quasar.device_actions(self.device["id"], **kwargs)
-
     async def async_set_temperature(self, temperature: float, **kwargs):
-        await self.quasar.device_action(self.device["id"], "temperature", temperature)
+        await self.quasar.device_action(self.device, "temperature", temperature)
 
     async def async_set_fan_mode(self, fan_mode: str):
-        await self.quasar.device_action(self.device["id"], "fan_speed", fan_mode)
+        await self.quasar.device_action(self.device, "fan_speed", fan_mode)
 
     async def async_set_preset_mode(self, preset_mode: str):
-        await self.quasar.device_action(
-            self.device["id"], self.preset_instance, preset_mode
-        )
+        await self.quasar.device_action(self.device, self.preset_instance, preset_mode)
