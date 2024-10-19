@@ -7,6 +7,7 @@ family_persons:
     - person.tatiana
     - person.olga
     - person.egor
+    - person.kirill
 
 devices_to_map:
   all: true
@@ -21,6 +22,7 @@ persons_to_map:
     - person.alexander
     - person.irina
     - person.egor
+    - person.kirill
 
 all_tv:
   name: Все телевизоры

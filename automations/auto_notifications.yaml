@@ -7,7 +7,14 @@
   mode: parallel
   triggers:
     trigger: state
-    entity_id: person.alexander, person.irina, person.galina, person.tatiana, person.olga, person.egor
+    entity_id:
+      - person.alexander
+      - person.irina
+      - person.galina
+      - person.tatiana
+      - person.olga
+      - person.egor
+      - person.kirill
   conditions:
     - and:
       #      - condition: template

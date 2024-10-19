@@ -210,6 +210,7 @@ cards:
             - person.galina
             - person.olga
             - person.egor
+            - person.kirill
           state_filter:
             - home
           card:
@@ -240,6 +241,7 @@ cards:
             - person.alexander
             - person.irina
             - person.egor
+            - person.kirill
           state_filter:
             - "Дача"
           card:
@@ -267,6 +269,7 @@ cards:
                 - person.alexander
                 - person.irina
                 - person.egor
+                - person.kirill
 
       # --- Время в пути (Утро)
   #      - type: conditional

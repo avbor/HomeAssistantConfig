@@ -53,6 +53,7 @@ cards:
         - person.alexander
         - person.irina
         - person.egor
+        - person.kirill
       state_filter:
         - "Дача"
       card:
