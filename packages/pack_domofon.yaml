@@ -42,7 +42,9 @@ domofon_pack:
                 data:
                   inline_keyboard:
                     - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
-            - action: script.domofon_alice_notify
+            - sequence:
+              - condition: "{{ is_state('switch.domofon_automatically_open_once', 'off') }}"
+              - action: script.domofon_alice_notify
 
     - alias: Domofon - Alice Intent control
       triggers:

@@ -112,7 +112,7 @@ cards:
           - entity: switch.0xa4c13806f468cf98_plug
             name: Обогреватель - Туалет 1 Этаж
             icon: mdi:radiator
-          - entity: switch.0xa4c13806f468cf98_plug
+          - entity: sensor.0xa4c13806f468cf98_power
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
