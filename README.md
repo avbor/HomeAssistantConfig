@@ -66,7 +66,7 @@ _Remote site (country house):_
 
 - Keenetic Giga [KN-1010](https://keenetic.ru/ru/keenetic-giga-kn-1010) as Router, WiFi Mesh Controller, WireGuard VPN Client and Access Point
 
-- Keneetic Speedster [KN-3010](https://keenetic.ru/ru/keenetic-speedster-kn-3010) as Access Point in WiFi Mesh Network
+- Keneetic Speedster [KN-3010](https://keenetic.ru/ru/keenetic-speedster-kn-3010) as Access Point in WiFi Mesh Network x2
 
 **ZigBee/BT Gateways:**
 
@@ -78,6 +78,9 @@ _Remote site (country house):_
 
 - Xiaomi Multi-Mode Gateway 2 (Hub 2) EU (DMWG03LM, lumi.gateway.mgl001)\
   Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) and "Zigbee2MQTT"
+
+- Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
+  Integration "Xiaomi Gateway 3" by [AlexxIT]
 
 - ESP32 D1 Mini with _bluetooth_proxy_ component x5\
   Integration "ESPHome"
@@ -97,8 +100,6 @@ _Remote site (country house):_
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\
   Not used for now
 
-- Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
-  Not used for now
 
 #### WiFi Devices:
 - Relays:
