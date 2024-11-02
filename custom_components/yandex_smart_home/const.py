@@ -116,6 +116,7 @@ TYPE_KETTLE = PREFIX_TYPES + 'cooking.kettle'
 TYPE_MULTICOOKER = PREFIX_TYPES + 'cooking.multicooker'
 TYPE_OPENABLE = PREFIX_TYPES + 'openable'
 TYPE_OPENABLE_CURTAIN = PREFIX_TYPES + 'openable.curtain'
+TYPE_OPENABLE_VALVE = PREFIX_TYPES + 'openable.valve'
 TYPE_HUMIDIFIER = PREFIX_TYPES + 'humidifier'
 TYPE_PURIFIER = PREFIX_TYPES + 'purifier'
 TYPE_VACUUM_CLEANER = PREFIX_TYPES + 'vacuum_cleaner'
@@ -140,6 +141,7 @@ TYPE_SMART_METER_HEAT = TYPE_SMART_METER + '.heat'
 TYPE_SMART_METER_HOT_WATER = TYPE_SMART_METER + '.hot_water'
 TYPE_PET_DRINKING_FOUNTAIN = PREFIX_TYPES + 'pet_drinking_fountain'
 TYPE_PET_FEEDER = PREFIX_TYPES + 'pet_feeder'
+TYPE_VENTILATION = PREFIX_TYPES + 'ventilation'
 TYPE_VENTILATION_FAN = PREFIX_TYPES + 'ventilation.fan'
 TYPE_OTHER = PREFIX_TYPES + 'other'
 TYPES = (
@@ -161,6 +163,7 @@ TYPES = (
     TYPE_MULTICOOKER,
     TYPE_OPENABLE,
     TYPE_OPENABLE_CURTAIN,
+    TYPE_OPENABLE_VALVE,
     TYPE_HUMIDIFIER,
     TYPE_PURIFIER,
     TYPE_VACUUM_CLEANER,
@@ -185,6 +188,7 @@ TYPES = (
     TYPE_SMART_METER_HOT_WATER,
     TYPE_PET_DRINKING_FOUNTAIN,
     TYPE_PET_FEEDER,
+    TYPE_VENTILATION,
     TYPE_VENTILATION_FAN,
     TYPE_OTHER,
 )
@@ -213,6 +217,7 @@ DOMAIN_TO_YANDEX_TYPES = {
     switch.DOMAIN: TYPE_SWITCH,
     vacuum.DOMAIN: TYPE_VACUUM_CLEANER,
     water_heater.DOMAIN: TYPE_KETTLE,
+    'valve': TYPE_OPENABLE_VALVE,  # backward compatibility < 2024.1
 }
 
 DEVICE_CLASS_TO_YANDEX_TYPES = {
@@ -742,6 +747,9 @@ TION_FAN_SPEED_3 = '3'
 TION_FAN_SPEED_4 = '4'
 TION_FAN_SPEED_5 = '5'
 TION_FAN_SPEED_6 = '6'
+
+# https://github.com/ClusterM/skykettle-ha/blob/c1b61c4a22693d6e2b7c2f57a989df418011f2c2/custom_components/skykettle/skykettle.py#L53
+SKYKETTLE_MODE_BOIL = "Boil"
 
 # https://github.com/home-assistant/core/pull/67743
 FAN_SPEED_OFF = 'off'
