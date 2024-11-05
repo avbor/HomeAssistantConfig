@@ -9,15 +9,15 @@ cards:
           ### <center>На улице</center>
       - type: markdown
         content: >
-          <center>Крыльцо</center>
+          <center>Веранда</center>
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.0x00158d00040e019e_temperature
+            entity: sensor.th_dacha_veranda_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.0x00158d00040e019e_humidity
+            entity: sensor.th_dacha_veranda_humidity
             name: Влажность
             graph: line
   - type: vertical-stack

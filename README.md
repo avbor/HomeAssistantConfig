@@ -82,6 +82,9 @@ _Remote site (country house):_
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
   Integration "Xiaomi Gateway 3" by [AlexxIT]
 
+- Aqara Hub E1 (ZHWG16LM)\
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) and "Zigbee2MQTT"
+
 - ESP32 D1 Mini with _bluetooth_proxy_ component x5\
   Integration "ESPHome"
 
@@ -92,9 +95,6 @@ _Remote site (country house):_
   Integration "Bluetooth"
 
 - Phoscon ConBee 2 by Dresden Elektronik\
-  Not used for now
-
-- Aqara Hub E1 (ZHWG16LM)\
   Not used for now
 
 - Xiaomi Gateway 2 (DGNWG02LM, lumi.gateway.v3)\

@@ -109,7 +109,7 @@ cards:
               - entity: sensor.0xa4c1386cd4ee5e2b_current
                 name: false
 
-          - entity: switch.0xa4c13806f468cf98_plug
+          - entity: switch.0xa4c13806f468cf98
             name: Обогреватель - Туалет 1 Этаж
             icon: mdi:radiator
           - entity: sensor.0xa4c13806f468cf98_power
@@ -160,6 +160,11 @@ cards:
           ### <center>Электроэнергия</center>
       - type: entities
         entities:
+          - entity: sensor.shellyem_34945470f5db_channel_1_power
+            name: Текущее потребление
+            icon: mdi:home-lightning-bolt-outline
+          - type: section
+            label: Счетчик
           - entity: input_number.country_house_enegry_cost_current
             name: Стоимость кВт⋅ч
           - entity: input_number.country_house_enegry_meter_value
@@ -174,9 +179,6 @@ cards:
             icon: mdi:meter-electric-outline
           - type: section
             label: Общее потребление
-          - entity: sensor.shellyem_34945470f5db_channel_1_power
-            name: Текущее
-            icon: []
           - entity: sensor.date_current_month
             type: custom:multiple-entity-row
             name: []

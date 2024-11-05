@@ -76,7 +76,7 @@ ch_light_pack:
           - alias: Aqara - Single click
             conditions:
               - condition: trigger
-                id: "single"
+                id: "aqara_button_single"
             sequence:
               - action: light.toggle
                 target:
@@ -84,7 +84,7 @@ ch_light_pack:
           - alias: Aqara - Double click
             conditions:
               - condition: trigger
-                id: "double"
+                id: "aqara_button_double"
             sequence:
               - action: light.toggle
                 target:

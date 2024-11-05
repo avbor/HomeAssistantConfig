@@ -201,7 +201,7 @@ ch_climate_pack:
     - platform: generic_thermostat
       unique_id: 834502ff-a80e-49ae-820a-897ea3c27ee5
       name: Country House Toilet 1st Floor
-      heater: switch.0xa4c13806f468cf98_plug
+      heater: switch.0xa4c13806f468cf98
       target_sensor: sensor.a4c13822ae19_temperature
       min_temp: 5
       max_temp: 30
