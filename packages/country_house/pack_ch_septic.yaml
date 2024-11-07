@@ -1,0 +1,24 @@
+#################################################
+# Package Country House Septic
+#################################################
+
+ch_septic_pack:
+
+  # Automations
+  automation:
+
+    - alias: Дача - Оповещение - Переполнен фильтрационный колодец
+      id: 76de5a9c-0b81-4613-bd6d-e9c12ab2bce9
+      triggers:
+        - trigger: numeric_state
+          entity_id: sensor.sonoff_pow_r3_01_power
+          above: 100
+          for: "00:05:00"
+      actions:
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_country_house
+            title: "*Внимание!*"
+            message: |
+              Похоже фильтрационный колодец переполнен!
+              Насос септика работает больше 5 минут.

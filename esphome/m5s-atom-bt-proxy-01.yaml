@@ -13,7 +13,7 @@ wifi:
   use_address: 192.168.10.230
 
 bluetooth_proxy:
-  #active: true
+  active: true
 
 #light:
 #  - platform: neopixelbus

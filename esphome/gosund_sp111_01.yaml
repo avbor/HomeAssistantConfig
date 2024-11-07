@@ -11,11 +11,14 @@ packages:
   wifi: !include common/wifi_ch.yaml
   device_base: !include common/device_base_8266.yaml
 
-wifi:
-  use_address: 192.168.10.123
-
 esp8266:
   restore_from_flash: True
+
+preferences:
+  flash_write_interval: 5min
+
+wifi:
+  use_address: 192.168.10.123
 
 web_server:
   port: 80
@@ -89,17 +92,19 @@ switch:
   - platform: gpio
     pin: GPIO15
     id: relay
-    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: template
     name: "${board_name} Switch"
     icon: mdi:power
     optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
     id: button_switch
     turn_on_action:
       - switch.turn_on: relay
+      - output.turn_on: led_red
     turn_off_action:
       - switch.turn_off: relay
+      - output.turn_off: led_red
 
 status_led:
   pin:

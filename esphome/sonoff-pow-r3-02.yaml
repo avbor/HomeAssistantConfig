@@ -5,8 +5,10 @@ substitutions:
   cse7766_update_interval: 2s
 
 packages:
-  wifi: !include common/wifi_ch.yaml
-  device_base: !include common/device_base_esp32.yaml
+  wifi: !include common/wifi_ch_bt_proxy.yaml
+  device_base: !include common/device_base_esp32_bt_proxy.yaml
+  esp32_ble_tracker: !include common/esp32_ble_tracker_bt_proxy.yaml
+  family_ibeacon_sensors: !include common/family_ibeacon_sensors.yaml
 
 esp32:
   framework:
@@ -14,6 +16,9 @@ esp32:
 
 wifi:
   use_address: 192.168.10.154
+
+bluetooth_proxy:
+  active: true
 
 web_server:
   port: 80

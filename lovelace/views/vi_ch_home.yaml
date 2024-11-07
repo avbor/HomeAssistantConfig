@@ -59,36 +59,7 @@ cards:
       card:
         type: glance
         show_state: false
-  - type: vertical-stack
-    cards:
-      - type: picture-entity
-        entity: camera.reolinkcam_02_rtsp
-        camera_image: camera.reolinkcam_02_rtsp
-        show_name: false
-        show_state: false
-      - type: button
-        entity: input_boolean.country_house_show_last_detect
-        name: "\U000021E7 Последние обнаружения \U000021E9"
-        show_state: false
-        show_icon: false
-        tap_action:
-          action: toggle
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: input_boolean.country_house_show_last_detect
-            state: "on"
-        card:
-          type: vertical-stack
-          cards:
-            - type: picture-entity
-              entity: image.reolinkcam_02_person
-              show_name: false
-              show_state: false
-            - type: picture-entity
-              entity: image.reolinkcam_02_car
-              show_name: false
-              show_state: false
+
   # Свет
   - type: vertical-stack
     cards:
@@ -123,6 +94,7 @@ cards:
 #          - entity: light.dacha_dvor
 #            name: Освещение двора
 #            icon: mdi:light-flood-down
+
   # Напряжение в сети
   - type: vertical-stack
     cards:
@@ -198,3 +170,51 @@ cards:
       - type: weather-forecast
         entity: weather.yandex_weather_nivki_2
         name: Нивки-2
+
+# CCTV
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Видеонаблюдение</center>
+      - type: button
+        entity: input_boolean.country_house_show_cctv
+        name: "\U000021E7 Камера \U000021E9"
+        show_state: false
+        show_icon: false
+        tap_action:
+          action: toggle
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: input_boolean.country_house_show_cctv
+            state: "on"
+        card:
+          type: picture-entity
+          entity: camera.reolinkcam_02_rtsp
+          camera_image: camera.reolinkcam_02_rtsp
+          show_name: false
+          show_state: false
+      - type: button
+        entity: input_boolean.country_house_show_last_detect
+        name: "\U000021E7 Последние обнаружения \U000021E9"
+        show_state: false
+        show_icon: false
+        tap_action:
+          action: toggle
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: input_boolean.country_house_show_last_detect
+            state: "on"
+        card:
+          type: vertical-stack
+          cards:
+            - type: picture-entity
+              entity: image.reolinkcam_02_person
+              show_name: false
+              show_state: false
+            - type: picture-entity
+              entity: image.reolinkcam_02_car
+              show_name: false
+              show_state: false

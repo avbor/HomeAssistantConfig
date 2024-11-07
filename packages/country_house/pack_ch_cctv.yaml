@@ -28,6 +28,8 @@ ch_cctv_pack:
 
   # Input Booleans
   input_boolean:
+    country_house_show_cctv:
+      icon: mdi:cctv
     country_house_show_last_detect:
       icon: mdi:account
 
