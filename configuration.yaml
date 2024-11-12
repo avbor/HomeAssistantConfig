@@ -226,11 +226,17 @@ calendar:
     url: !secret nc_calendar_url
     custom_calendars:
       - name: "School Vacation Egor"
-        calendar: "Семья (Alexander Borsiov)"
+        calendar: "Семья (Alexander Borisov)"
         search: "Каникулы - Егор"
+      - name: "School Vacation Kirill"
+        calendar: "Семья (Alexander Borisov)"
+        search: "Каникулы - Кирилл"
       - name: "Vacation"
-        calendar: "Семья (Alexander Borsiov)"
+        calendar: "Семья (Alexander Borisov)"
         search: "Отпуск"
+
+go2rtc:
+  url: !secret go2rtc_url
 
 yandex_station:
   include:

@@ -33,7 +33,10 @@ wakeup_radio_pack:
           entity_id: binary_sensor.workday_sensor
           state: "on"
         - condition: state
-          entity_id: calendar.semia_alexander_borsiov_school_vacation_egor
+          entity_id: calendar.semia_alexander_borisov_school_vacation_egor
+          state: "off"
+        - condition: state
+          entity_id: calendar.semia_alexander_borisov_school_vacation_kirill
           state: "off"
       actions:
 

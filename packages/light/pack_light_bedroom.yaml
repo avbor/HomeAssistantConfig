@@ -183,7 +183,7 @@ bedroom_light_pack:
             entity_id: binary_sensor.workday_sensor
             state: "on"
           - condition: state
-            entity_id: calendar.semia_alexander_borsiov_vacation
+            entity_id: calendar.semia_alexander_borisov_vacation
             state: "off"
           - condition: sun
             before: sunrise

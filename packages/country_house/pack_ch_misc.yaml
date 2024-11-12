@@ -58,11 +58,11 @@ ch_misc_pack:
           state: heat
           preset_mode: home
         # Насос
-        switch.sonoff_pow_r3_02:
-          state: "on"
+        #switch.sonoff_pow_r3_02:
+        #  state: "on"
         # Бойлер
-        switch.gosund_sp111_01_switch:
-          state: "on"
+        #switch.gosund_sp111_01_switch:
+        #  state: "on"
 
   # Automations
   automation:
