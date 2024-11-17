@@ -29,6 +29,8 @@
 !glances/
 !glances/glances.conf
 !influxdb_conf/
+!ldap/
+!ldap/*
 !lovelace/
 !lovelace/*
 !packages/
