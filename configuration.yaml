@@ -4,7 +4,9 @@
 
 homeassistant:
   auth_providers:
+    - type: homeassistant
     - type: command_line
+      name: "Home LDAP"
       command: /config/ldap/ldap-auth.sh
       args:
         - !secret ldap_uri
@@ -13,7 +15,6 @@ homeassistant:
         - !secret ldap_ha_admins_grp
         - !secret ldap_ha_local_only_grp
       meta: true
-    - type: homeassistant
     - type: trusted_networks
       trusted_networks:
         - 172.16.16.0/23

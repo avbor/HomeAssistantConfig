@@ -102,24 +102,23 @@ if [[ ! -z "$HA_LOCAL_GRP" ]] && echo $output | jq -r '.[].memberOf.[]' | grep -
     IS_LOCAL=true
 fi
 
-on_auth_success() {
-    # Print the meta entries for use in HA
-    [[ ! -z "$DISPLAY_NAME" ]] && echo "name=$DISPLAY_NAME"
+# Print the meta entries for use in HA
+if [[ ! -z "$DISPLAY_NAME" ]]; then
+    echo "name=$DISPLAY_NAME"
+fi
 
-#    if [[ "$IS_ADMIN" = true ]]; then
-#        echo "group=system-admin"
-#    else
-#        echo "group=system-users"
-#    fi
+if [[ "$IS_ADMIN" = true ]]; then
+    echo "group=system-admin"
+else
+    echo "group=system-users"
+fi
 
-    if [[ "$IS_LOCAL" = true ]]; then
-        echo "local_only=true"
-    else
-        echo "local_only=false"
-    fi
-}
+if [[ "$IS_LOCAL" = true ]]; then
+    echo "local_only=true"
+else
+    echo "local_only=false"
+fi
 
 log "User '$username' with DN $(echo $output | jq -r '.[].dn.[]') authenticated successfully."
-type on_auth_success > /dev/null && on_auth_success
 
 exit 0
