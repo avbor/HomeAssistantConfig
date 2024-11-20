@@ -14,13 +14,13 @@ from homeassistant.components.hassio import (
     ATTR_FOLDERS,
     ATTR_ADDONS,
     ATTR_PASSWORD,
-    is_hassio,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_NAME, __version__
 from homeassistant.core import HomeAssistant, callback, ServiceCall
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.hassio import is_hassio
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.helpers.storage import Store
 from homeassistant.loader import bind_hass
@@ -33,9 +33,7 @@ from .const import (
     EVENT_BACKUPS_PURGED,
     EVENT_BACKUP_SUCCESSFUL,
     EVENT_BACKUP_START,
-    UNSUB_LISTENER,
     DATA_AUTO_BACKUP,
-    DEFAULT_BACKUP_TIMEOUT_SECONDS,
     CONF_AUTO_PURGE,
     CONF_BACKUP_TIMEOUT,
     DEFAULT_BACKUP_TIMEOUT,
@@ -316,7 +314,7 @@ class AutoBackup:
 
             if ATTR_INCLUDE in config or ATTR_EXCLUDE in config:
                 raise HomeAssistantError(
-                    f"Partial backups (e.g. include/exclude) are not supported on non-supervised installations."
+                    "Partial backups (e.g. include/exclude) are not supported on non-supervised installations."
                 )
 
             if config.get(ATTR_NAME):

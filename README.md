@@ -307,6 +307,13 @@ Integration "Fully Kiosk Browser"
 **Storage:**
 - DSM 7.2
 - Virtual Machine Manager
+  - SSO service on dedicated VM
+    - Nginx Proxy Manager
+    - 389ds
+    - Keycloak
+    - oauth2-proxy
+    - Redis
+    - MySQL
 - Photos
 - Download Station
 - acme.sh
