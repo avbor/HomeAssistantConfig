@@ -93,7 +93,9 @@ CUSTOM = {
     "yandexstation_2": ["yandex:station-max", "Яндекс", "Станция Макс (2020)"],
     "yandexmini": ["yandex:station-mini", "Яндекс", "Станция Мини (2019)"],
     "yandexmini_2": ["yandex:station-mini-2", "Яндекс", "Станция Мини 2 (2021)"],
+    "bergamot": ["yandex:station-mini-3", "Яндекс", "Станция Мини 3 (2024)"],
     "yandexmicro": ["yandex:station-lite", "Яндекс", "Станция Лайт (2021)"],
+    "plum": ["yandex:station-lite-2", "Яндекс", "Станция Лайт 2 (2024)"],
     "yandexmidi": ["yandex:station-2", "Яндекс", "Станция 2 (2022)"],  # zigbee
     "cucumber": ["yandex:station-midi", "Яндекс", "Станция Миди (2023)"],  # zigbee
     "chiron": ["yandex:station-duo-max", "Яндекс", "Станция Дуо Макс (2023)"],  # zigbee
@@ -104,6 +106,7 @@ CUSTOM = {
     # ТВ с Алисой
     "goya": ["mdi:television-classic", "Яндекс", "ТВ (2022)"],
     "magritte": ["mdi:television-classic", "Яндекс", "ТВ Станция (2023)"],
+    "monet": ["mdi:television-classic", "Яндекс", "ТВ Станция Бейсик (2024)"],
     # колонки НЕ Яндекса
     "lightcomm": ["yandex:dexp-smartbox", "DEXP", "Smartbox"],
     "elari_a98": ["yandex:elari-smartbeat", "Elari", "SmartBeat"],
@@ -114,6 +117,8 @@ CUSTOM = {
     "jbl_link_portable": ["yandex:jbl-link-portable", "JBL", "Link Portable"],
     # экран с Алисой
     "quinglong": ["yandex:display-xiaomi", "Xiaomi", "Smart Display 10R X10G (2023)"],
+    # не колонки
+    "saturn": ["yandex:hub", "Яндекс", "Хаб (2023)"],
 }
 
 
@@ -365,7 +370,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         )
 
     async def _set_brightness(self, value: str):
-        if self.device_platform not in ("yandexstation_2", "yandexmini_2", "cucumber"):
+        if self.device_platform not in ("yandexstation_2", "yandexmini_2", "cucumber", "plum", "bergamot"):
             _LOGGER.warning("Поддерживаются только станции с экраном")
             return
 
@@ -667,7 +672,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         else:
             # на Яндекс ТВ Станция (2023) громкость от 0 до 100
             # на колонках - от 0 до 10
-            k = 100 if self.platform == "magritte" else 10
+            k = 100 if self.platform in ["magritte", "monet"] else 10
             await self.quasar.send(self.device, f"громкость на {round(k * volume)}")
             if volume > 0:
                 self._attr_is_volume_muted = False
@@ -781,8 +786,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
 
         if self.local_state:
             if "https://" in media_id or "http://" in media_id:
-                session = async_get_clientsession(self.hass)
-                payload = await utils.get_media_payload(media_id, session)
+                payload = await utils.get_media_payload(self.quasar.session, media_id)
                 if not payload:
                     _LOGGER.warning(f"Unsupported url: {media_id}")
                     return
@@ -794,7 +798,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
                 }
 
             elif media_type == "text":
-                # даже в локальном режиме делам TTS через облако, чтоб колонка
+                # даже в локальном режиме делаем TTS через облако, чтобы колонка
                 # не продолжала слушать
                 force_local: bool = extra and extra.get("force_local")
                 if self.quasar.session.x_token and not force_local:
@@ -1007,7 +1011,7 @@ class YandexModule(YandexStationBase):
         self._attr_available = False
         self._attr_should_poll = False
 
-        # both yandex moduls don't support music sync
+        # both yandex modules don't support music sync
         if self.device_platform == "yandexmodule":
             self.sync_sources = {}
 

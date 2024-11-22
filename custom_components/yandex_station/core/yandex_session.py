@@ -437,8 +437,10 @@ class YandexSession(BasicSession):
         assert "access_token" in resp, resp
         return resp["access_token"]
 
-    async def get(self, url, **kwargs):
-        if "/glagol/" in url or "/tracks/" in url:
+    async def get(self, url: str, **kwargs):
+        if url.startswith(
+            ("https://quasar.yandex.net/glagol/", "https://api.music.yandex.net/")
+        ):
             return await self.request_glagol(url, **kwargs)
         return await self.request("get", url, **kwargs)
 
@@ -449,8 +451,9 @@ class YandexSession(BasicSession):
         return await self.request("put", url, **kwargs)
 
     async def ws_connect(self, *args, **kwargs):
-        kwargs.setdefault("proxy", self.proxy)
-        kwargs.setdefault("ssl", self.ssl)
+        if "ssl" not in kwargs:
+            kwargs.setdefault("proxy", self.proxy)
+            kwargs.setdefault("ssl", self.ssl)
         return await self._session.ws_connect(*args, **kwargs)
 
     async def request(self, method: str, url: str, retry: int = 2, **kwargs):
@@ -461,7 +464,7 @@ class YandexSession(BasicSession):
         self.last_ts = time.time()
 
         # all except GET should contain CSRF token
-        if method != "get":
+        if method != "get" and "headers" not in kwargs:
             if self.csrf_token is None:
                 _LOGGER.debug(f"Обновление CSRF-токена, proxy: {self.proxy}")
                 r = await self._get(
