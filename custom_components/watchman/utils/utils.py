@@ -4,69 +4,116 @@ import anyio
 import re
 import fnmatch
 import time
-import logging
 from datetime import datetime
 from textwrap import wrap
 import os
 from typing import Any
+from types import MappingProxyType
 import pytz
 from prettytable import PrettyTable
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 
-from .const import (
+
+from .logger import _LOGGER, INDENT
+from ..const import (
+    CONF_CHECK_LOVELACE,
+    CONF_IGNORED_FILES,
+    CONF_INCLUDED_FOLDERS,
+    CONF_REPORT_PATH,
+    CONF_SECTION_APPEARANCE_LOCATION,
+    CONF_STARTUP_DELAY,
     DOMAIN,
     DOMAIN_DATA,
     DEFAULT_HEADER,
-    DEFAULT_CHUNK_SIZE,
     CONF_HEADER,
     CONF_IGNORED_ITEMS,
     CONF_IGNORED_STATES,
-    CONF_CHUNK_SIZE,
     CONF_COLUMNS_WIDTH,
     CONF_FRIENDLY_NAMES,
     BUNDLED_IGNORED_ITEMS,
     DEFAULT_REPORT_FILENAME,
+    HASS_DATA_CHECK_DURATION,
+    HASS_DATA_FILES_IGNORED,
+    HASS_DATA_FILES_PARSED,
+    HASS_DATA_MISSING_ENTITIES,
+    HASS_DATA_MISSING_SERVICES,
+    HASS_DATA_PARSE_DURATION,
+    HASS_DATA_PARSED_ENTITY_LIST,
+    HASS_DATA_PARSED_SERVICE_LIST,
+    REPORT_ENTRY_TYPE_ENTITY,
+    REPORT_ENTRY_TYPE_SERVICE,
+    DEFAULT_OPTIONS,
+    DEFAULT_HA_DOMAINS,
 )
 
-_LOGGER = logging.getLogger(__name__)
+
+def get_val(
+    options: MappingProxyType[str, Any], key: str, section: str | None = None
+) -> Any:
+    val = None
+    if section:
+        try:
+            val = options[section][key]
+        except KeyError:
+            _LOGGER.error(
+                "Key %s is missing in secion %s, return default value", key, section
+            )
+            val = DEFAULT_OPTIONS[section][key]
+    else:
+        val = options.get(key, DEFAULT_OPTIONS[key])
+    return val
 
 
-async def read_file(hass: HomeAssistant, path: str) -> Any:
-    """Read a file."""
-
-    def read():
-        with open(hass.config.path(path), "r", encoding="utf-8") as open_file:
-            return open_file.read()
-
-    return await hass.async_add_executor_job(read)
+def to_lists(options, key, section=None):
+    val = get_val(options, key, section)
+    return [x.strip() for x in val.split(",") if x.strip()]
 
 
-async def write_file(hass: HomeAssistant, path: str, content: Any) -> None:
-    """Write a file."""
-
-    def write():
-        with open(hass.config.path(path), "w", encoding="utf-8") as open_file:
-            open_file.write(content)
-
-    await hass.async_add_executor_job(write)
+def to_listi(options, key, section=None):
+    val = get_val(options, key, section)
+    return [int(x) for x in val.split(",") if x.strip()]
 
 
-def get_config(hass: HomeAssistant, key, default):
+def get_config(hass: HomeAssistant, key: str, default: Any | None = None) -> Any:
     """get configuration value"""
-    if DOMAIN_DATA not in hass.data:
-        return default
-    return hass.data[DOMAIN_DATA].get(key, default)
+    assert hass.data.get(DOMAIN_DATA)
+    entry = hass.config_entries.async_get_entry(
+        hass.data[DOMAIN_DATA]["config_entry_id"]
+    )
+
+    assert isinstance(entry, ConfigEntry)
+
+    if key in [CONF_INCLUDED_FOLDERS, CONF_IGNORED_ITEMS, CONF_IGNORED_FILES]:
+        return to_lists(entry.data, key)
+
+    if key in [CONF_IGNORED_STATES, CONF_CHECK_LOVELACE, CONF_STARTUP_DELAY]:
+        return get_val(entry.data, key)
+
+    if key in [CONF_HEADER, CONF_REPORT_PATH, CONF_COLUMNS_WIDTH, CONF_FRIENDLY_NAMES]:
+        section_name = CONF_SECTION_APPEARANCE_LOCATION
+        if key == CONF_COLUMNS_WIDTH:
+            return to_listi(entry.data, CONF_COLUMNS_WIDTH, section_name)
+        else:
+            return get_val(entry.data, key, section_name)
+
+    assert False, "Unknown key {}".format(key)
 
 
 async def async_get_report_path(hass, path):
     """if path not specified, create report in config directory with default filename"""
+    out_path = path
     if not path:
-        path = hass.config.path(DEFAULT_REPORT_FILENAME)
-    folder, _ = os.path.split(path)
+        out_path = hass.config.path(DEFAULT_REPORT_FILENAME)
+    folder, _ = os.path.split(out_path)
     if not await anyio.Path(folder).exists():
-        raise HomeAssistantError(f"Incorrect report_path: {path}.")
-    return path
+        raise HomeAssistantError(f"Incorrect report_path: {out_path}.")
+    _LOGGER.debug(
+        "::async_get_report_path:: input path [%s], output path [%s]", path, out_path
+    )
+    return out_path
 
 
 def get_columns_width(user_width):
@@ -89,10 +136,10 @@ def table_renderer(hass, entry_type):
     table = PrettyTable()
     columns_width = get_config(hass, CONF_COLUMNS_WIDTH, None)
     columns_width = get_columns_width(columns_width)
-    if entry_type == "service_list":
-        services_missing = hass.data[DOMAIN]["services_missing"]
-        service_list = hass.data[DOMAIN]["service_list"]
-        table.field_names = ["Service ID", "State", "Location"]
+    if entry_type == REPORT_ENTRY_TYPE_SERVICE:
+        services_missing = hass.data[DOMAIN][HASS_DATA_MISSING_SERVICES]
+        service_list = hass.data[DOMAIN][HASS_DATA_PARSED_SERVICE_LIST]
+        table.field_names = ["Action ID", "State", "Location"]
         for service in services_missing:
             row = [
                 fill(service, columns_width[0]),
@@ -102,9 +149,9 @@ def table_renderer(hass, entry_type):
             table.add_row(row)
         table.align = "l"
         return table.get_string()
-    elif entry_type == "entity_list":
-        entities_missing = hass.data[DOMAIN]["entities_missing"]
-        entity_list = hass.data[DOMAIN]["entity_list"]
+    elif entry_type == REPORT_ENTRY_TYPE_ENTITY:
+        entities_missing = hass.data[DOMAIN][HASS_DATA_MISSING_ENTITIES]
+        parsed_entity_list = hass.data[DOMAIN][HASS_DATA_PARSED_ENTITY_LIST]
         friendly_names = get_config(hass, CONF_FRIENDLY_NAMES, False)
         header = ["Entity ID", "State", "Location"]
         table.field_names = header
@@ -114,7 +161,7 @@ def table_renderer(hass, entry_type):
                 [
                     fill(entity, columns_width[0], name),
                     fill(state, columns_width[1]),
-                    fill(entity_list[entity], columns_width[2]),
+                    fill(parsed_entity_list[entity], columns_width[2]),
                 ]
             )
 
@@ -128,15 +175,15 @@ def table_renderer(hass, entry_type):
 def text_renderer(hass, entry_type):
     """Render plain lists in the report"""
     result = ""
-    if entry_type == "service_list":
-        services_missing = hass.data[DOMAIN]["services_missing"]
-        service_list = hass.data[DOMAIN]["service_list"]
+    if entry_type == REPORT_ENTRY_TYPE_SERVICE:
+        services_missing = hass.data[DOMAIN][HASS_DATA_MISSING_SERVICES]
+        service_list = hass.data[DOMAIN][HASS_DATA_PARSED_SERVICE_LIST]
         for service in services_missing:
             result += f"{service} in {fill(service_list[service], 0)}\n"
         return result
-    elif entry_type == "entity_list":
-        entities_missing = hass.data[DOMAIN]["entities_missing"]
-        entity_list = hass.data[DOMAIN]["entity_list"]
+    elif entry_type == REPORT_ENTRY_TYPE_ENTITY:
+        entities_missing = hass.data[DOMAIN][HASS_DATA_MISSING_ENTITIES]
+        entity_list = hass.data[DOMAIN][HASS_DATA_PARSED_ENTITY_LIST]
         friendly_names = get_config(hass, CONF_FRIENDLY_NAMES, False)
         for entity in entities_missing:
             state, name = get_entity_state(hass, entity, friendly_names)
@@ -157,12 +204,9 @@ async def async_get_next_file(folder_tuples, ignored_files):
     ignored_files_re = re.compile(ignored_files)
     for folder_name, glob_pattern in folder_tuples:
         _LOGGER.debug(
-            "Scan folder %s with pattern %s for configuration files",
-            folder_name,
-            glob_pattern,
+            f"{INDENT}Scan folder {folder_name} with pattern {glob_pattern} for configuration files"
         )
         async for filename in anyio.Path(folder_name).glob(glob_pattern):
-            _LOGGER.debug("Found file %s.", filename)
             yield (
                 str(filename),
                 (ignored_files and ignored_files_re.match(str(filename))),
@@ -171,7 +215,6 @@ async def async_get_next_file(folder_tuples, ignored_files):
 
 def add_entry(_list, entry, yaml_file, lineno):
     """Add entry to list of missing entities/services with line number information"""
-    _LOGGER.debug("Added %s to the list", entry)
     if entry in _list:
         if yaml_file in _list[entry]:
             _list[entry].get(yaml_file, []).append(lineno)
@@ -179,8 +222,10 @@ def add_entry(_list, entry, yaml_file, lineno):
         _list[entry] = {yaml_file: [lineno]}
 
 
-def is_service(hass, entry):
+def is_action(hass, entry):
     """check whether config entry is a service"""
+    if not isinstance(entry, str):
+        return False
     domain, service = entry.split(".")[0], ".".join(entry.split(".")[1:])
     return hass.services.has_service(domain, service)
 
@@ -202,66 +247,73 @@ def get_entity_state(hass, entry, friendly_names=False):
 def check_services(hass):
     """check if entries from config file are services"""
     services_missing = {}
+    _LOGGER.debug(f"::check_services:: Triaging list of found actions")
     if "missing" in get_config(hass, CONF_IGNORED_STATES, []):
+        _LOGGER.debug(
+            f"{INDENT}MISSING state set as ignored in config, so final list of reported actions is empty."
+        )
         return services_missing
-    if DOMAIN not in hass.data or "service_list" not in hass.data[DOMAIN]:
+    if (
+        DOMAIN not in hass.data
+        or HASS_DATA_PARSED_SERVICE_LIST not in hass.data[DOMAIN]
+    ):
         raise HomeAssistantError("Service list not found")
-    service_list = hass.data[DOMAIN]["service_list"]
-    _LOGGER.debug("::check_services")
-    for entry, occurences in service_list.items():
-        if not is_service(hass, entry):
-            services_missing[entry] = occurences
-            _LOGGER.debug("service %s added to missing list", entry)
+    parsed_service_list = hass.data[DOMAIN][HASS_DATA_PARSED_SERVICE_LIST]
+    for entry, occurrences in parsed_service_list.items():
+        if not is_action(hass, entry):
+            services_missing[entry] = occurrences
+            _LOGGER.debug(f"{INDENT}service {entry} added to the report")
     return services_missing
 
 
 def check_entitites(hass):
     """check if entries from config file are entities with an active state"""
+    _LOGGER.debug(f"::check_entities:: Triaging list of found entities")
+
     ignored_states = [
         "unavail" if s == "unavailable" else s
         for s in get_config(hass, CONF_IGNORED_STATES, [])
     ]
-    if DOMAIN not in hass.data or "entity_list" not in hass.data[DOMAIN]:
-        _LOGGER.error("Entity list not found")
+    if DOMAIN not in hass.data or HASS_DATA_PARSED_ENTITY_LIST not in hass.data[DOMAIN]:
+        _LOGGER.error(f"{INDENT}Entity list not found")
         raise Exception("Entity list not found")
-    entity_list = hass.data[DOMAIN]["entity_list"]
+    parsed_entity_list = hass.data[DOMAIN][HASS_DATA_PARSED_ENTITY_LIST]
     entities_missing = {}
-    _LOGGER.debug("::check_entities")
-    for entry, occurences in entity_list.items():
-        if is_service(hass, entry):  # this is a service, not entity
-            _LOGGER.debug("entry %s is service, skipping", entry)
+    for entry, occurrences in parsed_entity_list.items():
+        if is_action(hass, entry):  # this is a service, not entity
+            _LOGGER.debug(f"{INDENT}entry {entry} is service, skipping")
             continue
         state, _ = get_entity_state(hass, entry)
         if state in ignored_states:
-            _LOGGER.debug("entry %s ignored due to ignored_states", entry)
+            _LOGGER.debug(
+                f"{INDENT}entry {entry} with state {state} skipped due to ignored_states"
+            )
             continue
         if state in ["missing", "unknown", "unavail"]:
-            entities_missing[entry] = occurences
-            _LOGGER.debug("entry %s added to missing list", entry)
+            entities_missing[entry] = occurrences
+            _LOGGER.debug(f"{INDENT}entry {entry} added to the report")
     return entities_missing
 
 
 async def parse(hass, folders, ignored_files, root=None):
     """Parse a yaml or json file for entities/services"""
-    files_parsed = 0
+    parsed_files_count = 0
     entity_pattern = re.compile(
         r"(?:(?<=\s)|(?<=^)|(?<=\")|(?<=\'))([A-Za-z_0-9]*\s*:)?(?:\s*)?(?:states.)?"
-        r"((air_quality|alarm_control_panel|alert|automation|binary_sensor|button|calendar|camera|"
-        r"climate|counter|device_tracker|fan|group|humidifier|input_boolean|input_datetime|"
-        r"input_number|input_select|light|lock|media_player|number|person|plant|proximity|remote|"
-        r"scene|script|select|sensor|sun|switch|timer|vacuum|weather|zone)\.[A-Za-z_*0-9]+)"
+        rf"(({ "|".join([*Platform, *DEFAULT_HA_DOMAINS]) })\.[A-Za-z_*0-9]+)"
     )
-    service_pattern = re.compile(r"service:\s*([A-Za-z_0-9]*\.[A-Za-z_0-9]+)")
-    comment_pattern = re.compile(r"#.*")
-    entity_list = {}
-    service_list = {}
-    effectively_ignored = []
-    _LOGGER.debug("::parse started")
+    service_pattern = re.compile(
+        r"(?:service|action):\s*([A-Za-z_0-9]*\.[A-Za-z_0-9]+)"
+    )
+    comment_pattern = re.compile(r"(^\s*(?:description|example):.*)|(\s*#.*)")
+    parsed_entity_list = {}
+    parsed_service_list = {}
+    parsed_files = []
+    effectively_ignored_files = []
     async for yaml_file, ignored in async_get_next_file(folders, ignored_files):
         short_path = os.path.relpath(yaml_file, root)
         if ignored:
-            effectively_ignored.append(short_path)
-            _LOGGER.debug("%s ignored", yaml_file)
+            effectively_ignored_files.append(short_path)
             continue
 
         try:
@@ -278,13 +330,13 @@ async def parse(hass, folders, ignored_files, root=None):
                             and "*" not in val
                             and not val.endswith(".yaml")
                         ):
-                            add_entry(entity_list, val, short_path, lineno)
+                            add_entry(parsed_entity_list, val, short_path, lineno)
                     for match in re.finditer(service_pattern, line):
                         val = match.group(1)
-                        add_entry(service_list, val, short_path, lineno)
+                        add_entry(parsed_service_list, val, short_path, lineno)
                     lineno += 1
-            files_parsed += 1
-            _LOGGER.debug("%s parsed", yaml_file)
+            parsed_files_count += 1
+            parsed_files.append(short_path)
         except OSError as exception:
             _LOGGER.error("Unable to parse %s: %s", yaml_file, exception)
         except UnicodeDecodeError as exception:
@@ -293,7 +345,6 @@ async def parse(hass, folders, ignored_files, root=None):
                 yaml_file,
                 exception,
             )
-
     # remove ignored entities and services from resulting lists
     ignored_items = get_config(hass, CONF_IGNORED_ITEMS, [])
     ignored_items = list(set(ignored_items + BUNDLED_IGNORED_ITEMS))
@@ -301,17 +352,30 @@ async def parse(hass, folders, ignored_files, root=None):
     excluded_services = []
     for itm in ignored_items:
         if itm:
-            excluded_entities.extend(fnmatch.filter(entity_list, itm))
-            excluded_services.extend(fnmatch.filter(service_list, itm))
+            excluded_entities.extend(fnmatch.filter(parsed_entity_list, itm))
+            excluded_services.extend(fnmatch.filter(parsed_service_list, itm))
 
-    entity_list = {k: v for k, v in entity_list.items() if k not in excluded_entities}
-    service_list = {k: v for k, v in service_list.items() if k not in excluded_services}
+    parsed_entity_list = {
+        k: v for k, v in parsed_entity_list.items() if k not in excluded_entities
+    }
+    parsed_service_list = {
+        k: v for k, v in parsed_service_list.items() if k not in excluded_services
+    }
 
-    _LOGGER.debug("Parsed files: %s", files_parsed)
-    _LOGGER.debug("Ignored files: %s", effectively_ignored)
-    _LOGGER.debug("Found entities: %s", len(entity_list))
-    _LOGGER.debug("Found services: %s", len(service_list))
-    return (entity_list, service_list, files_parsed, len(effectively_ignored))
+    _LOGGER.debug(f"{INDENT}Parsed {parsed_files_count} files: {parsed_files}")
+    _LOGGER.debug(
+        f"{INDENT}Ignored {len(effectively_ignored_files)} files: {effectively_ignored_files}",
+    )
+    _LOGGER.debug(
+        f"{INDENT}Found {len(parsed_entity_list)} entities and {len(parsed_service_list)} actions"
+    )
+
+    return (
+        parsed_entity_list,
+        parsed_service_list,
+        parsed_files_count,
+        len(effectively_ignored_files),
+    )
 
 
 def fill(data, width, extra=None):
@@ -334,34 +398,29 @@ async def report(hass, render, chunk_size, test_mode=False):
 
     start_time = time.time()
     header = get_config(hass, CONF_HEADER, DEFAULT_HEADER)
-    services_missing = hass.data[DOMAIN]["services_missing"]
-    service_list = hass.data[DOMAIN]["service_list"]
-    entities_missing = hass.data[DOMAIN]["entities_missing"]
-    entity_list = hass.data[DOMAIN]["entity_list"]
-    files_parsed = hass.data[DOMAIN]["files_parsed"]
-    files_ignored = hass.data[DOMAIN]["files_ignored"]
-    chunk_size = (
-        get_config(hass, CONF_CHUNK_SIZE, DEFAULT_CHUNK_SIZE)
-        if chunk_size is None
-        else chunk_size
-    )
+    services_missing = hass.data[DOMAIN][HASS_DATA_MISSING_SERVICES]
+    service_list = hass.data[DOMAIN][HASS_DATA_PARSED_SERVICE_LIST]
+    entities_missing = hass.data[DOMAIN][HASS_DATA_MISSING_ENTITIES]
+    entity_list = hass.data[DOMAIN][HASS_DATA_PARSED_ENTITY_LIST]
+    files_parsed = hass.data[DOMAIN][HASS_DATA_FILES_PARSED]
+    files_ignored = hass.data[DOMAIN][HASS_DATA_FILES_IGNORED]
 
     rep = f"{header} \n"
     if services_missing:
-        rep += f"\n-== Missing {len(services_missing)} service(s) from "
+        rep += f"\n-== Missing {len(services_missing)} action(s) from "
         rep += f"{len(service_list)} found in your config:\n"
-        rep += render(hass, "service_list")
+        rep += render(hass, REPORT_ENTRY_TYPE_SERVICE)
         rep += "\n"
     elif len(service_list) > 0:
-        rep += f"\n-== Congratulations, all {len(service_list)} services from "
+        rep += f"\n-== Congratulations, all {len(service_list)} actions from "
         rep += "your config are available!\n"
     else:
-        rep += "\n-== No services found in configuration files!\n"
+        rep += "\n-== No actions found in configuration files!\n"
 
     if entities_missing:
         rep += f"\n-== Missing {len(entities_missing)} entity(ies) from "
         rep += f"{len(entity_list)} found in your config:\n"
-        rep += render(hass, "entity_list")
+        rep += render(hass, REPORT_ENTRY_TYPE_ENTITY)
         rep += "\n"
 
     elif len(entity_list) > 0:
@@ -377,8 +436,8 @@ async def report(hass, render, chunk_size, test_mode=False):
 
     if not test_mode:
         report_datetime = datetime.now(timezone).strftime("%d %b %Y %H:%M:%S")
-        parse_duration = hass.data[DOMAIN]["parse_duration"]
-        check_duration = hass.data[DOMAIN]["check_duration"]
+        parse_duration = hass.data[DOMAIN][HASS_DATA_PARSE_DURATION]
+        check_duration = hass.data[DOMAIN][HASS_DATA_CHECK_DURATION]
         render_duration = time.time() - start_time
     else:
         report_datetime = "01 Jan 1970 00:00:00"
