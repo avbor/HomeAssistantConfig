@@ -11,6 +11,7 @@ from homeassistant.components.light import (
     ATTR_COLOR_TEMP,
     ATTR_EFFECT,
     ATTR_HS_COLOR,
+    ATTR_RGB_COLOR,
     ATTR_TRANSITION,
 )
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -46,6 +47,9 @@ class XLight(XEntity, LightEntity, RestoreEntity):
             elif conv.attr == ATTR_HS_COLOR:
                 self.listen_attrs.add(conv.attr)
                 modes.add(ColorMode.HS)
+            elif conv.attr == ATTR_RGB_COLOR:
+                self.listen_attrs.add(conv.attr)
+                modes.add(ColorMode.RGB)
             elif conv.attr == ATTR_COLOR_MODE:
                 self.listen_attrs.add(conv.attr)
             elif conv.attr == ATTR_EFFECT and hasattr(conv, "map"):
@@ -66,6 +70,9 @@ class XLight(XEntity, LightEntity, RestoreEntity):
         if ATTR_HS_COLOR in data:
             self._attr_hs_color = data[ATTR_HS_COLOR]
             self._attr_color_mode = ColorMode.HS
+        if ATTR_RGB_COLOR in data:
+            self._attr_rgb_color = data[ATTR_RGB_COLOR]
+            self._attr_color_mode = ColorMode.RGB
         if ATTR_COLOR_MODE in data:
             self._attr_color_mode = ColorMode(data[ATTR_COLOR_MODE])
         if ATTR_EFFECT in data:
@@ -79,7 +86,10 @@ class XLight(XEntity, LightEntity, RestoreEntity):
         }
 
     async def async_turn_on(self, **kwargs):
-        self.device.write(kwargs if kwargs else {self.attr: True})
+        # https://github.com/AlexxIT/XiaomiGateway3/issues/1459
+        if not self._attr_is_on or not kwargs:
+            kwargs[self.attr] = True
+        self.device.write(kwargs)
 
     async def async_turn_off(self, **kwargs):
         self.device.write({self.attr: False})

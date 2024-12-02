@@ -7,6 +7,7 @@ from homeassistant.components.switch import SwitchDeviceClass
 from homeassistant.const import (
     CONCENTRATION_MILLIGRAMS_PER_CUBIC_METER,
     CONCENTRATION_PARTS_PER_BILLION,
+    CONCENTRATION_PARTS_PER_MILLION,
     LIGHT_LUX,
     MAJOR_VERSION,
     MINOR_VERSION,
@@ -23,13 +24,18 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.entity import Entity, EntityCategory
 
-if (MAJOR_VERSION, MINOR_VERSION) >= (2024, 7):
+from ..core.converters.base import BaseConv
+
+if (MAJOR_VERSION, MINOR_VERSION) >= (2024, 11):
     from homeassistant.const import UnitOfConductivity
+
+    CONDUCTIVITY = UnitOfConductivity.MICROSIEMENS_PER_CM
+elif (MAJOR_VERSION, MINOR_VERSION) >= (2024, 7):
+    from homeassistant.const import UnitOfConductivity
+
     CONDUCTIVITY = UnitOfConductivity.MICROSIEMENS
 else:
     from homeassistant.const import CONDUCTIVITY
-
-from ..core.converters.base import BaseConv
 
 # just to reduce the code
 CELSIUS = UnitOfTemperature.CELSIUS
@@ -86,6 +92,7 @@ ENTITY_DESCRIPTIONS: dict[str, dict] = {
     "smoke_density": {"icon": "mdi:google-circles-communities", "units": "% obs/ft"},
     "supply": {"icon": "mdi:gauge", "units": PERCENTAGE},
     "tvoc": {"icon": "mdi:cloud", "units": CONCENTRATION_PARTS_PER_BILLION},
+    "eco_two": {"name": "eCO2", "icon": "mdi:molecule-co2", "units": CONCENTRATION_PARTS_PER_MILLION},
     ##
     # stats sensors
     "binary_sensor.gateway": {

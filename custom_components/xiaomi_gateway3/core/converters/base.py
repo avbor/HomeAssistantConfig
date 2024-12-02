@@ -118,7 +118,7 @@ class BoolConv(BaseConv):
 
 @dataclass
 class MapConv(BaseConv):
-    map: dict[int, bool | str] = None
+    map: dict[int | str, bool | str] = None
 
     def decode(self, device: "XDevice", payload: dict, value: int):
         if value in self.map:
@@ -196,4 +196,13 @@ class ColorTempKelvin(BaseConv):
             value = self.mink
         if value > self.maxk:
             value = self.maxk
+        super().encode(device, payload, value)
+
+
+class RGBColor(BaseConv):
+    def decode(self, device: "XDevice", payload: dict, value: int):
+        payload[self.attr] = ((value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF)
+
+    def encode(self, device: "XDevice", payload: dict, value: tuple[int, int, int]):
+        value = value[0] << 16 | value[1] << 8 | value[2]
         super().encode(device, payload, value)
