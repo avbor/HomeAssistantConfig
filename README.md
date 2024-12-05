@@ -280,13 +280,11 @@ Integration "Fully Kiosk Browser"
   - Ubuntu Server 24.04 LTS
   - QEMU + KVM + libvirt
   - Docker
-  - Unbound
-  - Bind9
   - Nginx
   - Containers:
     - Watchtower
     - [Frigate](https://github.com/blakeblackshear/frigate) with [go2rtc](https://github.com/AlexxIT/go2rtc)
-    - [Double Take](https://github.com/skrashevich/double-take/) with [CompreFace](https://github.com/exadel-inc/CompreFace)
+    - [Double Take](https://github.com/skrashevich/double-take/) with [CompreFace](https://github.com/exadel-inc/CompreFace) and [CodeProject.AI Server](https://www.codeproject.com/)
     - Transmission
     - Plex
     - [proxy4plex](https://github.com/kadrim/proxy4plex)
@@ -294,6 +292,7 @@ Integration "Fully Kiosk Browser"
     - xTeVe
     - PhotoPrism
     - PostgreSQL
+    - Technitium DNS Server
 
 - NUC7:
   - Ubuntu Server 24.04 LTS
@@ -331,6 +330,8 @@ Integration "Fully Kiosk Browser"
   - Grafana
   - Torrserver
   - vlmcsd
+  - Apache Guacamole
+  - Docker Registry
 
 **Used DBs:**
 - MariaDB
