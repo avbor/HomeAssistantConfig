@@ -219,7 +219,7 @@ ch_climate_pack:
       unique_id: 883c8735-9705-4136-986f-c03f02eaec26
       name: Country House Toilet 2st Floor
       heater: switch.0xa4c138dd369833b0_plug
-      target_sensor: ssensor.a4c138169698_temperature
+      target_sensor: sensor.a4c138169698_temperature
       min_temp: 5
       max_temp: 30
       cold_tolerance: 2
