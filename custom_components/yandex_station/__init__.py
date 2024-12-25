@@ -8,28 +8,26 @@ from homeassistant.components.media_player import (
     DOMAIN as MEDIA_DOMAIN,
     SERVICE_PLAY_MEDIA,
 )
-from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
 from homeassistant.const import (
-    CONF_USERNAME,
-    CONF_PASSWORD,
     ATTR_ENTITY_ID,
-    EVENT_HOMEASSISTANT_STOP,
-    CONF_TOKEN,
-    CONF_INCLUDE,
     CONF_DEVICES,
-    CONF_HOST,
-    CONF_PORT,
     CONF_DOMAIN,
-    MAJOR_VERSION,
-    MINOR_VERSION,
+    CONF_HOST,
+    CONF_INCLUDE,
+    CONF_PASSWORD,
+    CONF_PORT,
+    CONF_TOKEN,
+    CONF_USERNAME,
+    EVENT_HOMEASSISTANT_STOP,
 )
 from homeassistant.core import ServiceCall
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import (
     aiohttp_client as ac,
     config_validation as cv,
-    discovery,
     device_registry as dr,
+    discovery,
 )
 
 from .core import utils
@@ -48,6 +46,14 @@ from .hass import hass_utils
 
 _LOGGER = logging.getLogger(__name__)
 
+# only for speakers
+SPEAKER_PLATFORMS = [
+    "calendar",
+    "camera",
+    "media_player",
+    "select",
+]
+# for import section
 PLATFORMS = [
     "button",
     "calendar",
@@ -60,13 +66,11 @@ PLATFORMS = [
     "number",
     "remote",
     "select",
+    "sensor",
     "switch",
     "vacuum",
-    "sensor",
     "water_heater",
 ]
-# only for speakers
-PLATFORMS2 = ["calendar", "camera", "conversation", "media_player", "select"]
 
 CONF_TTS_NAME = "tts_service_name"
 CONF_DEBUG = "debug"
@@ -124,9 +128,16 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
     await _init_services(hass)
     await _setup_entry_from_config(hass)
 
-    if (MAJOR_VERSION, MINOR_VERSION) >= (2024, 5):
-        # can't use ImportError, because bug with "Detected blocking call"
-        PLATFORMS.append("conversation")
+    def import_conversation():
+        try:
+            from . import conversation
+
+            SPEAKER_PLATFORMS.append("conversation")
+        except ImportError as e:
+            _LOGGER.warning(repr(e))
+
+    # using executor, because bug with "Detected blocking call"
+    await hass.async_add_executor_job(import_conversation)
 
     hass.http.register_view(utils.StreamingView(hass))
 
@@ -173,19 +184,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     await _setup_intents(hass, quasar)
     await _setup_devices(hass, quasar)
 
-    if not entry.update_listeners:
-        entry.add_update_listener(async_update_options)
-
     quasar.start()
 
-    platforms = PLATFORMS if hass_utils.incluce_devices(hass, entry) else PLATFORMS2
+    platforms = (
+        PLATFORMS if hass_utils.incluce_devices(hass, entry) else SPEAKER_PLATFORMS
+    )
     setattr(quasar, "platforms", platforms)
     await hass.config_entries.async_forward_entry_setups(entry, platforms)
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
     return True
 
 
-async def async_update_options(hass: HomeAssistant, config_entry: ConfigEntry):
+async def async_reload_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     await hass.config_entries.async_reload(config_entry.entry_id)
 
 
@@ -233,7 +244,11 @@ async def _init_services(hass: HomeAssistant):
             entity_ids = selected.referenced | selected.indirectly_referenced
             for speaker in speakers.values():
                 entity: YandexStationBase = speaker.get("entity")
-                if not entity or entity.entity_id not in entity_ids or not entity.glagol:
+                if (
+                    not entity
+                    or entity.entity_id not in entity_ids
+                    or not entity.glagol
+                ):
                     continue
                 data = service.remove_entity_service_fields(call)
                 data.setdefault("command", "sendText")

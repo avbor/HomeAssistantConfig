@@ -6,6 +6,8 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import (
+    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    CONCENTRATION_PARTS_PER_MILLION,
     LIGHT_LUX,
     PERCENTAGE,
     UnitOfElectricCurrent,
@@ -13,8 +15,6 @@ from homeassistant.const import (
     UnitOfPower,
     UnitOfPressure,
     UnitOfTemperature,
-    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
-    CONCENTRATION_PARTS_PER_MILLION,
 )
 
 from .core.entity import YandexCustomEntity
@@ -40,6 +40,7 @@ INCLUDE_TYPES = (
     "devices.types.smart_meter.gas",
     "devices.types.smart_meter.heat",
     "devices.types.smart_meter.hot_water",
+    "devices.types.smart_speaker.yandex.station.plum",
     "devices.types.socket",
 )
 INCLUDE_PROPERTIES = ("devices.properties.float", "devices.properties.event")

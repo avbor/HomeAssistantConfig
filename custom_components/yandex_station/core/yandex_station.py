@@ -14,8 +14,8 @@ from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
-    MediaType,
     MediaPlayerState,
+    MediaType,
     RepeatMode,
 )
 from homeassistant.components.media_source.models import BrowseMediaSource
@@ -33,7 +33,7 @@ from homeassistant.helpers.template import Template
 from . import utils
 from .const import DATA_CONFIG, DOMAIN
 from .yandex_glagol import YandexGlagol
-from .yandex_music import get_mp3
+from .yandex_music import get_file_info
 from .yandex_quasar import YandexQuasar
 from ..hass import shopping_list
 
@@ -370,7 +370,13 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         )
 
     async def _set_brightness(self, value: str):
-        if self.device_platform not in ("yandexstation_2", "yandexmini_2", "cucumber", "plum", "bergamot"):
+        if self.device_platform not in (
+            "yandexstation_2",
+            "yandexmini_2",
+            "cucumber",
+            "plum",
+            "bergamot",
+        ):
             _LOGGER.warning("Поддерживаются только станции с экраном")
             return
 
@@ -403,6 +409,13 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
 
         config, version = await self.quasar.get_device_config(self.device)
         config["beta"] = value
+        await self.quasar.set_device_config(self.device, config, version)
+
+    async def _set_locale(self, value: str):
+        assert value in ("ru-RU", "en-US", "ar-SA", "kk-KZ", "tr-TR")
+
+        config, version = await self.quasar.get_device_config(self.device)
+        config["locale"] = value
         await self.quasar.set_device_config(self.device, config, version)
 
     async def _set_settings(self, value: str):
@@ -777,6 +790,9 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         elif media_type == "beta":
             await self._set_beta(media_id)
             return
+        elif media_type == "locale":
+            await self._set_locale(media_id)
+            return
         elif media_type == "settings":
             await self._set_settings(media_id)
             return
@@ -966,16 +982,24 @@ class YandexStation(YandexStationBase):
     async def sync_play_media(self, player_state: dict):
         self.debug("Sync state: play_media")
 
-        url = await get_mp3(self.quasar.session, player_state)
-        if not url:
+        source = self.sync_sources[self._attr_source]
+
+        try:
+            info = await get_file_info(
+                self.quasar.session,
+                player_state["id"],
+                source.get("quality", "lossless"),
+                source.get("codecs", "mp3"),
+            )
+        except Exception as e:
+            self.debug("Failed to get track url: " + str(e))
             return
 
         await self.async_media_seek(0)
 
-        source = self.sync_sources[self._attr_source]
         data = {
             "media_content_id": utils.StreamingView.get_url(
-                self.hass, self._attr_unique_id, url
+                self.hass, self._attr_unique_id, info["url"], info["codec"]
             ),
             "media_content_type": source.get("media_content_type", "music"),
             "entity_id": source["entity_id"],

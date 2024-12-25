@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from dateutil.rrule import rrulestr
 from homeassistant.components.calendar import (
     CalendarEntity,
-    CalendarEvent,
     CalendarEntityFeature,
+    CalendarEvent,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
@@ -61,8 +61,8 @@ class YandexCalendar(CalendarEntity):
                     break
             else:
                 self.next_event = None
-        except Exception as e:
-            _LOGGER.warning("Не удалось загрузить будильники", exc_info=e)
+        except:
+            pass
 
     async def async_get_events(
         self, hass: HomeAssistant, start_date: datetime, end_date: datetime

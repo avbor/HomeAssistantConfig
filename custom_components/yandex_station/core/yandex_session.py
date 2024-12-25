@@ -103,6 +103,7 @@ class BasicSession:
             url = url.replace("yandex.ru", self.domain)
         kwargs["proxy"] = self.proxy
         kwargs["ssl"] = self.ssl
+        kwargs.setdefault("timeout", 5.0)
         return getattr(self._session, method)(url, **kwargs)
 
     def _get(self, url: str, **kwargs):
@@ -464,7 +465,7 @@ class YandexSession(BasicSession):
         self.last_ts = time.time()
 
         # all except GET should contain CSRF token
-        if method != "get" and "headers" not in kwargs:
+        if method != "get" and not url.startswith("https://rpc.alice.yandex.ru"):
             if self.csrf_token is None:
                 _LOGGER.debug(f"Обновление CSRF-токена, proxy: {self.proxy}")
                 r = await self._get(
@@ -488,7 +489,7 @@ class YandexSession(BasicSession):
         elif r.status == 403:
             # 403 - no x-csrf-token
             self.csrf_token = None
-        else:
+        elif not url.endswith("/get_alarms"):
             _LOGGER.warning(f"{url} return {r.status} status")
 
         if retry:

@@ -13,7 +13,7 @@ from functools import lru_cache
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.config_entries import ConfigFlow, ConfigEntry, OptionsFlow
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import AbortFlow
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
@@ -212,12 +212,13 @@ class YandexStationFlowHandler(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: ConfigEntry):
-        return OptionsHandler(config_entry)
+        return OptionsFlowHandler()
 
 
-class OptionsHandler(OptionsFlow):
-    def __init__(self, config_entry: ConfigEntry):
-        self.config_entry = config_entry
+class OptionsFlowHandler(OptionsFlow):
+    @property
+    def config_entry(self):
+        return self.hass.config_entries.async_get_entry(self.handler)
 
     async def async_step_init(self, user_input: dict = None):
         if user_input:
