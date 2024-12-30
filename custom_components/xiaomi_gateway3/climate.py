@@ -1,12 +1,12 @@
 from homeassistant.components.climate import (
     ClimateEntity,
     ClimateEntityFeature,
+    FAN_AUTO,
+    FAN_HIGH,
     FAN_LOW,
     FAN_MEDIUM,
-    FAN_HIGH,
-    FAN_AUTO,
-    HVACMode,
     HVACAction,
+    HVACMode,
 )
 from homeassistant.const import PRECISION_WHOLE, UnitOfTemperature
 
@@ -192,3 +192,4 @@ class XScdvbHAVC(XEntity, ClimateEntity):
 XEntity.NEW["climate.model.lumi.airrtc.tcpecn02"] = XAqaraS2
 XEntity.NEW["climate.model.lumi.airrtc.agl001"] = XAqaraE1
 XEntity.NEW["climate.model.14050"] = XScdvbHAVC
+XEntity.NEW["climate.model.9507"] = XScdvbHAVC

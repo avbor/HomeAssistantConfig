@@ -1,11 +1,11 @@
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.config_entries import ConfigFlow, ConfigEntry, OptionsFlow
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .core import core_utils
-from .core.const import DOMAIN, PID_WIFI, PID_WIFI_BLE, PID_BLE
+from .core.const import DOMAIN, PID_BLE, PID_WIFI, PID_WIFI_BLE
 from .core.xiaomi_cloud import MiCloud
 from .hass import hass_utils
 
@@ -129,13 +129,15 @@ class FlowHandler(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: ConfigEntry):
-        return CloudOptionsandler(config_entry)
+        return OptionsFlowHandler()
 
 
-class CloudOptionsandler(OptionsFlow):
-    def __init__(self, config_entry: ConfigEntry):
-        self.config_entry = config_entry
-        self.cloud_devices = None
+class OptionsFlowHandler(OptionsFlow):
+    cloud_devices = None
+
+    @property
+    def config_entry(self):
+        return self.hass.config_entries.async_get_entry(self.handler)
 
     @property
     def cloud(self) -> MiCloud:
