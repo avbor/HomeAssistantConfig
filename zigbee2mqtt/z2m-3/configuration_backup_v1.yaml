@@ -1,0 +1,49 @@
+homeassistant: true
+advanced:
+  network_key: '!secrets.yaml zb_network_key'
+  pan_id: 15554
+  ext_pan_id:
+    - 235
+    - 133
+    - 173
+    - 104
+    - 65
+    - 233
+    - 109
+    - 194
+  homeassistant_legacy_entity_attributes: false
+  homeassistant_legacy_triggers: false
+  legacy_api: false
+  legacy_availability_payload: false
+  log_syslog:
+    app_name: Zigbee2MQTT
+    eol: /n
+    host: localhost
+    localhost: localhost
+    path: /dev/log
+    pid: process.pid
+    port: 514
+    protocol: udp4
+    type: '5424'
+  last_seen: ISO_8601
+  log_level: warning
+  log_symlink_current: true
+mqtt:
+  server: mqtt://core-mosquitto:1883
+  user: '!secrets.yaml mqtt_user'
+  password: '!secrets.yaml mqtt_pass'
+  base_topic: zigbee2mqtt_3
+serial:
+  port: tcp://192.168.10.206:8888
+  adapter: ezsp
+frontend:
+  port: 8099
+device_options:
+  legacy: false
+devices:
+  '0x00158d00040e019e':
+    friendly_name: TH Дача - Веранда
+  '0x00158d00054859d5':
+    friendly_name: Кнопка Aqara Дача 02
+  '0xa4c13806f468cf98':
+    friendly_name: Розетка NAS-WR01B на Даче в Туалете 1 Этаж

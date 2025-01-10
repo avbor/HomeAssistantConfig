@@ -19,16 +19,16 @@ from typing import (
 )
 
 import voluptuous as vol
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_ENTITY_ID,
-    ATTR_SERVICE,
     CONF_DESCRIPTION,
-    STATE_LOCKED,
     STATE_OK,
     STATE_PROBLEM,
     STATE_UNKNOWN,
 )
+from homeassistant.components.lock.const import LockState
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import slugify
@@ -44,7 +44,6 @@ from custom_components.lkcomu_interrao.const import (
     ATTR_ACCOUNT_CODE,
     ATTR_ACCOUNT_ID,
     ATTR_ADDRESS,
-    ATTR_BENEFITS,
     ATTR_CALL_PARAMS,
     ATTR_CHARGED,
     ATTR_COMMENT,
@@ -55,19 +54,13 @@ from custom_components.lkcomu_interrao.const import (
     ATTR_IGNORE_PERIOD,
     ATTR_INCREMENTAL,
     ATTR_INDICATIONS,
-    ATTR_INITIAL,
     ATTR_INSTALL_DATE,
-    ATTR_INSURANCE,
-    ATTR_INVOICE_ID,
     ATTR_LAST_INDICATIONS_DATE,
     ATTR_LIVING_AREA,
     ATTR_METER_CATEGORY,
     ATTR_METER_CODE,
     ATTR_METER_MODEL,
     ATTR_MODEL,
-    ATTR_PAID,
-    ATTR_PENALTY,
-    ATTR_PERIOD,
     ATTR_PREVIOUS,
     ATTR_PROVIDER_NAME,
     ATTR_PROVIDER_TYPE,
@@ -83,10 +76,8 @@ from custom_components.lkcomu_interrao.const import (
     ATTR_SUBMIT_PERIOD_START,
     ATTR_SUCCESS,
     ATTR_SUM,
-    ATTR_TOTAL,
     ATTR_TOTAL_AREA,
     CONF_ACCOUNTS,
-    CONF_DEV_PRESENTATION,
     CONF_LAST_INVOICE,
     CONF_LOGOS,
     CONF_METERS,
@@ -129,20 +120,22 @@ INDICATIONS_SEQUENCE_SCHEMA = vol.All(
 )
 
 CALCULATE_PUSH_INDICATIONS_SCHEMA = vol.All(
-    cv.deprecated("notification"),
-    cv.make_entity_service_schema({
-        vol.Required(ATTR_INDICATIONS): vol.Any(
-            vol.All(
-                cv.string, lambda x: list(map(str.strip, x.split(","))), INDICATIONS_SEQUENCE_SCHEMA
+    cv.make_entity_service_schema(
+        {
+            vol.Required(ATTR_INDICATIONS): vol.Any(
+                vol.All(
+                    cv.string,
+                    lambda x: list(map(str.strip, x.split(","))),
+                    INDICATIONS_SEQUENCE_SCHEMA,
+                ),
+                INDICATIONS_MAPPING_SCHEMA,
+                INDICATIONS_SEQUENCE_SCHEMA,
             ),
-            INDICATIONS_MAPPING_SCHEMA,
-            INDICATIONS_SEQUENCE_SCHEMA,
-        ),
-        vol.Optional(ATTR_IGNORE_PERIOD, default=False): cv.boolean,
-        vol.Optional(ATTR_IGNORE_INDICATIONS, default=False): cv.boolean,
-        vol.Optional(ATTR_INCREMENTAL, default=False): cv.boolean,
-        vol.Optional("notification", default=None): lambda x: x,
-    })
+            vol.Optional(ATTR_IGNORE_PERIOD, default=False): cv.boolean,
+            vol.Optional(ATTR_IGNORE_INDICATIONS, default=False): cv.boolean,
+            vol.Optional(ATTR_INCREMENTAL, default=False): cv.boolean,
+        }
+    ),
 )
 
 SERVICE_PUSH_INDICATIONS: Final = "push_indications"
@@ -180,8 +173,12 @@ def get_supported_features(from_services: SupportedServicesType, for_object: Any
     return features
 
 
-class LkcomuAccount(LkcomuInterRAOEntity[Account]):
+class LkcomuAccount(LkcomuInterRAOEntity[Account], SensorEntity):
     """The class for this sensor"""
+
+    _attr_icon = "mdi:lightning-bolt-circle"
+    _attr_unit_of_measurement = "руб."
+    _attr_device_class = SensorDeviceClass.MONETARY
 
     config_key: ClassVar[str] = CONF_ACCOUNTS
 
@@ -227,37 +224,19 @@ class LkcomuAccount(LkcomuInterRAOEntity[Account]):
         return None
 
     @property
-    def code(self) -> str:
-        return self._account.code
-
-    @property
-    def device_class(self) -> Optional[str]:
-        return DOMAIN + "_account"
-
-    @property
     def unique_id(self) -> str:
         """Return the unique ID of the sensor"""
         acc = self._account
         return f"{acc.api.__class__.__name__}_account_{acc.id}"
 
     @property
-    def state(self) -> Union[str, float]:
+    def native_value(self) -> Union[str, float]:
         if self._account.is_locked:
             return STATE_PROBLEM
         balance = self._balance
         if balance is not None:
-            if self._account_config[CONF_DEV_PRESENTATION]:
-                return ("-" if (balance.balance or 0.0) < 0.0 else "") + "#####.###"
             return round(balance.balance or 0.0, 2)  # fixes -0.0 issues
         return STATE_UNKNOWN
-
-    @property
-    def icon(self) -> str:
-        return "mdi:lightning-bolt-circle"
-
-    @property
-    def unit_of_measurement(self) -> Optional[str]:
-        return "руб."
 
     @property
     def sensor_related_attributes(self) -> Optional[Mapping[str, Any]]:
@@ -286,7 +265,7 @@ class LkcomuAccount(LkcomuInterRAOEntity[Account]):
         }
 
         if account.is_locked:
-            attributes[ATTR_STATUS] = STATE_LOCKED
+            attributes[ATTR_STATUS] = LockState.LOCKED
             attributes[ATTR_REASON] = account.lock_reason
 
         else:
@@ -321,20 +300,6 @@ class LkcomuAccount(LkcomuInterRAOEntity[Account]):
 
                 if isinstance(info, BytInfoSingle):
                     attributes[ATTR_METER_MODEL] = info.meter_model
-
-        self._handle_dev_presentation(
-            attributes,
-            (),
-            (
-                ATTR_DESCRIPTION,
-                ATTR_FULL_NAME,
-                ATTR_ADDRESS,
-                ATTR_LIVING_AREA,
-                ATTR_TOTAL_AREA,
-                ATTR_METER_MODEL,
-                ATTR_METER_CODE,
-            ),
-        )
 
         return attributes
 
@@ -543,8 +508,10 @@ class LkcomuAccount(LkcomuInterRAOEntity[Account]):
             _LOGGER.info(self.log_prefix + "End handling indications calculation")
 
 
-class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
+class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters], SensorEntity):
     """The class for this sensor"""
+
+    _attr_icon = "mdi:counter"
 
     config_key: ClassVar[str] = CONF_METERS
 
@@ -625,23 +592,15 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
         return f"{acc.api.__class__.__name__}_meter_{acc.id}_{met.id}"
 
     @property
-    def state(self) -> str:
+    def native_value(self) -> str:
         return self._meter.status or STATE_OK
-
-    @property
-    def icon(self):
-        return "mdi:counter"
-
-    @property
-    def device_class(self) -> Optional[str]:
-        return DOMAIN + "_meter"
 
     @property
     def supported_features(self) -> int:
         meter = self._meter
         return (
-                isinstance(meter, AbstractSubmittableMeter) * FEATURE_PUSH_INDICATIONS
-                | isinstance(meter, AbstractCalculatableMeter) * FEATURE_CALCULATE_INDICATIONS
+            isinstance(meter, AbstractSubmittableMeter) * FEATURE_PUSH_INDICATIONS
+            | isinstance(meter, AbstractCalculatableMeter) * FEATURE_CALCULATE_INDICATIONS
         )
 
     @property
@@ -707,17 +666,6 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
             for attribute, value in iterator:
                 attributes[f"zone_{zone_id}_{attribute}"] = value
 
-        self._handle_dev_presentation(
-            attributes,
-            (),
-            (
-                ATTR_METER_CODE,
-                ATTR_INSTALL_DATE,
-                ATTR_LAST_INDICATIONS_DATE,
-                *filter(lambda x: x.endswith("_indication"), attributes.keys()),
-            ),
-        )
-
         return attributes
 
     @property
@@ -734,18 +682,20 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
     #################################################################################
 
     def _fire_callback_event(
-        self, call_data: Mapping[str, Any], event_data: Mapping[str, Any], event_id: str, title: str
+        self,
+        call_data: Mapping[str, Any],
+        event_data: Mapping[str, Any],
+        event_id: str,
+        title: str,
     ):
         meter = self._meter
         hass = self.hass
         comment = event_data.get(ATTR_COMMENT)
 
         if comment is not None:
-            message = str(comment)
             comment = "Response comment: " + str(comment)
         else:
             comment = "Response comment not provided"
-            message = comment
 
         _LOGGER.log(
             logging.INFO if event_data.get(ATTR_SUCCESS) else logging.ERROR,
@@ -779,12 +729,12 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
         if call_data[ATTR_INCREMENTAL]:
             return {
                 zone_id: (
-                        (
-                                meter_zones[zone_id].today_indication
-                                or meter_zones[zone_id].last_indication
-                                or 0
-                        )
-                        + new_value
+                    (
+                        meter_zones[zone_id].today_indication
+                        or meter_zones[zone_id].last_indication
+                        or 0
+                    )
+                    + new_value
                 )
                 for zone_id, new_value in indications.items()
             }
@@ -904,7 +854,11 @@ class LkcomuMeter(LkcomuInterRAOEntity[AbstractAccountWithMeters]):
             _LOGGER.info(self.log_prefix + "End handling indications calculation")
 
 
-class LkcomuLastInvoice(LkcomuInterRAOEntity[AbstractAccountWithInvoices]):
+class LkcomuLastInvoice(LkcomuInterRAOEntity[AbstractAccountWithInvoices], SensorEntity):
+    _attr_unit_of_measurement = "руб."
+    _attr_icon = "mdi:receipt"
+    _attr_device_class = SensorDeviceClass.MONETARY
+
     config_key = CONF_LAST_INVOICE
 
     def __init__(self, *args, last_invoice: Optional["AbstractInvoice"] = None, **kwargs) -> None:
@@ -916,61 +870,23 @@ class LkcomuLastInvoice(LkcomuInterRAOEntity[AbstractAccountWithInvoices]):
         )
 
     @property
-    def code(self) -> str:
-        return self._account.code
-
-    @property
-    def device_class(self) -> Optional[str]:
-        return DOMAIN + "_invoice"
-
-    @property
     def unique_id(self) -> str:
         """Return the unique ID of the sensor"""
         acc = self._account
         return f"{acc.api.__class__.__name__}_lastinvoice_{acc.id}"
 
     @property
-    def state(self) -> Union[float, str]:
+    def native_value(self) -> Union[float, str]:
         invoice = self._last_invoice
         if invoice:
-            if self._account_config[CONF_DEV_PRESENTATION]:
-                return ("-" if (invoice.total or 0.0) < 0.0 else "") + "#####.###"
             return round(invoice.total or 0.0, 2)
         return STATE_UNKNOWN
 
     @property
-    def icon(self) -> str:
-        return "mdi:receipt"
-
-    @property
-    def unit_of_measurement(self) -> str:
-        return "руб." if self._last_invoice else None
-
-    @property
     def sensor_related_attributes(self):
         invoice = self._last_invoice
-
         if invoice:
-            attributes = invoice_to_attrs(invoice)
-
-            self._handle_dev_presentation(
-                attributes,
-                (ATTR_PERIOD, ATTR_INVOICE_ID),
-                (
-                    ATTR_TOTAL,
-                    ATTR_PAID,
-                    ATTR_INITIAL,
-                    ATTR_CHARGED,
-                    ATTR_INSURANCE,
-                    ATTR_BENEFITS,
-                    ATTR_PENALTY,
-                    ATTR_SERVICE,
-                ),
-            )
-
-            return attributes
-
-        return {}
+            return invoice_to_attrs(invoice)
 
     @property
     def name_format_values(self) -> Mapping[str, Any]:
@@ -989,8 +905,9 @@ class LkcomuLastInvoice(LkcomuInterRAOEntity[AbstractAccountWithInvoices]):
         config_entry: ConfigEntry,
         account_config: ConfigType,
     ):
-        entity_key = account.id
         if isinstance(account, AbstractAccountWithInvoices):
+            entity_key = account.id
+
             try:
                 entity = entities[entity_key]
             except KeyError:

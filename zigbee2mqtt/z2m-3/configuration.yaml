@@ -1,4 +1,5 @@
-homeassistant: true
+homeassistant:
+  enabled: true
 advanced:
   network_key: '!secrets.yaml zb_network_key'
   pan_id: 15554
@@ -11,9 +12,6 @@ advanced:
     - 233
     - 109
     - 194
-  homeassistant_legacy_entity_attributes: false
-  legacy_api: false
-  legacy_availability_payload: false
   log_syslog:
     app_name: Zigbee2MQTT
     eol: /n
@@ -36,9 +34,9 @@ serial:
   port: tcp://192.168.10.206:8888
   adapter: ezsp
 frontend:
+  enabled: true
   port: 8099
-device_options:
-  legacy: false
+device_options: {}
 devices:
   '0x00158d00040e019e':
     friendly_name: TH Дача - Веранда
@@ -46,3 +44,4 @@ devices:
     friendly_name: Кнопка Aqara Дача 02
   '0xa4c13806f468cf98':
     friendly_name: Розетка NAS-WR01B на Даче в Туалете 1 Этаж
+version: 4

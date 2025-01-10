@@ -2,7 +2,8 @@ push_indications:
   description: 'Передать показания в личный кабинет'
   target:
     entity:
-      device_class: lkcomu_interrao_meter
+      integration: lkcomu_interrao
+      domain: sensor
   fields:
     indications:
       description: 'Список показаний (от 1 до 3) для тарифов: T1, T2, T3'
@@ -41,7 +42,8 @@ calculate_indications:
   description: 'Подсчитать начисления по передаваемым показаниям'
   target:
     entity:
-      device_class: lkcomu_interrao_meter
+      integration: lkcomu_interrao
+      domain: sensor
   fields:
     indications:
       description: 'Список показаний (от 1 до 3) для тарифов: T1, T2, T3'
@@ -81,7 +83,8 @@ set_description:
   description: "Задать комментарий к лицевому счёту. Пустой параметр `description` (или его упущение) очистит описание к лицевому счёту."
   target:
     entity:
-      device_class: lkcomu_interrao_account
+      integration: lkcomu_interrao
+      domain: sensor
   fields:
     description:
       description: 'Описание'
@@ -95,7 +98,8 @@ get_payments:
   description: "Получить перечень платежей, связанных с лицевым счётом, которые находятся внутри заданного периода"
   target:
     entity:
-      device_class: lkcomu_interrao_account
+      integration: lkcomu_interrao
+      domain: sensor
   fields:
     start:
       description: "Дата начала периода"
@@ -116,7 +120,8 @@ get_invoices:
   description: "Получить перечень квитанций, связанных с лицевым счётом, которые находятся внутри заданного периода"
   target:
     entity:
-      device_class: lkcomu_interrao_account
+      integration: lkcomu_interrao
+      domain: sensor
   fields:
     start:
       description: "Дата начала периода"

@@ -1,0 +1,43 @@
+homeassistant: true
+advanced:
+  network_key: '!secrets.yaml zb_network_key'
+  pan_id: 18921
+  ext_pan_id:
+    - 232
+    - 158
+    - 244
+    - 189
+    - 187
+    - 236
+    - 112
+    - 108
+  log_syslog:
+    app_name: Zigbee2MQTT
+    eol: /n
+    host: localhost
+    localhost: localhost
+    path: /dev/log
+    pid: process.pid
+    port: 514
+    protocol: udp4
+    type: '5424'
+  last_seen: ISO_8601
+  log_level: warning
+  log_symlink_current: true
+mqtt:
+  server: mqtt://core-mosquitto:1883
+  user: '!secrets.yaml mqtt_user'
+  password: '!secrets.yaml mqtt_pass'
+  base_topic: zigbee2mqtt_2
+serial:
+  port: tcp://192.168.10.185:8888
+  adapter: ezsp
+frontend:
+  enabled: true
+  port: 8099
+device_options: {}
+availability: true
+devices:
+  '0xa4c138d6c1469ae0':
+    friendly_name: '0xa4c138d6c1469ae0'
+version: 2

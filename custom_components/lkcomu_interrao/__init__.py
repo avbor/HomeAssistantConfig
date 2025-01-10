@@ -338,13 +338,10 @@ async def async_setup_entry(
     hass.data.setdefault(DATA_UPDATE_DELEGATORS, {})[entry_id] = {}
 
     # Forward entry setup to sensor platform
-    for domain in (SENSOR_DOMAIN, BINARY_SENSOR_DOMAIN):
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(
-                config_entry,
-                domain,
-            )
-        )
+    await hass.config_entries.async_forward_entry_setups(
+        config_entry,
+        [SENSOR_DOMAIN, BINARY_SENSOR_DOMAIN],
+    )
 
     # Create options update listener
     update_listener = config_entry.add_update_listener(async_reload_entry)

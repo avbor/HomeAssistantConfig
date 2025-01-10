@@ -30,13 +30,25 @@ ch_light_pack:
         - platform: time
           at: "01:00:00"
           id: "night"
-        - trigger: state
-          entity_id: sensor.0x00158d00054859d5_action
-          to: single
+#        - trigger: state
+#          entity_id: sensor.0x00158d00054859d5_action
+#          to: single
+#          id: aqara_button_single
+#        - trigger: state
+#          entity_id: sensor.0x00158d00054859d5_action
+#          to: double
+#          id: aqara_button_double
+        - trigger: device
+          domain: mqtt
+          device_id: 77a32fdacf4947b90f0669153028de4e
+          type: action
+          subtype: single
           id: aqara_button_single
-        - trigger: state
-          entity_id: sensor.0x00158d00054859d5_action
-          to: double
+        - trigger: device
+          domain: mqtt
+          device_id: 77a32fdacf4947b90f0669153028de4e
+          type: action
+          subtype: double
           id: aqara_button_double
       actions:
         choose:

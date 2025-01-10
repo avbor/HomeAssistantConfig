@@ -1,10 +1,10 @@
 #################################################
 # Yandex Smart Home Settings
 #################################################
-notifier:
-  - oauth_token: !secret ysm_notifier_oauth_token
-    skill_id: !secret ysm_notifier_skill_id
-    user_id: !secret ysm_notifier_user_id
+#notifier:
+#  - oauth_token: !secret ysm_notifier_oauth_token
+#    skill_id: !secret ysm_notifier_skill_id
+#    user_id: !secret ysm_notifier_user_id
 
 filter:
   include_domains:

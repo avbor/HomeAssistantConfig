@@ -20,7 +20,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TYPE, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers.entity_platform import EntityPlatform
-from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.core import HomeAssistant
 
 from custom_components.lkcomu_interrao.const import DOMAIN
 from inter_rao_energosbyt.enums import ProviderType
@@ -49,7 +49,7 @@ def _make_log_prefix(
 
 @callback
 def _find_existing_entry(
-    hass: HomeAssistantType, type_: str, username: str
+    hass: HomeAssistant, type_: str, username: str
 ) -> Optional[config_entries.ConfigEntry]:
     existing_entries = hass.config_entries.async_entries(DOMAIN)
     for config_entry in existing_entries:

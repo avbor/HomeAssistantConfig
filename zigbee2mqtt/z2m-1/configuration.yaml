@@ -1,4 +1,5 @@
-homeassistant: true
+homeassistant:
+  enabled: true
 advanced:
   network_key: '!secrets.yaml zb_network_key'
   pan_id: 39122
@@ -11,9 +12,6 @@ advanced:
     - 64
     - 214
     - 51
-  homeassistant_legacy_entity_attributes: false
-  legacy_api: false
-  legacy_availability_payload: false
   log_syslog:
     app_name: Zigbee2MQTT
     eol: /n
@@ -25,7 +23,7 @@ advanced:
     protocol: udp4
     type: '5424'
   last_seen: ISO_8601
-  log_level: warn
+  log_level: warning
   log_symlink_current: true
 mqtt:
   server: mqtt://core-mosquitto:1883
@@ -37,10 +35,11 @@ serial:
     /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_7e93dcb7b529ec119ab3c99c40c9ce8d-if00-port0
   adapter: zstack
 frontend:
+  enabled: true
   port: 8099
-device_options:
-  legacy: false
-availability: true
+device_options: {}
+availability:
+  enabled: true
 devices:
   '0x00158d000413b210':
     friendly_name: Датчик газа на Кухне
@@ -50,3 +49,4 @@ devices:
     friendly_name: Датчик присутствия в Ванной
   '0xa4c138b96f4627bc':
     friendly_name: Датчик присутствия в Туалете
+version: 4

@@ -18,7 +18,6 @@ from custom_components.lkcomu_interrao.const import (
     API_TYPE_DEFAULT,
     API_TYPE_NAMES,
     CONF_ACCOUNTS,
-    CONF_DEV_PRESENTATION,
     CONF_LAST_INVOICE,
     CONF_LAST_PAYMENT,
     CONF_LOGOS,
@@ -96,7 +95,6 @@ GENERIC_ACCOUNT_SCHEMA = vol.Schema(
         vol.Optional(CONF_METERS, default=True): cv.boolean,
         vol.Optional(CONF_LAST_PAYMENT, default=True): cv.boolean,
         vol.Optional(CONF_LOGOS, default=True): cv.boolean,
-        vol.Optional(CONF_DEV_PRESENTATION, default=False): cv.boolean,
         vol.Optional(CONF_NAME_FORMAT, default=lambda: NAME_FORMAT_SCHEMA({})): vol.Any(
             vol.All(cv.string, lambda x: {CONF_ACCOUNTS: x}, NAME_FORMAT_SCHEMA),
             NAME_FORMAT_SCHEMA,
@@ -161,7 +159,6 @@ GENERIC_CONFIG_ENTRY_SCHEMA = vol.Schema(
         vol.Required(CONF_TYPE): PROFILE_TYPE_VALIDATOR,
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(CONF_DEV_PRESENTATION, default=False): cv.boolean,
         # Additional API configuration
         vol.Optional(CONF_USER_AGENT): vol.All(
             cv.string, lambda x: " ".join(map(str.strip, x.split("\n")))
