@@ -1,0 +1,112 @@
+#################################################
+# Package for Potter Spells
+#################################################
+
+alice_potter_pack:
+
+# Yandex intents
+  yandex_station_intents:
+    intents:
+      Люмос:
+        extra_phrases:
+          - Люмус
+      Люмос максима:
+        extra_phrases:
+          - Люмус максима
+          - Люмос максимус
+          - Люмус максимус
+      Нокс:
+
+  # Automations
+  automation:
+
+    - alias: "Alice: Lumos"
+      id: 1385db9f-772d-474e-b9bc-237c073ba44a
+      mode: restart
+      triggers:
+        - trigger: event
+          event_type: yandex_intent
+          event_data:
+            text: Люмос
+            room: Гостиная
+          id: Living_Room_Lumos
+        - trigger: event
+          event_type: yandex_intent
+          event_data:
+            text: Люмос максима
+            room: Гостиная
+          id: Living_Room_Lumos_Maxima
+        - trigger: event
+          event_type: yandex_intent
+          event_data:
+            text: Нокс
+            room: Гостиная
+          id: Living_Room_Nox
+        - trigger: event
+          event_type: yandex_intent
+          event_data:
+            text: Люмос
+            room: Детская
+          id: Nursery_Lumos
+        - trigger: event
+          event_type: yandex_intent
+          event_data:
+            text: Люмос максима
+            room: Детская
+          id: Nursery_Lumos_Maxima
+        - trigger: event
+          event_type: yandex_intent
+          event_data:
+            text: Нокс
+            room: Детская
+          id: Nursery_Nox
+      actions:
+        choose:
+          - alias: Nursery Lumos
+            conditions:
+              - condition: trigger
+                id: "Nursery_Lumos"
+            sequence:
+              - action: light.turn_on
+                target: 
+                  entity_id: light.ikea_e27_detskaia
+          - alias: Nursery Lumos Maxima
+            conditions:
+              - condition: trigger
+                id: "Nursery_Lumos_Maxima"
+            sequence:
+              - action: light.turn_on
+                target: 
+                  area_id: 24758c6268dd46168d35620719b05ed0
+          - alias: Nursery Nox
+            conditions:
+              - condition: trigger
+                id: "Nursery_Nox"
+            sequence:
+              - action: light.turn_off
+                target: 
+                  entity_id: light.ikea_e27_detskaia
+          - alias: Living Room Lumos
+            conditions:
+              - condition: trigger
+                id: "Living_Room_Lumos"
+            sequence:
+              - action: light.turn_on
+                target: 
+                  entity_id: light.sonoff_1000f30a9e
+          - alias: Living Room Lumos Maxima
+            conditions:
+              - condition: trigger
+                id: "Living_Room_Lumos_Maxima"
+            sequence:
+              - action: light.turn_on
+                target: 
+                  area_id: 38de229de4ae4b9c9aebbb4973528a2f
+          - alias: Living Room Nox
+            conditions:
+              - condition: trigger
+                id: "Living_Room_Nox"
+            sequence:
+              - action: light.turn_off
+                target: 
+                  entity_id: light.sonoff_1000f30a9e
