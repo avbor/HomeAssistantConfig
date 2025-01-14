@@ -376,7 +376,10 @@
           '^sensor\.ch_main_energy_.*|'
           '^sensor\..*_geocoded_location$|'
           '^sensor\.double_take_.*|'
-          '^sensor\.processor_use$'
+          '^sensor\.processor_use$|'
+          '^binary_sensor.avb0r$|'
+          '^sensor.dacha_nearest_.*|'
+          '^sensor.dacha_.*_di.*'
           )
         }}
     - condition: template
