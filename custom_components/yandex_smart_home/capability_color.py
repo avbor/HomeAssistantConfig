@@ -235,7 +235,7 @@ class ColorTemperatureCapability(StateCapability[TemperatureKInstanceActionState
         """Return the current capability value."""
         color_temperature = self.state.attributes.get(ATTR_COLOR_TEMP_KELVIN)
         if color_temperature is not None:
-            return self._converter.get_yandex_color_temperature(color_temperature)
+            return self._converter.get_yandex_color_temperature(int(color_temperature))
 
         color_mode = self.state.attributes.get(ATTR_COLOR_MODE)
         match color_mode:

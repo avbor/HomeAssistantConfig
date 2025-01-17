@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from functools import cached_property
+import logging
 from typing import Protocol, Self
 
 from homeassistant.components import air_quality, climate, fan, humidifier, light, sensor, switch, water_heater
@@ -24,7 +25,6 @@ from homeassistant.const import (
     UnitOfPower,
     UnitOfVolume,
 )
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util.unit_conversion import (
     BaseUnitConverter,
     ElectricCurrentConverter,
@@ -81,6 +81,8 @@ from .schema import (
 )
 from .unit_conversion import PressureConverter, TVOCConcentrationConverter, UnitOfPressure, UnitOfTemperature
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class FloatProperty(Property, Protocol):
     """Base class for float properties (sensors)."""
@@ -116,15 +118,14 @@ class FloatProperty(Property, Protocol):
             raise APIError(ResponseCode.NOT_SUPPORTED_IN_CURRENT_MODE, f"Unsupported value '{value}' for {self}")
 
         if self._native_unit_of_measurement and self.unit_of_measurement and self._unit_converter:
-            try:
+            if self._native_unit_of_measurement in self._unit_converter.VALID_UNITS:
                 float_value = self._unit_converter.convert(
                     float_value, self._native_unit_of_measurement, self.unit_of_measurement
                 )
-            except HomeAssistantError as e:
-                raise APIError(
-                    ResponseCode.INVALID_VALUE,
-                    f"Failed to convert value from '{self._native_unit_of_measurement}' to "
-                    f"'{self.unit_of_measurement}' for {self}: {e}",
+            else:
+                _LOGGER.warning(
+                    f"Unsupported unit of measurement '{self._native_unit_of_measurement}' for {self}. "
+                    f"Valid units are: %s" % ", ".join(sorted(map(str, self._unit_converter.VALID_UNITS)))
                 )
 
         lower_limit, upper_limit = self.parameters.range
@@ -160,9 +161,10 @@ class FloatProperty(Property, Protocol):
         ...
 
     @cached_property
+    @abstractmethod
     def _native_unit_of_measurement(self) -> str | None:
         """Return the unit the native value is expressed in."""
-        return None
+        ...
 
     @property
     def _unit_converter(self) -> BaseUnitConverter | None:
@@ -495,6 +497,14 @@ class BatteryLevelPercentageProperty(FloatProperty, Protocol):
 class StateFloatProperty(StateProperty, FloatProperty):
     """Base class for a float property based on the state."""
 
+    @cached_property
+    def _native_unit_of_measurement(self) -> str | None:
+        """Return the unit the native value is expressed in."""
+        if self.state.domain == sensor.DOMAIN:
+            return self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+
+        return None
+
 
 class TemperatureSensor(StateFloatProperty, TemperatureProperty):
     """Representaton of the state as a temperature sensor."""
@@ -524,11 +534,6 @@ class TemperatureSensor(StateFloatProperty, TemperatureProperty):
                 return self.state.attributes.get(ATTR_CURRENT_TEMPERATURE)
 
         return self.state.state
-
-    @property
-    def _native_unit_of_measurement(self) -> str:
-        """Return the unit the native value is expressed in."""
-        return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, UnitOfTemperature.CELSIUS))
 
 
 class HumiditySensor(StateFloatProperty, HumidityProperty):
@@ -572,11 +577,6 @@ class PressureSensor(StateFloatProperty, PressureProperty):
     def _get_native_value(self) -> float | str | None:
         """Return the current property value without conversion."""
         return self.state.state
-
-    @property
-    def _native_unit_of_measurement(self) -> str:
-        """Return the unit the native value is expressed in."""
-        return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, UnitOfPressure.MMHG))
 
 
 class IlluminationSensor(StateFloatProperty, IlluminationProperty):
@@ -651,11 +651,6 @@ class ElectricityMeterSensor(StateFloatProperty, ElectricityMeterProperty):
         """Return the current property value without conversion."""
         return self.state.state
 
-    @property
-    def _native_unit_of_measurement(self) -> str:
-        """Return the unit the native value is expressed in."""
-        return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, UnitOfEnergy.KILO_WATT_HOUR))
-
 
 class GasMeterSensor(StateFloatProperty, GasMeterProperty):
     """Representaton of the state as a gas meter sensor."""
@@ -669,11 +664,6 @@ class GasMeterSensor(StateFloatProperty, GasMeterProperty):
         """Return the current property value without conversion."""
         return self.state.state
 
-    @property
-    def _native_unit_of_measurement(self) -> str:
-        """Return the unit the native value is expressed in."""
-        return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, UnitOfVolume.CUBIC_METERS))
-
 
 class WaterMeterSensor(StateFloatProperty, WaterMeterProperty):
     """Representaton of the state as a water meter sensor."""
@@ -686,11 +676,6 @@ class WaterMeterSensor(StateFloatProperty, WaterMeterProperty):
     def _get_native_value(self) -> float | str | None:
         """Return the current property value without conversion."""
         return self.state.state
-
-    @property
-    def _native_unit_of_measurement(self) -> str:
-        """Return the unit the native value is expressed in."""
-        return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, UnitOfVolume.CUBIC_METERS))
 
 
 class PM1DensitySensor(StateFloatProperty, PM1DensityProperty):
@@ -790,14 +775,6 @@ class TVOCConcentrationSensor(StateFloatProperty, TVOCConcentrationProperty):
 
         return self.state.attributes.get(ATTR_TVOC)
 
-    @property
-    def _native_unit_of_measurement(self) -> str | None:
-        """Return the unit the native value is expressed in."""
-        if self.state.domain == sensor.DOMAIN:
-            return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, CONCENTRATION_MICROGRAMS_PER_CUBIC_METER))
-
-        return None
-
 
 class VOCConcentrationSensor(StateFloatProperty, TVOCConcentrationProperty):
     """Representaton of the state as a VOC concentration sensor."""
@@ -813,6 +790,10 @@ class VOCConcentrationSensor(StateFloatProperty, TVOCConcentrationProperty):
     def _get_native_value(self) -> float | str | None:
         """Return the current property value without conversion."""
         return self.state.state
+
+    @property
+    def _native_unit_of_measurement(self) -> str | None:
+        return None
 
 
 class VoltageSensor(StateFloatProperty, VoltageProperty):
@@ -836,14 +817,6 @@ class VoltageSensor(StateFloatProperty, VoltageProperty):
 
         return self.state.attributes.get(ATTR_VOLTAGE)
 
-    @property
-    def _native_unit_of_measurement(self) -> str | None:
-        """Return the unit the native value is expressed in."""
-        if self.state.domain == sensor.DOMAIN:
-            return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, self.unit_of_measurement))
-
-        return None
-
 
 class ElectricCurrentSensor(StateFloatProperty, ElectricCurrentProperty):
     """Representaton of the state as a electric current sensor."""
@@ -865,14 +838,6 @@ class ElectricCurrentSensor(StateFloatProperty, ElectricCurrentProperty):
             return self.state.state
 
         return self.state.attributes.get(ATTR_CURRENT)
-
-    @property
-    def _native_unit_of_measurement(self) -> str | None:
-        """Return the unit the native value is expressed in."""
-        if self.state.domain == sensor.DOMAIN:
-            return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, self.unit_of_measurement))
-
-        return None
 
 
 class ElectricPowerSensor(StateFloatProperty, ElectricPowerProperty):
@@ -899,14 +864,6 @@ class ElectricPowerSensor(StateFloatProperty, ElectricPowerProperty):
                     return self.state.attributes.get(attribute)
 
         return self.state.state
-
-    @property
-    def _native_unit_of_measurement(self) -> str | None:
-        """Return the unit the native value is expressed in."""
-        if self.state.domain == sensor.DOMAIN:
-            return str(self.state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, self.unit_of_measurement))
-
-        return None
 
 
 class BatteryLevelPercentageSensor(StateFloatProperty, BatteryLevelPercentageProperty):

@@ -95,7 +95,11 @@ async def async_devices_action(hass: HomeAssistant, data: RequestData, payload: 
     results: list[ActionResultDevice] = []
 
     for device_id, actions in [(rd.id, rd.capabilities) for rd in request.payload.devices]:
-        device = Device(hass, data.entry_data, device_id, hass.states.get(device_id))
+        state = hass.states.get(device_id)
+        device = Device(hass, data.entry_data, device_id, state)
+
+        if state and not device.should_expose:
+            data.entry_data.mark_entity_unexposed(state.entity_id)
 
         if device.unavailable:
             hass.bus.async_fire(

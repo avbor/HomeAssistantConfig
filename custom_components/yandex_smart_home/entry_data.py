@@ -15,8 +15,9 @@ from homeassistant.const import (
     CONF_TOKEN,
     EVENT_HOMEASSISTANT_STARTED,
     EVENT_HOMEASSISTANT_STOP,
+    STATE_UNKNOWN,
 )
-from homeassistant.core import CoreState, HomeAssistant
+from homeassistant.core import CoreState, HomeAssistant, State
 from homeassistant.helpers import entity_registry as er, issue_registry as ir
 from homeassistant.helpers.entityfilter import EntityFilter
 from homeassistant.helpers.template import Template
@@ -54,6 +55,7 @@ from .const import (
     ISSUE_ID_DEPRECATED_YAML_NOTIFIER,
     ISSUE_ID_DEPRECATED_YAML_SEVERAL_NOTIFIERS,
     ISSUE_ID_MISSING_SKILL_DATA,
+    ISSUE_ID_PREFIX_UNEXPOSED_ENTITY_FOUND,
     ConnectionType,
     EntityFilterSource,
     EntityId,
@@ -95,6 +97,7 @@ class ConfigEntryData:
         """Initialize."""
         self.entry = entry
         self.entity_config: ConfigType = entity_config or {}
+        self.unexposed_entities: set[str] = set()
         self._yaml_config: ConfigType = yaml_config or {}
 
         self.component_version = "unknown"
@@ -287,6 +290,40 @@ class ConfigEntryData:
         data[CONF_LINKED_PLATFORMS] = list(self.linked_platforms - {platform})
 
         self._hass.config_entries.async_update_entry(self.entry, data=data)
+
+    def mark_entity_unexposed(self, entity_id: str) -> None:
+        """Create an issue for unexposed entity."""
+        _LOGGER.warning(
+            f"Device for {entity_id} exists in Yandex, but entity {entity_id} not exposed via integration settings. "
+            f"Please either expose the entity or delete the device from Yandex."
+        )
+
+        self.unexposed_entities.add(entity_id)
+        issue_id = ISSUE_ID_PREFIX_UNEXPOSED_ENTITY_FOUND + self.entry.options[CONF_FILTER_SOURCE]
+
+        formatted_entities: list[str] = []
+        for entity_id in sorted(self.unexposed_entities):
+            if self.entry.options[CONF_FILTER_SOURCE] == EntityFilterSource.YAML:
+                formatted_entities.append(f"* `- {entity_id}`")
+            else:
+                state = self._hass.states.get(entity_id) or State(entity_id, STATE_UNKNOWN)
+                formatted_entities.append(f"* `{state.entity_id}` ({state.name})")
+
+        ir.async_create_issue(
+            self._hass,
+            DOMAIN,
+            issue_id,
+            is_fixable=self.entry.options[CONF_FILTER_SOURCE] != EntityFilterSource.YAML,
+            is_persistent=True,
+            severity=ir.IssueSeverity.WARNING,
+            data={"entry_id": self.entry.entry_id},
+            translation_key=issue_id,
+            translation_placeholders={
+                "entry_title": self.entry.title,
+                "entities": "\n".join(formatted_entities),
+            },
+            learn_more_url="https://docs.yaha-cloud.ru/v1.0.x/config/filter/",
+        )
 
     async def _async_setup_notifiers(self, *_: Any) -> None:
         """Set up notifiers."""

@@ -312,4 +312,4 @@ class LightState(Protocol):
     @property
     def _solid_effect_supported(self) -> bool:
         """Check if the solid light effect is supported by the state."""
-        return SOLID_LIGHT_EFFECT in self.state.attributes.get(ATTR_EFFECT_LIST, [])
+        return SOLID_LIGHT_EFFECT in (self.state.attributes.get(ATTR_EFFECT_LIST) or [])

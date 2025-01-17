@@ -28,8 +28,6 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.setup import async_setup_component
 import voluptuous as vol
 
-from custom_components.yandex_smart_home.helpers import SmartHomePlatform
-
 from . import DOMAIN, cloud
 from .const import (
     CLOUD_BASE_URL,
@@ -49,6 +47,7 @@ from .const import (
     ConnectionType,
     EntityFilterSource,
 )
+from .helpers import SmartHomePlatform
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigFlowContext  # noqa: F401

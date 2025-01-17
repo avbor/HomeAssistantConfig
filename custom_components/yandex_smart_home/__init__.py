@@ -36,6 +36,7 @@ from .const import (
 from .entry_data import ConfigEntryData
 from .helpers import SmartHomePlatform
 from .http import async_register_http
+from .repairs import delete_unexposed_entity_found_issues
 
 if TYPE_CHECKING:
     from .cloud_stream import CloudStreamManager
@@ -123,11 +124,13 @@ class YandexSmartHome:
 
         self._entry_datas[entry.entry_id] = await data.async_setup()
         entry.async_on_unload(entry.add_update_listener(_async_entry_update_listener))
+        delete_unexposed_entity_found_issues(self._hass)
 
         return True
 
     async def async_unload_entry(self, entry: ConfigEntry) -> bool:
         """Unload a config entry."""
+        delete_unexposed_entity_found_issues(self._hass)
         data = self.get_entry_data(entry)
         await data.async_unload()
         return True

@@ -124,4 +124,5 @@ class PressureConverter(BaseUnitConverter):
         UnitOfPressure.INHG,
         UnitOfPressure.PSI,
         UnitOfPressure.MMHG,
+        UnitOfPressure.ATM,
     }
