@@ -41,7 +41,6 @@ from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.switch import SwitchDeviceClass
 from homeassistant.const import (
     ATTR_DEVICE_CLASS,
-    CLOUD_NEVER_EXPOSED_ENTITIES,
     CONF_DEVICE_CLASS,
     CONF_NAME,
     CONF_ROOM,
@@ -292,15 +291,6 @@ class Device:
     @property
     def should_expose(self) -> bool:
         """Test if the device should be exposed."""
-        if self.unavailable:
-            return False
-
-        if not self.type:
-            return False
-
-        if self.id in CLOUD_NEVER_EXPOSED_ENTITIES:
-            return False
-
         return self._entry_data.should_expose(self.id)
 
     @property
@@ -314,7 +304,7 @@ class Device:
         return self._state.state == STATE_UNAVAILABLE
 
     @property
-    def type(self) -> DeviceType | None:
+    def type(self) -> DeviceType:
         """Return device type."""
         if user_type := self._config.get(CONF_TYPE):
             return DeviceType(user_type)
@@ -322,7 +312,13 @@ class Device:
         domain = self._state.domain
         device_class: str = self._config.get(CONF_DEVICE_CLASS, self._state.attributes.get(ATTR_DEVICE_CLASS, ""))
 
-        return _DEVICE_CLASS_TO_DEVICE_TYPES.get((domain, device_class), _DOMAIN_TO_DEVICE_TYPES.get(domain))
+        if device_class_type := _DEVICE_CLASS_TO_DEVICE_TYPES.get((domain, device_class)):
+            return device_class_type
+
+        if domain_type := _DOMAIN_TO_DEVICE_TYPES.get(domain):
+            return domain_type
+
+        return DeviceType.OTHER
 
     async def describe(self) -> DeviceDescription | None:
         """Return description of the device."""
@@ -491,10 +487,8 @@ async def async_get_devices(hass: HomeAssistant, entry_data: ConfigEntryData) ->
 
     for state in hass.states.async_all():
         device = Device(hass, entry_data, state.entity_id, state)
-        if not device.should_expose:
-            continue
-
-        devices.append(device)
+        if device.should_expose and not device.unavailable:
+            devices.append(device)
 
     return devices
 

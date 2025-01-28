@@ -1,11 +1,6 @@
 import logging
 
-from homeassistant.components.vacuum import (
-    STATE_CLEANING,
-    StateVacuumEntity,
-    VacuumEntityFeature,
-)
-from homeassistant.const import STATE_IDLE, STATE_PAUSED
+from homeassistant.components.vacuum import StateVacuumEntity, VacuumEntityFeature
 
 from .core.entity import YandexEntity
 from .hass import hass_utils
@@ -13,6 +8,35 @@ from .hass import hass_utils
 _LOGGER = logging.getLogger(__name__)
 
 INCLUDE_TYPES = ("devices.types.vacuum_cleaner",)
+
+
+try:
+    # https://developers.home-assistant.io/blog/2024/12/08/new-vacuum-state-property/
+    from homeassistant.components.vacuum import VacuumActivity
+
+    class VacuumBase(StateVacuumEntity):
+        def set_cleaning_state(self):
+            self._attr_activity = VacuumActivity.CLEANING
+
+        def set_idle_state(self):
+            self._attr_activity = VacuumActivity.IDLE
+
+        def set_paused_state(self):
+            self._attr_activity = VacuumActivity.PAUSED
+
+except ImportError:
+    from homeassistant.components.vacuum import STATE_CLEANING
+    from homeassistant.const import STATE_IDLE, STATE_PAUSED
+
+    class VacuumBase(StateVacuumEntity):
+        def set_cleaning_state(self):
+            self._attr_state = STATE_CLEANING
+
+        def set_idle_state(self):
+            self._attr_state = STATE_IDLE
+
+        def set_paused_state(self):
+            self._attr_state = STATE_PAUSED
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -24,7 +48,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 # noinspection PyAbstractClass
-class YandexVacuum(StateVacuumEntity, YandexEntity):
+class YandexVacuum(VacuumBase, YandexEntity):
     pause_value: bool = None
     on_value: bool = None
 
@@ -60,23 +84,23 @@ class YandexVacuum(StateVacuumEntity, YandexEntity):
             self._attr_fan_speed = capabilities["work_speed"]
 
         if self.pause_value:
-            self._attr_state = STATE_PAUSED
+            self.set_paused_state()
         elif self.on_value:
-            self._attr_state = STATE_CLEANING
+            self.set_cleaning_state()
         else:
-            self._attr_state = STATE_IDLE
+            self.set_idle_state()
 
     async def async_start(self):
-        await self.quasar.device_action(self.device, "on", True)
+        await self.device_action("on", True)
 
     async def async_stop(self, **kwargs):
-        await self.quasar.device_action(self.device, "on", False)
+        await self.device_action("on", False)
 
     async def async_pause(self):
-        await self.quasar.device_action(self.device, "pause", True)
+        await self.device_action("pause", True)
 
     async def async_return_to_base(self, **kwargs):
         await self.async_stop()
 
     async def async_set_fan_speed(self, fan_speed, **kwargs):
-        await self.quasar.device_action(self.device, "work_speed", fan_speed)
+        await self.device_action("work_speed", fan_speed)

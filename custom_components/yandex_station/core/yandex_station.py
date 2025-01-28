@@ -65,6 +65,8 @@ LOCAL_FEATURES = (
     | MediaPlayerEntityFeature.PLAY
     | MediaPlayerEntityFeature.PAUSE
     | MediaPlayerEntityFeature.SELECT_SOURCE
+    | MediaPlayerEntityFeature.REPEAT_SET
+    | MediaPlayerEntityFeature.SHUFFLE_SET
 )
 
 SOUND_MODE1 = "Произнеси текст"
@@ -748,6 +750,14 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         else:
             await self.async_media_pause()
 
+    async def async_set_repeat(self, repeat: RepeatMode):
+        modes = {RepeatMode.ALL: "All", RepeatMode.ONE: "One"}
+        mode = modes.get(repeat, "None")
+        await self.glagol.send({"command": "repeat", "mode": mode})
+
+    async def async_set_shuffle(self, shuffle: bool) -> None:
+        await self.glagol.send({"command": "shuffle", "enable": shuffle})
+
     async def async_update(self):
         # update online only while cloud connected
         if self.local_state:
@@ -924,7 +934,7 @@ class YandexStation(YandexStationBase):
 
         self._attr_source_list += list(self.sync_sources.keys())
 
-    async def async_select_source(self, source):
+    async def async_select_source(self, source: str):
         if self.sync_mute is True:
             # включаем звук колонке, если выключали его
             self.hass.create_task(self.async_mute_volume(False))
@@ -937,7 +947,12 @@ class YandexStation(YandexStationBase):
 
         await super().async_select_source(source)
 
-        self.sync_enabled = self.sync_sources and source in self.sync_sources
+        if self.sync_sources and (source := self.sync_sources.get(source)):
+            self.sync_enabled = True
+            if "platform" not in source:
+                source["platform"] = utils.get_platform(self.hass, source["entity_id"])
+        else:
+            self.sync_enabled = False
 
     @callback
     def async_set_state(self, data: dict):
@@ -984,6 +999,22 @@ class YandexStation(YandexStationBase):
 
         source = self.sync_sources[self._attr_source]
 
+        if source.get("platform") == "apple_tv":
+            # For AirPlay receivers is not possible to change media_content_id, while
+            # streaming to device is in progress. So we need to send media_stop command
+            # to media_player instance and after streaming is stopped we can send to
+            # device new media_content_id. If we don't do this we got error "already
+            # streaming to device".
+            # Error provided by pyatv component https://github.com/postlund/pyatv
+            await self.hass.services.async_call(
+                "media_player",
+                "media_stop",
+                {"entity_id": source["entity_id"]},
+            )
+            # After command is sended, we need to wait while receiver accept command and
+            # stop streaming.
+            await asyncio.sleep(1)
+
         try:
             info = await get_file_info(
                 self.quasar.session,
@@ -1003,11 +1034,18 @@ class YandexStation(YandexStationBase):
             ),
             "media_content_type": source.get("media_content_type", "music"),
             "entity_id": source["entity_id"],
-            "extra": {
-                "title": f"{self._attr_media_artist} - {self._attr_media_title}",
-                "thumb": self._attr_media_image_url,
-            },
         }
+
+        if source.get("platform") == "cast":
+            data["extra"] = {
+                "stream_type": "BUFFERED",
+                "metadata": {
+                    "metadataType": 3,
+                    "title": self._attr_media_title,
+                    "artist": self._attr_media_artist,
+                    "images": [{"url": self._attr_media_image_url}],
+                },
+            }
 
         await self.hass.services.async_call("media_player", "play_media", data)
 

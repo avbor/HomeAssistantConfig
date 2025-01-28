@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 import voluptuous as vol
 from homeassistant.components.binary_sensor import HomeAssistant  # important for tests
@@ -29,6 +30,7 @@ from homeassistant.helpers import (
     device_registry as dr,
     discovery,
 )
+from homeassistant.helpers.event import async_track_time_interval
 
 from .core import utils
 from .core.const import (
@@ -115,10 +117,10 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
     config: dict = hass_config.get(DOMAIN) or {}
     hass.data[DOMAIN] = {DATA_CONFIG: config, DATA_SPEAKERS: {}}
 
-    if CONF_RECOGNITION_LANG in config:
-        utils.fix_recognition_lang(
-            hass, "frontend_latest", config[CONF_RECOGNITION_LANG]
-        )
+    # if CONF_RECOGNITION_LANG in config:
+    #     utils.fix_recognition_lang(
+    #         hass, "frontend_latest", config[CONF_RECOGNITION_LANG]
+    #     )
 
     YandexSession.domain = config.get(CONF_DOMAIN)
     YandexSession.proxy = config.get(CONF_PROXY)
@@ -133,6 +135,7 @@ async def async_setup(hass: HomeAssistant, hass_config: dict):
             from . import conversation
 
             SPEAKER_PLATFORMS.append("conversation")
+            PLATFORMS.append("conversation")
         except ImportError as e:
             _LOGGER.warning(repr(e))
 
@@ -168,7 +171,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     quasar = YandexQuasar(yandex)
     await quasar.init()
 
-    hass_utils.load_fake_devies(hass, quasar)
+    await hass_utils.load_fake_devies(hass, quasar)
 
     # entry.unique_id - user login
     hass.data[DOMAIN][entry.unique_id] = quasar
@@ -186,10 +189,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     quasar.start()
 
-    platforms = (
-        PLATFORMS if hass_utils.incluce_devices(hass, entry) else SPEAKER_PLATFORMS
-    )
-    setattr(quasar, "platforms", platforms)
+    if hass_utils.incluce_devices(hass, entry):
+        quasar.platforms = platforms = PLATFORMS
+        entry.async_on_unload(
+            async_track_time_interval(
+                hass, quasar.devices_passive_update, timedelta(minutes=5)
+            )
+        )
+    else:
+        quasar.platforms = platforms = SPEAKER_PLATFORMS
+
     await hass.config_entries.async_forward_entry_setups(entry, platforms)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 

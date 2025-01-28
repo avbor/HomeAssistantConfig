@@ -427,11 +427,9 @@ class Notifier(ABC):
         self._debug_log("Reporting initial states")
         for state in self._hass.states.async_all():
             device = Device(self._hass, self._entry_data, state.entity_id, state)
-            if not device.should_expose:
-                continue
-
-            await self._pending.async_add(device.get_capabilities(), [])
-            await self._pending.async_add([p for p in device.get_properties() if p.heartbeat_report], [])
+            if device.should_expose:
+                await self._pending.async_add(device.get_capabilities(), [])
+                await self._pending.async_add([p for p in device.get_properties() if p.heartbeat_report], [])
 
         return self._schedule_report_states()
 
@@ -440,10 +438,8 @@ class Notifier(ABC):
         self._debug_log("Reporting states (heartbeat)")
         for state in self._hass.states.async_all():
             device = Device(self._hass, self._entry_data, state.entity_id, state)
-            if not device.should_expose:
-                continue
-
-            await self._pending.async_add([p for p in device.get_properties() if p.heartbeat_report], [])
+            if device.should_expose:
+                await self._pending.async_add([p for p in device.get_properties() if p.heartbeat_report], [])
 
         self._unsub_heartbeat_report = async_call_later(
             self._hass,

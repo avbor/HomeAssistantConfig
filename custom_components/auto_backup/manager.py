@@ -9,6 +9,7 @@ from homeassistant.components.hassio import (
     ATTR_FOLDERS,
     ATTR_ADDONS,
     ATTR_PASSWORD,
+    ATTR_HOMEASSISTANT_EXCLUDE_DATABASE,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_NAME, __version__
@@ -36,6 +37,7 @@ from .const import (
     ATTR_KEEP_DAYS,
     ATTR_DOWNLOAD_PATH,
     ATTR_ENCRYPTED,
+    ATTR_EXCLUDE_DATABASE,
 )
 from .handlers import HassioAPIError, HandlerBase
 
@@ -220,12 +222,17 @@ class AutoBackup:
         keep_days = data.pop(ATTR_KEEP_DAYS, None)
         download_paths: Optional[List[str]] = data.pop(ATTR_DOWNLOAD_PATH, None)
 
+        # handle exclude database
+        if data.pop(ATTR_EXCLUDE_DATABASE, False):
+            data[ATTR_HOMEASSISTANT_EXCLUDE_DATABASE] = True
+
+        # remove password if empty
+        has_password = len(data.get(ATTR_PASSWORD, "")) > 0
+        if not has_password and ATTR_PASSWORD in data:
+            del data[ATTR_PASSWORD]
+
         # support default encryption key
-        if (
-            not data.get(ATTR_PASSWORD, "")
-            and data.get(ATTR_ENCRYPTED)
-            and self._manager
-        ):
+        if not has_password and data.get(ATTR_ENCRYPTED) and self._manager:
             data[ATTR_PASSWORD] = self._manager.config.data.create_backup.password
             del data[ATTR_ENCRYPTED]
         elif ATTR_ENCRYPTED in data:
