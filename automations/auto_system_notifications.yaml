@@ -377,9 +377,10 @@
           '^sensor\..*_geocoded_location$|'
           '^sensor\.double_take_.*|'
           '^sensor\.processor_use$|'
-          '^binary_sensor.avb0r$|'
-          '^sensor.dacha_nearest_.*|'
-          '^sensor.dacha_.*_di.*'
+          '^binary_sensor\.avb0r$|'
+          '^sensor\.dacha_nearest_.*|'
+          '^sensor\.dacha_.*_di.*|'
+          '^(media_player|remote)\.xbox_ch_01'
           )
         }}
     - condition: template
