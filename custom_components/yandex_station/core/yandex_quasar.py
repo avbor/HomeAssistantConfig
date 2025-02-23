@@ -27,6 +27,8 @@ IOT_TYPES = {
     "humidity": "devices.capabilities.range",
     "ionization": "devices.capabilities.toggle",
     "backlight": "devices.capabilities.toggle",
+    # climate
+    "swing": "devices.capabilities.mode",
     # kettle:
     "keep_warm": "devices.capabilities.toggle",
     "tea_mode": "devices.capabilities.mode",
@@ -432,7 +434,8 @@ class YandexQuasar(Dispatcher):
         resp = await r.json()
         assert resp["status"] == "ok", resp
 
-        # update device state
+        await asyncio.sleep(1)
+
         device = await self.get_device(device)
         self.dispatch_update(device["id"], device)
 
