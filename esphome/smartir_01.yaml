@@ -1,18 +1,23 @@
 substitutions:
   board_name: smartir_01
-  esp_platform: ESP8266
   esp_board: esp01_1m
   room_name: nursery
 
 packages:
   wifi: !include common/wifi.yaml
-  device_base: !include common/device_base.yaml
+  device_base: !include common/device_base_8266.yaml
 
 esphome:
   includes: 
     - include/daikin_ir_v2.h
   libraries:
     - IRremoteESP8266
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/robertklep/esphome-custom-component
+    components: [ custom, custom_component ]
 
 # Use the blue LED as a status light.
 #   Blink slowly = Temporary issue (WiFi/MQTT disconnected, sensor unavailable, ...)

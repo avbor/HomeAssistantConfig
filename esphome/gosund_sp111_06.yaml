@@ -1,6 +1,5 @@
 substitutions:
   board_name: gosund_sp111_06
-  esp_platform: ESP8266
   esp_board: esp8285
   room_name: Kitchen
   # Higher value gives lower watt readout
@@ -10,7 +9,7 @@ substitutions:
 
 packages:
   wifi: !include common/wifi.yaml
-  device_base: !include common/device_base.yaml
+  device_base: !include common/device_base_8266.yaml
 
 esphome:
   on_boot:

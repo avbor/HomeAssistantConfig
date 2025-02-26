@@ -44,11 +44,12 @@ substitutions:
 packages:
   wifi: !include common/wifi.yaml
 
-esphome:
-  name: domofon
-  platform: ESP8266
+esp8266:
   board: $board
-  esp8266_restore_from_flash: true
+  restore_from_flash: True
+
+esphome:
+  name: ${board_name}
 
 logger:
   baud_rate: 0

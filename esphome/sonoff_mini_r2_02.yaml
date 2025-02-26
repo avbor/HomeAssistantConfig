@@ -1,12 +1,11 @@
 substitutions:
   board_name: sonoff_mini_r2_02
-  esp_platform: ESP8266
   esp_board: esp8285
   room_name: Hallway
 
 packages:
   wifi: !include common/wifi.yaml
-  device_base: !include common/device_base.yaml
+  device_base: !include common/device_base_8266.yaml
 
 esphome:
   on_boot:

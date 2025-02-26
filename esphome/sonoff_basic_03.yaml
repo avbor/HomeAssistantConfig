@@ -1,12 +1,11 @@
 substitutions:
   board_name: sonoff_basic_03
-  esp_platform: ESP8266
   esp_board: esp01_1m
   room_name: Country House
 
 packages:
   wifi: !include common/wifi_ch.yaml
-  device_base: !include common/device_base.yaml
+  device_base: !include common/device_base_8266.yaml
 
 esphome:
   on_boot:
