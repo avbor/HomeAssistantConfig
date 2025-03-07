@@ -72,20 +72,24 @@ cards:
             entity: light.dacha_parkovka
             name: Парковка
             icon: mdi:light-flood-down
-            #hide_state: true
+            hide_state: true
             tap_action:
               action: toggle
             hold_action:
               action: more-info
+            features:
+              - type: "toggle"
           - type: tile
             entity: light.dacha_dvor
             name: Двор
             icon: mdi:light-flood-down
-            #hide_state: true
+            hide_state: true
             tap_action:
               action: toggle
             hold_action:
               action: more-info
+            features:
+              - type: "toggle"
 #      - type: entities
 #        entities:
 #          - entity: light.dacha_parkovka
