@@ -380,7 +380,8 @@
           '^binary_sensor\.avb0r$|'
           '^sensor\.dacha_nearest_.*|'
           '^sensor\.dacha_.*_di.*|'
-          '^(media_player|remote)\.xbox_ch_01'
+          '^(media_player|remote)\.xbox_ch_01|'
+          '^(media_player|remote)\.xbox_v_gostinoi'
           )
         }}
     - condition: template
