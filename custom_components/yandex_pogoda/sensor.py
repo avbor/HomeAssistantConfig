@@ -35,6 +35,8 @@ from .const import (
     ATTR_API_WIND_GUST,
     ATTR_API_YA_CONDITION,
     ATTR_MIN_FORECAST_TEMPERATURE,
+    ATTR_API_SUNRISE_BEGIN_TIME,
+    ATTR_API_SUNRISE_END_TIME,
     ATTRIBUTION,
     DOMAIN,
     ENTRY_NAME,
@@ -137,6 +139,20 @@ WEATHER_SENSORS: tuple[SensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         entity_registry_enabled_default=True,
         icon="mdi:thermometer-chevron-down",
+    ),
+    SensorEntityDescription(
+        key=ATTR_API_SUNRISE_BEGIN_TIME,
+        name="Next sunrise",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=True,
+    ),
+    SensorEntityDescription(
+        key=ATTR_API_SUNRISE_END_TIME,
+        name="Next sunset",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=True,
     ),
 )
 

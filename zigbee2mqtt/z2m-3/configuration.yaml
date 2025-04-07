@@ -27,8 +27,8 @@ advanced:
   log_symlink_current: true
 mqtt:
   server: mqtt://core-mosquitto:1883
-  user: '!secrets.yaml mqtt_user'
-  password: '!secrets.yaml mqtt_pass'
+  user: z2m_3_mqtt
+  password: qyLQYvzLY4UG21ZxBSVRubAn1xV3WgbNOvItm10YE1qmCmGszxGOAgmJx7D1fUIX
   base_topic: zigbee2mqtt_3
 serial:
   port: tcp://192.168.10.206:8888

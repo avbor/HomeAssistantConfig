@@ -8,6 +8,7 @@ import pickle
 import zlib
 
 from collections.abc import Callable
+from datetime import datetime
 
 from homeassistant.components.weather import (
     ATTR_WEATHER_TEMPERATURE_UNIT,
@@ -36,6 +37,7 @@ ATTR_API_WIND_BEARING = "windAngle"
 ATTR_API_DAYTIME = "daytime"
 ATTR_API_CONDITION = "condition"
 ATTR_API_IMAGE = "icon"
+ATTR_API_POLAR = "polar"
 ATTR_API_SERVER_TIME = "serverTime"
 ATTR_API_TIME = "time"
 ATTR_API_SUNRISE_BEGIN_TIME = "sunriseBeginTime"
@@ -218,3 +220,28 @@ def decompress_data(compressed: str | None) -> dict:
         return pickle.loads(zlib.decompress(base64.b64decode(compressed)))
     except TypeError:  # for backward compatibility
         return {}
+
+
+def is_daytime(
+    hour: datetime,
+    day: datetime,
+    sunrise_begin: datetime,
+    sunset_end: datetime,
+    polar: str,
+) -> bool:
+    """returns whether it is daytime for a given hour of the day"""
+
+    if polar:
+        if day == sunrise_begin and day == sunset_end:
+            return polar == "DAY"
+
+        if day == sunrise_begin:
+            return hour < sunset_end
+
+        if day == sunset_end:
+            return hour >= sunrise_begin
+
+    if sunrise_begin <= sunset_end:
+        return hour >= sunrise_begin and hour < sunset_end
+    else:
+        return hour < sunset_end or hour >= sunrise_begin

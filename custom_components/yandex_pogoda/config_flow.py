@@ -35,7 +35,7 @@ class YandexWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow for this handler."""
-        return YandexWeatherOptionsFlow(config_entry)
+        return YandexWeatherOptionsFlow()
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -81,9 +81,9 @@ class YandexWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class YandexWeatherOptionsFlow(config_entries.OptionsFlow):
     """Changing options flow."""
 
-    def __init__(self, config_entry):
-        """Initialize options flow."""
-        self.config_entry = config_entry
+    @property
+    def config_entry(self):
+        return self.hass.config_entries.async_get_entry(self.handler)
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
