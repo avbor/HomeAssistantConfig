@@ -10,7 +10,6 @@
     entity_id:
       - person.alexander
       - person.irina
-      - person.galina
       - person.tatiana
       - person.olga
       - person.egor
