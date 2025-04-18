@@ -98,7 +98,8 @@ WEATHER_SENSORS: tuple[SensorEntityDescription, ...] = (
         icon="mdi:compass-rose",
         translation_key=ATTR_API_WIND_BEARING,
         native_unit_of_measurement=DEGREE,
-        state_class=SensorStateClass.MEASUREMENT,
+        device_class=SensorDeviceClass.WIND_DIRECTION,
+        state_class=SensorStateClass.MEASUREMENT_ANGLE,
     ),
     SensorEntityDescription(
         key=ATTR_WIND_INTERCARDINAL_DIRECTION,
@@ -214,7 +215,11 @@ class YandexWeatherSensor(SensorEntity, CoordinatorEntity, RestoreEntity):
             self._attr_available = False
         else:
             self._attr_available = True
-            if self.entity_description.key == ATTR_API_SERVER_TIME:
+            if self.entity_description.key in {
+                ATTR_API_SERVER_TIME,
+                ATTR_API_SUNRISE_BEGIN_TIME,
+                ATTR_API_SUNRISE_END_TIME,
+            }:
                 self._attr_native_value = parser.parse(state.state)
             elif self.entity_description.key in UNIT_CONVERTOR_TYPE_MAP:
                 self._attr_native_value = str(
