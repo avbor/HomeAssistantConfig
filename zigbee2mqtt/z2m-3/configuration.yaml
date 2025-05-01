@@ -44,4 +44,6 @@ devices:
     friendly_name: Кнопка Aqara Дача 02
   '0xa4c13806f468cf98':
     friendly_name: Розетка NAS-WR01B на Даче в Туалете 1 Этаж
+  '0x00158d000802df91':
+    friendly_name: '0x00158d000802df91'
 version: 4
