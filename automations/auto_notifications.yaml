@@ -180,25 +180,6 @@
         message: |
           Температура воды в бойлере *{{ trigger.to_state.state }}*°C
 
-- alias: Huawei E5372 - New Unread SMS Alert
-  id: a3215213-fe61-43f1-8eb4-ea572a4acee2
-  triggers:
-    - trigger: state
-      entity_id: sensor.huawei_e5372_sms_unread
-  conditions:
-    - condition: template
-      value_template: >
-        {% set ignore = ['unknown', 'unavailable', 'none', None, null, '', 'null'] %}
-        {{ trigger.to_state.state not in ignore and trigger.from_state.state != '' }}
-    - condition: template
-      value_template: >
-        {{ (trigger.to_state.state | int) > (trigger.from_state.state | int) }}
-  actions:
-    - action: notify.telegram_group_system
-      data:
-        message: |
-          _Huawei E5372_, Непрочитанных SMS: *{{ states('sensor.huawei_e5372_sms_unread') }}*, новых: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*
-
 - alias: Kettle - Boil Finished Notification
   id: c5eaa742-7ea5-4c0b-8d43-d3ce69232a3e
   triggers:

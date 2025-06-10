@@ -1,0 +1,23 @@
+{
+  "domain": "ha_keenetic",
+  "name": "Keenetic Router",
+  "codeowners": ["@akinin"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/akinin/ha_keenetic",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/akinin/ha_keenetic/issues",
+  "requirements": ["pyqrcode==1.2.1", "pypng==0.20220715.0"],
+  "ssdp": [
+      {
+        "st": "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+        "manufacturer": "Keenetic Ltd."
+      },
+      {
+        "st": "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+        "manufacturer": "ZyXEL Communications Corp."
+      }
+    ],
+    "version": "2.0.0-rc2"
+  }

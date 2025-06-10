@@ -6,17 +6,25 @@ cards:
     cards:
       - type: markdown
         content: >
-          ### <center>Huawei LTE</center>
+          ### <center>LTE Modem</center>
       - type: entities
         show_header_toggle: false
         entities:
-          - entity: binary_sensor.huawei_e5372_mobile_connection
+          - entity: sensor.ch_lte_modem_operator
+            name: Operator
+          - entity: sensor.ch_lte_modem_phone_number
+            name: Phone number
+          - entity: sensor.ch_lte_modem_mobile_connection
             name: "Mobile Connection"
-          - entity: sensor.huawei_e5372_rssi
+          - entity: sensor.ch_lte_modem_rssi
             name: "RSSI"
-          - entity: sensor.huawei_e5372_sinr
+          - entity: sensor.ch_lte_modem_rsrp
+            name: RSRP
+          - entity: sensor.ch_lte_modem_sinr
             name: "SINR"
-          - entity: sensor.huawei_e5372_sms_unread
+          - entity: sensor.ch_lte_modem_cell_distance
+            name: Cell Distance
+          - entity: sensor.ch_lte_modem_unread_sms_count
             name: "Unread SMS"
   - type: vertical-stack
     cards:

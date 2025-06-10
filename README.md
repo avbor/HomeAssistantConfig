@@ -61,8 +61,7 @@ _Main site (city apartment):_
 
 _Remote site (country house):_
 
-- Huawei E5372 as LTE Modem with 4G Antenna (Baltic Signal [OMEGA](https://baltic-signal.ru/catalog/antennas/antennas-4g/antenna-baltic-signal-omega-3g-4g/))\
-  Integration "Huawei LTE"
+- DW5821e Snapdragon X20 LTE Modem with 4G Antenna (Baltic Signal [OMEGA](https://baltic-signal.ru/catalog/antennas/antennas-4g/antenna-baltic-signal-omega-3g-4g/))\
 
 - Keenetic Giga [KN-1010](https://keenetic.ru/ru/keenetic-giga-kn-1010) as Router, WiFi Mesh Controller, WireGuard VPN Client and Access Point
 

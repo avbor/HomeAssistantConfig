@@ -1,0 +1,134 @@
+#################################################
+# Package for Contry House Keenetic Devices
+#################################################
+
+ch_keenetic_pack:
+
+  # Rest
+  rest:
+    - resource: "http://192.168.10.1:81/rci/show/interface?name=UsbQmi0"
+      sensor:
+
+        - name: "CH LTE Modem RSSI"
+          unique_id: c8a6677e-7bb2-40ac-92a0-ecfca4b49bc4
+          value_template: "{{ value_json.rssi }}"
+          unit_of_measurement: dBm
+          device_class: signal_strength
+
+        - name: "CH LTE Modem RSRP"
+          unique_id: 9346a268-ff1b-4847-ae09-3f72dca409ae
+          value_template: "{{ value_json.rsrp }}"
+          unit_of_measurement: dBm
+          device_class: signal_strength
+
+        - name: "CH LTE Modem SINR"
+          unique_id: 40b7c479-8f96-46ad-b8ee-e7e8939bff2c
+          value_template: "{{ value_json.cinr }}"
+          unit_of_measurement: dBm
+          device_class: signal_strength
+
+        - name: "CH LTE Modem RSRQ"
+          unique_id: d1789e2b-6b5d-47e5-b22e-eb84915693ae
+          value_template: "{{ value_json.rsrq }}"
+          unit_of_measurement: dBm
+          device_class: signal_strength
+
+        - name: "CH LTE Modem Signal Level"
+          unique_id:  b24cd295-e529-4f9f-80c3-9a539d5e7845
+          value_template: '{{ value_json["signal-level"] }}'
+
+        - name: "CH LTE Modem Mobile Connection"
+          unique_id: 74ef6b85-a212-47ab-89bf-35e639626bed
+          value_template: "{{ value_json.mobile }}"
+
+        - name: "CH LTE Modem Operator"
+          unique_id: 41337145-4c5b-4d0b-a3f5-08840bf8e6d1
+          value_template: "{{ value_json.operator }}"
+
+        - name: "CH LTE Modem Phone Number"
+          unique_id: 791b9bc1-ddcb-44ff-8982-d4ec4243d763
+          value_template: '{{ value_json["phone-number"] }}'
+
+        - name: "CH LTE Modem Cell Distance"
+          unique_id: 50f07a6b-5769-4fa6-81f6-16a78e7ef73b
+          value_template: "{{ value_json.distance }}"
+          unit_of_measurement: m
+          device_class: distance
+
+    - resource: "http://192.168.10.1:81/rci/sms/list?interface=UsbQmi0"
+      sensor:
+
+        - name: "CH LTE Modem SMS Count"
+          unique_id: 3292dcaa-9463-4888-971c-a820cec67dea
+          value_template: '{{ value_json["messages-count"] }}'
+
+        - name: "CH LTE Modem Unread SMS Count"
+          unique_id: 571a459a-48d5-4025-9e37-46f59ae42d20
+          value_template: >
+            {% set ns = namespace(unread = 0) %}
+            {% if "messages" in value_json %}
+              {% for i in value_json.messages %}
+                {% if value_json.messages[i].read == false %}
+                  {% set ns.unread = ns.unread + 1 %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            {{ ns.unread }}
+
+    - resource: "http://192.168.10.1:81/rci/ussd/send"
+
+  # Rest command
+  rest_command:
+
+    ch_lte_modem_balance_send_ussd:
+      url: http://192.168.10.1:81/rci/ussd/send
+      method: POST
+      content_type: "application/json"
+      payload: '{"interface":"UsbQmi0","request":"*100#"}'
+
+    ch_lte_modem_balance_get_ussd:
+      url: http://192.168.10.1:81/rci/ussd/send
+      method: GET
+
+
+  # Automations
+  automation:
+
+    - alias: CH LTE Modem Get Balance
+      id: a5ff7877-9577-42c4-a711-8068eaeb0e00
+      triggers:
+        - trigger: time_pattern
+          hours: "/8"
+      actions:
+        - action: rest_command.ch_lte_modem_balance_send_ussd
+          response_variable: ussd_send_response
+        - if: "{{ ussd_send_response.content.continued == true }}"
+          then:
+            - delay:
+                seconds: 5
+            - action: rest_command.ch_lte_modem_balance_get_ussd
+              response_variable: ussd_get_response
+            - action: telegram_bot.send_message
+              data:
+                target: !secret tlg_group_country_house
+                message: "{{ ussd_get_response.content.response }}"
+
+    - alias: CH LTE Modem - New Unread SMS Alert
+      id: a3215213-fe61-43f1-8eb4-ea572a4acee2
+      triggers:
+        - trigger: state
+          entity_id: sensor.ch_lte_modem_unread_sms_count
+      conditions:
+        - condition: template
+          value_template: >
+            {% set ignore = ['unknown', 'unavailable', 'none', None, null, '', 'null'] %}
+            {{ trigger.to_state.state not in ignore and trigger.from_state.state != '' }}
+        - condition: template
+          value_template: >
+            {{ (trigger.to_state.state | int) > (trigger.from_state.state | int) }}
+      actions:
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_country_house
+            message: |
+              _LTE Modem_, Непрочитанных SMS: *{{ states('sensor.ch_lte_modem_unread_sms_count') }}*, новых: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*

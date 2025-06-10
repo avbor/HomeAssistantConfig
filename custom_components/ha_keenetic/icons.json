@@ -1,0 +1,89 @@
+{
+    "entity": {
+        "switch": {
+            "wifi_interface": {
+                "default": "mdi:wifi",
+                "state": {
+                    "off": "mdi:wifi-off",
+                    "on": "mdi:wifi"
+                }
+            },
+            "vpn_interface": {
+                "default": "mdi:vpn",
+                "state": {
+                    "off": "mdi:cancel",
+                    "on": "mdi:vpn"
+                }
+            },
+            "interface": {
+                "default": "mdi:ethernet",
+                "state": {
+                    "off": "mdi:ethernet-off",
+                    "on": "mdi:ethernet"
+                }
+            },
+            "port_forwarding": {
+                "default": "mdi:swap-horizontal-bold",
+                "state": {
+                    "off": "mdi:cancel",
+                    "on": "mdi:swap-horizontal-bold"
+                }
+            },
+            "web_configurator_access": {
+                "default": "mdi:web",
+                "state": {
+                    "off": "mdi:web-off",
+                    "on": "mdi:web"
+                }
+            },
+            "usb_port": {
+                "default": "mdi:usb-flash-drive",
+                "state": {
+                    "off": "mdi:usb-flash-drive-outline",
+                    "on": "mdi:usb-flash-drive"
+                }
+            }
+        },
+        "sensor": {
+            "hostname": {
+                "default": "mdi:router"
+            },
+            "domainname": {
+                "default": "mdi:domain"
+            },
+            "clients_wifi": {
+                "default": "mdi:sitemap-outline"
+            },
+            "memory": {
+                "default": "mdi:memory"
+            },
+            "cpuload": {
+                "default": "mdi:cpu-32-bit"
+            },
+            "wan_ip_adress": {
+                "default": "mdi:ip-network"
+            },
+            "mesh_node": {
+                "default": "mdi:access-point",
+                "state": {
+                    "connected": "mdi:access-point",
+                    "disconnected": "mdi:access-point-off",
+                    "unknown": "mdi:access-point-remove"
+                }
+            }
+        },
+        "binary_sensor": {
+            "connected_to_media": {
+                "default": "mdi:play-network",
+                "state": {
+                    "off": "mdi:play-network-outline",
+                    "on": "mdi:play-network"
+                }
+            }
+        }
+    },
+    "services": {
+        "request_api": "mdi:api",
+        "backup_router": "mdi:file-document-plus"
+    }
+}

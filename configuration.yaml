@@ -142,9 +142,6 @@ recorder:
       - sun.sun
       - counter.syslog_errors
       - counter.syslog_warnings
-      - sensor.huawei_e5372_current_connection_duration
-      - sensor.huawei_e5372_rssi
-      - sensor.huawei_e5372_sinr
       - sensor.energy_flat_main_voltage
       - sensor.energy_flat_main_current
       - sensor.sonoff_1001322978_current
