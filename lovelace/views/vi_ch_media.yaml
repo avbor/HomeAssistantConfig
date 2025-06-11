@@ -1,0 +1,32 @@
+title: Media
+path: ch-media
+icon: mdi:television-play
+cards:
+      # --- Yandex
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Yandex</center>
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.yandex_station_mini2_dacha_gostinaia
+            state_not: "unavailable"
+        card:
+          type: media-control
+          entity: media_player.yandex_station_mini2_dacha_gostinaia
+      # --- Microsoft
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Microsoft</center>
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: media_player.xbox_ch_01
+            state_not: "unavailable"
+        card:
+          type: media-control
+          entity: media_player.xbox_ch_01

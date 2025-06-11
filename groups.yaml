@@ -47,6 +47,11 @@ all_yandex_stations:
     - media_player.yandex_station_mini2_spalnia
     - media_player.yandex_station_lite_prikhozhaya
 
+all_ch_yandex_stations:
+  name: Все Яндекс станции на Даче
+  entities:
+    - media_player.yandex_station_mini2_dacha_gostinaia
+
 all_xbox:
     name: Все XBOX'ы
     entities:

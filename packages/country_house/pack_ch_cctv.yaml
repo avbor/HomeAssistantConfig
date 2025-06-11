@@ -44,14 +44,14 @@ ch_cctv_pack:
           ssh -i /config/.ssh/id_ecdsa
           -o 'StrictHostKeyChecking=no'
           ha@srv01.home.intra
-          "yq -i '.cameras.reolinkcam_02.enabled = True' /opt/docker-compose/frigate/config/config.yml &&
-          docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
+          "yq -i '.cameras.reolinkcam_02.enabled = True' /mnt/docker-compose/frigate/config/config.yml &&
+          docker compose -f /mnt/docker-compose/frigate/docker-compose.yaml restart"
         command_off: >-
           ssh -i /config/.ssh/id_ecdsa
           -o 'StrictHostKeyChecking=no'
           ha@srv01.home.intra
-          "yq -i '.cameras.reolinkcam_02.enabled = False' /opt/docker-compose/frigate/config/config.yml &&
-          docker compose -f /opt/docker-compose/frigate/docker-compose.yaml restart"
+          "yq -i '.cameras.reolinkcam_02.enabled = False' /mnt/docker-compose/frigate/config/config.yml &&
+          docker compose -f /mnt/docker-compose/frigate/docker-compose.yaml restart"
         command_state: >-
           curl -s -X GET http://srv01.home.intra:5000/api/config | jq '.cameras.reolinkcam_02.enabled'
         value_template: >-
