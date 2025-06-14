@@ -113,12 +113,12 @@
     - action: telegram_bot.send_photo
       data:
         target: "{{ trigger.event.data.user_id }}"
-        file: '/config/www/weather_icons/{{ states("weather.yandex_weather_danilovskii") }}.webp'
+        file: '/config/www/weather_icons/{{ states("weather.danilovskii") }}.webp'
         caption: |
-          Температура {{ states('sensor.yandex_weather_danilovskii_temperature') }}°C
-          Ощущается как {{ states('sensor.yandex_weather_danilovskii_feels_like_temperature') }}°C
-          Влажность {{ states('sensor.yandex_weather_danilovskii_humidity') }}%
-          Давление {{ states('sensor.yandex_weather_danilovskii_pressure') }} hPa ({{ states('sensor.yandex_weather_danilovskii_pressure_mmhg') }} mmHg)
+          Температура {{ states('sensor.danilovskii_temperature') }}°C
+          Ощущается как {{ states('sensor.danilovskii_feels_like_temperature') }}°C
+          Влажность {{ states('sensor.danilovskii_humidity') }}%
+          Давление {{ states('sensor.danilovskii_pressure') }} hPa ({{ states('sensor.openweathermap_moskva_danilovskii_pressure_mmhg') }} mmHg)
 # ---- /weather_ch
 - alias: "Telegram Bot - Weather Country House"
   id: c5ac3f4b-80b8-479f-96bf-45274aeba2ec
@@ -135,12 +135,12 @@
     - action: telegram_bot.send_photo
       data:
         target: "{{ trigger.event.data.user_id }}"
-        file: '/config/www/weather_icons/{{ states("weather.yandex_weather_nivki_2") }}.webp'
+        file: '/config/www/weather_icons/{{ states("weather.nivki_2") }}.webp'
         caption: |
-          Температура {{ states('sensor.yandex_weather_nivki_2_temperature') }}°C
-          Ощущается как {{ states('sensor.yandex_weather_nivki_2_feels_like_temperature') }}°C
-          Влажность {{ states('sensor.yandex_weather_nivki_2_humidity') }}%
-          Давление {{ states('sensor.yandex_weather_nivki_2_pressure') }} hPa ({{ states('sensor.yandex_weather_nivki_2_pressure_mmhg') }} mmHg)
+          Температура {{ states('sensor.nivki_2_temperature') }}°C
+          Ощущается как {{ states('sensor.nivki_2_feels_like_temperature') }}°C
+          Влажность {{ states('sensor.nivki_2_humidity') }}%
+          Давление {{ states('sensor.nivki_2_pressure') }} hPa ({{ states('sensor.openweathermap_stupino_nivki_2_pressure_mmhg') }} mmHg)
 # ---- /status
 - alias: "Telegram Bot - Status"
   id: 51572bf5-4960-4034-b09a-17d202c07c18

@@ -172,7 +172,8 @@ cards:
         content: >
           ### <center>Погода</center>
       - type: weather-forecast
-        entity: weather.yandex_weather_nivki_2
+        entity: weather.nivki_2
+        forecast_type: daily
         name: Нивки-2
 
 # CCTV

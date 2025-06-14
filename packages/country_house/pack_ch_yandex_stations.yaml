@@ -1,0 +1,14 @@
+#################################################
+# Package Country House Yandex Stations
+#################################################
+
+ch_yandex_stations_pack:
+
+  yandex_station:
+    devices:
+      # Детская
+      L01DFB800A63SB:
+        host: 192.168.10.222
+      # Гостиная
+      M109VCA10C3NYK:
+        host: 192.168.10.128

@@ -41,14 +41,17 @@ ch_keenetic_pack:
 
         - name: "CH LTE Modem Mobile Connection"
           unique_id: 74ef6b85-a212-47ab-89bf-35e639626bed
+          icon: mdi:access-point
           value_template: "{{ value_json.mobile }}"
 
         - name: "CH LTE Modem Operator"
           unique_id: 41337145-4c5b-4d0b-a3f5-08840bf8e6d1
+          icon: mdi:wan
           value_template: "{{ value_json.operator }}"
 
         - name: "CH LTE Modem Phone Number"
           unique_id: 791b9bc1-ddcb-44ff-8982-d4ec4243d763
+          icon: mdi:card-account-phone-outline
           value_template: '{{ value_json["phone-number"] }}'
 
         - name: "CH LTE Modem Cell Distance"
@@ -67,6 +70,7 @@ ch_keenetic_pack:
 
         - name: "CH LTE Modem Unread SMS Count"
           unique_id: 571a459a-48d5-4025-9e37-46f59ae42d20
+          icon: mdi:message-text-outline
           value_template: >
             {% set ns = namespace(unread = 0) %}
             {% if "messages" in value_json %}
@@ -143,7 +147,7 @@ ch_keenetic_pack:
         - condition: template
           value_template: >
             {% set ignore = ['unknown', 'unavailable', 'none', None, null, '', 'null'] %}
-            {{ trigger.to_state.state not in ignore and trigger.from_state.state != '' }}
+            {{ trigger.to_state.state not in ignore and trigger.from_state.state not in ignore }}
         - condition: template
           value_template: >
             {{ (trigger.to_state.state | int(0)) > (trigger.from_state.state | int(0)) }}
@@ -152,4 +156,4 @@ ch_keenetic_pack:
           data:
             target: !secret tlg_group_country_house
             message: |
-              _LTE Modem_, Непрочитанных SMS: *{{ states('sensor.ch_lte_modem_unread_sms_count') }}*, новых: *{{ (trigger.to_state.state | int ) - (trigger.from_state.state | int) }}*
+              _LTE Modem_, Непрочитанных SMS: *{{ states('sensor.ch_lte_modem_unread_sms_count') }}*, новых: *{{ (trigger.to_state.state | int(0) ) - (trigger.from_state.state | int(0)) }}*

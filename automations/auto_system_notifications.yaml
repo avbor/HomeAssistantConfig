@@ -381,7 +381,8 @@
           '^sensor\.dacha_nearest_.*|'
           '^sensor\.dacha_.*_di.*|'
           '^(media_player|remote)\.xbox_ch_01|'
-          '^(media_player|remote)\.xbox_v_gostinoi'
+          '^(media_player|remote)\.xbox_v_gostinoi|'
+          '^sensor\..*_sonoff_pow_r3_0._power_factor$'
           )
         }}
     - condition: template

@@ -611,7 +611,8 @@ cards:
 
           <center>{{ states('sensor.gismeteo_geomagnitnaia_aktivnost_v_moskve_now') }}</center>
       - type: weather-forecast
-        entity: weather.yandex_weather_danilovskii
+        entity: weather.danilovskii
+        forecast_type: daily
         name: Москва
       - type: "custom:mini-graph-card"
         name: Атмосферное давление
@@ -625,7 +626,7 @@ cards:
         entities:
           - entity: sensor.local_pressure_mmhg
             name: Aqara (Гостиная)
-          - entity: sensor.yandex_weather_danilovskii_pressure_mmhg
-            name: Yandex Weather
+          - entity: sensor.openweathermap_moskva_danilovskii_pressure_mmhg
+            name: OpenWeatherMap
         show:
           fill: false

@@ -11,6 +11,14 @@ cards:
       - type: conditional
         conditions:
           - condition: state
+            entity: media_player.yandex_station_mini2_dacha_detskaya
+            state_not: "unavailable"
+        card:
+          type: media-control
+          entity: media_player.yandex_station_mini2_dacha_detskaya
+      - type: conditional
+        conditions:
+          - condition: state
             entity: media_player.yandex_station_mini2_dacha_gostinaia
             state_not: "unavailable"
         card:
