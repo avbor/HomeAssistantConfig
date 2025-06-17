@@ -382,7 +382,9 @@
           '^sensor\.dacha_.*_di.*|'
           '^(media_player|remote)\.xbox_ch_01|'
           '^(media_player|remote)\.xbox_v_gostinoi|'
-          '^sensor\..*_sonoff_pow_r3_0._power_factor$'
+          '^sensor\..*_sonoff_pow_r3_0._power_factor$|'
+          'sensor\.ch_lte_modem_.*|'
+          'sensor\.ch_(water|septic)_pump_run_time_.*'
           )
         }}
     - condition: template

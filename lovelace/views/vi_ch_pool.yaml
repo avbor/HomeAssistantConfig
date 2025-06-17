@@ -1,0 +1,40 @@
+title: Pool
+path: ch-pool
+icon: mdi:pool
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Бассейн</center>
+      - type: "custom:mini-graph-card"
+        name: Температура
+        icon: mdi:pool-thermometer
+        hours_to_show: 24
+        points_per_hour: 2
+        decimals: 1
+        hour24: true
+        align_state: center
+        entities:
+          - entity: sensor.0xa4c13801a96dffff_temperature
+        color_thresholds:
+          - value: 20
+            color: "#4D93DD"
+          - value: 22
+            color: "#4BDCE3"
+          - value: 23
+            color: "#A1EDDE"
+          - value: 24
+            color: "#A4EDA1"
+          - value: 25
+            color: "#CAFF12"
+          - value: 26
+            color: "#FFD512"
+        show:
+          labels: false
+
+      - type: entities
+        entities:
+          - entity: switch.sonoff_basic_04_switch
+            name: Фильтр бассейна
+            icon: mdi:water-sync

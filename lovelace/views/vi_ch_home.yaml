@@ -90,91 +90,6 @@ cards:
               action: more-info
             features:
               - type: "toggle"
-#      - type: entities
-#        entities:
-#          - entity: light.dacha_parkovka
-#            name: Освещение парковки
-#            icon: mdi:light-flood-down
-#          - entity: light.dacha_dvor
-#            name: Освещение двора
-#            icon: mdi:light-flood-down
-
-  # Напряжение в сети
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Напряжение (V)</center>
-
-      - type: horizontal-stack
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: markdown
-                content: >
-                  <center>Входящее</center>
-              - type: gauge
-                entity: sensor.shellyem_34945470f5db_channel_1_voltage
-                name: ""
-                needle: true
-                min: 100
-                max: 295
-                segments:
-                  - from: 100
-                    color: red
-                  - from: 116
-                    color: yellow
-                  - from: 210
-                    color: green
-                  - from: 240
-                    color: yellow
-                  - from: 285
-                    color: red
-
-          - type: vertical-stack
-            cards:
-              - type: markdown
-                content: >
-                  <center>Стабилизированное</center>
-              - type: gauge
-                entity: sensor.average_voltage_in_country_house
-                name: ""
-                needle: true
-                min: 170
-                max: 280
-                segments:
-                  - from: 0
-                    color: red
-                  - from: 195
-                    color: yellow
-                  - from: 210
-                    color: green
-                  - from: 240
-                    color: yellow
-                  - from: 255
-                    color: red
-      - type: statistics-graph
-        entities:
-          - entity: sensor.average_voltage_in_country_house
-            name: []
-          - entity: sensor.shellyem_34945470f5db_channel_1_voltage
-            name: []
-        days_to_show: 7
-        chart_type: line
-        hide_legend: true
-        stat_types:
-          - min
-          - mean
-          - max
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Погода</center>
-      - type: weather-forecast
-        entity: weather.nivki_2
-        forecast_type: daily
-        name: Нивки-2
 
 # CCTV
   - type: vertical-stack
@@ -223,3 +138,14 @@ cards:
               entity: image.reolinkcam_02_car
               show_name: false
               show_state: false
+
+  # Погода
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>Погода</center>
+      - type: weather-forecast
+        entity: weather.nivki_2
+        forecast_type: daily
+        name: Нивки-2

@@ -3,5 +3,9 @@ views:
   - !include views/vi_ch_home.yaml
   - !include views/vi_ch_climate.yaml
   - !include views/vi_ch_heating.yaml
+  - !include views/vi_ch_plumbing.yaml
   - !include views/vi_ch_media.yaml
+  - !include views/vi_ch_internet.yaml
+  - !include views/vi_ch_pool.yaml
+  - !include views/vi_ch_electricity.yaml
   - !include views/vi_ch_system.yaml

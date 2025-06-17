@@ -37,6 +37,7 @@ ch_keenetic_pack:
 
         - name: "CH LTE Modem Signal Level"
           unique_id:  b24cd295-e529-4f9f-80c3-9a539d5e7845
+          icon: mdi:signal
           value_template: '{{ value_json["signal-level"] | int(0) }}'
 
         - name: "CH LTE Modem Mobile Connection"
@@ -56,9 +57,38 @@ ch_keenetic_pack:
 
         - name: "CH LTE Modem Cell Distance"
           unique_id: 50f07a6b-5769-4fa6-81f6-16a78e7ef73b
+          icon: mdi:signal-distance-variant
           value_template: "{{ value_json.distance | int(0) }}"
           unit_of_measurement: m
           device_class: distance
+
+        - name: "CH LTE Modem TAC ID"
+          unique_id: b0d4078a-80b9-40a5-844d-a43fb8e45b04
+          icon: mdi:radio-tower
+          value_template: "{{ value_json.tac | int(0) }}"
+
+        - name: "CH LTE Modem eCell ID"
+          unique_id: 958bfd19-d750-4be4-a9e8-c4f64b8dee8e
+          icon: mdi:radio-tower
+          value_template: "{{ value_json.bssid | int(0) }}"
+
+        - name: "CH LTE Modem PhyCell ID"
+          unique_id: f4ce99f9-082d-4b50-80dc-8d79a0b1c89d
+          icon: mdi:radio-tower
+          value_template: '{{ value_json["phy-cell-id"] | int(0) }}'
+
+        - name: "CH LTE Modem eNB ID"
+          unique_id: 41839e97-edfc-4d9e-a26d-403e62373964
+          icon: mdi:radio-tower
+          value_template: '{{ value_json["enb-id"] | int(0) }}'
+
+        - name: "CH LTE Modem Sector ID"
+          unique_id: b645ac00-6975-4654-bc81-7844f786a2ec
+          icon: mdi:radio-tower
+          value_template: '{{ value_json["sector-id"] | int(0) }}'
+
+
+
 
     # SMS
     - resource: "http://192.168.10.1:81/rci/sms/list?interface=UsbQmi0"

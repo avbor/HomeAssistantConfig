@@ -84,47 +84,6 @@ ch_misc_pack:
               Повышенная температура в холодильнике!
               Текущая: {{ states('sensor.0x00158d000802df91_temperature') }}°C
 
-#    - alias: Дача - Насос - Включение
-#      id: 93336fae-64cd-4f48-90a9-5ec2abb6ece3
-#      triggers:
-#        - trigger: state
-#          entity_id: binary_sensor.coutry_house_presence
-#          from: "off"
-#          to: "on"
-#        - trigger: state
-#          entity_id: switch.gosund_sp111_01_switch
-#          from: "off"
-#          to: "on"
-#      conditions: "{{ is_state('switch.sonoff_pow_r3_02', 'off') }}"
-#      actions:
-#        - action: switch.turn_on
-#          target:
-#            entity_id: switch.sonoff_pow_r3_02
-
-    - alias: Дача - Насос - Оповещение о состоянии
-      id: 5db218dd-eef9-45ab-aa9f-f9e814fdfe62
-      triggers:
-        - trigger: state
-          entity_id: switch.sonoff_pow_r3_02
-          not_from:
-            - unavailable
-            - unknown
-          not_to:
-            - unavailable
-            - unknown
-      conditions: "{{ trigger.to_state.state != trigger.from_state.state }}"
-      actions:
-        - action: telegram_bot.send_message
-          data:
-            target: !secret tlg_group_country_house
-            title: "*Водяной насос:*"
-            message: >
-              {% if trigger.to_state.state == 'on' %}
-                Питание подключено.
-              {% elif trigger.to_state.state == 'off' %}
-                Питание отключено.
-              {% endif %}
-
     - alias: Дача - Напоминание после отъезда
       id: 7596485f-5cf9-4b99-af54-b51672510ab6
       triggers:

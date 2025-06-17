@@ -1,0 +1,65 @@
+title: Internet
+path: ch-internet
+icon: mdi:web
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>LTE Modem</center>
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.ch_lte_modem_operator
+            name: Operator
+          - entity: sensor.ch_lte_modem_phone_number
+            name: Phone number
+          - entity: sensor.ch_lte_modem_mobile_connection
+            name: "Mobile Connection"
+          - entity: sensor.ch_lte_modem_unread_sms_count
+            name: "Unread SMS"
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>LTE Modem [Signal]</center>
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.ch_lte_modem_signal_level
+            icon: mdi:signal
+            name: "Signal level"
+          - entity: sensor.ch_lte_modem_rssi
+            name: "RSSI"
+          - entity: sensor.ch_lte_modem_rsrp
+            name: "RSRP"
+          - entity: sensor.ch_lte_modem_rsrq
+            name: "RSRQ"
+          - entity: sensor.ch_lte_modem_sinr
+            name: "SINR"
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: >
+          ### <center>LTE Modem [Cell info]</center>
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.ch_lte_modem_cell_distance
+            icon: mdi:signal-distance-variant
+            name: Cell Distance
+          - entity: sensor.ch_lte_modem_tac_id
+            icon: mdi:radio-tower
+            name: "TAC"
+          - entity: sensor.ch_lte_modem_ecell_id
+            icon: mdi:radio-tower
+            name: "eCell ID"
+          - entity: sensor.ch_lte_modem_enb_id
+            icon: mdi:radio-tower
+            name: "eNB ID"
+          - entity: sensor.ch_lte_modem_sector_id
+            icon: mdi:radio-tower
+            name: "Sector ID"
+          - entity: sensor.ch_lte_modem_phycell_id_id
+            icon: mdi:radio-tower
+            name: "Physical Cell ID (PCI)"
