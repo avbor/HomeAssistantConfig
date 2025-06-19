@@ -27,7 +27,7 @@ ch_septic_pack:
         device_class: running
         availability: "{{ is_state('switch.sonoff_pow_r3_01', 'on') }}"
         state: >-
-          {% if (states('sensor.sonoff_pow_r3_01_power') | float(0)) > 40 and (states('sensor.sonoff_pow_r3_01_power') | float(0)) < 200 %}
+          {% if (states('sensor.sonoff_pow_r3_01_power') | float(0)) > 40 and (states('sensor.sonoff_pow_r3_01_power') | float(0)) < 250 %}
             on
           {% elif ((states('sensor.sonoff_pow_r3_01_power') | float(0)) - 200) > 40 %}
             on

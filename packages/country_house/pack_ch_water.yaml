@@ -182,7 +182,7 @@ ch_water_pack:
           above: 2
       conditions:
         - condition: time
-          after: "01:00:00"
+          after: "03:00:00"
           before: "06:00:00"
       actions:
         - action: telegram_bot.send_message
