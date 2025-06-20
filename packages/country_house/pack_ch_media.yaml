@@ -1,0 +1,32 @@
+#################################################
+# Package Country House Media
+#################################################
+
+ch_media_pack:
+
+  media_player:
+  - platform: universal
+    name: CH MiTV в Гостиной
+    unique_id: 90ff250a-f472-4c97-88ce-de9931b26210
+    device_class: tv
+    children:
+      - media_player.mitv_ayfr0
+      - media_player.tv_pristavka_mi_tv_stick
+    browse_media_entity: media_player.tv_pristavka_mi_tv_stick
+    commands:
+      turn_off:
+        action: media_player.turn_off
+        data:
+          entity_id: media_player.mitv_ayfr0
+      turn_on:
+        action: media_player.turn_on
+        data:
+          entity_id: media_player.mitv_ayfr0
+      volume_up:
+        action: media_player.volume_up
+        data:
+          entity_id: media_player.mitv_ayfr0
+      volume_down:
+        action: media_player.volume_down
+        data:
+          entity_id: media_player.mitv_ayfr0
