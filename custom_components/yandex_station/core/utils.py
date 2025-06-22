@@ -25,6 +25,7 @@ from yarl import URL
 
 from . import protobuf, stream
 from .const import CONF_MEDIA_PLAYERS, DATA_CONFIG, DOMAIN
+from .yandex_session import YandexSession
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -84,6 +85,11 @@ class YandexDebug(logging.Handler, HomeAssistantView):
     async def get(self, request: web.Request):
         reload = request.query.get("r", "")
         return web.Response(text=HTML % (reload, self.text), content_type="text/html")
+
+
+def fix_dialog_text(text: str) -> str:
+    # known problem words: запа, таблетк, трусы
+    return re.sub("[а-яё]+", lambda m: m.group(0).upper(), text)
 
 
 def update_form(name: str, **kwargs):
@@ -193,7 +199,7 @@ RE_MEDIA = {
 }
 
 
-async def get_media_payload(session, media_id: str) -> dict | None:
+async def get_media_payload(session: YandexSession, media_id: str) -> dict | None:
     for k, v in RE_MEDIA.items():
         if m := v.search(media_id):
             if k in ("youtube", "kinopoisk", "strm", "yavideo"):
@@ -245,15 +251,39 @@ async def get_media_payload(session, media_id: str) -> dict | None:
                 except:
                     return None
 
-    ext = stream.get_ext(media_id)
-    if ext == "mp3":
-        return external_command(
-            "radio_play", {"streamUrl": stream.get_url(media_id, "mp3", 3)}
-        )
-    elif ext == "gif":
-        return external_command(
-            "draw_led_screen", {"animation_sequence": [{"frontal_led_image": media_id}]}
-        )
+    if ext := await stream.get_content_type(session._session, media_id):
+        return get_stream_url(media_id, "stream." + ext)
+
+    return None
+
+
+def get_stream_url(
+    media_id: str, media_type: str, metadata: dict = None
+) -> dict | None:
+    if media_type.startswith("stream."):
+        ext = media_type[7:]  # manual file extension
+    else:
+        ext = stream.get_ext(media_id)  # auto detect extension
+
+    if ext in ("aac", "flac", "m3u8", "mp3", "mp4"):
+        # station can't handle links without extension
+        payload = {
+            "streamUrl": stream.get_url(media_id, ext, 3),
+            "force_restart_player": True,
+        }
+        if metadata:
+            if title := metadata.get("title"):
+                payload["title"] = title
+            if (url := metadata.get("imageUrl")) and url.startswith("https://"):
+                payload["imageUrl"] = url[8:]
+        return external_command("radio_play", payload)
+
+    if ext == "gif":
+        # maximum link size ~250 symbols
+        if media_id[0] == "/":
+            media_id = stream.get_url(media_id, ext, 0)
+        payload = {"animation_sequence": [{"frontal_led_image": media_id}]}
+        return external_command("draw_led_screen", payload)
 
     return None
 
@@ -334,7 +364,9 @@ def fix_cloud_text(text: str) -> str:
     return text.strip()[:100]
 
 
-async def get_playlist_uid(session, username: str, playlist_id: str) -> int | None:
+async def get_playlist_uid(
+    session: YandexSession, username: str, playlist_id: str
+) -> int | None:
     try:
         r = await session.get(
             f"https://api.music.yandex.net/users/{username}/playlists/{playlist_id}",

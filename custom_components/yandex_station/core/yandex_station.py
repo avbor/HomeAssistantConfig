@@ -65,6 +65,7 @@ LOCAL_FEATURES = (
     BASE_FEATURES
     | MediaPlayerEntityFeature.PLAY
     | MediaPlayerEntityFeature.PAUSE
+    | MediaPlayerEntityFeature.STOP
     | MediaPlayerEntityFeature.SELECT_SOURCE
     | MediaPlayerEntityFeature.REPEAT_SET
     | MediaPlayerEntityFeature.SHUFFLE_SET
@@ -837,13 +838,19 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
                 sourced_media = await media_source.async_resolve_media(
                     self.hass, media_id, self.entity_id
                 )
-                media_id = async_process_play_media_url(self.hass, sourced_media.url)
+                # we use the sourced_media.url to reduce the link size
+                payload = utils.get_stream_url(
+                    sourced_media.url, media_type, extra.get("metadata")
+                )
 
-            if "https://" in media_id or "http://" in media_id:
-                payload = await utils.get_media_payload(self.quasar.session, media_id)
+            elif "https://" in media_id or "http://" in media_id:
+                payload = utils.get_stream_url(
+                    media_id, media_type, extra.get("metadata")
+                )
                 if not payload:
-                    _LOGGER.warning(f"Unsupported url: {media_id}")
-                    return
+                    payload = await utils.get_media_payload(
+                        self.quasar.session, media_id
+                    )
 
             elif media_type.startswith(("text:", "dialog:")):
                 payload = {
@@ -865,10 +872,9 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             elif media_type == "dialog":
                 if extra and extra.get("volume_level") is not None:
                     self._check_set_alice_volume(extra["volume_level"])
-                # known problem words: запа, таблетк, трусы
                 payload = utils.update_form(
                     "personal_assistant.scenarios.repeat_after_me",
-                    request=media_id.upper(),  # upper fix problem words
+                    request=utils.fix_dialog_text(media_id),
                 )
 
             elif media_type == "draw_animation":
@@ -898,7 +904,10 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
                 payload = {"command": "playMusic", "id": media_id, "type": media_type}
 
             else:
-                _LOGGER.warning(f"Unsupported local media: {media_id}")
+                payload = None
+
+            if not payload:
+                _LOGGER.warning(f"Unsupported local media: {media_id} {media_type}")
                 return
 
             await self.glagol.send(payload)
