@@ -30,3 +30,19 @@ ch_media_pack:
         action: media_player.volume_down
         data:
           entity_id: media_player.mitv_ayfr0
+
+  automation:
+
+    - alias: CH Yandex Station in Nursery - Turn Off
+      id: 2485e60e-7e83-4942-96a2-5545fb4a4af5
+      triggers:
+        - platform: time
+          at: "23:30:00"
+        - platform: time
+          at: "00:30:00"
+      actions:
+        - if: "{{ is_state('media_player.yandex_station_mini2_dacha_detskaya', 'playing') }}"
+          then:
+            - action: media_player.turn_off
+              target:
+                entity_id: media_player.yandex_station_mini2_dacha_detskaya

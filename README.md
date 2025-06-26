@@ -62,6 +62,7 @@ _Main site (city apartment):_
 _Remote site (country house):_
 
 - DW5821e Snapdragon X20 LTE Modem with 4G MIMO 2x2 Antenna (Baltic Signal [OMEGA](https://baltic-signal.ru/catalog/antennas/antennas-4g/antenna-baltic-signal-omega-3g-4g/))\
+  integration RESTful (via Keenetic)
 
 - Keenetic Giga [KN-1010](https://keenetic.ru/ru/keenetic-giga-kn-1010) as Router, WiFi Mesh Controller, WireGuard VPN Client and Access Point
 
@@ -76,10 +77,10 @@ _Remote site (country house):_
   Used by "Zigbee2MQTT"
 
 - Xiaomi Multi-Mode Gateway 2 (Hub 2) EU (DMWG03LM, lumi.gateway.mgl001)\
-  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) and "Zigbee2MQTT"
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)
 
 - Xiaomi Gateway 3 (ZNDMWG03LM, lumi.gateway.mgl03)\
-  Integration "Xiaomi Gateway 3" by [AlexxIT]
+  Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3)
 
 - Aqara Hub E1 (ZHWG16LM)\
   Integration "Xiaomi Gateway 3" by [AlexxIT](https://github.com/AlexxIT/XiaomiGateway3) and "Zigbee2MQTT"
@@ -166,6 +167,7 @@ _Remote site (country house):_
 - Relays:
   - Aqara Wireless Relay (LLKZMK11LM, lumi.relay.c2acn01)
   - Sonoff ZBMINI
+  - Sonoff ZBMINIR2 Extreme
 
 - Plugs:
   - MiJia Smart Power Plug 2 (ZNCZ02LM, lumi.plug)
