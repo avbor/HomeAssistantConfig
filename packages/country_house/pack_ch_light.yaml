@@ -4,6 +4,12 @@
 
 ch_light_pack:
 
+  # Timers
+  timer:
+
+    ch_toilet_1st_floor_presence:
+      duration: "00:05:00"
+
   # Light
   light:
 
@@ -14,6 +20,18 @@ ch_light_pack:
     - platform: switch
       name: Дача - Парковка
       entity_id: switch.sonoff_mini_r2_03_switch
+
+    - platform: switch
+      name: Дача - Прихожая
+      entity_id: switch.0x08b95ffffeec6863
+
+    - platform: switch
+      name: Дача - Туалет 1 Этаж
+      entity_id: switch.0xfc4d6afffecd844f
+
+    - platform: switch
+      name: Дача - Туалет 2 Этаж
+      entity_id: switch.0x08b95ffffeec8bcc
 
   # Automations
   automation:
@@ -101,3 +119,109 @@ ch_light_pack:
               - action: light.toggle
                 target:
                   entity_id: light.dacha_dvor
+
+    - alias: "Дача - Свет в Туалете 1 Этаж"
+      id: 78180b45-0ead-45f1-803f-347ccaaaedb1
+      mode: queued
+      max: 10
+      max_exceeded: silent
+      triggers:
+        - trigger: state
+          entity_id: timer.ch_toilet_1st_floor_presence
+          to: "idle"
+          id: "timer_idle"
+        - trigger: state
+          entity_id: binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy
+          to: "on"
+          id: "motion_on"
+        - trigger: state
+          entity_id: light.dacha_tualet_1_etazh
+          to: "off"
+          id: "light_off"
+        - trigger: state
+          entity_id: light.dacha_tualet_1_etazh
+          to: "on"
+          id: "light_on"
+      actions:
+        choose:
+          - alias: Motion
+            conditions:
+              - condition: trigger
+                id: "motion_on"
+            sequence:
+              - action: timer.start
+                target:
+                  entity_id: timer.ch_toilet_1st_floor_presence
+              - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'off') }}"
+              - action: light.turn_on
+                target:
+                  entity_id: light.dacha_tualet_1_etazh
+          - alias: Timer Idle
+            conditions:
+              - condition: trigger
+                id: "timer_idle"
+            sequence:
+              choose:
+                - alias: Motion On
+                  conditions: "{{ states('binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy') == 'on' }}"
+                  sequence:
+                    - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'on') }}"
+                    - action: timer.start
+                      target:
+                        entity_id: timer.ch_toilet_1st_floor_presence
+                - alias: Motion Off
+                  conditions: "{{ states('binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy') == 'off' }}"
+                  sequence:
+                    choose:
+                      - alias: Motion detected > 5 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy.last_changed)) > 300 }}"
+                        sequence:
+                          - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'on') }}"
+                          - action: light.turn_off
+                            target:
+                              entity_id: light.dacha_tualet_1_etazh
+                      - alias: Motion detected <= 5 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy.last_changed)) <= 300 }}"
+                        sequence:
+                          - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'on') }}"
+                          - action: light.turn_off
+                            target:
+                              entity_id: light.dacha_tualet_1_etazh
+                          - delay:
+                              seconds: 0.3
+                          - action: light.turn_on
+                            target:
+                              entity_id: light.dacha_tualet_1_etazh
+                          - wait_template: "{{ is_state('binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy', 'on') }}"
+                            timeout: "00:01:00"
+                          - if:
+                              - "{{ not wait.completed }}"
+                            then:
+                              - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'on') }}"
+                              - action: light.turn_off
+                                target:
+                                  entity_id: light.dacha_tualet_1_etazh
+          - alias: Light Off
+            conditions:
+              - condition: trigger
+                id: "light_off"
+            sequence:
+              choose:
+                - alias: Timer Active
+                  conditions: "{{ is_state('timer.ch_toilet_1st_floor_presence', 'active') }}"
+                  sequence:
+                    - action: timer.finish
+                      target:
+                        entity_id: timer.ch_toilet_1st_floor_presence
+          - alias: Light On
+            conditions:
+              - condition: trigger
+                id: "light_on"
+            sequence:
+              choose:
+                - alias: Timer Idle
+                  conditions: "{{ is_state('timer.ch_toilet_1st_floor_presence', 'idle') }}"
+                  sequence:
+                    - action: timer.start
+                      target:
+                        entity_id: timer.ch_toilet_1st_floor_presence
