@@ -296,7 +296,7 @@ class XiaomiCloudConnector:
         a = random.randint(0, 9)
         b = random.randint(0, 9)
         c = random.randint(0, 9)
-        return f"Android-7.1.1-{a}.{b}.{c}-ONEPLUS A3011-136-{agent_id} APP/xiaomi.smarthome APPV/62830"
+        return f"Android-7.1.1-{a}.{b}.{c}-ONEPLUS A3011-136-{agent_id} APP/com.xiaomi.mihome APPV/10.5.201"
 
     @staticmethod
     def generate_device_id() -> str:
