@@ -103,7 +103,7 @@ cards:
               - entity: sensor.gosund_sp111_07_ampere
                 name: false
 
-          - entity: switch.0xa4c1386cd4ee5e2b_plug
+          - entity: switch.0xa4c1386cd4ee5e2b
             name: Обогреватель - Кабинет
             icon: mdi:radiator
           - entity: sensor.0xa4c1386cd4ee5e2b_power
@@ -136,7 +136,7 @@ cards:
               - entity: sensor.gosund_sp111_08_ampere
                 name: false
 
-          - entity: switch.0xa4c13852453d20d5_plug
+          - entity: switch.0xa4c13852453d20d5
             name: Обогреватель - Спальня
             icon: mdi:radiator
           - entity: sensor.0xa4c13852453d20d5_power
@@ -147,7 +147,7 @@ cards:
               - entity: sensor.0xa4c13852453d20d5_current
                 name: false
 
-          - entity: switch.0xa4c138dd369833b0_plug
+          - entity: switch.0xa4c138dd369833b0
             name: Обогреватель - Туалет 2 Этаж
             icon: mdi:radiator
           - entity: sensor.0xa4c138dd369833b0_power

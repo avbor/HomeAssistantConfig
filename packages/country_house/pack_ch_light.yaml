@@ -27,11 +27,11 @@ ch_light_pack:
 
     - platform: switch
       name: Дача - Туалет 1 Этаж
-      entity_id: switch.0xfc4d6afffecd844f
+      entity_id: switch.rch_0xfc4d6afffecd844f
 
     - platform: switch
       name: Дача - Туалет 2 Этаж
-      entity_id: switch.0x08b95ffffeec8bcc
+      entity_id: switch.rch_0x08b95ffffeec8bcc
 
   # Automations
   automation:

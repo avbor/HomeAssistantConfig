@@ -8,5 +8,5 @@ views:
   - !include views/vi_radio_quality_gw3.yaml
   - !include views/vi_radio_quality_zha.yaml
   - !include views/vi_z2m_1.yaml
-  - !include views/vi_z2m_2.yaml
-  - !include views/vi_z2m_3.yaml
+  #- !include views/vi_z2m_2.yaml
+  - !include views/vi_z2m_ch.yaml

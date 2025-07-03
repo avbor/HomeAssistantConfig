@@ -17,7 +17,7 @@ cards:
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.th_dacha_veranda_humidity
+            entity:  sensor.th_dacha_veranda_humidity
             name: Влажность
             graph: line
 

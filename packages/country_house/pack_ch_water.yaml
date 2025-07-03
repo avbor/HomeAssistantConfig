@@ -3,118 +3,113 @@
 #################################################
 
 ch_water_pack:
-
   # Templates
   template:
-
     - binary_sensor:
+        - name: CH Water Pump Status
+          unique_id: dc675ac6-f4d0-4f64-b575-adf974639020
+          icon: mdi:water-pump
+          device_class: running
+          availability: "{{ is_state('switch.sonoff_pow_r3_02', 'on') }}"
+          state: "{{ (states('sensor.sonoff_pow_r3_02_power') | float(0)) > 1200 }}"
+          attributes:
+            minute_counter: >
+              {% if (states('sensor.sonoff_pow_r3_02_power') | float(0)) < 1200 %}
+                {{ now().minute }}
+              {% endif %}
 
-      - name: CH Water Pump Status
-        unique_id: dc675ac6-f4d0-4f64-b575-adf974639020
-        icon: mdi:water-pump
-        device_class: running
-        availability: "{{ is_state('switch.sonoff_pow_r3_02', 'on') }}"
-        state: "{{ (states('sensor.sonoff_pow_r3_02_power') | float(0)) > 1200 }}"
-        attributes:
-          minute_counter: >
-            {% if (states('sensor.sonoff_pow_r3_02_power') | float(0)) < 1200 %}
-              {{ now().minute }}
-            {% endif %}
+        - name: CH Boiler Status
+          unique_id: 97c98f5b-b879-4a7c-b924-f1f34c446e11
+          icon: mdi:water-boiler
+          device_class: heat
+          availability: "{{ is_state('switch.gosund_sp111_01_switch', 'on') }}"
+          state: "{{ (states('sensor.gosund_sp111_01_watt') | float(0)) > 1200 }}"
+          attributes:
+            minute_counter: >
+              {% if (states('sensor.gosund_sp111_01_watt') | float(0)) < 1200 %}
+                {{ now().minute }}
+              {% endif %}
 
-      - name: CH Boiler Status
-        unique_id: 97c98f5b-b879-4a7c-b924-f1f34c446e11
-        icon: mdi:water-boiler
-        device_class: heat
-        availability: "{{ is_state('switch.gosund_sp111_01_switch', 'on') }}"
-        state: "{{ (states('sensor.gosund_sp111_01_watt') | float(0)) > 1200 }}"
-        attributes:
-          minute_counter: >
-            {% if (states('sensor.gosund_sp111_01_watt') | float(0)) < 1200 %}
-              {{ now().minute }}
-            {% endif %}
-
-      - name: CH Heating Cable Status
-        unique_id: b0b5a626-c50d-470f-95b2-f3ff7af42380
-        icon: mdi:heating-coil
-        device_class: heat
-        availability: "{{ is_state('switch.gosund_sp111_02_switch', 'on') }}"
-        state: "{{ (states('sensor.gosund_sp111_02_watt') | float(0)) > 10 }}"
-        attributes:
-          minute_counter: >
-            {% if (states('sensor.gosund_sp111_02_watt') | float(0)) < 10 %}
-              {{ now().minute }}
-            {% endif %}
+        - name: CH Heating Cable Status
+          unique_id: b0b5a626-c50d-470f-95b2-f3ff7af42380
+          icon: mdi:heating-coil
+          device_class: heat
+          availability: "{{ is_state('switch.gosund_sp111_02_switch', 'on') }}"
+          state: "{{ (states('sensor.gosund_sp111_02_watt') | float(0)) > 10 }}"
+          attributes:
+            minute_counter: >
+              {% if (states('sensor.gosund_sp111_02_watt') | float(0)) < 10 %}
+                {{ now().minute }}
+              {% endif %}
 
   # Sensors
   sensor:
+    - platform: statistics
+      name: CH Water Pump Start Frequency 10m
+      unique_id: 3004d402-db90-4ab9-a70e-60dd4a31a12f
+      entity_id: binary_sensor.ch_water_pump_status
+      state_characteristic: count_on
+      max_age:
+        minutes: 10
 
-  - platform: statistics
-    name: CH Water Pump Start Frequency 10m
-    unique_id: 3004d402-db90-4ab9-a70e-60dd4a31a12f
-    entity_id: binary_sensor.ch_water_pump_status
-    state_characteristic: count_on
-    max_age:
-      minutes: 10
+    - platform: statistics
+      name: CH Water Pump Start Frequency 60m
+      unique_id: 72defade-ea72-46b8-9cc8-0fa7f4aace85
+      entity_id: binary_sensor.ch_water_pump_status
+      state_characteristic: count_on
+      max_age:
+        minutes: 60
 
-  - platform: statistics
-    name: CH Water Pump Start Frequency 60m
-    unique_id: 72defade-ea72-46b8-9cc8-0fa7f4aace85
-    entity_id: binary_sensor.ch_water_pump_status
-    state_characteristic: count_on
-    max_age:
-      minutes: 60
+    - platform: statistics
+      name: CH Water Pump Start Frequency 24h
+      unique_id: 2624d49c-25ae-47d0-8345-04a9e87dea65
+      entity_id: binary_sensor.ch_water_pump_status
+      state_characteristic: count_on
+      max_age:
+        hours: 24
 
-  - platform: statistics
-    name: CH Water Pump Start Frequency 24h
-    unique_id: 2624d49c-25ae-47d0-8345-04a9e87dea65
-    entity_id: binary_sensor.ch_water_pump_status
-    state_characteristic: count_on
-    max_age:
-      hours: 24
+    - platform: statistics
+      name: CH Water Pump Run Time 10m
+      unique_id: aa258ffa-8ae6-460d-ba82-6d6f5bb3674f
+      entity_id: binary_sensor.ch_water_pump_status
+      state_characteristic: average_step
+      max_age:
+        minutes: 10
 
-  - platform: statistics
-    name: CH Water Pump Run Time 10m
-    unique_id: aa258ffa-8ae6-460d-ba82-6d6f5bb3674f
-    entity_id: binary_sensor.ch_water_pump_status
-    state_characteristic: average_step
-    max_age:
-      minutes: 10
+    - platform: statistics
+      name: CH Water Pump Run Time 60m
+      unique_id: e1703e3f-5fcc-47c9-b57e-6ea8d174d3fa
+      entity_id: binary_sensor.ch_water_pump_status
+      state_characteristic: average_step
+      max_age:
+        minutes: 60
 
-  - platform: statistics
-    name: CH Water Pump Run Time 60m
-    unique_id: e1703e3f-5fcc-47c9-b57e-6ea8d174d3fa
-    entity_id: binary_sensor.ch_water_pump_status
-    state_characteristic: average_step
-    max_age:
-      minutes: 60
-
-  - platform: statistics
-    name: CH Water Pump Run Time 24h
-    unique_id: 0615357a-0f51-4774-b229-93eaacdbf349
-    entity_id: binary_sensor.ch_water_pump_status
-    state_characteristic: average_step
-    max_age:
-      hours: 24
+    - platform: statistics
+      name: CH Water Pump Run Time 24h
+      unique_id: 0615357a-0f51-4774-b229-93eaacdbf349
+      entity_id: binary_sensor.ch_water_pump_status
+      state_characteristic: average_step
+      max_age:
+        hours: 24
 
   # Automations
   automation:
-
-#    - alias: Дача - Насос - Включение
-#      id: 93336fae-64cd-4f48-90a9-5ec2abb6ece3
-#      triggers:
-#        - trigger: state
-#          entity_id: binary_sensor.coutry_house_presence
-#          from: "off"
-#          to: "on"
-#        - trigger: state
-#          entity_id: switch.gosund_sp111_01_switch
-#          from: "off"
-#          to: "on"
-#      conditions: "{{ is_state('switch.sonoff_pow_r3_02', 'off') }}"
-#      actions:
-#        - action: switch.turn_on
-#          target:
-#            entity_id: switch.sonoff_pow_r3_02
+    #    - alias: Дача - Насос - Включение
+    #      id: 93336fae-64cd-4f48-90a9-5ec2abb6ece3
+    #      triggers:
+    #        - trigger: state
+    #          entity_id: binary_sensor.coutry_house_presence
+    #          from: "off"
+    #          to: "on"
+    #        - trigger: state
+    #          entity_id: switch.gosund_sp111_01_switch
+    #          from: "off"
+    #          to: "on"
+    #      conditions: "{{ is_state('switch.sonoff_pow_r3_02', 'off') }}"
+    #      actions:
+    #        - action: switch.turn_on
+    #          target:
+    #            entity_id: switch.sonoff_pow_r3_02
 
     - alias: Дача - Насос - Оповещение о состоянии
       id: 5db218dd-eef9-45ab-aa9f-f9e814fdfe62
@@ -197,17 +192,17 @@ ch_water_pack:
       id: 8cb01977-28d2-4450-8326-c32fe97e1c77
       triggers:
         - trigger: state
-          entity_id: binary_sensor.0x00158d0006d3b285_moisture
+          entity_id: binary_sensor.0x00158d0006d3b285_water_leak
           from: "off"
           to: "on"
           id: "kitchen"
         - trigger: state
-          entity_id: binary_sensor.0x00158d0006d3c775_moisture
+          entity_id: binary_sensor.0x00158d0006d3c775_water_leak
           from: "off"
           to: "on"
           id: "1st_toilet"
         - trigger: state
-          entity_id: binary_sensor.0x00158d0006d3b20b_moisture
+          entity_id: binary_sensor.0x00158d0006d3b20b_water_leak
           from: "off"
           to: "on"
           id: "2nd_toilet"
@@ -216,71 +211,71 @@ ch_water_pack:
           target:
             entity_id: switch.sonoff_pow_r3_02
         - choose:
-          - alias: "kitchen"
-            conditions:
-              - condition: trigger
-                id: "kitchen"
-            sequence:
-              - action: telegram_bot.send_message
-                data:
-                  target: !secret tlg_group_country_house
-                  title: "*Протечка, внимание!*"
-                  message: |
-                    Сработал датчик протечки Aqara на *Кухне*.
-                    Водяной насос отключен!
-                    Необходимо проверить наличие воды *под мойкой*.
-                  inline_keyboard:
-                    - 'Включить насос:/water_pump_on'
-          - alias: "1st_toilet"
-            conditions:
-              - condition: trigger
-                id: "1st_toilet"
-            sequence:
-              - action: telegram_bot.send_message
-                data:
-                  target: !secret tlg_group_country_house
-                  title: "*Протечка, внимание!*"
-                  message: |
-                    Сработал датчик протечки Aqara в *Туалете 1го этажа*.
-                    Водяной насос отключен!
-                    Необходимо проверить наличие воды *в районе ввода трубы*.
-                  inline_keyboard:
-                    - 'Включить насос:/water_pump_on'
-          - alias: "2nd_toilet"
-            conditions:
-              - condition: trigger
-                id: "2nd_toilet"
-            sequence:
-              - action: telegram_bot.send_message
-                data:
-                  target: !secret tlg_group_country_house
-                  title: "*Протечка, внимание!*"
-                  message: |
-                    Сработал датчик протечки Aqara в *Туалете 2го этажа*.
-                    Водяной насос отключен!
-                    Необходимо проверить наличие воды *под бойлером*.
-                  inline_keyboard:
-                    - 'Включить насос:/water_pump_on'
+            - alias: "kitchen"
+              conditions:
+                - condition: trigger
+                  id: "kitchen"
+              sequence:
+                - action: telegram_bot.send_message
+                  data:
+                    target: !secret tlg_group_country_house
+                    title: "*Протечка, внимание!*"
+                    message: |
+                      Сработал датчик протечки Aqara на *Кухне*.
+                      Водяной насос отключен!
+                      Необходимо проверить наличие воды *под мойкой*.
+                    inline_keyboard:
+                      - "Включить насос:/water_pump_on"
+            - alias: "1st_toilet"
+              conditions:
+                - condition: trigger
+                  id: "1st_toilet"
+              sequence:
+                - action: telegram_bot.send_message
+                  data:
+                    target: !secret tlg_group_country_house
+                    title: "*Протечка, внимание!*"
+                    message: |
+                      Сработал датчик протечки Aqara в *Туалете 1го этажа*.
+                      Водяной насос отключен!
+                      Необходимо проверить наличие воды *в районе ввода трубы*.
+                    inline_keyboard:
+                      - "Включить насос:/water_pump_on"
+            - alias: "2nd_toilet"
+              conditions:
+                - condition: trigger
+                  id: "2nd_toilet"
+              sequence:
+                - action: telegram_bot.send_message
+                  data:
+                    target: !secret tlg_group_country_house
+                    title: "*Протечка, внимание!*"
+                    message: |
+                      Сработал датчик протечки Aqara в *Туалете 2го этажа*.
+                      Водяной насос отключен!
+                      Необходимо проверить наличие воды *под бойлером*.
+                    inline_keyboard:
+                      - "Включить насос:/water_pump_on"
 
-    - alias: 'Дача Водяной Насос - Telegram Control - Включение'
+    - alias: "Дача Водяной Насос - Telegram Control - Включение"
       id: c4ff5d52-df3b-4e02-a8ef-f4a11323dcb4
       triggers:
         trigger: event
         event_type: telegram_callback
         event_data:
-          data: '/water_pump_on'
+          data: "/water_pump_on"
       actions:
         - action: switch.turn_on
           target:
             entity_id: switch.sonoff_pow_r3_02
         - action: telegram_bot.answer_callback_query
           data:
-            callback_query_id: '{{ trigger.event.data.id }}'
-            message: 'Команда отправлена'
+            callback_query_id: "{{ trigger.event.data.id }}"
+            message: "Команда отправлена"
         - action: telegram_bot.edit_replymarkup
           data:
-            message_id: '{{ trigger.event.data.message.message_id }}'
-            chat_id: '{{ trigger.event.data.chat_id }}'
+            message_id: "{{ trigger.event.data.message.message_id }}"
+            chat_id: "{{ trigger.event.data.chat_id }}"
             inline_keyboard: []
         - alias: "Wait for switch.sonoff_pow_r3_02"
           wait_for_trigger:
@@ -292,5 +287,5 @@ ch_water_pack:
           continue_on_timeout: false
         - action: telegram_bot.send_message
           data:
-            target: '{{ trigger.event.data.chat_id }}'
+            target: "{{ trigger.event.data.chat_id }}"
             message: "Насос включен."

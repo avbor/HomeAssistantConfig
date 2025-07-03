@@ -179,16 +179,16 @@ tts:
   - platform: google_translate
     language: "ru"
 
-telegram_bot:
-  - platform: webhooks
-    api_key: !secret telegram_bot_token
-    allowed_chat_ids:
-      - !secret tlg_stall_id
-      - !secret tlg_iborisochka_id
-      - !secret tlg_group_flat_1
-      - !secret tlg_group_system
-      - !secret tlg_group_staircase
-      - !secret tlg_group_country_house
+#telegram_bot:
+#  - platform: webhooks
+#    api_key: !secret telegram_bot_token
+#    allowed_chat_ids:
+#      - !secret tlg_stall_id
+#      - !secret tlg_iborisochka_id
+#      - !secret tlg_group_flat_1
+#      - !secret tlg_group_system
+#      - !secret tlg_group_staircase
+#      - !secret tlg_group_country_house
 
 notify:
   - name: telegram_stall

@@ -218,7 +218,7 @@ ch_climate_pack:
     - platform: generic_thermostat
       unique_id: 883c8735-9705-4136-986f-c03f02eaec26
       name: Country House Toilet 2st Floor
-      heater: switch.0xa4c138dd369833b0_plug
+      heater: switch.0xa4c138dd369833b0
       target_sensor: sensor.a4c138169698_temperature
       min_temp: 5
       max_temp: 30
@@ -235,7 +235,7 @@ ch_climate_pack:
     - platform: generic_thermostat
       unique_id: cf4af255-9332-4117-b32a-854bc3add45a
       name: Country House Bedroom
-      heater: switch.0xa4c13852453d20d5_plug
+      heater: switch.0xa4c13852453d20d5
       target_sensor: sensor.a4c1384fc124_temperature
       min_temp: 5
       max_temp: 30
@@ -252,7 +252,7 @@ ch_climate_pack:
     - platform: generic_thermostat
       unique_id: afb01822-bfa4-4927-bb4a-05b6dfd4fa94
       name: Country House Cabinet
-      heater: switch.0xa4c1386cd4ee5e2b_plug
+      heater: switch.0xa4c1386cd4ee5e2b
       target_sensor: sensor.a4c138962bb6_temperature
       min_temp: 5
       max_temp: 30

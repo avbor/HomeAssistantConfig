@@ -17,9 +17,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.sonoff_pow_r3_02_current
                 name: false
+                format: precision1
           - entity: binary_sensor.ch_water_pump_status
             state_color: true
             icon: mdi:water-pump
@@ -64,9 +66,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.sonoff_pow_r3_01_current
                 name: false
+                format: precision1
           - entity: binary_sensor.ch_septic_air_compressor_status
             state_color: true
             name: Статус компрессора
@@ -118,9 +122,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.gosund_sp111_01_ampere
                 name: false
+                format: precision1
       - type: markdown
         content: >
           ### <center>Греющий кабель</center>
@@ -138,9 +144,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.gosund_sp111_02_ampere
                 name: false
+                format: precision1
 
   - type: vertical-stack
     cards:
@@ -151,14 +159,14 @@ cards:
         content: >
           #### <center>1 Этаж</center>
       - type: entity
-        entity: binary_sensor.0x00158d0006d3b285_moisture
+        entity: binary_sensor.0x00158d0006d3b285_water_leak
         name: Кухня (под мойкой)
       - type: entity
-        entity: binary_sensor.0x00158d0006d3c775_moisture
+        entity: binary_sensor.0x00158d0006d3c775_water_leak
         name: Туалет (труба)
       - type: markdown
         content: >
           #### <center>2 Этаж</center>
       - type: entity
-        entity: binary_sensor.0x00158d0006d3b20b_moisture
+        entity: binary_sensor.0x00158d0006d3b20b_water_leak
         name: Туалет (под бойлером)
