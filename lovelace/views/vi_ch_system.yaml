@@ -42,9 +42,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.sonoff_pow_r3_02_current
                 name: false
+                format: precision1
           - entity: switch.sonoff_pow_r3_01
             name: Септик
             #icon: mdi:toilet
@@ -53,9 +55,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.sonoff_pow_r3_01_current
                 name: false
+                format: precision1
           - entity: switch.gosund_sp111_02_switch
             name: Греющий кабель
             icon: mdi:heating-coil
@@ -63,9 +67,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.gosund_sp111_02_ampere
                 name: false
+                format: precision1
           - entity: switch.gosund_sp111_01_switch
             name: Бойлер
             icon: mdi:water-boiler
@@ -73,9 +79,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.gosund_sp111_01_ampere
                 name: false
+                format: precision1
           - entity: switch.gosund_sp111_11_switch
             name: Холодильник
             icon: mdi:fridge
@@ -83,9 +91,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.gosund_sp111_11_ampere
                 name: false
+                format: precision1
           - entity: switch.sonoff_basic_04_switch
             name: Фильтр бассейна
             icon: mdi:pool
@@ -99,9 +109,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.gosund_sp111_07_ampere
                 name: false
+                format: precision1
 
           - entity: switch.0xa4c1386cd4ee5e2b
             name: Обогреватель - Кабинет
@@ -109,10 +121,12 @@ cards:
           - entity: sensor.0xa4c1386cd4ee5e2b_power
             type: custom:multiple-entity-row
             name: "Потребление"
+            format: precision1
             icon: []
             entities:
               - entity: sensor.0xa4c1386cd4ee5e2b_current
                 name: false
+                format: precision1
 
           - entity: switch.0xa4c13806f468cf98
             name: Обогреватель - Туалет 1 Этаж
@@ -121,9 +135,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.0xa4c13806f468cf98_current
                 name: false
+                format: precision1
 
           - entity: switch.gosund_sp111_08_switch
             name: Обогреватель - Детская
@@ -132,9 +148,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.gosund_sp111_08_ampere
                 name: false
+                format: precision1
 
           - entity: switch.0xa4c13852453d20d5
             name: Обогреватель - Спальня
@@ -143,9 +161,11 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.0xa4c13852453d20d5_current
                 name: false
+                format: precision1
 
           - entity: switch.0xa4c138dd369833b0
             name: Обогреватель - Туалет 2 Этаж
@@ -154,6 +174,8 @@ cards:
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
+            format: precision1
             entities:
               - entity: sensor.0xa4c138dd369833b0_current
                 name: false
+                format: precision1
