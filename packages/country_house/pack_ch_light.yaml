@@ -131,7 +131,7 @@ ch_light_pack:
           to: "idle"
           id: "timer_idle"
         - trigger: state
-          entity_id: binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy
+          entity_id: binary_sensor.0x8c65a3fffed8ea79_occupancy
           to: "on"
           id: "motion_on"
         - trigger: state
@@ -163,25 +163,25 @@ ch_light_pack:
             sequence:
               choose:
                 - alias: Motion On
-                  conditions: "{{ states('binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy') == 'on' }}"
+                  conditions: "{{ states('binary_sensor.0x8c65a3fffed8ea79_occupancy') == 'on' }}"
                   sequence:
                     - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'on') }}"
                     - action: timer.start
                       target:
                         entity_id: timer.ch_toilet_1st_floor_presence
                 - alias: Motion Off
-                  conditions: "{{ states('binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy') == 'off' }}"
+                  conditions: "{{ states('binary_sensor.0x8c65a3fffed8ea79_occupancy') == 'off' }}"
                   sequence:
                     choose:
                       - alias: Motion detected > 5 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy.last_changed)) > 300 }}"
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor['0x8c65a3fffed8ea79_occupancy'].last_changed)) > 300 }}"
                         sequence:
                           - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'on') }}"
                           - action: light.turn_off
                             target:
                               entity_id: light.dacha_tualet_1_etazh
                       - alias: Motion detected <= 5 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy.last_changed)) <= 300 }}"
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor['0x8c65a3fffed8ea79_occupancy'].last_changed)) <= 300 }}"
                         sequence:
                           - condition: "{{ is_state('light.dacha_tualet_1_etazh', 'on') }}"
                           - action: light.turn_off
@@ -192,7 +192,7 @@ ch_light_pack:
                           - action: light.turn_on
                             target:
                               entity_id: light.dacha_tualet_1_etazh
-                          - wait_template: "{{ is_state('binary_sensor.dd_ikea_na_dacha_v_tualete_1_etazh_occupancy', 'on') }}"
+                          - wait_template: "{{ is_state('binary_sensor.0x8c65a3fffed8ea79_occupancy', 'on') }}"
                             timeout: "00:01:00"
                           - if:
                               - "{{ not wait.completed }}"
