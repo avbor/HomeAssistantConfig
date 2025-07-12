@@ -149,6 +149,8 @@ recorder:
       - sensor.sonoff_1001322978_voltage
       - sensor.shellyem_34945470f5db_channel_1_power_factor
       - sensor.shellyem_34945470f5db_channel_1_energy_returned
+      - sensor.rch_shellyem_34945470f5db_channel_1_power_factor
+      - sensor.rch_shellyem_34945470f5db_channel_1_energy_returned
       - sensor.saures_api_sid
       - sensor.saures_water_meter_09_104476_cold
       - sensor.saures_water_meter_13193152_hot

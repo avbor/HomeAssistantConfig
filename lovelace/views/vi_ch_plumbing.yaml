@@ -9,46 +9,46 @@ cards:
           ### <center>Насос</center>
       - type: entities
         entities:
-          - entity: switch.sonoff_pow_r3_02
+          - entity: switch.rch_sonoff_pow_r3_02
             state_color: true
             name: Питание
             icon: mdi:power
-          - entity: sensor.sonoff_pow_r3_02_power
+          - entity: sensor.rch_sonoff_pow_r3_02_power
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.sonoff_pow_r3_02_current
+              - entity: sensor.rch_sonoff_pow_r3_02_current
                 name: false
                 format: precision1
-          - entity: binary_sensor.ch_water_pump_status
+          - entity: binary_sensor.rch_ch_water_pump_status
             state_color: true
             icon: mdi:water-pump
             name: Статус насоса
-          - entity: binary_sensor.ch_water_pump_status
+          - entity: binary_sensor.rch_ch_water_pump_status
             type: custom:multiple-entity-row
             name: Частота включения
             show_state: false
             icon: []
             entities:
-              - entity: sensor.ch_water_pump_start_frequency_10m
+              - entity: sensor.rch_ch_water_pump_start_frequency_10m
                 name: "10 м"
-              - entity: sensor.ch_water_pump_start_frequency_60m
+              - entity: sensor.rch_ch_water_pump_start_frequency_60m
                 name: "60 м"
-              - entity: sensor.ch_water_pump_start_frequency_24h
+              - entity: sensor.rch_ch_water_pump_start_frequency_24h
                 name: "24 ч"
-          - entity: binary_sensor.ch_water_pump_status
+          - entity: binary_sensor.rch_ch_water_pump_status
             type: custom:multiple-entity-row
             name: Время работы
             show_state: false
             icon: []
             entities:
-              - entity: sensor.ch_water_pump_run_time_10m
+              - entity: sensor.rch_ch_water_pump_run_time_10m
                 name: "10 м"
-              - entity: sensor.ch_water_pump_run_time_60m
+              - entity: sensor.rch_ch_water_pump_run_time_60m
                 name: "60 м"
-              - entity: sensor.ch_water_pump_run_time_24h
+              - entity: sensor.rch_ch_water_pump_run_time_24h
                 name: "24 ч"
 
   #- type: vertical-stack
@@ -58,49 +58,49 @@ cards:
           ### <center>Септик</center>
       - type: entities
         entities:
-          - entity: switch.sonoff_pow_r3_01
+          - entity: switch.rch_sonoff_pow_r3_01
             state_color: true
             name: Питание
             icon: mdi:power
-          - entity: sensor.sonoff_pow_r3_01_power
+          - entity: sensor.rch_sonoff_pow_r3_01_power
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.sonoff_pow_r3_01_current
+              - entity: sensor.rch_sonoff_pow_r3_01_current
                 name: false
                 format: precision1
-          - entity: binary_sensor.ch_septic_air_compressor_status
+          - entity: binary_sensor.rch_ch_septic_air_compressor_status
             state_color: true
             name: Статус компрессора
-          - entity: binary_sensor.ch_septic_pump_status
+          - entity: binary_sensor.rch_ch_septic_pump_status
             state_color: true
             icon: mdi:water-pump
             name: Статус насоса
-          - entity: binary_sensor.ch_septic_pump_status
+          - entity: binary_sensor.rch_ch_septic_pump_status
             type: custom:multiple-entity-row
             name: Частота включения насоса
             show_state: false
             icon: []
             entities:
-              - entity: sensor.ch_septic_pump_start_frequency_10m
+              - entity: sensor.rch_ch_septic_pump_start_frequency_10m
                 name: "10 м"
-              - entity: sensor.ch_septic_pump_start_frequency_60m
+              - entity: sensor.rch_ch_septic_pump_start_frequency_60m
                 name: "60 м"
-              - entity: sensor.ch_septic_pump_start_frequency_24h
+              - entity: sensor.rch_ch_septic_pump_start_frequency_24h
                 name: "24 ч"
-          - entity: binary_sensor.ch_septic_pump_status
+          - entity: binary_sensor.rch_ch_septic_pump_status
             type: custom:multiple-entity-row
             name: Время работы насоса
             show_state: false
             icon: []
             entities:
-              - entity: sensor.ch_septic_pump_run_time_10m
+              - entity: sensor.rch_ch_septic_pump_run_time_10m
                 name: "10 м"
-              - entity: sensor.ch_septic_pump_run_time_60m
+              - entity: sensor.rch_ch_septic_pump_run_time_60m
                 name: "60 м"
-              - entity: sensor.ch_septic_pump_run_time_24h
+              - entity: sensor.rch_ch_septic_pump_run_time_24h
                 name: "24 ч"
 
   - type: vertical-stack
@@ -110,21 +110,21 @@ cards:
           ### <center>Бойлер</center>
       - type: entities
         entities:
-          - entity: switch.gosund_sp111_01_switch
+          - entity: switch.rch_gosund_sp111_01_switch
             state_color: true 
             name: Питание
             icon: mdi:power
-          - entity: binary_sensor.ch_boiler_status
+          - entity: binary_sensor.rch_ch_boiler_status
             state_color: true 
             icon: mdi:water-boiler
             name: Статус
-          - entity: sensor.gosund_sp111_01_watt
+          - entity: sensor.rch_gosund_sp111_01_watt
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.gosund_sp111_01_ampere
+              - entity: sensor.rch_gosund_sp111_01_ampere
                 name: false
                 format: precision1
       - type: markdown
@@ -132,21 +132,21 @@ cards:
           ### <center>Греющий кабель</center>
       - type: entities
         entities:
-          - entity: switch.gosund_sp111_02_switch
+          - entity: switch.rch_gosund_sp111_02_switch
             state_color: true
             name: Питание
             icon: mdi:power
-          - entity: binary_sensor.ch_heating_cable_status
+          - entity: binary_sensor.rch_ch_heating_cable_status
             state_color: true
             icon: mdi:heating-coil
             name: Статус
-          - entity: sensor.gosund_sp111_02_watt
+          - entity: sensor.rch_gosund_sp111_02_watt
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.gosund_sp111_02_ampere
+              - entity: sensor.rch_gosund_sp111_02_ampere
                 name: false
                 format: precision1
 

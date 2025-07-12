@@ -14,7 +14,7 @@ cards:
             content: >
               ### <center>Гостиная</center>
           - type: custom:simple-thermostat
-            entity: climate.country_house_living_room
+            entity: climate.rch_country_house_living_room
             layout:
               step: row
               mode:
@@ -60,9 +60,9 @@ cards:
             hour24: true
             align_state: center
             entities:
-              - entity: sensor.a4c138d358e9_temperature
+              - entity: sensor.rch_a4c138d358e9_temperature
                 name: Температура
-              - entity: sensor.a4c138d358e9_humidity
+              - entity: sensor.rch_a4c138d358e9_humidity
                 name: Влажность
                 show_state: true
                 y_axis: secondary
@@ -158,7 +158,7 @@ cards:
             content: >
               ### <center>Кабинет</center>
           - type: custom:simple-thermostat
-            entity: climate.country_house_cabinet
+            entity: climate.rch_country_house_cabinet
             layout:
               step: row
               mode:
@@ -204,9 +204,9 @@ cards:
             hour24: true
             align_state: center
             entities:
-              - entity: sensor.a4c138962bb6_temperature
+              - entity: sensor.rch_a4c138962bb6_temperature
                 name: Температура
-              - entity: sensor.a4c138962bb6_humidity
+              - entity: sensor.rch_a4c138962bb6_humidity
                 name: Влажность
                 show_state: true
                 y_axis: secondary
@@ -302,7 +302,7 @@ cards:
             content: >
               ### <center>Туалет 1 Этаж</center>
           - type: custom:simple-thermostat
-            entity: climate.country_house_toilet_1st_floor
+            entity: climate.rch_country_house_toilet_1st_floor
             layout:
               step: row
               mode:
@@ -348,9 +348,9 @@ cards:
             hour24: true
             align_state: center
             entities:
-              - entity: sensor.a4c13822ae19_temperature
+              - entity: sensor.rch_a4c13822ae19_temperature
                 name: Температура
-              - entity: sensor.a4c13822ae19_humidity
+              - entity: sensor.rch_a4c13822ae19_humidity
                 name: Влажность
                 show_state: true
                 y_axis: secondary
@@ -452,7 +452,7 @@ cards:
             content: >
               ### <center>Детская</center>
           - type: custom:simple-thermostat
-            entity: climate.country_house_kids_rooms
+            entity: climate.rch_country_house_kids_rooms
             layout:
               step: row
               mode:
@@ -498,9 +498,9 @@ cards:
             hour24: true
             align_state: center
             entities:
-              - entity: sensor.country_house_avg_temp_kids_rooms
+              - entity: sensor.rch_country_house_avg_temp_kids_rooms
                 name: Температура
-              - entity: sensor.country_house_avg_humidity_kids_rooms
+              - entity: sensor.rch_country_house_avg_humidity_kids_rooms
                 name: Влажность
                 show_state: true
                 y_axis: secondary
@@ -596,7 +596,7 @@ cards:
             content: >
               ### <center>Спальня</center>
           - type: custom:simple-thermostat
-            entity: climate.country_house_bedroom
+            entity: climate.rch_country_house_bedroom
             layout:
               step: row
               mode:
@@ -642,9 +642,9 @@ cards:
             hour24: true
             align_state: center
             entities:
-              - entity: sensor.a4c1384fc124_temperature
+              - entity: sensor.rch_a4c1384fc124_temperature
                 name: Температура
-              - entity: sensor.a4c1384fc124_humidity
+              - entity: sensor.rch_a4c1384fc124_humidity
                 name: Влажность
                 show_state: true
                 y_axis: secondary
@@ -740,7 +740,7 @@ cards:
             content: >
               ### <center>Туалет 2 Этаж</center>
           - type: custom:simple-thermostat
-            entity: climate.country_house_toilet_2st_floor
+            entity: climate.rch_country_house_toilet_2st_floor
             layout:
               step: row
               mode:
@@ -786,9 +786,9 @@ cards:
             hour24: true
             align_state: center
             entities:
-              - entity: sensor.a4c138169698_temperature
+              - entity: sensor.rch_a4c138169698_temperature
                 name: Температура
-              - entity: sensor.a4c138169698_humidity
+              - entity: sensor.rch_a4c138169698_humidity
                 name: Влажность
                 show_state: true
                 y_axis: secondary

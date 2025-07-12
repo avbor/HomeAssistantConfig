@@ -24,62 +24,62 @@ ch_climate_pack:
       icon: mdi:radiator
 
   # Sensors
-  sensor:
-    - platform: min_max
-      name: Country House Avg Temp - Kids Rooms
-      unique_id: 00ea4868-27d4-44e7-b29c-e205b1b3d740
-      type: median
-      round_digits: 1
-      entity_ids:
-        - sensor.a4c138c7ded2_temperature
-        - sensor.a4c1380b3a85_temperature
+  # sensor:
+  #   - platform: min_max
+  #     name: Country House Avg Temp - Kids Rooms
+  #     unique_id: 00ea4868-27d4-44e7-b29c-e205b1b3d740
+  #     type: median
+  #     round_digits: 1
+  #     entity_ids:
+  #       - sensor.a4c138c7ded2_temperature
+  #       - sensor.a4c1380b3a85_temperature
 
-    - platform: min_max
-      name: Country House Avg Humidity - Kids Rooms
-      unique_id: aac9aa34-da5f-4910-9ab4-00e02063b404
-      type: median
-      round_digits: 1
-      entity_ids:
-        - sensor.a4c138c7ded2_humidity
-        - sensor.a4c1380b3a85_humidity
+  #   - platform: min_max
+  #     name: Country House Avg Humidity - Kids Rooms
+  #     unique_id: aac9aa34-da5f-4910-9ab4-00e02063b404
+  #     type: median
+  #     round_digits: 1
+  #     entity_ids:
+  #       - sensor.a4c138c7ded2_humidity
+  #       - sensor.a4c1380b3a85_humidity
 
   # Templates
-  template:
-    - sensor:
-        - name: ch_heater_living_room_status
-          unique_id: 62995209-7e00-4417-8259-b44117b29827
-          state: >-
-            {{ ((state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs) * 100 }}
+  # template:
+  #   - sensor:
+  #       - name: ch_heater_living_room_status
+  #         unique_id: 62995209-7e00-4417-8259-b44117b29827
+  #         state: >-
+  #           {{ ((state_attr('climate.country_house_living_room', 'hvac_action') == 'heating') | abs) * 100 }}
 
-        - name: ch_heater_kids_rooms_status
-          unique_id: 0570de2f-750a-41e4-849c-6a618acbede0
-          state: >-
-            {{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}
+  #       - name: ch_heater_kids_rooms_status
+  #         unique_id: 0570de2f-750a-41e4-849c-6a618acbede0
+  #         state: >-
+  #           {{ ((state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') | abs) * 100 }}
 
-        - name: ch_heater_cabinet_status
-          unique_id: 9dde316e-ca73-4a7b-a25e-ddd860ddf3e4
-          state: >-
-            {{ ((state_attr('climate.country_house_cabinet', 'hvac_action') == 'heating') | abs) * 100 }}
+  #       - name: ch_heater_cabinet_status
+  #         unique_id: 9dde316e-ca73-4a7b-a25e-ddd860ddf3e4
+  #         state: >-
+  #           {{ ((state_attr('climate.country_house_cabinet', 'hvac_action') == 'heating') | abs) * 100 }}
 
-        - name: ch_heater_bedroom_status
-          unique_id: 5e7bf583-ea87-4d86-9af3-dd280d30b9c9
-          state: >-
-            {{ ((state_attr('climate.country_house_bedroom', 'hvac_action') == 'heating') | abs) * 100 }}
+  #       - name: ch_heater_bedroom_status
+  #         unique_id: 5e7bf583-ea87-4d86-9af3-dd280d30b9c9
+  #         state: >-
+  #           {{ ((state_attr('climate.country_house_bedroom', 'hvac_action') == 'heating') | abs) * 100 }}
 
-        - name: ch_heater_toilet_1st_floor_status
-          unique_id: e2335c1c-3574-4cdc-a2f5-47e570a9f26a
-          state: >-
-            {{ ((state_attr('climate.country_house_toilet_1st_floor', 'hvac_action') == 'heating') | abs) * 100 }}
+  #       - name: ch_heater_toilet_1st_floor_status
+  #         unique_id: e2335c1c-3574-4cdc-a2f5-47e570a9f26a
+  #         state: >-
+  #           {{ ((state_attr('climate.country_house_toilet_1st_floor', 'hvac_action') == 'heating') | abs) * 100 }}
 
-        - name: ch_heater_toilet_2st_floor_status
-          unique_id: e1c405f5-60f0-43af-bbb9-753abaccd593
-          state: >-
-            {{ ((state_attr('climate.country_house_toilet_2st_floor', 'hvac_action') == 'heating') | abs) * 100 }}
+  #       - name: ch_heater_toilet_2st_floor_status
+  #         unique_id: e1c405f5-60f0-43af-bbb9-753abaccd593
+  #         state: >-
+  #           {{ ((state_attr('climate.country_house_toilet_2st_floor', 'hvac_action') == 'heating') | abs) * 100 }}
 
 #        - name: ch_heater_terrace_power
 #          unique_id: 9c477f38-20b2-42f9-91fc-50b9d0e4da64
 #          state: >-
-#            {% set heat_power = (states('sensor.gosund_sp111_02_watt') | int(0)) %}
+#            {% set heat_power = (states('sensor.rch_gosund_sp111_02_watt') | int(0)) %}
 #            {% if heat_power == 0 %}
 #              0
 #            {% elif heat_power > 500 and heat_power < 1000 %}
@@ -88,180 +88,180 @@ ch_climate_pack:
 #              2
 #            {% endif %}
 
-    - binary_sensor:
-        - name: ch_heater_living_room_status
-          unique_id: 8357e1e6-2f99-4750-8353-719aa092ce49
-          device_class: heat
-          state: >-
-            {{ state_attr('climate.country_house_living_room', 'hvac_action') == 'heating' }}
-          icon: >-
-            {% if state_attr('climate.country_house_living_room', 'hvac_action') == 'heating' %}
-              mdi:radiator
-            {% else %}
-              mdi:radiator-disabled
-            {% endif %}
+    # - binary_sensor:
+    #     - name: ch_heater_living_room_status
+    #       unique_id: 8357e1e6-2f99-4750-8353-719aa092ce49
+    #       device_class: heat
+    #       state: >-
+    #         {{ state_attr('climate.country_house_living_room', 'hvac_action') == 'heating' }}
+    #       icon: >-
+    #         {% if state_attr('climate.country_house_living_room', 'hvac_action') == 'heating' %}
+    #           mdi:radiator
+    #         {% else %}
+    #           mdi:radiator-disabled
+    #         {% endif %}
 
-        - name: ch_heater_kids_rooms_status
-          unique_id: 529dbbe5-9d12-4a80-a4e9-46c779eeba97
-          device_class: heat
-          state: >-
-            {{ (state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') }}
-          icon: >-
-            {% if state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating' %}
-              mdi:radiator
-            {% else %}
-              mdi:radiator-disabled
-            {% endif %}
+    #     - name: ch_heater_kids_rooms_status
+    #       unique_id: 529dbbe5-9d12-4a80-a4e9-46c779eeba97
+    #       device_class: heat
+    #       state: >-
+    #         {{ (state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating') }}
+    #       icon: >-
+    #         {% if state_attr('climate.country_house_kids_rooms', 'hvac_action') == 'heating' %}
+    #           mdi:radiator
+    #         {% else %}
+    #           mdi:radiator-disabled
+    #         {% endif %}
 
-        - name: ch_heater_cabinet_status
-          unique_id: 86f0e256-4db7-497d-b5a5-11facc115153
-          device_class: heat
-          state: >-
-            {{ (state_attr('climate.country_house_cabinet', 'hvac_action') == 'heating') }}
-          icon: >-
-            {% if state_attr('climate.country_house_cabinet', 'hvac_action') == 'heating' %}
-              mdi:radiator
-            {% else %}
-              mdi:radiator-disabled
-            {% endif %}
+    #     - name: ch_heater_cabinet_status
+    #       unique_id: 86f0e256-4db7-497d-b5a5-11facc115153
+    #       device_class: heat
+    #       state: >-
+    #         {{ (state_attr('climate.country_house_cabinet', 'hvac_action') == 'heating') }}
+    #       icon: >-
+    #         {% if state_attr('climate.country_house_cabinet', 'hvac_action') == 'heating' %}
+    #           mdi:radiator
+    #         {% else %}
+    #           mdi:radiator-disabled
+    #         {% endif %}
 
-        - name: ch_heater_bedroom_status
-          unique_id: 49e66541-5dad-48b5-83a0-20bbf36e1b3a
-          device_class: heat
-          state: >-
-            {{ (state_attr('climate.country_house_bedroom', 'hvac_action') == 'heating') }}
-          icon: >-
-            {% if state_attr('climate.country_house_bedroom', 'hvac_action') == 'heating' %}
-              mdi:radiator
-            {% else %}
-              mdi:radiator-disabled
-            {% endif %}
+    #     - name: ch_heater_bedroom_status
+    #       unique_id: 49e66541-5dad-48b5-83a0-20bbf36e1b3a
+    #       device_class: heat
+    #       state: >-
+    #         {{ (state_attr('climate.country_house_bedroom', 'hvac_action') == 'heating') }}
+    #       icon: >-
+    #         {% if state_attr('climate.country_house_bedroom', 'hvac_action') == 'heating' %}
+    #           mdi:radiator
+    #         {% else %}
+    #           mdi:radiator-disabled
+    #         {% endif %}
 
-        - name: ch_heater_toilet_1st_floor_status
-          unique_id: 0d71a2a7-0ef8-4672-90a4-84304c6dcfb7
-          device_class: heat
-          state: >-
-            {{ (state_attr('climate.country_house_toilet_1st_floor', 'hvac_action') == 'heating') }}
-          icon: >-
-            {% if state_attr('climate.country_house_toilet_1st_floor', 'hvac_action') == 'heating' %}
-              mdi:radiator
-            {% else %}
-              mdi:radiator-disabled
-            {% endif %}
+    #     - name: ch_heater_toilet_1st_floor_status
+    #       unique_id: 0d71a2a7-0ef8-4672-90a4-84304c6dcfb7
+    #       device_class: heat
+    #       state: >-
+    #         {{ (state_attr('climate.country_house_toilet_1st_floor', 'hvac_action') == 'heating') }}
+    #       icon: >-
+    #         {% if state_attr('climate.country_house_toilet_1st_floor', 'hvac_action') == 'heating' %}
+    #           mdi:radiator
+    #         {% else %}
+    #           mdi:radiator-disabled
+    #         {% endif %}
 
 
-        - name: ch_heater_toilet_2st_floor_status
-          unique_id: 9a18b81c-083b-4ae0-9849-47477f315c0f
-          device_class: heat
-          state: >-
-            {{ (state_attr('climate.country_house_toilet_2st_floor', 'hvac_action') == 'heating') }}
-          icon: >-
-            {% if state_attr('climate.country_house_toilet_2st_floor', 'hvac_action') == 'heating' %}
-              mdi:radiator
-            {% else %}
-              mdi:radiator-disabled
-            {% endif %}
+    #     - name: ch_heater_toilet_2st_floor_status
+    #       unique_id: 9a18b81c-083b-4ae0-9849-47477f315c0f
+    #       device_class: heat
+    #       state: >-
+    #         {{ (state_attr('climate.country_house_toilet_2st_floor', 'hvac_action') == 'heating') }}
+    #       icon: >-
+    #         {% if state_attr('climate.country_house_toilet_2st_floor', 'hvac_action') == 'heating' %}
+    #           mdi:radiator
+    #         {% else %}
+    #           mdi:radiator-disabled
+    #         {% endif %}
 
   # Climate
-  climate:
-    - platform: generic_thermostat
-      unique_id: 9b877559-21bf-424b-8edc-0e1efb8c5834
-      name: Country House Living Room
-      heater: switch.gosund_sp111_07_switch
-      target_sensor: sensor.a4c138d358e9_temperature
-      min_temp: 5
-      max_temp: 30
-      cold_tolerance: 2
-      hot_tolerance: 0.5
-      keep_alive:
-        minutes: 5
-      away_temp: 12
-      comfort_temp: 23
-      eco_temp: 15
-      home_temp: 21
-      precision: 0.1
+  # climate:
+  #   - platform: generic_thermostat
+  #     unique_id: 9b877559-21bf-424b-8edc-0e1efb8c5834
+  #     name: Country House Living Room
+  #     heater: switch.rch_gosund_sp111_07_switch
+  #     target_sensor: sensor.a4c138d358e9_temperature
+  #     min_temp: 5
+  #     max_temp: 30
+  #     cold_tolerance: 2
+  #     hot_tolerance: 0.5
+  #     keep_alive:
+  #       minutes: 5
+  #     away_temp: 12
+  #     comfort_temp: 23
+  #     eco_temp: 15
+  #     home_temp: 21
+  #     precision: 0.1
 
-    - platform: generic_thermostat
-      unique_id: 5c3bb751-1458-4b32-b86c-5ef3206ded5a
-      name: Country House Kids Rooms
-      heater: switch.gosund_sp111_08_switch
-      target_sensor: sensor.country_house_avg_temp_kids_rooms
-      min_temp: 5
-      max_temp: 30
-      cold_tolerance: 2
-      hot_tolerance: 0.5
-      keep_alive:
-        minutes: 5
-      away_temp: 12
-      comfort_temp: 23
-      eco_temp: 15
-      home_temp: 21
-      precision: 0.1
+  #   - platform: generic_thermostat
+  #     unique_id: 5c3bb751-1458-4b32-b86c-5ef3206ded5a
+  #     name: Country House Kids Rooms
+  #     heater: switch.rch_gosund_sp111_08_switch
+  #     target_sensor: sensor.country_house_avg_temp_kids_rooms
+  #     min_temp: 5
+  #     max_temp: 30
+  #     cold_tolerance: 2
+  #     hot_tolerance: 0.5
+  #     keep_alive:
+  #       minutes: 5
+  #     away_temp: 12
+  #     comfort_temp: 23
+  #     eco_temp: 15
+  #     home_temp: 21
+  #     precision: 0.1
 
-    - platform: generic_thermostat
-      unique_id: 834502ff-a80e-49ae-820a-897ea3c27ee5
-      name: Country House Toilet 1st Floor
-      heater: switch.0xa4c13806f468cf98
-      target_sensor: sensor.a4c13822ae19_temperature
-      min_temp: 5
-      max_temp: 30
-      cold_tolerance: 2
-      hot_tolerance: 0.5
-      keep_alive:
-        minutes: 5
-      away_temp: 12
-      comfort_temp: 23
-      eco_temp: 15
-      home_temp: 21
-      precision: 0.1
+  #   - platform: generic_thermostat
+  #     unique_id: 834502ff-a80e-49ae-820a-897ea3c27ee5
+  #     name: Country House Toilet 1st Floor
+  #     heater: switch.0xa4c13806f468cf98
+  #     target_sensor: sensor.a4c13822ae19_temperature
+  #     min_temp: 5
+  #     max_temp: 30
+  #     cold_tolerance: 2
+  #     hot_tolerance: 0.5
+  #     keep_alive:
+  #       minutes: 5
+  #     away_temp: 12
+  #     comfort_temp: 23
+  #     eco_temp: 15
+  #     home_temp: 21
+  #     precision: 0.1
 
-    - platform: generic_thermostat
-      unique_id: 883c8735-9705-4136-986f-c03f02eaec26
-      name: Country House Toilet 2st Floor
-      heater: switch.0xa4c138dd369833b0
-      target_sensor: sensor.a4c138169698_temperature
-      min_temp: 5
-      max_temp: 30
-      cold_tolerance: 2
-      hot_tolerance: 0.5
-      keep_alive:
-        minutes: 5
-      away_temp: 12
-      comfort_temp: 23
-      eco_temp: 15
-      home_temp: 21
-      precision: 0.1
+  #   - platform: generic_thermostat
+  #     unique_id: 883c8735-9705-4136-986f-c03f02eaec26
+  #     name: Country House Toilet 2st Floor
+  #     heater: switch.0xa4c138dd369833b0
+  #     target_sensor: sensor.a4c138169698_temperature
+  #     min_temp: 5
+  #     max_temp: 30
+  #     cold_tolerance: 2
+  #     hot_tolerance: 0.5
+  #     keep_alive:
+  #       minutes: 5
+  #     away_temp: 12
+  #     comfort_temp: 23
+  #     eco_temp: 15
+  #     home_temp: 21
+  #     precision: 0.1
 
-    - platform: generic_thermostat
-      unique_id: cf4af255-9332-4117-b32a-854bc3add45a
-      name: Country House Bedroom
-      heater: switch.0xa4c13852453d20d5
-      target_sensor: sensor.a4c1384fc124_temperature
-      min_temp: 5
-      max_temp: 30
-      cold_tolerance: 2
-      hot_tolerance: 0.5
-      keep_alive:
-        minutes: 5
-      away_temp: 12
-      comfort_temp: 23
-      eco_temp: 15
-      home_temp: 21
-      precision: 0.1
+  #   - platform: generic_thermostat
+  #     unique_id: cf4af255-9332-4117-b32a-854bc3add45a
+  #     name: Country House Bedroom
+  #     heater: switch.0xa4c13852453d20d5
+  #     target_sensor: sensor.a4c1384fc124_temperature
+  #     min_temp: 5
+  #     max_temp: 30
+  #     cold_tolerance: 2
+  #     hot_tolerance: 0.5
+  #     keep_alive:
+  #       minutes: 5
+  #     away_temp: 12
+  #     comfort_temp: 23
+  #     eco_temp: 15
+  #     home_temp: 21
+  #     precision: 0.1
 
-    - platform: generic_thermostat
-      unique_id: afb01822-bfa4-4927-bb4a-05b6dfd4fa94
-      name: Country House Cabinet
-      heater: switch.0xa4c1386cd4ee5e2b
-      target_sensor: sensor.a4c138962bb6_temperature
-      min_temp: 5
-      max_temp: 30
-      cold_tolerance: 2
-      hot_tolerance: 0.5
-      keep_alive:
-        minutes: 5
-      away_temp: 12
-      comfort_temp: 23
-      eco_temp: 15
-      home_temp: 21
-      precision: 0.1
+  #   - platform: generic_thermostat
+  #     unique_id: afb01822-bfa4-4927-bb4a-05b6dfd4fa94
+  #     name: Country House Cabinet
+  #     heater: switch.0xa4c1386cd4ee5e2b
+  #     target_sensor: sensor.a4c138962bb6_temperature
+  #     min_temp: 5
+  #     max_temp: 30
+  #     cold_tolerance: 2
+  #     hot_tolerance: 0.5
+  #     keep_alive:
+  #       minutes: 5
+  #     away_temp: 12
+  #     comfort_temp: 23
+  #     eco_temp: 15
+  #     home_temp: 21
+  #     precision: 0.1

@@ -27,10 +27,10 @@ ch_misc_pack:
           state: heat
           preset_mode: away
         # Насос
-        switch.sonoff_pow_r3_02:
+        switch.rch_sonoff_pow_r3_02:
           state: "off"
         # Бойлер
-        switch.gosund_sp111_01_switch:
+        switch.rch_gosund_sp111_01_switch:
           state: "off"
         light.dacha_parkovka:
           state: "off"
@@ -58,31 +58,31 @@ ch_misc_pack:
           state: heat
           preset_mode: home
         # Насос
-        #switch.sonoff_pow_r3_02:
+        #switch.rch_sonoff_pow_r3_02:
         #  state: "on"
         # Бойлер
-        #switch.gosund_sp111_01_switch:
+        #switch.rch_gosund_sp111_01_switch:
         #  state: "on"
 
   # Automations
   automation:
 
-    - alias: Дача - Оповещение о повышенной температуре в холодильнике
-      id: c7acbed6-d09b-47ce-a52f-cb6f9ff38765
-      triggers:
-        trigger: numeric_state
-        entity_id: sensor.0x00158d000802df91_temperature
-        above: 10
-        for:
-          minutes: 30
-      actions:
-        - action: telegram_bot.send_message
-          data:
-            target: !secret tlg_group_country_house
-            title: "*Внимание!*"
-            message: |
-              Повышенная температура в холодильнике!
-              Текущая: {{ states('sensor.0x00158d000802df91_temperature') }}°C
+    # - alias: Дача - Оповещение о повышенной температуре в холодильнике
+    #   id: c7acbed6-d09b-47ce-a52f-cb6f9ff38765
+    #   triggers:
+    #     trigger: numeric_state
+    #     entity_id: sensor.0x00158d000802df91_temperature
+    #     above: 10
+    #     for:
+    #       minutes: 30
+    #   actions:
+    #     - action: telegram_bot.send_message
+    #       data:
+    #         target: !secret tlg_group_country_house
+    #         title: "*Внимание!*"
+    #         message: |
+    #           Повышенная температура в холодильнике!
+    #           Текущая: {{ states('sensor.0x00158d000802df91_temperature') }}°C
 
     - alias: Дача - Напоминание после отъезда
       id: 7596485f-5cf9-4b99-af54-b51672510ab6

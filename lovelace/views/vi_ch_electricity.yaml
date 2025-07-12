@@ -17,7 +17,7 @@ cards:
                 content: >
                   <center>Входящее</center>
               - type: gauge
-                entity: sensor.shellyem_34945470f5db_channel_1_voltage
+                entity: sensor.rch_shellyem_34945470f5db_channel_1_voltage
                 name: ""
                 needle: true
                 min: 100
@@ -60,7 +60,7 @@ cards:
         entities:
           - entity: sensor.average_voltage_in_country_house
             name: []
-          - entity: sensor.shellyem_34945470f5db_channel_1_voltage
+          - entity: sensor.rch_shellyem_34945470f5db_channel_1_voltage
             name: []
         days_to_show: 7
         chart_type: line
@@ -93,7 +93,7 @@ cards:
         aggregate_func: max
         align_state: right
         entities:
-          - entity: sensor.shellyem_34945470f5db_channel_1_power
+          - entity: sensor.rch_shellyem_34945470f5db_channel_1_power
 
       - type: entities
         entities:

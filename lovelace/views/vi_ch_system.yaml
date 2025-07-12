@@ -20,11 +20,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4_c1_38_71_79_f4_79f4_temperature
+            entity: sensor.rch_bthome_sensor_79f4_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4_c1_38_71_79_f4_79f4_humidity
+            entity: sensor.rch_bthome_sensor_79f4_humidity
             name: Влажность
             graph: line
 
@@ -35,83 +35,83 @@ cards:
           ### <center>Розетки</center>
       - type: entities
         entities:
-          - entity: switch.sonoff_pow_r3_02
+          - entity: switch.rch_sonoff_pow_r3_02
             name: Насос
             icon: mdi:water-pump
-          - entity: sensor.sonoff_pow_r3_02_power
+          - entity: sensor.rch_sonoff_pow_r3_02_power
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.sonoff_pow_r3_02_current
+              - entity: sensor.rch_sonoff_pow_r3_02_current
                 name: false
                 format: precision1
-          - entity: switch.sonoff_pow_r3_01
+          - entity: switch.rch_sonoff_pow_r3_01
             name: Септик
             #icon: mdi:toilet
             icon: mdi:biohazard
-          - entity: sensor.sonoff_pow_r3_01_power
+          - entity: sensor.rch_sonoff_pow_r3_01_power
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.sonoff_pow_r3_01_current
+              - entity: sensor.rch_sonoff_pow_r3_01_current
                 name: false
                 format: precision1
-          - entity: switch.gosund_sp111_02_switch
+          - entity: switch.rch_gosund_sp111_02_switch
             name: Греющий кабель
             icon: mdi:heating-coil
-          - entity: sensor.gosund_sp111_02_watt
+          - entity: sensor.rch_gosund_sp111_02_watt
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.gosund_sp111_02_ampere
+              - entity: sensor.rch_gosund_sp111_02_ampere
                 name: false
                 format: precision1
-          - entity: switch.gosund_sp111_01_switch
+          - entity: switch.rch_gosund_sp111_01_switch
             name: Бойлер
             icon: mdi:water-boiler
-          - entity: sensor.gosund_sp111_01_watt
+          - entity: sensor.rch_gosund_sp111_01_watt
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.gosund_sp111_01_ampere
+              - entity: sensor.rch_gosund_sp111_01_ampere
                 name: false
                 format: precision1
-          - entity: switch.gosund_sp111_11_switch
+          - entity: switch.rch_gosund_sp111_11_switch
             name: Холодильник
             icon: mdi:fridge
-          - entity: sensor.gosund_sp111_11_watt
+          - entity: sensor.rch_gosund_sp111_11_watt
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.gosund_sp111_11_ampere
+              - entity: sensor.rch_gosund_sp111_11_ampere
                 name: false
                 format: precision1
-          - entity: switch.sonoff_basic_04_switch
+          - entity: switch.rch_sonoff_basic_04_switch
             name: Фильтр бассейна
             icon: mdi:pool
 
           - type: section
 
-          - entity: switch.gosund_sp111_07_switch
+          - entity: switch.rch_gosund_sp111_07_switch
             name: Обогреватель - Гостиная
             icon: mdi:radiator
-          - entity: sensor.gosund_sp111_07_watt
+          - entity: sensor.rch_gosund_sp111_07_watt
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.gosund_sp111_07_ampere
+              - entity: sensor.rch_gosund_sp111_07_ampere
                 name: false
                 format: precision1
 
@@ -141,16 +141,16 @@ cards:
                 name: false
                 format: precision1
 
-          - entity: switch.gosund_sp111_08_switch
+          - entity: switch.rch_gosund_sp111_08_switch
             name: Обогреватель - Детская
             icon: mdi:radiator
-          - entity: sensor.gosund_sp111_08_watt
+          - entity: sensor.rch_gosund_sp111_08_watt
             type: custom:multiple-entity-row
             name: "Потребление"
             icon: []
             format: precision1
             entities:
-              - entity: sensor.gosund_sp111_08_ampere
+              - entity: sensor.rch_gosund_sp111_08_ampere
                 name: false
                 format: precision1
 

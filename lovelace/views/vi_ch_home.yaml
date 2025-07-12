@@ -69,7 +69,7 @@ cards:
       - type: horizontal-stack
         cards:
           - type: tile
-            entity: light.dacha_parkovka
+            entity: light.rch_dacha_parkovka
             name: Парковка
             icon: mdi:light-flood-down
             hide_state: true
@@ -80,7 +80,7 @@ cards:
             features:
               - type: "toggle"
           - type: tile
-            entity: light.dacha_dvor
+            entity: light.rch_dacha_dvor
             name: Двор
             icon: mdi:light-flood-down
             hide_state: true

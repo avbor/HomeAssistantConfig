@@ -32,11 +32,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c138d358e9_temperature
+            entity: sensor.rch_a4c138d358e9_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c138d358e9_humidity
+            entity: sensor.rch_a4c138d358e9_humidity
             name: Влажность
             graph: line
       - type: markdown
@@ -45,11 +45,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c138962bb6_temperature
+            entity: sensor.rch_a4c138962bb6_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c138962bb6_humidity
+            entity: sensor.rch_a4c138962bb6_humidity
             name: Влажность
             graph: line
       - type: markdown
@@ -58,11 +58,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c13822ae19_temperature
+            entity: sensor.rch_a4c13822ae19_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c13822ae19_humidity
+            entity: sensor.rch_a4c13822ae19_humidity
             name: Влажность
             graph: line
   - type: vertical-stack
@@ -76,12 +76,12 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.country_house_avg_temp_kids_rooms
+            entity: sensor.rch_country_house_avg_temp_kids_rooms
             name: Температура
             graph: line
             icon: mdi:thermometer
           - type: sensor
-            entity: sensor.country_house_avg_humidity_kids_rooms
+            entity: sensor.rch_country_house_avg_humidity_kids_rooms
             name: Влажность
             graph: line
             icon: mdi:water-percent
@@ -91,11 +91,11 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c1384fc124_temperature
+            entity: sensor.rch_a4c1384fc124_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c1384fc124_humidity
+            entity: sensor.rch_a4c1384fc124_humidity
             name: Влажность
             graph: line
       - type: markdown
@@ -104,10 +104,10 @@ cards:
       - type: horizontal-stack
         cards:
           - type: sensor
-            entity: sensor.a4c138169698_temperature
+            entity: sensor.rch_a4c138169698_temperature
             name: Температура
             graph: line
           - type: sensor
-            entity: sensor.a4c138169698_humidity
+            entity: sensor.rch_a4c138169698_humidity
             name: Влажность
             graph: line

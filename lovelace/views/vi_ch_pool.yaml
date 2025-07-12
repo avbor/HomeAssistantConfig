@@ -35,6 +35,6 @@ cards:
 
       - type: entities
         entities:
-          - entity: switch.sonoff_basic_04_switch
+          - entity: switch.rch_sonoff_basic_04_switch
             name: Фильтр бассейна
             icon: mdi:water-sync
