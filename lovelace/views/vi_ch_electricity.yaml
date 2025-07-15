@@ -120,7 +120,7 @@ cards:
               entity: sensor.date_current_month
               name: false
             entities:
-              - entity: sensor.ch_main_energy_monthly_total
+              - entity: sensor.rch_ch_main_energy_monthly_total
                 name: false
                 unit: "кВт⋅ч"
                 format: precision2
@@ -138,7 +138,7 @@ cards:
               entity: sensor.date_previous_month
               name: false
             entities:
-              - entity: sensor.ch_main_energy_monthly_total
+              - entity: sensor.rch_ch_main_energy_monthly_total
                 attribute: last_period
                 name: false
                 unit: "кВт⋅ч"

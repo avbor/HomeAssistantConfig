@@ -69,7 +69,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.ch_main_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_ch_main_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_main_monthly_prev
@@ -79,7 +79,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.ch_main_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_ch_main_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Living Room
@@ -90,7 +90,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_livingroom_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_radiator_livingroom_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_livingroom_monthly_prev
@@ -100,7 +100,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_livingroom_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_livingroom_daily_avg
@@ -124,7 +124,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_livingroom_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_livingroom_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Cabinet
@@ -135,7 +135,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_cabinet_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_radiator_cabinet_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_cabinet_monthly_prev
@@ -145,7 +145,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_cabinet_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_cabinet_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_cabinet_daily_avg
@@ -169,7 +169,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_cabinet_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_cabinet_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Toilet 1st Floor
@@ -180,7 +180,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_radiator_toilet_1st_floor_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_toilet_1st_floor_monthly_prev
@@ -190,7 +190,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_toilet_1st_floor_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_toilet_1st_floor_daily_avg
@@ -214,7 +214,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_toilet_1st_floor_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_toilet_1st_floor_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Kid's Rooms
@@ -225,7 +225,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_radiator_kidsrooms_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_kidsrooms_monthly_prev
@@ -235,7 +235,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_kidsrooms_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_kidsrooms_daily_avg
@@ -259,7 +259,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_kidsrooms_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_kidsrooms_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Bedroom
@@ -270,7 +270,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_bedroom_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_radiator_bedroom_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_bedroom_monthly_prev
@@ -280,7 +280,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_bedroom_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_bedroom_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_bedroom_daily_avg
@@ -304,7 +304,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_bedroom_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_bedroom_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Radiator - Toilet 2st Floor
@@ -315,7 +315,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_radiator_toilet_2st_floor_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_toilet_2st_floor_monthly_prev
@@ -325,7 +325,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_toilet_2st_floor_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_radiator_toilet_2st_floor_daily_avg
@@ -349,7 +349,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_radiator_toilet_2st_floor_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_radiator_toilet_2st_floor_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Water Pump
@@ -360,7 +360,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_water_pump_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_water_pump_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_water_pump_monthly_prev
@@ -370,7 +370,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_water_pump_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_water_pump_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_water_pump_daily_avg
@@ -394,7 +394,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_water_pump_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_water_pump_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Septic
@@ -405,7 +405,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_septic_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_septic_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_septic_monthly_prev
@@ -415,7 +415,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_septic_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_septic_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_septic_daily_avg
@@ -439,7 +439,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_septic_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_septic_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # Water Heating Cable
@@ -450,7 +450,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((states('sensor.socket_ch_water_heating_cable_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((states('sensor.rch_socket_ch_water_heating_cable_energy_monthly_total') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_water_heating_cable_monthly_prev
@@ -460,7 +460,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_septic_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_septic_energy_monthly_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         - name: energy_cost_ch_water_heating_cable_daily_avg
@@ -484,7 +484,7 @@ ch_energy_pack:
           icon: mdi:cash
           state: >
             {{
-              ((state_attr('sensor.socket_ch_water_heating_cable_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
+              ((state_attr('sensor.rch_socket_ch_water_heating_cable_energy_daily_total', 'last_period') | float(0)) * (states('input_number.country_house_enegry_cost_current') | float(0))) | round(2)
             }}
 
         # MES Energy Meter 44259893 last accepted readings T1
@@ -651,189 +651,6 @@ ch_energy_pack:
       entity_ids:
         - sensor.rch_gosund_sp111_01_volt
         - sensor.rch_gosund_sp111_02_volt
-
-  # Utility Meters
-  utility_meter:
-
-    # For Main
-    ch_main_energy_hourly:
-      unique_id: 06a44801-2e3c-4f0c-89d0-eca6323f08f1
-      name: CH Main Energy Daily Hourly
-      source: sensor.rch_shellyem_34945470f5db_channel_1_energy
-      cycle: hourly
-      tariffs:
-        - total
-
-    ch_main_energy_daily:
-      unique_id: 5924e3e0-c085-47c1-8777-d4f75f7f5480
-      name: CH Main Energy Daily Energy
-      source: sensor.rch_shellyem_34945470f5db_channel_1_energy
-      cycle: daily
-      tariffs:
-        - total
-
-    ch_main_energy_monthly:
-      unique_id: 0740d58c-f61c-4951-a3d0-7f6c84b2500d
-      name: CH Main Energy Monthly Energy
-      source: sensor.rch_shellyem_34945470f5db_channel_1_energy
-      cycle: monthly
-      offset:
-        days: 20
-      tariffs:
-        - total
-
-    # For Radiator in Living Room
-    socket_ch_radiator_livingroom_energy_daily:
-      unique_id: 8c08ced7-021c-4463-9e89-77dba89f37a6
-      name: Living Room Daily Energy
-      source: sensor.rch_gosund_sp111_07_todays_usage
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_radiator_livingroom_energy_monthly:
-      unique_id: 3460b241-01dd-4160-9f31-4df154aadaed
-      name: Living Room Monthly Energy
-      source: sensor.rch_gosund_sp111_07_todays_usage
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Radiator in Cabinet
-    socket_ch_radiator_cabinet_energy_daily:
-      unique_id: 291f17f2-93e5-4ef9-908a-bbbea4a4c7f2
-      name: Cabinet Daily Energy
-      source: sensor.0xa4c1386cd4ee5e2b_energy
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_radiator_cabinet_energy_monthly:
-      unique_id: ac871d9f-b5f2-4b56-ace0-7ac4b8f46d87
-      name: Cabinet Monthly Energy
-      source: sensor.0xa4c1386cd4ee5e2b_energy
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Radiator in Toilet 1st Floor
-    socket_ch_radiator_toilet_1st_floor_energy_daily:
-      unique_id: 727efcea-4f7e-4f63-a6b0-8f6bfd901163
-      name: Toilet 1st Floor Daily Energy
-      source: sensor.0xa4c13806f468cf98_energy
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_radiator_toilet_1st_floor_energy_monthly:
-      unique_id: df6fe6c4-e2a1-41fc-9c57-727aed3a2606
-      name: Toilet 1st Floor Monthly Energy
-      source: sensor.0xa4c13806f468cf98_energy
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Radiator in Kid's Rooms
-    socket_ch_radiator_kidsrooms_energy_daily:
-      unique_id: 58f81cf4-2828-4550-ab9f-581963158007
-      name: Kids Room Daily Energy
-      source: sensor.rch_gosund_sp111_08_todays_usage
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_radiator_kidsrooms_energy_monthly:
-      unique_id: 8653271a-f885-4f4c-be51-0c13859087dc
-      name: Kids Room Monthly Energy
-      source: sensor.rch_gosund_sp111_08_todays_usage
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Radiator in Bedroom
-    socket_ch_radiator_bedroom_energy_daily:
-      unique_id: 0745e1c8-cc1f-4514-9953-d5a69cc6cbf3
-      name: bedroom Daily Energy
-      source: sensor.0xa4c13852453d20d5_energy
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_radiator_bedroom_energy_monthly:
-      unique_id: e49f9827-b8bb-4f43-a983-8ae5b57356d0
-      name: Kids Room Monthly Energy
-      source: sensor.0xa4c13852453d20d5_energy
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Radiator in Toilet 2st Floor
-    socket_ch_radiator_toilet_2st_floor_energy_daily:
-      unique_id: 33ca5ebb-30ea-4fa5-a889-ed8e17b702ab
-      name: Toilet 2st Floor Daily Energy
-      source: sensor.0xa4c138dd369833b0_energy
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_radiator_toilet_2st_floor_energy_monthly:
-      unique_id: ea93834e-f628-4026-baa5-f15c330a74e8
-      name: Toilet 2st Floor Monthly Energy
-      source: sensor.0xa4c138dd369833b0_energy
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Water Pump
-    socket_ch_water_pump_energy_daily:
-      unique_id: fdd4ae5c-8671-4785-a1f5-664270929cdb
-      name: Water Pump Daily Energy
-      source: sensor.rch_sonoff_pow_r3_02_total_daily_energy
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_water_pump_energy_monthly:
-      unique_id: e1d44185-e5fb-40ae-a7fb-67048f72baaa
-      name: Water Pump Monthly Energy
-      source: sensor.rch_sonoff_pow_r3_02_total_daily_energy
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Septic
-    socket_ch_septic_energy_daily:
-      unique_id: dbd359c1-205b-4a67-a005-68b37d72e769
-      name: Septic Daily Energy
-      source: sensor.rch_sonoff_pow_r3_01_total_daily_energy
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_septic_energy_monthly:
-      unique_id: de3adfa8-3ee0-4629-8542-28b8cc30b28c
-      name: Septic Monthly Energy
-      source: sensor.rch_sonoff_pow_r3_01_total_daily_energy
-      cycle: monthly
-      tariffs:
-        - total
-
-    # For Water Heating Cable
-    socket_ch_water_heating_cable_energy_daily:
-      unique_id: d6d38780-434e-4d34-91ee-93ac80a4b8d2
-      name: Water Heating Cable Daily Energy
-      source: sensor.rch_gosund_sp111_02_todays_usage
-      cycle: daily
-      tariffs:
-        - total
-
-    socket_ch_water_heating_cable_energy_monthly:
-      unique_id: 78f21740-7cb2-4cd1-b552-f6e5c8aa86fe
-      name: Water Heating Cable Monthly Energy
-      source: sensor.rch_gosund_sp111_02_todays_usage
-      cycle: monthly
-      tariffs:
-        - total
 
   # Scripts
   script:

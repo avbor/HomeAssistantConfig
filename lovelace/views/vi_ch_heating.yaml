@@ -21,7 +21,7 @@ cards:
                 names: false
             header: false
             sensors:
-              - entity: binary_sensor.ch_heater_living_room_status
+              - entity: binary_sensor.rch_ch_heater_living_room_status
                 name: Статус
             control:
               hvac:
@@ -69,7 +69,7 @@ cards:
                 smoothing: true
                 show_fill: false
                 color: deepskyblue
-              - entity: sensor.ch_heater_living_room_status
+              - entity: sensor.rch_ch_heater_living_room_status
                 y_axis: secondary
                 aggregate_func: max
                 smoothing: false
@@ -111,7 +111,7 @@ cards:
                         entity: sensor.date_current_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_livingroom_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_livingroom_energy_monthly_total
                           name: false
                           unit: "кВт⋅ч"
                           format: precision2
@@ -129,7 +129,7 @@ cards:
                         entity: sensor.date_previous_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_livingroom_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_livingroom_energy_monthly_total
                           attribute: last_period
                           name: false
                           unit: "кВт⋅ч"
@@ -165,7 +165,7 @@ cards:
                 names: false
             header: false
             sensors:
-              - entity: binary_sensor.ch_heater_cabinet_status
+              - entity: binary_sensor.rch_ch_heater_cabinet_status
                 name: Статус
             control:
               hvac:
@@ -213,7 +213,7 @@ cards:
                 smoothing: true
                 show_fill: false
                 color: deepskyblue
-              - entity: sensor.ch_heater_cabinet_status
+              - entity: sensor.rch_ch_heater_cabinet_status
                 y_axis: secondary
                 aggregate_func: max
                 smoothing: false
@@ -255,7 +255,7 @@ cards:
                         entity: sensor.date_current_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_cabinet_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_cabinet_energy_monthly_total
                           name: false
                           unit: "кВт⋅ч"
                           format: precision2
@@ -273,7 +273,7 @@ cards:
                         entity: sensor.date_previous_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_cabinet_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_cabinet_energy_monthly_total
                           attribute: last_period
                           name: false
                           unit: "кВт⋅ч"
@@ -309,7 +309,7 @@ cards:
                 names: false
             header: false
             sensors:
-              - entity: binary_sensor.ch_heater_toilet_1st_floor_status
+              - entity: binary_sensor.rch_ch_heater_toilet_1st_floor_status
                 name: Статус
             control:
               hvac:
@@ -357,7 +357,7 @@ cards:
                 smoothing: true
                 show_fill: false
                 color: deepskyblue
-              - entity: sensor.ch_heater_toilet_1st_floor_status
+              - entity: sensor.rch_ch_heater_toilet_1st_floor_status
                 y_axis: secondary
                 aggregate_func: max
                 smoothing: false
@@ -399,7 +399,7 @@ cards:
                         entity: sensor.date_current_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_toilet_1st_floor_energy_monthly_total
                           name: false
                           unit: "кВт⋅ч"
                           format: precision2
@@ -417,7 +417,7 @@ cards:
                         entity: sensor.date_previous_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_toilet_1st_floor_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_toilet_1st_floor_energy_monthly_total
                           attribute: last_period
                           name: false
                           unit: "кВт⋅ч"
@@ -459,7 +459,7 @@ cards:
                 names: false
             header: false
             sensors:
-              - entity: binary_sensor.ch_heater_kids_rooms_status
+              - entity: binary_sensor.rch_ch_heater_kids_rooms_status
                 name: Статус
             control:
               hvac:
@@ -507,7 +507,7 @@ cards:
                 smoothing: true
                 show_fill: false
                 color: deepskyblue
-              - entity: sensor.ch_heater_kids_rooms_status
+              - entity: sensor.rch_ch_heater_kids_rooms_status
                 y_axis: secondary
                 aggregate_func: max
                 smoothing: false
@@ -549,7 +549,7 @@ cards:
                         entity: sensor.date_current_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_kidsrooms_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_kidsrooms_energy_monthly_total
                           name: false
                           unit: "кВт⋅ч"
                           format: precision2
@@ -567,7 +567,7 @@ cards:
                         entity: sensor.date_previous_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_kidsrooms_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_kidsrooms_energy_monthly_total
                           attribute: last_period
                           name: false
                           unit: "кВт⋅ч"
@@ -603,7 +603,7 @@ cards:
                 names: false
             header: false
             sensors:
-              - entity: binary_sensor.ch_heater_bedroom_status
+              - entity: binary_sensor.rch_ch_heater_bedroom_status
                 name: Статус
             control:
               hvac:
@@ -651,7 +651,7 @@ cards:
                 smoothing: true
                 show_fill: false
                 color: deepskyblue
-              - entity: sensor.ch_heater_bedroom_status
+              - entity: sensor.rch_ch_heater_bedroom_status
                 y_axis: secondary
                 aggregate_func: max
                 smoothing: false
@@ -693,7 +693,7 @@ cards:
                         entity: sensor.date_current_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_bedroom_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_bedroom_energy_monthly_total
                           name: false
                           unit: "кВт⋅ч"
                           format: precision2
@@ -711,7 +711,7 @@ cards:
                         entity: sensor.date_previous_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_bedroom_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_bedroom_energy_monthly_total
                           attribute: last_period
                           name: false
                           unit: "кВт⋅ч"
@@ -747,7 +747,7 @@ cards:
                 names: false
             header: false
             sensors:
-              - entity: binary_sensor.ch_heater_toilet_2st_floor_status
+              - entity: binary_sensor.rch_ch_heater_toilet_2st_floor_status
                 name: Статус
             control:
               hvac:
@@ -795,7 +795,7 @@ cards:
                 smoothing: true
                 show_fill: false
                 color: deepskyblue
-              - entity: sensor.ch_heater_toilet_2st_floor_status
+              - entity: sensor.rch_ch_heater_toilet_2st_floor_status
                 y_axis: secondary
                 aggregate_func: max
                 smoothing: false
@@ -837,7 +837,7 @@ cards:
                         entity: sensor.date_current_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_toilet_2st_floor_energy_monthly_total
                           name: false
                           unit: "кВт⋅ч"
                           format: precision2
@@ -855,7 +855,7 @@ cards:
                         entity: sensor.date_previous_month
                         name: false
                       entities:
-                        - entity: sensor.socket_ch_radiator_toilet_2st_floor_energy_monthly_total
+                        - entity: sensor.rch_socket_ch_radiator_toilet_2st_floor_energy_monthly_total
                           attribute: last_period
                           name: false
                           unit: "кВт⋅ч"

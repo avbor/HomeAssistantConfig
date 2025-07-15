@@ -1,0 +1,66 @@
+#################################################
+# Package Country House Telegram Control
+#################################################
+
+ch_tlg_ctrl:
+
+  # # Automations
+  automation:
+
+    - alias: "Дача Водяной Насос - Telegram Control - Включение"
+      id: c4ff5d52-df3b-4e02-a8ef-f4a11323dcb4
+      triggers:
+        trigger: event
+        event_type: telegram_callback
+        event_data:
+          data: "/water_pump_on"
+      actions:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.rch_sonoff_pow_r3_02
+        - action: telegram_bot.answer_callback_query
+          data:
+            callback_query_id: "{{ trigger.event.data.id }}"
+            message: "Команда отправлена"
+        - action: telegram_bot.edit_replymarkup
+          data:
+            message_id: "{{ trigger.event.data.message.message_id }}"
+            chat_id: "{{ trigger.event.data.chat_id }}"
+            inline_keyboard: []
+        - alias: "Wait for switch.rch_sonoff_pow_r3_02"
+          wait_for_trigger:
+            - trigger: state
+              entity_id: switch.rch_sonoff_pow_r3_02
+              from: "off"
+              to: "on"
+          timeout: "00:00:10"
+          continue_on_timeout: false
+        - action: telegram_bot.send_message
+          data:
+            target: "{{ trigger.event.data.chat_id }}"
+            message: "Насос включен."
+
+    - alias: 'Дача - Telegram Control - Turn On Away Mode'
+      id: 86da4969-92fa-49c9-aba3-23ab804e7194
+      triggers:
+        trigger: event
+        event_type: telegram_callback
+        event_data:
+          data: '/ch_turn_on_away_mode'
+      actions:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.rch_ch_away
+        - action: telegram_bot.answer_callback_query
+          data:
+            callback_query_id: '{{ trigger.event.data.id }}'
+            message: 'Команда отправлена'
+        - action: telegram_bot.edit_replymarkup
+          data:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            inline_keyboard: []
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_country_house
+            message: "Включен Away Mode"
