@@ -7,7 +7,7 @@ cards:
       - type: horizontal-stack
         cards:
           - type: tile
-            entity: scene.ch_away
+            entity: scene.rch_ch_away
             name: Away Mode
             icon: mdi:home-export-outline
             hide_state: true
@@ -19,7 +19,7 @@ cards:
               action: more-info
             color: amber
           - type: tile
-            entity: scene.ch_at_home
+            entity: scene.rch_ch_at_home
             name: Home Mode
             icon: mdi:home-account
             hide_state: true

@@ -159,14 +159,14 @@ cards:
         content: >
           #### <center>1 Этаж</center>
       - type: entity
-        entity: binary_sensor.0x00158d0006d3b285_water_leak
+        entity: binary_sensor.rch_0x00158d0006d3b285_water_leak
         name: Кухня (под мойкой)
       - type: entity
-        entity: binary_sensor.0x00158d0006d3c775_water_leak
+        entity: binary_sensor.rch_0x00158d0006d3c775_water_leak
         name: Туалет (труба)
       - type: markdown
         content: >
           #### <center>2 Этаж</center>
       - type: entity
-        entity: binary_sensor.0x00158d0006d3b20b_water_leak
+        entity: binary_sensor.rch_0x00158d0006d3b20b_water_leak
         name: Туалет (под бойлером)

@@ -62,8 +62,8 @@ filter:
     - humidifier.smartmi_humidifier_02_spalnia # Спальня - Увлажнитель
     - light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2 # Спальня - Лампа у кровати слева
     # Дача
-    - sensor.a4c138d358e9_temperature # Дача (Гостииная) - Температура
-    - sensor.country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
+    - sensor.rch_a4c138d358e9_temperature # Дача (Гостииная) - Температура
+    - sensor.rch_country_house_avg_temp_kids_rooms # Дача (Дети) - Температура
     # Keenetic
     - switch.keenetic_vpn_xbox_01
     - switch.keenetic_vpn_mi8
@@ -195,21 +195,21 @@ entity_config:
     name: Пылесос
     room: Квартира
 
-  sensor.a4c138d358e9_temperature:
+  sensor.rch_a4c138d358e9_temperature:
     name: Климат в гостиной
     properties:
       - type: humidity
-        entity: sensor.a4c138d358e9_humidity
+        entity: sensor.rch_a4c138d358e9_humidity
       - type: battery_level
-        entity: sensor.a4c138d358e9_battery
+        entity: sensor.rch_a4c138d358e9_battery
 
-  sensor.country_house_avg_temp_kids_rooms:
+  sensor.rch_country_house_avg_temp_kids_rooms:
     name: Климат у детей
     properties:
       - type: temperature
-        entity: sensor.country_house_avg_temp_kids_rooms
+        entity: sensor.rch_country_house_avg_temp_kids_rooms
       - type: humidity
-        entity: sensor.country_house_avg_humidity_kids_rooms
+        entity: sensor.rch_country_house_avg_humidity_kids_rooms
 
   climate.daikin_nursery:
     name: Кондиционер

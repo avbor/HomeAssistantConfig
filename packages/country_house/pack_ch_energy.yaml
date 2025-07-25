@@ -642,15 +642,15 @@ ch_energy_pack:
               {% endif %}
 
   # Sensors
-  sensor:
+  # sensor:
 
-    - platform: min_max
-      name: Average Voltage In Country House
-      unique_id: 0315cada-a337-4a4b-b1b1-4c86c86e6af3
-      type: median
-      entity_ids:
-        - sensor.rch_gosund_sp111_01_volt
-        - sensor.rch_gosund_sp111_02_volt
+  #   - platform: min_max
+  #     name: Average Voltage In Country House
+  #     unique_id: 0315cada-a337-4a4b-b1b1-4c86c86e6af3
+  #     type: median
+  #     entity_ids:
+  #       - sensor.rch_gosund_sp111_01_volt
+  #       - sensor.rch_gosund_sp111_02_volt
 
   # Scripts
   script:
@@ -780,7 +780,7 @@ ch_energy_pack:
             entity_id: input_number.country_house_enegry_meter_predicted_value
           data:
             value: >-
-              {{ ((states('input_number.country_house_enegry_meter_predicted_value') | float(0)) + (states('sensor.ch_main_energy_daily_total') | float(0))) | round(2) }}
+              {{ ((states('input_number.country_house_enegry_meter_predicted_value') | float(0)) + (states('sensor.rch_ch_main_energy_daily_total') | float(0))) | round(2) }}
 
     # Push an energy meter reading to MES
     - alias: CH Push Energy Meter reading

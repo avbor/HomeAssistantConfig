@@ -424,7 +424,7 @@ cards:
               - entity: light.gostinaia_podsvetka_na_okne
                 name: Подсветка на окне в Гостиной
                 icon: mdi:string-lights
-              - entity: light.dacha_dvor
+              - entity: light.rch_dacha_dvor
                 name: Подсветка двора на Даче
                 icon: mdi:light-flood-down
               - entity: light.detskaia_girlianda_na_krovati
