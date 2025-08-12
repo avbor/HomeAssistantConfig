@@ -135,7 +135,7 @@ class LkcomuInterRAOConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="already_configured_service")
 
         try:
-            api_cls = import_api_cls(type_)
+            api_cls = await import_api_cls(type_)
         except (ImportError, AttributeError):
             _LOGGER.error("Could not find API type: %s", type_)
             return self.async_abort(reason="api_load_error")
@@ -198,7 +198,7 @@ class LkcomuInterRAOConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_create_entry(
             title=self.make_entry_title(
-                import_api_cls(current_config[CONF_TYPE]),
+                await import_api_cls(current_config[CONF_TYPE]),
                 current_config[CONF_USERNAME],
             ),
             data=_flatten(current_config),
@@ -214,7 +214,7 @@ class LkcomuInterRAOConfigFlow(ConfigFlow, domain=DOMAIN):
         if await self._check_entry_exists(type_, username):
             return self.async_abort(reason="already_exists")
 
-        api_cls = import_api_cls(type_)
+        api_cls = await import_api_cls(type_)
 
         return self.async_create_entry(
             title=self.make_entry_title(api_cls, username),
