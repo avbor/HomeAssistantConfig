@@ -10,10 +10,15 @@ from typing import TypedDict
 from Crypto.Cipher import ARC4
 from aiohttp import ClientSession
 
-COOKIES = ("userId", "cUserId", "serviceToken")
 SDK_VERSION = "4.2.29"
-SERVERS = ["cn", "de", "i2", "ru", "sg", "us"]
-SID = "xiaomiio"
+BASE = {
+    "cn": "https://api.io.mi.com/app",
+    "de": "https://de.api.io.mi.com/app",
+    "i2": "https://i2.api.io.mi.com/app",
+    "ru": "https://ru.api.io.mi.com/app",
+    "sg": "https://sg.api.io.mi.com/app",
+    "us": "https://us.api.io.mi.com/app",
+}
 
 FLAG_PHONE = 4
 FLAG_EMAIL = 8
@@ -34,14 +39,20 @@ class MiCloud:
 
     devices: list[dict] = None
 
-    def __init__(self, session: ClientSession, servers: list = None):
-        self.session = session
+    def __init__(
+        self, session: ClientSession = None, servers: list = None, sid: str = None
+    ):
+        self.session = session or ClientSession()
         self.servers = servers or ["cn"]
+        self.sid = sid or "xiaomiio"
         self.device_id = get_random_string(16)
 
     @property
     def ok(self):
         return self.cookies is not None and self.ssecurity is not None
+
+    async def close(self):
+        return await self.session.close()
 
     async def login(self, username: str, password: str, **kwargs) -> AuthResult:
         try:
@@ -59,13 +70,17 @@ class MiCloud:
             if notification_url := res1.get("notificationUrl"):
                 return await self._get_notification_url(notification_url)
 
-            res2 = await self._get_location(res1["location"])
+            return await self._get_credentials(res1)
 
-            self.ssecurity = base64.b64decode(res1["ssecurity"])
-            self.cookies = {k: res2[k] for k in COOKIES}
+        except Exception as e:
+            return {"ok": False, "exception": e}
 
-            return {"ok": True, "token": f"{res1['userId']}:{res1['passToken']}"}
+    async def login_password(self, username: str, password: str) -> AuthResult:
+        try:
+            res1 = await self._service_login(username, password)
+            assert res1["code"] == 0, res1
 
+            return await self._get_credentials(res1)
         except Exception as e:
             return {"ok": False, "exception": e}
 
@@ -76,16 +91,12 @@ class MiCloud:
             r = await self.session.get(
                 "https://account.xiaomi.com/pass/serviceLogin",
                 cookies={"userId": user_id, "passToken": pass_token},
-                params={"_json": "true", "sid": SID},
+                params={"_json": "true", "sid": self.sid},
             )
             res1 = parse_auth_response(await r.read())
+            assert res1["code"] == 0, res1
 
-            res2 = await self._get_location(res1["location"])
-
-            self.ssecurity = base64.b64decode(res1["ssecurity"])
-            self.cookies = {k: res2[k] for k in COOKIES}
-
-            return {"ok": True}
+            return await self._get_credentials(res1)
 
         except Exception as e:
             return {"ok": False, "exception": e}
@@ -112,12 +123,7 @@ class MiCloud:
         res1 = parse_auth_response(await r.read())
         assert res1["code"] == 0, res1
 
-        res2 = await self._get_location(res1["location"])
-
-        self.ssecurity = base64.b64decode(res2["ssecurity"])
-        self.cookies = {k: res2[k] for k in COOKIES}
-
-        return {"ok": True, "token": f"{res2['userId']}:{res2['passToken']}"}
+        return await self._get_credentials(res1)
 
     async def _service_login(
         self, username: str, password: str, captcha_code: str = None
@@ -125,7 +131,7 @@ class MiCloud:
         r = await self.session.get(
             "https://account.xiaomi.com/pass/serviceLogin",
             cookies={"sdkVersion": SDK_VERSION, "deviceId": self.device_id},
-            params={"_json": "true", "sid": SID},
+            params={"_json": "true", "sid": self.sid},
         )
         res1 = parse_auth_response(await r.read())
 
@@ -151,25 +157,32 @@ class MiCloud:
         )
         return parse_auth_response(await r.read())
 
-    async def _get_location(self, location: str) -> dict:
-        r1 = await self.session.get(location)
-        assert await r1.read() == b"ok"
-
-        # this is useful for all steps
-        response = {k: v.value for k, v in r1.cookies.items()}
-
-        # this is useful for verify_email step
-        for r2 in r1.history:
-            response.update({k: v.value for k, v in r2.cookies.items()})
-            if ext := r2.headers.get("extension-pragma"):
-                response.update(json.loads(ext))
-
-        return response
-
     async def _get_captcha_url(self, captcha_url: str) -> dict:
         r = await self.session.get("https://account.xiaomi.com" + captcha_url)
         body = await r.read()
         return {"image": body, "ick": r.cookies["ick"]}
+
+    async def _get_credentials(self, data: dict) -> AuthResult:
+        # For `login_password` and `login_token` steps `data` has keys:
+        # `ssecurity`, `passToken`, `userId`.
+        assert data.get("location"), data
+
+        r1 = await self.session.get(data["location"])
+        assert await r1.read() == b"ok"
+
+        # For all steps `r1.cookies` has keys: `userId`, `cUserId`, `serviceToken`.
+        self.cookies = {k: v.value for k, v in r1.cookies.items()}
+
+        for r2 in r1.history:
+            # For `login_verify` step `r2.cookies` has keys: `passToken`, `userId`.
+            data.update({k: v.value for k, v in r2.cookies.items()})
+            if ext := r2.headers.get("extension-pragma"):
+                # For `login_verify` step `r2.headers` has key `ssecurity`.
+                data.update(json.loads(ext))
+
+        self.ssecurity = base64.b64decode(data["ssecurity"])
+
+        return {"ok": True, "token": f"{data['userId']}:{data['passToken']}"}
 
     async def _get_notification_url(self, notification_url: str) -> AuthResult:
         assert "/identity/authStart" in notification_url, notification_url
@@ -242,11 +255,8 @@ class MiCloud:
         # 4. add nonce
         form["_nonce"] = base64.b64encode(nonce).decode()
 
-        dom = "" if server == "cn" else server + "."
-
-        r = await self.session.post(
-            f"https://{dom}api.io.mi.com/app{path}", cookies=self.cookies, data=form
-        )
+        url = BASE.get(server, server) + path
+        r = await self.session.post(url, cookies=self.cookies, data=form)
         assert r.ok, r.status
 
         ciphertext: bytes = base64.b64decode(await r.read())
