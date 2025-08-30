@@ -18,6 +18,7 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.switch import SwitchEntity
 
 from .ewelink import XDevice
+from ..alarm_control_panel import XPanelAlarm
 from ..binary_sensor import (
     XBinarySensor,
     XHumanSensor,
@@ -48,6 +49,7 @@ from ..light import (
     XZigbeeColorTemp,
     XZigbeeLight,
 )
+from ..media_player import XPanelBuzzer
 from ..number import XPulseWidth, XSensitivity
 from ..remote import XRemote
 from ..select import XSelectStartup
@@ -72,6 +74,7 @@ from ..sensor import (
 from ..switch import (
     XBoolSwitch,
     XDetach,
+    XPanelScreen,
     XSwitch,
     XSwitchPOWR3,
     XSwitchTH,
@@ -439,7 +442,7 @@ DEVICES = {
         ),
     ],
     # NSPanel Pro, https://github.com/AlexxIT/SonoffLAN/issues/984
-    195: [XTemperatureTH],
+    195: [XTemperatureTH, XPanelAlarm, XPanelBuzzer, XPanelScreen],
     # Sonoff TX ULTIMATE T5-1C-86, https://github.com/AlexxIT/SonoffLAN/issues/1183
     209: [Switch1, Startup1, XT5Light, XT5Action, XT5Alarm, XT5Bell],
     # Sonoff TX ULTIMATE T5-2C-86
