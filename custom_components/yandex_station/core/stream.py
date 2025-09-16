@@ -1,10 +1,12 @@
+import asyncio
 import logging
 import secrets
 import time
+from contextlib import suppress
 from urllib.parse import urljoin, urlparse
 
 import jwt
-from aiohttp import ClientSession, web
+from aiohttp import ClientError, ClientSession, web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.components.media_player import async_process_play_media_url
 from homeassistant.core import HomeAssistant
@@ -56,7 +58,8 @@ async def get_hls(session: ClientSession, url: str) -> str:
             item = item.strip()
             if not item or item.startswith("#"):
                 continue
-            item = urljoin(url, item)
+            # should use r.url, not url, because redirects
+            item = urljoin(str(r.url), item)
             lines[i] = get_url(item)
         return "\n".join(lines)
 
@@ -73,8 +76,14 @@ CONTENT_TYPES = {
 async def get_content_type(session: ClientSession, url: str) -> str | None:
     try:
         async with session.head(url) as r:
+            if r.content_type.startswith("text/html"):
+                # fix Icecast bug - return text/html on HEAD
+                # https://github.com/AlexxIT/YandexStation/issues/696
+                async with session.get(url) as r2:
+                    return CONTENT_TYPES.get(r2.content_type)
             return CONTENT_TYPES.get(r.content_type)
     except Exception as e:
+        _LOGGER.debug(f"Can't get content type: {repr(e)}")
         return None
 
 
@@ -151,7 +160,7 @@ class StreamView(HomeAssistantView):
                 )
 
             headers = {"Range": r} if (r := request.headers.get("Range")) else None
-            async with self.session.get(url, headers=headers, timeout=None) as r:
+            async with self.session.get(url, headers=headers, timeout=10) as r:
                 response = web.StreamResponse(status=r.status, headers=r.headers)
                 response.headers["Content-Type"] = MIME_TYPES[ext]
 
@@ -161,7 +170,15 @@ class StreamView(HomeAssistantView):
 
                 await response.prepare(request)
 
-                async for chunk in r.content.iter_chunked(2**16):
-                    await response.write(chunk)
+                # logic from async_aiohttp_proxy_stream()
+                with suppress(TimeoutError, ClientError):
+                    while self.hass.is_running:
+                        async with asyncio.timeout(10):
+                            data = await r.content.read(65536)
+                        if not data:
+                            break
+                        await response.write(data)
+
+                return response
         except:
             pass

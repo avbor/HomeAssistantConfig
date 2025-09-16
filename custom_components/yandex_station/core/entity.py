@@ -89,9 +89,9 @@ class YandexEntity(Entity):
         device = await self.quasar.get_device(self.device)
         self.quasar.dispatch_update(device["id"], device)
 
-    async def device_action(self, instance: str, value):
+    async def device_action(self, instance: str, value, relative=False):
         try:
-            await self.quasar.device_action(self.device, instance, value)
+            await self.quasar.device_action(self.device, instance, value, relative)
         except Exception as e:
             raise HomeAssistantError(f"Device action failed: {repr(e)}")
 
@@ -104,7 +104,8 @@ class YandexEntity(Entity):
 
 class YandexCustomEntity(YandexEntity):
     def __init__(self, quasar: YandexQuasar, device: dict, config: dict):
-        self.instance = config["parameters"]["instance"]
+        self.instance = config["parameters"].get("instance", "on")
         super().__init__(quasar, device)
-        self._attr_name += " " + config["parameters"]["name"]
+        if name := config["parameters"].get("name"):
+            self._attr_name += " " + name
         self._attr_unique_id += " " + self.instance

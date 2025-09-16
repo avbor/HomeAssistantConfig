@@ -5,6 +5,7 @@ from datetime import datetime
 
 from aiohttp import WSMsgType
 
+from .quasar_info import has_quasar
 from .yandex_session import YandexSession
 
 _LOGGER = logging.getLogger(__name__)
@@ -34,6 +35,10 @@ IOT_TYPES = {
     "tea_mode": "devices.capabilities.mode",
     # cover
     "open": "devices.capabilities.range",
+    # camera
+    "camera_pan": "devices.capabilities.range",
+    "camera_tilt": "devices.capabilities.range",
+    "get_stream": "devices.capabilities.video_stream",
     # don't work
     "hsv": "devices.capabilities.color_setting",
     "rgb": "devices.capabilities.color_setting",
@@ -209,8 +214,6 @@ class YandexQuasar(Dispatcher):
         self.devices = []
 
         for house in resp["households"]:
-            if "sharing_info" in house:
-                continue
             self.devices.extend(
                 {**device, "house_name": house["name"]} for device in house["all"]
             )
@@ -220,18 +223,12 @@ class YandexQuasar(Dispatcher):
 
     @property
     def speakers(self):
-        return [
-            d for d in self.devices if d.get("quasar_info") and d.get("capabilities")
-        ]
+        return [i for i in self.devices if has_quasar(i) and i.get("capabilities")]
 
     @property
     def modules(self):
         # modules don't have cloud scenarios
-        return [
-            d
-            for d in self.devices
-            if d.get("quasar_info") and not d.get("capabilities")
-        ]
+        return [i for i in self.devices if has_quasar(i) and not i.get("capabilities")]
 
     async def load_speakers(self):
         hashes = {}
@@ -377,15 +374,14 @@ class YandexQuasar(Dispatcher):
         assert resp["status"] == "ok", resp
         return resp
 
-    async def device_action(self, device: dict, instance: str, value):
-        action = {"state": {"instance": instance, "value": value}}
+    async def device_action(self, device: dict, instance: str, value, relative=False):
+        action = {
+            "state": {"instance": instance, "value": value},
+            "type": IOT_TYPES[instance],
+        }
 
-        if instance in IOT_TYPES:
-            action["type"] = IOT_TYPES[instance]
-        elif instance.isdecimal():
-            action["type"] = "devices.capabilities.custom.button"
-        else:
-            return
+        if relative:
+            action["state"]["relative"] = True
 
         r = await self.session.post(
             f"https://iot.quasar.yandex.ru/m/user/{device['item_type']}s/{device['id']}/actions",
@@ -398,6 +394,19 @@ class YandexQuasar(Dispatcher):
 
         device = await self.get_device(device)
         self.dispatch_update(device["id"], device)
+
+    async def get_device_action(self, device: dict, instance: str, value) -> list[dict]:
+        action = {
+            "state": {"instance": instance, "value": value},
+            "type": IOT_TYPES[instance],
+        }
+
+        url = f"https://iot.quasar.yandex.ru/m/user/{device['item_type']}s/{device['id']}/actions"
+        r = await self.session.post(url, json={"actions": [action]})
+        resp = await r.json()
+        assert resp["status"] == "ok", resp
+
+        return resp["devices"]
 
     async def device_actions(self, device: dict, **kwargs):
         _LOGGER.debug(f"Device action: {kwargs}")

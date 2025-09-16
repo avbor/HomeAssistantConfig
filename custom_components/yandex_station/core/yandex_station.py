@@ -22,6 +22,7 @@ from homeassistant.components.media_player import (
 )
 from homeassistant.components.media_source.models import BrowseMediaSource
 from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceRegistry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.restore_state import (
@@ -33,6 +34,7 @@ from homeassistant.helpers.template import Template
 
 from . import stream, utils
 from .const import DATA_CONFIG, DOMAIN
+from .quasar_info import QUASAR_INFO
 from .yandex_glagol import YandexGlagol
 from .yandex_music import get_file_info
 from .yandex_quasar import YandexQuasar
@@ -94,42 +96,6 @@ MEDIA_DEFAULT = [
 
 SOURCE_STATION = "Станция"
 SOURCE_HDMI = "HDMI"
-
-# Thanks to: https://github.com/iswitch/ha-yandex-icons
-CUSTOM = {
-    # колонки Яндекса
-    "yandexstation": ["yandex:station", "Яндекс", "Станция (2018)"],
-    "yandexstation_2": ["yandex:station-max", "Яндекс", "Станция Макс (2020)"],
-    "yandexmini": ["yandex:station-mini", "Яндекс", "Станция Мини (2019)"],
-    "yandexmini_2": ["yandex:station-mini-2", "Яндекс", "Станция Мини 2 (2021)"],
-    "bergamot": ["yandex:station-mini-3", "Яндекс", "Станция Мини 3 (2024)"],
-    "yandexmicro": ["yandex:station-lite", "Яндекс", "Станция Лайт (2021)"],
-    "plum": ["yandex:station-lite-2", "Яндекс", "Станция Лайт 2 (2024)"],
-    "yandexmidi": ["yandex:station-2", "Яндекс", "Станция 2 (2022)"],  # zigbee
-    "cucumber": ["yandex:station-midi", "Яндекс", "Станция Миди (2023)"],  # zigbee
-    "chiron": ["yandex:station-duo-max", "Яндекс", "Станция Дуо Макс (2023)"],  # zigbee
-    # платформа Яндекс.ТВ (без облачного управления!)
-    "yandexmodule": ["yandex:module", "Яндекс", "Модуль (2019)"],
-    "yandexmodule_2": ["yandex:module-2", "Яндекс", "Модуль 2 (2021)"],
-    "yandex_tv": ["mdi:television-classic", "Unknown", "ТВ с Алисой"],
-    # ТВ с Алисой
-    "goya": ["mdi:television-classic", "Яндекс", "ТВ (2022)"],
-    "magritte": ["mdi:television-classic", "Яндекс", "ТВ Станция (2023)"],
-    "monet": ["mdi:television-classic", "Яндекс", "ТВ Станция Бейсик (2024)"],
-    # колонки НЕ Яндекса
-    "lightcomm": ["yandex:dexp-smartbox", "DEXP", "Smartbox"],
-    "elari_a98": ["yandex:elari-smartbeat", "Elari", "SmartBeat"],
-    "linkplay_a98": ["yandex:irbis-a", "IRBIS", "A"],
-    "wk7y": ["yandex:lg-xboom-wk7y", "LG", "XBOOM AI ThinQ WK7Y"],
-    "prestigio_smart_mate": ["yandex:prestigio-smartmate", "Prestigio", "Smartmate"],
-    "jbl_link_music": ["yandex:jbl-link-music", "JBL", "Link Music"],
-    "jbl_link_portable": ["yandex:jbl-link-portable", "JBL", "Link Portable"],
-    # экран с Алисой
-    "quinglong": ["yandex:display-xiaomi", "Xiaomi", "Smart Display 10R X10G (2023)"],
-    # не колонки
-    "saturn": ["yandex:hub", "Яндекс", "Хаб (2023)"],
-    "mike": ["yandex:lg-xboom-wk7y", "Яндекс", "IP камера (2025)"],
-}
 
 
 # noinspection PyAbstractClass
@@ -230,7 +196,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             identifiers={(DOMAIN, self.unique_id)},
             name=self.device["name"],
         )
-        if custom := CUSTOM.get(self.device_platform):
+        if custom := QUASAR_INFO.get(self.device_platform):
             info["manufacturer"] = custom[1]
             info["model"] = custom[2]
         if mac := device.get("mac"):
@@ -385,33 +351,39 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             },
         )
 
-    async def _set_brightness(self, value: str):
-        if self.device_platform not in (
-            "yandexstation_2",
-            "yandexmini_2",
-            "cucumber",
-            "plum",
-            "bergamot",
-        ):
-            _LOGGER.warning("Поддерживаются только станции с экраном")
-            return
-
-        try:
-            value = float(value)
-        except:
-            _LOGGER.exception(f"Недопустимое значение яркости: {value}")
-            return
-
+    async def _set_led(self, **kwargs):
         config, version = await self.quasar.get_device_config(self.device)
 
-        if "led" not in config:
-            config["led"] = {"brightness": {"auto": True, "value": 0.5}}
+        led: dict = config.setdefault("led", {})
 
-        if 0 <= value <= 1:
-            config["led"]["brightness"]["auto"] = False
-            config["led"]["brightness"]["value"] = value
-        else:
-            config["led"]["brightness"]["auto"] = True
+        if "brightness" in kwargs:
+            if self.device_platform not in (
+                "yandexstation_2",
+                "yandexmini_2",
+                "cucumber",
+                "plum",
+                "bergamot",
+            ):
+                raise HomeAssistantError("Поддерживаются только станции с часами")
+
+            brightness = led.setdefault("brightness", {"auto": True, "value": 0.5})
+
+            if 0 <= (value := float(kwargs["brightness"])) <= 1:
+                brightness["auto"] = False
+                brightness["value"] = value
+            else:
+                brightness["auto"] = True
+
+        # https://github.com/AlexxIT/YandexStation/issues/697
+        if "visualization" in kwargs:
+            if self.device_platform != "yandexstation_2":
+                raise HomeAssistantError("Поддерживаются только станции с экраном")
+
+            visualization = led.setdefault(
+                "music_equalizer_visualization", {"style": "showClock", "auto": False}
+            )
+            # auto - true, clock - false
+            visualization["auto"] = kwargs["visualization"] != "clock"
 
         await self.quasar.set_device_config(self.device, config, version)
 
@@ -659,8 +631,10 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             data = extra_data.as_dict()
             self._attr_sound_mode = data["sound_mode"]
 
-        if await utils.has_custom_icons(self.hass) and self.device_platform in CUSTOM:
-            self._attr_icon = CUSTOM[self.device_platform][0]
+        if await utils.has_custom_icons(self.hass) and (
+            info := QUASAR_INFO.get(self.device_platform)
+        ):
+            self._attr_icon = info[0]
             self.debug(f"Установка кастомной иконки: {self._attr_icon}")
 
         if "host" in self.device:
@@ -692,7 +666,20 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             try:
                 volume = float(volume)
             except Exception:
-                return
+                raise HomeAssistantError(f"Неправильное значение volume: {volume}")
+
+        # fix increasing and decreasing volume by 0.05
+        # https://github.com/AlexxIT/YandexStation/issues/687
+        if 0.04 < abs(volume - self._attr_volume_level) < 0.06:
+            if volume > self._attr_volume_level:
+                volume = self._attr_volume_level + 0.06
+            else:
+                volume = self._attr_volume_level - 0.06
+
+        if volume < 0:
+            volume = 0
+        if volume > 1:
+            volume = 1
 
         if self.local_state:
             # у станции округление громкости до десятых
@@ -701,7 +688,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         else:
             # на Яндекс ТВ Станция (2023) громкость от 0 до 100
             # на колонках - от 0 до 10
-            k = 100 if self.platform in ["magritte", "monet"] else 10
+            k = 100 if self.device_platform in ["magritte", "monet"] else 10
             await self.quasar.send(self.device, f"громкость на {round(k * volume)}")
             if volume > 0:
                 self._attr_is_volume_muted = False
@@ -818,7 +805,10 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         if media_type == "tts":
             media_type = "text" if self._attr_sound_mode == SOUND_MODE1 else "command"
         elif media_type == "brightness":
-            await self._set_brightness(media_id)
+            await self._set_led(brightness=media_id)
+            return
+        elif media_type == "visualization":
+            await self._set_led(visualization=media_id)
             return
         elif media_type == "beta":
             await self._set_beta(media_id)
