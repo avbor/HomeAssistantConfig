@@ -7,8 +7,9 @@ import string
 import time
 from typing import TypedDict
 
-from Crypto.Cipher import ARC4
 from aiohttp import ClientSession
+from cryptography.hazmat.primitives import ciphers
+from cryptography.hazmat.primitives.ciphers import algorithms
 
 SDK_VERSION = "4.2.29"
 BASE = {
@@ -185,8 +186,10 @@ class MiCloud:
         return {"ok": True, "token": f"{data['userId']}:{data['passToken']}"}
 
     async def _get_notification_url(self, notification_url: str) -> AuthResult:
-        assert "/identity/authStart" in notification_url, notification_url
-        notification_url = notification_url.replace("authStart", "list")
+        assert "/fe/service/identity/authStart" in notification_url, notification_url
+        notification_url = notification_url.replace(
+            "/fe/service/identity/authStart", "/identity/list"
+        )
 
         r = await self.session.get(notification_url)
         res1 = parse_auth_response(await r.read())
@@ -333,6 +336,7 @@ def gen_signature_base64(path: str, data: dict, signed_nonce: bytes) -> str:
 
 
 def crypt(key: bytes, data: bytes) -> bytes:
-    cipher = ARC4.new(key)
-    cipher.encrypt(bytes(1024))
-    return cipher.encrypt(data)
+    cipher = ciphers.Cipher(algorithms.ARC4(key), None)
+    encryptor = cipher.encryptor()
+    encryptor.update(bytes(1024))
+    return encryptor.update(data)

@@ -1147,6 +1147,12 @@ DEVICES += [{
         ZTuyaButtonModeConv("mode", "select"),  # config
     ],
 }, {
+    "TS0041": ["Tuya", "Wireless switch with 1 button", "TS0041"],
+    "spec": [
+        ZTuyaButtonConfig("action", "sensor"),
+        ZTuyaButtonConv("button", ep=1, bind=True),
+    ],
+}, {
     # very simple relays with binding
     "TS0011": ["Tuya", "Single Switch (no N)", "TS0011"],
     "support": 5,
@@ -1786,6 +1792,26 @@ DEVICES += [{
         MapConv("action", mi="2.e.1014.p.1", map={1: BUTTON_1_HOLD, 2: BUTTON_2_HOLD, 3: BUTTON_3_HOLD, 4: BUTTON_4_HOLD, 5: "button_5_hold", 6: "button_6_hold", 7: "button_7_hold", 8: "button_8_hold"}),
     ]
 }, {
+    # MIOT https://home.miot-spec.com/spec?type=urn:miot-spec-v2:device:remote-control:0000A021:lemesh-ts10:1
+    17658: ["LeMesh", "Remote Control TS10", "lemesh.remote.ts10"], 
+    "spec": [
+        BaseConv("action", "sensor"),
+        # --- Handle directional button events using MapConv ---
+        MapConv("action", mi="5.e.1012.p.1", map={1: BUTTON_1_SINGLE, 2: BUTTON_2_SINGLE, 3: BUTTON_3_SINGLE, 4: BUTTON_4_SINGLE,}),
+        MapConv("action", mi="5.e.1013.p.1", map={1: BUTTON_1_DOUBLE, 2: BUTTON_2_DOUBLE, 3: BUTTON_3_DOUBLE, 4: BUTTON_4_DOUBLE,}),
+        MapConv("action", mi="5.e.1014.p.1", map={1: BUTTON_1_HOLD, 2: BUTTON_2_HOLD, 3: BUTTON_3_HOLD, 4: BUTTON_4_HOLD,}),
+        # --- Knob operation ---
+        # First use a generic value, then determine direction via another sensor
+        ConstConv("action", mi="5.e.1036", value="knob_rotate"),        
+        # The value of this sensor is a number: positive for right, negative for left rotation.
+        BaseConv("knob_rotation_amplitude", "sensor", mi="5.e.1036.p.2"),
+        # --- Combined operation events ---
+        # Both "Down Button Press Right/Left Rotation" and "Press To Turn Right/Left" correspond to eiid: 1028        
+        ConstConv("action", mi="5.e.1028", value="button_3_press_rotate"),
+        # --- Battery level support ---
+        BaseConv("battery", "sensor", mi="1.p.1"),
+    ]        
+}, {
     16191: ["GranwinIoT", "V5 One Key Switch (BLE)", "giot.remote.v51kwm"],
     "spec": [
         BaseConv("action", "sensor"),
@@ -2180,6 +2206,11 @@ DEVICES += [{
         BaseConv("timestamp", mi="11.e.1022.p.3"),
     ],
 }, {
+    20962: ["Xiaomi", "8-electrode Body Fat Scale S800", "MJTZC04YM", "xiaomi.scales.ms116"],
+    "spec": [
+        MapConv("battery_low", "binary_sensor", mi="4.e.1001.p.1", map={0: False, 1: True, 2: True}),
+    ],
+}, {
     # https://home.miot-spec.com/spec/izq.sensor_occupy.ble
     18788: ["ZiQing", "IZQ Presence Sensor Loong", "IZQ-BLE", "izq.sensor_occupy.ble"],
     "spec": [
@@ -2325,6 +2356,11 @@ DEVICES += [{
         BaseConv("battery", "sensor", mi="5.p.1003"),
     ],
 }, {
+    26197: [None, "SO Smart Aroma Diffuser S5", "bwj.diffuser.s5"],
+    "spec": [
+        # BoolConv("status", "binary_sensor", mi="2.p.1004"),
+    ]
+}, {
     # BLE devices can be supported witout spec. New spec will be added "on the fly" when
     # device sends them. But better to rewrite right spec for each device
     "default": "ble",  # default BLE device
@@ -2421,6 +2457,7 @@ DEVICES += [{
     7057: ["PTX", "Mesh Light", "090615.light.cxlg01"],
     15169: ["PTX", "Mesh Downlight", "090615.light.mylg04"],
     18776: ["PTX", "Mesh Downlight", "090615.light.milg05"],
+    24665: ["PTX", "Mesh Lightstrip", "090615.light.dd20"],
     "spec": [
         BaseConv("light", "light", mi="2.p.1"),
         BrightnessConv("brightness", mi="2.p.2", max=100),
@@ -2576,6 +2613,7 @@ DEVICES += [{
     ]
 }, {
     22809: ["seomsh", "星月影智能筒射灯", "wy0a01", "seomsh.light.wy0a01"],
+    22856: ["seomsh", "星月影智能磁吸灯", "wy0a03", "seomsh.light.wy0a03"],
     "spec": [
         BaseConv("light", "light", mi="2.p.1"),
         BrightnessConv("brightness", mi="2.p.2", max=100),
@@ -2969,6 +3007,7 @@ DEVICES += [{
         BoolConv("motor_reverse", "switch", mi="2.p.5"),  # uint8, config
         MapConv("battery_charging", "binary_sensor", mi="5.p.2", map={1: True, 2: False, 3: False}),  # diagnostic
         BaseConv("battery_temp_warning", mi="3.p.16"),
+        BaseConv("identify", "button", mi="4.a.1")
     ],
 }, {
     3789: ["PTX", "Mesh Double Wall Switch", "090615.switch.meshk2"],
@@ -4294,49 +4333,33 @@ DEVICES += [{
         MapConv("action", mi="6.e.1.p.2", map={1: BUTTON_1_SINGLE, 2: BUTTON_2_SINGLE, 3: BUTTON_3_SINGLE, 4: BUTTON_4_SINGLE, 5: "button_5_single", 6: "button_6_single"}),
     ],
 }, {
-    # https://home.miot-spec.com/spec/xiaomi.diffuser.xw002
-    18462: ["Xiaomi", "Xiaomi Smart Diffuser", "xiaomi.diffuser.xw002"],
+    18462: ["Xiaomi", "Smart Aroma Diffuser", "MJXFJ03XW", "xiaomi.diffuser.xw002"],
+    20199: ["Xiaomi", "Smart Scent Diffuser", "xiaomi.diffuser.xw2iv"],
+    24876: ["Xiaomi", "Smart Aroma Diffuser", "MJXFJ03XW", "xiaomi.diffuser.02wh"],
     "spec": [
         BaseConv("diffuser", "switch", mi="2.p.2"),
-        MathConv("fragrance_duration", "number", mi="2.p.3", min=2, max=6, step=1, entity={"units": UNIT_SECONDS}),
-        MathConv("fragrance_interval", "number", mi="2.p.4", min=10, max=20, step=5, entity={"units": UNIT_MINUTES}),
+        MathConv("fragrance_duration", "number", mi="2.p.3", min=2, max=6, step=1, entity={"category": "config", "units": UNIT_SECONDS}),
+        MathConv("fragrance_interval", "number", mi="2.p.4", min=10, max=20, step=5, entity={"category": "config", "units": UNIT_MINUTES}),
         # Ambient Light
-        BaseConv("ambient_light", "light", mi="3.p.1"),
-        BrightnessConv("brightness", mi="3.p.2", max=100),
-        MathConv("color", "number", mi="3.p.3", min=1, max=16777215),
-        BoolConv("auto_fragrance", "switch", mi="4.p.1"),
+        BaseConv("light", "light", mi="3.p.1"),
+        BrightnessConv("brightness", mi="3.p.2"),
+        RGBColor("rgb_color", mi="3.p.3"),
         # Battery
         BaseConv("battery", "sensor", mi="5.p.1"),
-        MapConv("charging_state", "sensor", mi="5.p.2", map={1: "Charging", 2: "Not Charging", 3: "Not Chargeable"}),
+        MapConv("battery_charging", "binary_sensor", mi="5.p.2", map={1: True, 2: False, 3: False}, entity=ENTITY_DIAGNOSTIC),
+        # Settings
+        BaseConv("auto_fragrance", "switch", mi="4.p.1", entity=ENTITY_CONFIG),
+        BaseConv("auto_light", "switch", mi="4.p.2", entity=ENTITY_CONFIG),
+        # 18462 and 20199 don't have this setting, only 24876 has it
+        BaseConv("auto_light_off", "switch", mi="4.p.3", entity=ENTITY_CONFIG),
         # Actions
         BaseConv("action", "sensor"),
-        ConstConv("action", mi="4.e.1", value="Auto Light"),
-        ConstConv("action", mi="4.e.2", value="Auto Fragrance"),
-        ConstConv("action", mi="4.e.3", value="Someone Move"),
-        ConstConv("action", mi="4.e.4", value="Nobody Move"),
-    ],
-}, {
-    # https://home.miot-spec.com/spec/xiaomi.diffuser.xw2iv
-    20199: ["Xiaomi", "Xiaomi Smart Scent Diffuser", "xiaomi.diffuser.xw2iv"],
-    "spec": [
-        BaseConv("diffuser", "switch", mi="2.p.2"),
-        MathConv("fragrance_duration", "number", mi="2.p.3", min=2, max=6, step=1, entity={"units": UNIT_SECONDS}),
-        MathConv("fragrance_interval", "number", mi="2.p.4", min=10, max=20, step=5, entity={"units": UNIT_MINUTES}),
-        # Ambient Light
-        BaseConv("ambient_light", "light", mi="3.p.1"),
-        BrightnessConv("brightness", mi="3.p.2", max=100),
-        MathConv("color", "number", mi="3.p.3", min=1, max=16777215),
-        BoolConv("auto_fragrance", "switch", mi="4.p.1"),
-        # Battery
-        BaseConv("battery", "sensor", mi="5.p.1"),
-        MapConv("charging_state", "sensor", mi="5.p.2", map={1: "Charging", 2: "Not Charging", 3: "Not Chargeable"}),
-        # Actions
-        BaseConv("action", "sensor"),
-        ConstConv("action", mi="4.e.1", value="Auto Light"),
-        ConstConv("action", mi="4.e.2", value="Auto Fragrance"),
-        ConstConv("action", mi="4.e.3", value="Someone Move"),
-        ConstConv("action", mi="4.e.4", value="Nobody Move"),
-    ],
+        ConstConv("action", mi="4.e.1", value="auto_light"),
+        ConstConv("action", mi="4.e.2", value="auto_fragrance"),
+        ConstConv("action", mi="4.e.3", value="someone_move"),
+        ConstConv("action", mi="4.e.4", value="nobody_move"),
+        BaseConv("fragrance_delivery", "button", mi="4.a.1"),
+    ]
 }, {
     20066: [None, "Mesh Light", "yankon.light.ykmesh"],
     "spec": [
@@ -5078,6 +5101,15 @@ DEVICES += [{
         CurtainPosConv("position", mi="2.p.3"),
         BaseConv("target_position", mi="2.p.4"),
         BoolConv("motor_reverse", "switch", mi="2.p.5", entity=ENTITY_CONFIG), # config
+    ],
+}, {
+    19534: ["Mean Well", "Smart Chromatic Controller", "ftd.light.nomain"],
+    "spec": [
+        BaseConv("light", "light", mi="2.p.1"),
+        BrightnessConv("brightness", mi="2.p.2", max=100),
+        ColorTempKelvin("color_temp", mi="2.p.3", mink=3000, maxk=6500),
+        BaseConv("flex_switch", "switch", mi="2.p.12", entity=ENTITY_CONFIG), 
+        MapConv("mode","select",mi="2.p.13", map={0: "None", 1: "Day", 2: "Night", 3: "Warmth", 4: "TV", 5: "Reading", 6: "Computer", 7: "Sleep", 8: "Wakeup"}),
     ],
 }, {
     "default": "mesh",  # default Mesh device
