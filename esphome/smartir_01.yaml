@@ -14,10 +14,12 @@ esphome:
     - IRremoteESP8266
 
 external_components:
-  - source:
-      type: git
-      url: https://github.com/robertklep/esphome-custom-component
-    components: [ custom, custom_component ]
+#  - source:
+#      type: git
+#      url: https://github.com/robertklep/esphome-custom-component
+#    components: [ custom, custom_component ]
+  - source: github://igorlistopad/esphome-custom-components
+    components: [custom, custom_component]
 
 # Use the blue LED as a status light.
 #   Blink slowly = Temporary issue (WiFi/MQTT disconnected, sensor unavailable, ...)
