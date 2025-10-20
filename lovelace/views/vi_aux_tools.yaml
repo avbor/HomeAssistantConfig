@@ -32,8 +32,11 @@ cards:
               - entity: switch.keenetic_vpn_xiaomi_12_lite
                 name: Xiaomi 12 Lite (Кирилл)
                 icon: mdi:cellphone
-              - entity: switch.keenetic_vpn_mi8
-                name: Xiaomi Mi 8 (Егор)
+#              - entity: switch.keenetic_vpn_mi8
+#                name: Xiaomi Mi 8 (Егор)
+#                icon: mdi:cellphone
+              - entity: switch.keenetic_vpn_x7_pro
+                name: Poco X7 Pro (Егор)
                 icon: mdi:cellphone
               - entity: switch.keenetic_vpn_xbox_01
                 name: XBox

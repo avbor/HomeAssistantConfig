@@ -64,6 +64,18 @@ keenetic_pack:
       body_off: '[{"ip":{"hotspot":{"host":{"mac": "a4:50:46:d4:9b:d0","policy": false}}}},{"system": {"configuration": {"save": {}}}}]'
       is_on_template: "{{ 'Policy4' in value_json | selectattr('mac', 'match', 'a4:50:46:d4:9b:d0') | join }}"
 
+    # Xiaomi Poco x7 Pro
+    - platform: rest
+      name: keenetic_vpn_x7_pro
+      unique_id: fb6d0854-270f-4831-890b-bbe850e14e31
+      headers:
+        Content-Type: application/json
+      resource: "http://172.16.16.254:81/rci/"
+      state_resource: "http://172.16.16.254:81/rci/ip/hotspot/host"
+      body_on: '[{"ip":{"hotspot":{"host":{"mac": "e8:98:47:72:f7:f2","policy": "Policy4"}}}},{"system": {"configuration": {"save": {}}}}]'
+      body_off: '[{"ip":{"hotspot":{"host":{"mac": "e8:98:47:72:f7:f2","policy": false}}}},{"system": {"configuration": {"save": {}}}}]'
+      is_on_template: "{{ 'Policy4' in value_json | selectattr('mac', 'match', 'e8:98:47:72:f7:f2') | join }}"
+
     # Lenovo Tab M10
     - platform: rest
       name: keenetic_vpn_lenovo_tb128xu
