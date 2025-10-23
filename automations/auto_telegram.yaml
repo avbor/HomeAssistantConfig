@@ -220,7 +220,6 @@
         Детская: *{{ states('binary_sensor.samsungtv_40c5100') }}*
         `-= Chromecast =-`
         Гостинная: *{{ states('media_player.gostinaia') }}*
-        Детская: *{{ states('media_player.detskaia') }}*
         `-= Yandex =-`
         Прихожая: *{{ states('media_player.yandex_station_lite_prikhozhaya') }}*
         Детская: *{{ states('media_player.yandex_station_lite_detskaia') }}*

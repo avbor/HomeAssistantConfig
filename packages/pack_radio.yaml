@@ -34,7 +34,7 @@ ha_radio:
         - Спальня (Яндекс)
 #        - Детская (Home Mini)
         - Детская (Яндекс)
-        - Детская (TV)
+#        - Детская (TV)
       initial: Ванная (Home Mini)
       icon: mdi:speaker-wireless
 
@@ -72,8 +72,6 @@ ha_radio:
                 ip_addr: >-
                   {% if is_state("input_select.output_device", "Гостинная (TV)") -%}
                     "172.16.16.211"
-                  {% elif is_state("input_select.output_device", "Детская (TV)") -%}
-                    "172.16.16.212"
                   {% endif %}
         - action: media_player.volume_set
           target:
@@ -156,8 +154,6 @@ ha_radio:
             value: >-
               {% if is_state("input_select.output_device", "Гостинная (TV)") -%}
                 media_player.gostinaia
-              {% elif is_state("input_select.output_device", "Детская (TV)") -%}
-                media_player.detskaia
               {% elif is_state("input_select.output_device", "Ванная (Home Mini)") -%}
                 media_player.mini_v_vannoi
               {% elif is_state("input_select.output_device", "Гостинная (Яндекс)") -%}
