@@ -1,0 +1,37 @@
+#################################################
+# Template fans
+#################################################
+
+- fan:
+
+  - name: Вытяжка в Туалете
+    unique_id: 912a2bfe-d504-44ba-ba28-aa4b66fda702
+    default_entity_id: fan.toilet_extractor
+    turn_on:
+      - action: switch.turn_on
+        target:
+          entity_id:
+          - switch.sonoff_basic_01_switch
+    turn_off:
+      - action: switch.turn_off
+        target:
+          entity_id:
+          - switch.sonoff_basic_01_switch
+    availability: "{{ states('binary_sensor.sonoff_basic_01_status') }}"
+    state: "{{ states('switch.sonoff_basic_01_switch') }}"
+
+  - name: Вытяжка в Ванной
+    unique_id: 89b94bc8-2c48-4240-b216-a688a9d8585b
+    default_entity_id: fan.bathroom_extractor
+    turn_on:
+      - action: switch.turn_on
+        target:
+          entity_id:
+          - switch.sonoff_basic_02_switch
+    turn_off:
+      - action: switch.turn_off
+        target:
+          entity_id:
+          - switch.sonoff_basic_02_switch
+    availability: "{{ states('binary_sensor.sonoff_basic_02_status') }}"
+    state: "{{ states('switch.sonoff_basic_02_switch') }}"

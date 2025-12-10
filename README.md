@@ -202,6 +202,8 @@ _Remote site (country house):_
   - Trust Motion Sensor (ZPIR-8000)
   - IKEA TRÅDFRI Motion Sensor (E1745)
   - TuYa Human Breathe Sensor (ZY-M100-S_2, TS0601, _TZE204_qasjif9e)
+  - Sonoff Temperature Sensor (SNZB-02LD)
+  - Sonoff Human Presence Sensor (SNZB-06P)
 
 - Other:
   - Aqara Cube (MFKZQ01LM, lumi.sensor_cube.aqgl01)

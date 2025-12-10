@@ -10,6 +10,7 @@ __all__ = (
 
 import asyncio
 import logging
+import re
 from abc import abstractmethod
 from datetime import timedelta
 from typing import (
@@ -22,6 +23,7 @@ from typing import (
     Iterable,
     List,
     Mapping,
+    MutableMapping,
     Optional,
     Set,
     SupportsInt,
@@ -44,9 +46,9 @@ from homeassistant.const import (
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_time_interval
-from homeassistant.helpers.typing import ConfigType
-from homeassistant.core import HomeAssistant
+from homeassistant.helpers.typing import ConfigType, StateType
 from homeassistant.util import as_local, utcnow
+from homeassistant.core import HomeAssistant
 
 from custom_components.lkcomu_interrao._util import (
     IS_IN_RUSSIA,
@@ -60,6 +62,7 @@ from custom_components.lkcomu_interrao.const import (
     ATTR_ACCOUNT_CODE,
     ATTR_ACCOUNT_ID,
     CONF_ACCOUNTS,
+    CONF_DEV_PRESENTATION,
     CONF_NAME_FORMAT,
     DATA_API_OBJECTS,
     DATA_ENTITIES,
@@ -70,6 +73,7 @@ from custom_components.lkcomu_interrao.const import (
     FORMAT_VAR_ACCOUNT_CODE,
     FORMAT_VAR_ACCOUNT_ID,
     FORMAT_VAR_CODE,
+    FORMAT_VAR_ID,
     FORMAT_VAR_PROVIDER_CODE,
     FORMAT_VAR_PROVIDER_NAME,
     SUPPORTED_PLATFORMS,
@@ -147,6 +151,9 @@ async def async_register_update_delegator(
         await async_refresh_api_data(hass, config_entry)
 
 
+DEV_CLASSES_PROCESSED = set()
+
+
 async def async_refresh_api_data(hass: HomeAssistant, config_entry: ConfigEntry):
     entry_id = config_entry.entry_id
     api: "BaseEnergosbytAPI" = hass.data[DATA_API_OBJECTS][entry_id]
@@ -198,6 +205,19 @@ async def async_refresh_api_data(hass: HomeAssistant, config_entry: ConfigEntry)
     entities: EntitiesDataType = hass.data[DATA_ENTITIES][entry_id]
     final_config: ConfigType = dict(hass.data[DATA_FINAL_CONFIG][entry_id])
 
+    dev_presentation = final_config.get(CONF_DEV_PRESENTATION)
+    dev_log_prefix = log_prefix_base + "[dev] "
+
+    if dev_presentation:
+        from pprint import pformat
+
+        _LOGGER.debug(
+            dev_log_prefix
+            + ("Конечная конфигурация:" if IS_IN_RUSSIA else "Final configuration:")
+            + "\n"
+            + pformat(final_config)
+        )
+
     platform_tasks = {}
 
     accounts_config = final_config.get(CONF_ACCOUNTS) or {}
@@ -229,6 +249,24 @@ async def async_refresh_api_data(hass: HomeAssistant, config_entry: ConfigEntry)
                         )
                     )
                     continue
+
+                if dev_presentation:
+                    dev_key = (entity_cls, account.provider_type)
+                    if dev_key in DEV_CLASSES_PROCESSED:
+                        _LOGGER.debug(
+                            cls_log_prefix_base
+                            + "[dev] "
+                            + (
+                                f"Пропущен лицевой счёт ({mask_username(account.code)}) "
+                                f"по уникальности типа"
+                                if IS_IN_RUSSIA
+                                else f"Account skipped ({mask_username(account.code)}) "
+                                f"due to type uniqueness"
+                            )
+                        )
+                        continue
+
+                    DEV_CLASSES_PROCESSED.add(dev_key)
 
                 current_entities = entities.setdefault(entity_cls, {})
 
@@ -359,6 +397,39 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
 
         return device_info
 
+    def _handle_dev_presentation(
+        self,
+        mapping: MutableMapping[str, Any],
+        filter_vars: Iterable[str],
+        blackout_vars: Optional[Iterable[str]] = None,
+    ) -> None:
+        if self._account_config[CONF_DEV_PRESENTATION]:
+            filter_vars = set(filter_vars)
+            if blackout_vars is not None:
+                blackout_vars = set(blackout_vars)
+                filter_vars.difference_update(blackout_vars)
+
+                for attr in blackout_vars:
+                    value = mapping.get(attr)
+                    if value is not None:
+                        if isinstance(value, float):
+                            value = "#####.###"
+                        elif isinstance(value, int):
+                            value = "#####"
+                        elif isinstance(value, str):
+                            value = "XXXXX"
+                        else:
+                            value = "*****"
+                        mapping[attr] = value
+
+            for attr in filter_vars:
+                value = mapping.get(attr)
+                if value is not None:
+                    value = re.sub(r"[A-Za-z]", "X", str(value))
+                    value = re.sub(r"[0-9]", "#", value)
+                    value = re.sub(r"\w+", "*", value)
+                    mapping[attr] = value
+
     #################################################################################
     # Config getter helpers
     #################################################################################
@@ -407,6 +478,11 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
         if ATTR_ACCOUNT_CODE not in attributes:
             attributes[ATTR_ACCOUNT_CODE] = self._account.code
 
+        self._handle_dev_presentation(
+            attributes,
+            (ATTR_ACCOUNT_CODE, ATTR_ACCOUNT_ID),
+        )
+
         return attributes
 
     @property
@@ -430,6 +506,12 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
 
         if FORMAT_VAR_PROVIDER_NAME not in name_format_values:
             name_format_values[FORMAT_VAR_PROVIDER_NAME] = self._account.provider_name
+
+        self._handle_dev_presentation(
+            name_format_values,
+            (FORMAT_VAR_CODE, FORMAT_VAR_ACCOUNT_CODE),
+            (FORMAT_VAR_ACCOUNT_ID, FORMAT_VAR_ID),
+        )
 
         return self.name_format.format_map(NameFormatDict(name_format_values))
 
@@ -530,8 +612,19 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def code(self) -> str:
-        return self._account.code
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def state(self) -> StateType:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def icon(self) -> str:
+        raise NotImplementedError
 
     @property
     @abstractmethod
@@ -546,6 +639,11 @@ class LkcomuInterRAOEntity(Entity, Generic[_TAccount]):
     @property
     @abstractmethod
     def unique_id(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def device_class(self) -> Optional[str]:
         raise NotImplementedError
 
     def register_supported_services(self, for_object: Optional[Any] = None) -> None:

@@ -1,4 +1,5 @@
 wifi:
+  min_auth_mode: WPA2
   networks:
     - ssid: !secret wifi_mesh_ssid
       password: !secret wifi_mesh_password

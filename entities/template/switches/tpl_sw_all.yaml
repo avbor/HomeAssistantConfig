@@ -1,0 +1,46 @@
+#################################################
+# Template switches
+#################################################
+
+- switch:
+
+  - name: samsungtv_40c5100
+    unique_id: 2b5a88b7-7a1d-41fd-82e7-56678eb9c8b0
+    default_entity_id: switch.samsungtv_40c5100
+    turn_on:
+      - action: switch.turn_on
+        target:
+          entity_id:
+          - switch.smartir_01_tv_samsung_power
+    turn_off:
+      - action: script.turn_on
+        target:
+          entity_id:
+          - script.power_off_samsungtv_40c5100
+    icon: >-
+      {% if is_state('binary_sensor.samsungtv_40c5100', 'on') %}
+        mdi:television
+      {% else %}
+        mdi:television-off
+      {% endif %}
+    availability: "{{ is_state('binary_sensor.smartir_01_status', 'on') }}"
+    state: "{{ is_state('binary_sensor.samsungtv_40c5100', 'on') }}"
+
+  - name: samsungtv_46es5507
+    unique_id: 2f82e193-ac27-42ed-8964-7123fe059f8b
+    default_entity_id: switch.samsungtv_46es5507
+    turn_on:
+      - action: shell_command.chromecast_tv_on
+        data:
+          ip_addr: 172.16.16.211
+    turn_off:
+      - action: media_player.turn_off
+        data:
+          entity_id: media_player.ue46es5507
+    icon: >-
+      {% if is_state('media_player.ue46es5507', 'on') %}
+        mdi:television
+      {% else %}
+        mdi:television-off
+      {% endif %}
+    state: "{{ is_state('media_player.ue46es5507', 'on') }}"

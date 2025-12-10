@@ -9,7 +9,7 @@ packages:
 
 esphome:
   includes: 
-    - include/daikin_ir_v2.h
+    - include/daikin_ir_v2.1.h
   libraries:
     - IRremoteESP8266
 

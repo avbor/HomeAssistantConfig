@@ -65,6 +65,7 @@ ATTR_TOTAL_AREA: Final = "total_area"
 ATTR_UNIT: Final = "unit"
 
 CONF_ACCOUNTS: Final = "accounts"
+CONF_DEV_PRESENTATION: Final = "dev_presentation"
 CONF_LAST_INVOICE: Final = "last_invoice"
 CONF_LAST_PAYMENT: Final = "last_payment"
 CONF_LOGOS: Final = "logos"

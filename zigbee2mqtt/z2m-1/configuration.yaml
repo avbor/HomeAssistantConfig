@@ -37,6 +37,7 @@ serial:
 frontend:
   enabled: true
   port: 8099
+  package: zigbee2mqtt-frontend
 device_options: {}
 availability:
   enabled: true
@@ -49,4 +50,6 @@ devices:
     friendly_name: Датчик присутствия в Ванной
   '0xa4c138b96f4627bc':
     friendly_name: Датчик присутствия в Туалете
+  '0xd44867fffe60d52c':
+    friendly_name: Датчик присутствия в Ванной - Sonoff
 version: 4

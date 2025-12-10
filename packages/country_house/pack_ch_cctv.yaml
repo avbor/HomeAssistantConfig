@@ -13,18 +13,18 @@ ch_cctv_pack:
     sss_reolinkcam_02_disable:
       url: !secret sss_reolinkcam_02_disable_url
 
-  # Switches
-  switch:
-
-    - platform: template
-      switches:
-
-        sss_reolinkcam_02:
-          turn_on:
-            action: rest_command.sss_reolinkcam_02_enable
-          turn_off:
-            action: rest_command.sss_reolinkcam_02_disable
-          icon_template: mdi:cctv
+#  # Switches
+#  switch:
+#
+#    - platform: template
+#      switches:
+#
+#        sss_reolinkcam_02:
+#          turn_on:
+#            action: rest_command.sss_reolinkcam_02_enable
+#          turn_off:
+#            action: rest_command.sss_reolinkcam_02_disable
+#          icon_template: mdi:cctv
 
   # Input Booleans
   input_boolean:
@@ -75,6 +75,16 @@ ch_cctv_pack:
           device_class: motion
           state: "{{ trigger.data.motion }}"
           auto_off: "00:00:30"
+
+    - switch:
+      - name: sss_reolinkcam_02
+        unique_id: d21b9f75-7801-44d9-85f8-2db2aaf8f38c
+        default_entity_id: switch.sss_reolinkcam_02
+        turn_on:
+          - action: rest_command.sss_reolinkcam_02_enable
+        turn_off:
+          - action: rest_command.sss_reolinkcam_02_disable
+        icon: mdi:cctv
 
   # Automations
   automation:

@@ -378,6 +378,7 @@
           '^sensor\.double_take_.*|'
           '^sensor\.processor_use$|'
           '^binary_sensor\.avb0r$|'
+          '^(sensor|binary_sensor|image).avb0r_.*|'
           '^sensor\.dacha_nearest_.*|'
           '^sensor\.dacha_.*_di.*|'
           '^(media_player|remote)\.xbox_ch_01|'

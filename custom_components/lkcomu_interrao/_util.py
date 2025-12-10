@@ -57,13 +57,9 @@ def _find_existing_entry(
             return config_entry
 
 
-async def import_api_cls(type_):
-    loop = asyncio.get_running_loop()
-    API = await loop.run_in_executor(
-        None,
-        lambda: __import__("inter_rao_energosbyt.api." + type_, globals(), locals(), ("API",)).API
-    )
-    return API
+def import_api_cls(type_: str) -> Type["BaseEnergosbytAPI"]:
+    return __import__("inter_rao_energosbyt.api." + type_, globals(), locals(), ("API",)).API
+
 
 _RE_USERNAME_MASK = re.compile(r"^(\W*)(.).*(.)$")
 

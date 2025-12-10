@@ -2,7 +2,12 @@ from typing import Any, ClassVar, Dict, Hashable, Iterable, Mapping, Optional, T
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.typing import ConfigType
+from homeassistant.const import (
+    STATE_OFF,
+    STATE_ON,
+    STATE_UNKNOWN,
+)
+from homeassistant.helpers.typing import ConfigType, StateType
 from homeassistant.util import slugify
 
 from custom_components.lkcomu_interrao._base import (
@@ -11,7 +16,13 @@ from custom_components.lkcomu_interrao._base import (
 )
 from custom_components.lkcomu_interrao._encoders import payment_to_attrs
 from custom_components.lkcomu_interrao.const import (
+    ATTR_AGENT,
+    ATTR_AMOUNT,
+    ATTR_GROUP,
+    ATTR_PAID_AT,
+    ATTR_PERIOD,
     CONF_LAST_PAYMENT,
+    DOMAIN,
     FORMAT_VAR_ID,
     FORMAT_VAR_TYPE_EN,
     FORMAT_VAR_TYPE_RU,
@@ -24,8 +35,6 @@ _TLkcomuInterRAOEntity = TypeVar("_TLkcomuInterRAOEntity", bound=LkcomuInterRAOE
 class LkcomuInterRAOLastPayment(
     LkcomuInterRAOEntity[AbstractAccountWithPayments], BinarySensorEntity
 ):
-    _attr_icon = "mdi:cash-multiple"
-
     config_key: ClassVar[str] = CONF_LAST_PAYMENT
 
     def __init__(self, *args, last_payment: Optional[AbstractPayment] = None, **kwargs) -> None:
@@ -37,11 +46,9 @@ class LkcomuInterRAOLastPayment(
         )
 
     @property
-    def is_on(self) -> Optional[bool]:
+    def is_on(self) -> bool:
         payment = self._last_payment
-        if payment is None:
-            return None
-        return payment.is_accepted
+        return payment is not None and payment.is_accepted
 
     @property
     def entity_id(self) -> Optional[str]:
@@ -86,10 +93,36 @@ class LkcomuInterRAOLastPayment(
     #################################################################################
 
     @property
+    def code(self) -> str:
+        return self._account.code
+
+    @property
+    def state(self) -> StateType:
+        data = self._last_payment
+
+        if data is None:
+            return STATE_UNKNOWN
+
+        return STATE_ON if self.is_on else STATE_OFF
+
+    @property
+    def icon(self) -> str:
+        return "mdi:cash-multiple"
+
+    @property
     def sensor_related_attributes(self) -> Optional[Mapping[str, Any]]:
         payment = self._last_payment
-        if payment:
-            return payment_to_attrs(payment)
+
+        if payment is None:
+            attributes = {}
+        else:
+
+            attributes = payment_to_attrs(payment)
+            self._handle_dev_presentation(
+                attributes, (ATTR_PAID_AT, ATTR_PERIOD), (ATTR_AMOUNT, ATTR_AGENT, ATTR_GROUP)
+            )
+
+        return attributes
 
     @property
     def name_format_values(self) -> Mapping[str, Any]:
@@ -105,6 +138,10 @@ class LkcomuInterRAOLastPayment(
         """Return the unique ID of the sensor"""
         acc = self._account
         return f"{acc.api.__class__.__name__}_lastpayment_{acc.id}"
+
+    @property
+    def device_class(self) -> Optional[str]:
+        return DOMAIN + "_payment"
 
 
 async_setup_entry = make_common_async_setup_entry(LkcomuInterRAOLastPayment)

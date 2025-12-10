@@ -8,7 +8,7 @@ bathroom_light_pack:
   timer:
 
     bathroom_presence:
-      duration: "00:05:00"
+      duration: "00:02:00"
 
   # Automations
   automation:
@@ -26,7 +26,7 @@ bathroom_light_pack:
           entity_id: binary_sensor.lumi_lumi_sensor_magnet_on_off
           id: "magnet"
         - trigger: state
-          entity_id: binary_sensor.trust_iaszone
+          entity_id: binary_sensor.0xd44867fffe60d52c_occupancy
           to: "on"
           id: "motion_on"
         - trigger: state
@@ -54,17 +54,17 @@ bathroom_light_pack:
                       target:
                         entity_id: timer.bathroom_presence
                 - alias: Motion On
-                  conditions: "{{ states('binary_sensor.trust_iaszone') == 'on' }}"
+                  conditions: "{{ states('binary_sensor.0xd44867fffe60d52c_occupancy') == 'on' }}"
                   sequence:
                     - action: timer.start
                       target:
                         entity_id: timer.bathroom_presence
                 - alias: Motion Off
-                  conditions: "{{ states('binary_sensor.trust_iaszone') == 'off' }}"
+                  conditions: "{{ states('binary_sensor.0xd44867fffe60d52c_occupancy') == 'off' }}"
                   sequence:
                     choose:
-                      - alias: Motion detected > 5 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.trust_iaszone.last_changed)) > 300 }}"
+                      - alias: Motion detected > 2 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor['0xd44867fffe60d52c_occupancy'].last_changed)) > 120 }}"
                         sequence:
                           - parallel:
                               - sequence:
@@ -78,8 +78,8 @@ bathroom_light_pack:
                                   - action: fan.turn_off
                                     target:
                                       entity_id: fan.bathroom_extractor
-                      - alias: Motion detected <= 5 min ago
-                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor.trust_iaszone.last_changed)) <= 300 }}"
+                      - alias: Motion detected <= 2 min ago
+                        conditions: "{{ (as_timestamp(now()) - as_timestamp(states.binary_sensor['0xd44867fffe60d52c_occupancy'].last_changed)) <= 120 }}"
                         sequence:
                           - condition: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
                           - action: light.turn_off
@@ -90,8 +90,8 @@ bathroom_light_pack:
                           - action: light.turn_on
                             target:
                               entity_id: light.sonoff_zbmini_04_on_off
-                          - wait_template: "{{ is_state('binary_sensor.trust_iaszone', 'on') }}"
-                            timeout: "00:01:00"
+                          - wait_template: "{{ is_state('binary_sensor.0xd44867fffe60d52c_occupancy', 'on') }}"
+                            timeout: "00:00:30"
                           - if:
                               - "{{ not wait.completed }}"
                             then:
@@ -128,7 +128,7 @@ bathroom_light_pack:
                   sequence:
                     - parallel:
                         - sequence:
-                            - condition: "{{ is_state('binary_sensor.trust_iaszone', 'off') }}"
+                            - condition: "{{ is_state('binary_sensor.0xd44867fffe60d52c_occupancy', 'off') }}"
                             - condition: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
                             - action: light.turn_off
                               target:
@@ -136,7 +136,7 @@ bathroom_light_pack:
                         - sequence:
                             - condition: "{{ is_state('fan.bathroom_extractor', 'on') }}"
                             - condition: "{{ is_state('binary_sensor.bathroom_high_humidity', 'off') }}"
-                            - condition: "{{ is_state('binary_sensor.trust_iaszone', 'off') }}"
+                            - condition: "{{ is_state('binary_sensor.0xd44867fffe60d52c_occupancy', 'off') }}"
                             - action: fan.turn_off
                               target:
                                 entity_id: fan.bathroom_extractor
