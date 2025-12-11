@@ -112,31 +112,26 @@ cctv_pack:
         from: "off"
         to: "on"
       actions:
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: "В *Детской* обнаружено движение:"
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_photo
           data:
-            message: "Camera Snapshot 1"
-            data:
-              photo:
-                - url: !secret dafangcam_03_snapshot_url
+            target: !secret tlg_group_flat_1
+            url: !secret dafangcam_03_snapshot_url
         - delay:
             seconds: 1
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_photo
           data:
-            message: "Camera Snapshot 2"
-            data:
-              photo:
-                - url: !secret dafangcam_03_snapshot_url
+            target: !secret tlg_group_flat_1
+            url: !secret dafangcam_03_snapshot_url
         - delay:
             seconds: 1
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_photo
           data:
-            message: "Camera Snapshot 3"
-            data:
-              photo:
-                - url: !secret dafangcam_03_snapshot_url
+            target: !secret tlg_group_flat_1
+            url: !secret dafangcam_03_snapshot_url
 
     - alias: "Вкл контроль движения в детской"
       id: f46ce78b-11b1-42e9-b217-34ed6eabb7bb
@@ -172,36 +167,28 @@ cctv_pack:
       actions:
         - delay:
             seconds: 3
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_photo
           data:
-            message: "Camera Snapshot 1"
-            data:
-              photo:
-                - url: !secret dafangcam_02_snapshot_url
+            target: !secret tlg_group_flat_1
+            url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 1
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_photo
           data:
-            message: "Camera Snapshot 2"
-            data:
-              photo:
-                - url: !secret dafangcam_02_snapshot_url
+            target: !secret tlg_group_flat_1
+            url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 2
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_photo
           data:
-            message: "Camera Snapshot 3"
-            data:
-              photo:
-                - url: !secret dafangcam_02_snapshot_url
+            target: !secret tlg_group_flat_1
+            url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 3
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_photo
           data:
-            message: "Camera Snapshot 4"
-            data:
-              photo:
-                - url: !secret dafangcam_02_snapshot_url
+            target: !secret tlg_group_flat_1
+            url: !secret dafangcam_02_snapshot_url
 
     - alias: "DafangCam-02 Turn Off Night Mode by Light"
       id: ff6813b7-a4a7-4682-bacb-c28290e43f88

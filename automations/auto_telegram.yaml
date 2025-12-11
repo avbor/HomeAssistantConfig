@@ -9,11 +9,12 @@
     trigger: event
     event_type: telegram_text
   actions:
-    action: notify.telegram_group_system
-    data:
-      message: |
-        *{{ trigger.event.data.from_first }} {{ trigger.event.data.from_last }} [{{ trigger.event.data.user_id }}] пишет:*
-        {{ trigger.event.data.text }}
+    - action: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_system
+        message: |
+          *{{ trigger.event.data.from_first }} {{ trigger.event.data.from_last }} [{{ trigger.event.data.user_id }}] пишет:*
+          {{ trigger.event.data.text }}
 # ---- /start
 - alias: "Telegram Bot - Start"
   id: d50c7e2c-9f67-40f2-9495-41ba1140c9b5

@@ -193,18 +193,18 @@ tts:
 #      - !secret tlg_group_country_house
 
 notify:
-  - name: telegram_stall
-    platform: telegram
-    chat_id: !secret tlg_stall_id
-  - name: telegram_iborisochka
-    platform: telegram
-    chat_id: !secret tlg_iborisochka_id
-  - name: telegram_group_flat_1
-    platform: telegram
-    chat_id: !secret tlg_group_flat_1
-  - name: telegram_group_system
-    platform: telegram
-    chat_id: !secret tlg_group_system
+#  - name: telegram_stall
+#    platform: telegram
+#    chat_id: !secret tlg_stall_id
+#  - name: telegram_iborisochka
+#    platform: telegram
+#    chat_id: !secret tlg_iborisochka_id
+#  - name: telegram_group_flat_1
+#    platform: telegram
+#    chat_id: !secret tlg_group_flat_1
+#  - name: telegram_group_system
+#    platform: telegram
+#    chat_id: !secret tlg_group_system
   - name: sms_rest
     platform: rest
     resource: !secret sms_rest_addr

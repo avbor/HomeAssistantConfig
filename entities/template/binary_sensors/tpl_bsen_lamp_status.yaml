@@ -1,0 +1,167 @@
+#################################################
+# Template lamp status sensors
+#################################################
+
+- binary_sensor:
+
+  - name: Лампа на столе в Спальне
+    unique_id: d9713788-f880-4316-a1fb-1c2bb2a52088
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_spalnia_stol
+    icon: mdi:desk-lamp
+    state: "{{ is_state('light.spalnia_stol', 'on') }}"
+
+  - name: Бра в Спальне - Право
+    unique_id: 728e5d76-ca66-42c9-ac4c-c23bd8ba6fbd
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_spalnia_bra_right
+    icon: mdi:wall-sconce-flat
+    state: "{{ is_state('light.sonoff_1001045426', 'on') }}"
+
+  - name: Бра в Спальне - Лево
+    unique_id: 68cf898c-4b5c-4dde-8cef-d7504aecc1a4
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_spalnia_bra_left
+    icon: mdi:wall-sconce-flat
+    state: "{{ is_state('light.sonoff_01minizb_47ef08fe_on_off', 'on') }}"
+
+  - name: Лампа в Спальне у кровати - Лево
+    unique_id: 4eaf6c33-959f-41ed-8e7a-151860582c08
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_spalnia_u_krovati_left
+    icon: mdi:lamp
+    state: "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2', 'on') }}"
+
+  - name: Люстра в Спальне
+    unique_id: ca6142c6-0d17-41c4-828f-82da705b1a7b
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_spalnia_liustra
+    icon: mdi:ceiling-light
+    state: "{{ is_state('light.sonoff_1001053235', 'on') }}"
+
+  - name: Люстра в Детской
+    unique_id: 4def13fd-699d-46f6-8456-87c10e250b9f
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_detskaia
+    icon: mdi:ceiling-light
+    state: "{{ is_state('light.ikea_e27_detskaia', 'on') }}"
+
+  - name: Подсветка окна в Детской
+    unique_id: bd1c17eb-68f8-4a04-859e-8a3f4d3eb8bb
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_detskaia_okno
+    icon: mdi:string-lights
+    state: "{{ is_state('light.detskaia_podsvetka_na_okne', 'on') }}"
+
+  - name: Подсветка окна в Гостиной
+    unique_id: 70e60003-8f28-4189-9270-b6dfb175df98
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_gostinaia_okno
+    icon: mdi:string-lights
+    state: "{{ is_state('light.gostinaia_podsvetka_na_okne', 'on') }}"
+
+  - name: Бра в Гостиной
+    unique_id: 1c7e3127-a100-424d-afa5-c5b8fd18f8a6
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_gostinaya_bra
+    icon: mdi:wall-sconce-flat
+    state: "{{ is_state('light.sonoff_1000ab3c28', 'on') }}"
+
+  - name: Люстра в Гостиной
+    unique_id: 19b80381-11ba-42a7-8879-37866c2a5e62
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_gostinaya_liustra
+    icon: mdi:ceiling-light
+    state: "{{ is_state('light.sonoff_1000f3035d', 'on') }}"
+
+  - name: Споты в Гостиной
+    unique_id: 1ef133cc-652d-4258-9729-fa7134e92949
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_gostinaya_spots
+    icon: mdi:light-recessed
+    state: "{{ is_state('light.sonoff_1000f30a9e', 'on') }}"
+
+  - name: Подсветка Кухни
+    unique_id: 7927a813-af15-4438-9ddf-259ba8d8e484
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_kukhnia_lenta
+    icon: mdi:led-strip-variant
+    state: "{{ is_state('light.kukhnia_lenta', 'on') }}"
+
+  - name: Люстра на Кухне
+    unique_id: 52490714-b2b4-4a60-ad12-2e8578f84db2
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_kukhnia_liustra
+    icon: mdi:ceiling-light
+    state: "{{ is_state('light.ikea_e27_kukhnia', 'on') }}"
+
+  - name: Споты на Кухне
+    unique_id: 81241d74-f41c-4973-8ea3-252fa8b19311
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_kukhnia_spots
+    icon: mdi:light-recessed
+    state: "{{ is_state('light.sonoff_1000b72483', 'on') }}"
+
+  - name: Люстра в Кладовой
+    unique_id: 91544185-5d5b-4df0-bd24-be71491cdb34
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_kladovaya
+    icon: mdi:vanity-light
+    state: "{{ is_state('light.sonoff_1000b6831b', 'on') }}"
+
+  - name: Лампа на столе в Гостиной
+    unique_id: 3072c102-2f65-4fb4-8ad3-1033edc881e4
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_workdesk_gostinaya
+    icon: mdi:desk-lamp
+    state: "{{ is_state('light.ikea_e27_level_light_color_on_off', 'on') }}"
+
+  - name: Лампа на столе в Детской слева
+    unique_id: 11a54ee1-4f5e-471c-af28-85163f118be9
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_workdesk_detskaia_left
+    icon: mdi:desk-lamp
+    state: "{{ is_state('light.ikea_e14_level_light_color_on_off', 'on') }}"
+
+  - name: Лампа на столе в Детской справа
+    unique_id: 80fa9749-3641-4c1e-8dca-e5254704a297
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_workdesk_detskaia_right
+    icon: mdi:desk-lamp
+    state: "{{ is_state('light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light', 'on') }}"
+
+  - name: Споты в Прихожей
+    unique_id: f5eafd5b-ebdd-42f4-8249-390469dcc7d0
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_prikhozhaya
+    icon: mdi:light-recessed
+    state: "{{ is_state('light.sonoff_1000f2f14a', 'on') }}"
+
+  - name: Споты в Коридоре
+    unique_id: 47e349b3-501a-4a39-91f1-50ee3e4b0d0e
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_koridor
+    icon: mdi:light-recessed
+    state: "{{ is_state('light.sonoff_1000f2a500', 'on') }}"
+
+  - name: Споты в Туалете
+    unique_id: 5d100d72-e0d2-44e2-b2ce-eee8b1dc3d01
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_toilet
+    icon: mdi:light-recessed
+    state: "{{ is_state('light.sonoff_zbmini_03_on_off', 'on') }}"
+
+  - name: Споты в Ванной
+    unique_id: ec87689f-4cd8-452e-a90d-c2df498edd44
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_bathroom
+    icon: mdi:light-recessed
+    state: "{{ is_state('light.sonoff_zbmini_04_on_off', 'on') }}"
+
+  - name: Гирлянда на кровати в Детской
+    unique_id: 5eef82af-4e54-4a74-843d-58fb7291dae4
+    device_class: power
+    default_entity_id: binary_sensor.lamp_status_girlianda_detskaia
+    icon: mdi:string-lights
+    state: "{{ is_state('light.detskaia_girlianda_na_krovati', 'on') }}"
+

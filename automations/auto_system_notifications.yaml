@@ -66,8 +66,9 @@
         - trigger: state
           entity_id: sensor.warnings_in_system_log_command_line
       timeout: "00:00:01"
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: |
           _INFO:_ Home Assistant *запущен* за {{ states('sensor.start_time') }} сек.
           Ошибок: *{{ states('sensor.errors_in_system_log_command_line') }}*, Предупреждений: *{{ states('sensor.warnings_in_system_log_command_line') }}*
@@ -90,8 +91,9 @@
     - action: input_boolean.turn_on
       data:
         entity_id: input_boolean.ha_shutdown
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: "_INFO:_ Home Assistant *остановлен*."
 
 - alias: "HASS: ERRORs in System Log [notify to group system]"
@@ -103,8 +105,9 @@
     event_data:
       level: ERROR
   actions:
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: "HASS: WARNINGs in System Log [notify to group system]"
@@ -116,8 +119,9 @@
     event_data:
       level: WARNING
   actions:
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: "HASS: System Config Errors [notify to group system]"
@@ -137,8 +141,9 @@
         value_template: >-
           {{ trigger.event.data.service_data.notification_id == 'invalid_config' }}
   actions:
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: |
           *Внимание, конфигурация содержит ошибки!*
           {% if trigger.event.data.service_data.notification_id == 'homeassistant.check_config' -%}

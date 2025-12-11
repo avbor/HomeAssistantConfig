@@ -375,8 +375,9 @@ nursery_light_pack:
         - action: homeassistant.turn_off
           target:
             entity_id: light.ikea_e27_detskaia
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: _{{ now().strftime("%d.%m.%Y %H:%M:%S") }}_ автоматически выключен свет в детской.
 
     - alias: "Кубик Aqara в Детской"

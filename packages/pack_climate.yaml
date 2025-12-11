@@ -421,8 +421,9 @@ climate_pack:
           for:
             minutes: 5
       actions:
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: >-
               В *Детской*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -442,8 +443,9 @@ climate_pack:
           for:
             minutes: 5
       actions:
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: >-
               В *Гостиной*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -463,8 +465,9 @@ climate_pack:
           for:
             minutes: 5
       actions:
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: >-
               В *Спальне*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -486,10 +489,11 @@ climate_pack:
         for:
           hours: 8
       actions:
-        action: notify.telegram_group_flat_1
-        data:
-          message: >
-            Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше 8 часов.
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            message: >
+              Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше 8 часов.
 
     - alias: AC - long running [16h]
       id: 970eef7a-4b66-4186-88ff-a0542c13c10a
@@ -504,10 +508,11 @@ climate_pack:
         for:
           hours: 16
       actions:
-        action: notify.telegram_group_flat_1
-        data:
-          message: >
-            Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *16* часов.
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            message: >
+              Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *16* часов.
 
     - alias: AC - long running [24h]
       id: 106513d8-941c-4bfe-8f42-1fe9c95a77de
@@ -522,10 +527,11 @@ climate_pack:
         for:
           hours: 24
       actions:
-        action: notify.telegram_group_flat_1
-        data:
-          message: >
-            Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *24* часов.
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            message: >
+              Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *24* часов.
 
     # Air quality
     - alias: Carbon dioxide alert

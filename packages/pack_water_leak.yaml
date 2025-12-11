@@ -10,16 +10,26 @@ water_leak_protection:
       name: Neptune Activated
       icon: mdi:help-network
 
-# Binary Sensors
-  binary_sensor:
+# # Binary Sensors
+#   binary_sensor:
 
-    - platform: template
-      sensors:
-        neptun_water_leakage:
-          friendly_name: Датчики протечки Нептун
-          device_class: 'moisture'
-          value_template: >
-            {{ is_state('input_boolean.neptun_activated', "on") }}
+#     - platform: template
+#       sensors:
+#         neptun_water_leakage:
+#           friendly_name: Датчики протечки Нептун
+#           device_class: 'moisture'
+#           value_template: >
+#             {{ is_state('input_boolean.neptun_activated', "on") }}
+
+# Templates
+  template:
+
+    - binary_sensor:
+      - name: Датчики протечки Нептун
+        unique_id: 813d8590-14fe-49a5-82f8-cd74e0c01c21
+        device_class: moisture
+        default_entity_id: binary_sensor.neptun_water_leakage
+        state: "{{ is_state('input_boolean.neptun_activated', 'on') }}"
 
 # Scripts
   script:
@@ -153,8 +163,9 @@ water_leak_protection:
         - action: switch.turn_on
           target:
             entity_id: switch.sonoff_1000b68886
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: |
               _INFO:_ Нептун был перезапущен.
 

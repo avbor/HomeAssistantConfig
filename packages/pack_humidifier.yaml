@@ -80,21 +80,43 @@ humidifiers_pack:
                   mdi:air-humidifier-off
                 {% endif %}
 
-  # Sensors
-  sensor:
+    - sensor:
 
-    - platform: template
-      sensors:
-
-        # 01
-        smartmi_humidifier_01_detskaia_mode:
-          friendly_name: "Режим работы"
-          value_template: >
+      - name: Режим работы увлажнителя 01 (Детская)
+        unique_id: 499bbc9a-3cbf-42b0-bcb7-433c5584f421
+        default_entity_id: sensor.smartmi_humidifier_01_detskaia_mode
+        state: >-
             {% if state_attr('humidifier.smartmi_humidifier_01_detskaia', 'mode') %}
               {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'mode') }}
             {% else %}
               off
-            {% endif %}
+            {% endif %}"
+
+      - name: Режим работы увлажнителя 02 (Спальня)
+        unique_id: 18475090-1676-45a3-8448-916158b9a052
+        default_entity_id: sensor.smartmi_humidifier_02_spalnia_mode
+        state: >-
+            {% if state_attr('humidifier.smartmi_humidifier_02_spalnia', 'mode') %}
+              {{ state_attr('humidifier.smartmi_humidifier_02_spalnia', 'mode') }}
+            {% else %}
+              off
+            {% endif %}"
+
+  # Sensors
+#  sensor:
+#
+#    - platform: template
+#      sensors:
+
+        # 01
+        # smartmi_humidifier_01_detskaia_mode:
+        #   friendly_name: "Режим работы"
+        #   value_template: >
+        #     {% if state_attr('humidifier.smartmi_humidifier_01_detskaia', 'mode') %}
+        #       {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'mode') }}
+        #     {% else %}
+        #       off
+        #     {% endif %}
 
 #        smartmi_humidifier_01_detskaia_target_humidity:
 #          friendly_name: "Целевая влажность"
@@ -102,14 +124,14 @@ humidifiers_pack:
 #            {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'humidity') }}
 
         # 02
-        smartmi_humidifier_02_spalnia_mode:
-          friendly_name: "Режим работы"
-          value_template: >
-            {% if state_attr('humidifier.smartmi_humidifier_02_spalnia', 'mode') %}
-              {{ state_attr('humidifier.smartmi_humidifier_02_spalnia', 'mode') }}
-            {% else %}
-              off
-            {% endif %}
+        # smartmi_humidifier_02_spalnia_mode:
+        #   friendly_name: "Режим работы"
+        #   value_template: >
+        #     {% if state_attr('humidifier.smartmi_humidifier_02_spalnia', 'mode') %}
+        #       {{ state_attr('humidifier.smartmi_humidifier_02_spalnia', 'mode') }}
+        #     {% else %}
+        #       off
+        #     {% endif %}
 
 #        smartmi_humidifier_02_spalnia_target_humidity:
 #          friendly_name: "Целевая влажность"
@@ -150,8 +172,9 @@ humidifiers_pack:
         condition: template
         value_template: "{{ (trigger.to_state.state | int) != 0 }}"
       actions:
-        - action: notify.telegram_group_system
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_system
             message: >-
               {% if '_01_' in trigger.entity_id -%}
               *Smartmi Humidifier 01* (Детская): заканчивается вода (осталось *{{ trigger.to_state.state }}*%)!
@@ -179,8 +202,9 @@ humidifiers_pack:
               {% elif '_02_' in trigger.entity_id -%}
               humidifier.smartmi_humidifier_02_spalnia
               {% endif -%}
-        - action: notify.telegram_group_system
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_system
             message: >-
               {% if '_01_' in trigger.entity_id -%}
               *Smartmi Humidifier 01* (Детская): выключен (остаток воды *{{ trigger.to_state.state }}*%)!

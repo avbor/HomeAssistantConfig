@@ -11,8 +11,9 @@
     for:
       minutes: 30
   actions:
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: Влажность в хьюмидоре ниже 65% (текущая {{ states("sensor.atc_3d13_humidity") }}%)
 
 - alias: 'Humidity in humidor too high'
@@ -24,8 +25,9 @@
     for:
       minutes: 30
   actions:
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: Влажность в хьюмидоре выше 80% (текущая {{ states("sensor.atc_3d13_humidity") }}%)
 
 - alias: 'Temperature in humidor too low'
@@ -37,8 +39,9 @@
     for:
       minutes: 30
   actions:
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: Температура в хьюмидоре ниже 20°C (текущая {{ states("sensor.atc_3d13_temperature") }}°C)
 
 - alias: 'Temperature in humidor too high'
@@ -50,6 +53,7 @@
     for:
       minutes: 30
   actions:
-    - action: notify.telegram_group_system
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_system
         message: Температура в хьюмидоре выше 25°C (текущая {{ states("sensor.atc_3d13_temperature") }}°C)

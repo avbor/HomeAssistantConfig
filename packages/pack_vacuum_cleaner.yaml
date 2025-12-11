@@ -55,38 +55,85 @@ vacuum_cleaner:
       initial: Standard
       icon: mdi:speedometer
 
-  # Sensors
-  sensor:
+  # Templates
+  template:
 
-    - platform: template
-      sensors:
-        mirobot_1s_current_fan_speed:
-          value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'fan_speed') }}"
-        mirobot_1s_battery:
-          friendly_name: "Xiaomi Vacuum Cleaner 1S"
-          device_class: battery
-          unit_of_measurement: "%"
-          icon_template: >
-            {% if not state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}mdi:battery-unknown
-            {% else %}{{state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon')}}
-            {% endif %}
-          value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_level') }}"
-        mirobot_1s_main_brush_left:
-          friendly_name: "Main brush hours remaining"
-          unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_main_brush_left') | int(0)) / 3600) | round(0) }}"
-        mirobot_1s_side_brush_left:
-          friendly_name: "Side brush hours remaining"
-          unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_side_brush_left') | int(0)) / 3600) | round(0) }}"
-        mirobot_1s_filter_left:
-          friendly_name: "Filter hours remaining"
-          unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_filter_left') | int(0)) / 3600) | round(0) }}"
-        mirobot_1s_sensor_dirty_left:
-          friendly_name: "Sensors hours remaining"
-          unit_of_measurement: "h"
-          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_sensor_dirty_left') | int(0)) / 3600) | round(0) }}"
+    - sensor:
+
+      - name: mirobot_1s_current_fan_speed
+        unique_id: df94cea5-80d8-4d73-90d7-48fec6c0e02f
+        default_entity_id: sensor.mirobot_1s_current_fan_speed
+        state: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'fan_speed') }}"
+
+      - name: Xiaomi Vacuum Cleaner 1S Battery
+        unique_id: 4805977f-0d9b-4763-a9c0-9601bb891139
+        device_class: battery
+        unit_of_measurement: '%'
+        default_entity_id: sensor.mirobot_1s_battery
+        icon: >-
+          {% if not state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}
+            mdi:battery-unknown
+          {% else %}
+            {{state_attr('vacuum.xiaomi_vacuum_cleaner','battery_icon')}}
+          {% endif %}'
+        state: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_level') }}"
+
+      - name: Xiaomi Vacuum Cleaner 1S Main Brush Hours Remaining
+        unique_id: 220c4ce6-6ca0-4dd9-88c3-a3a46783ab03
+        unit_of_measurement: h
+        default_entity_id: sensor.mirobot_1s_main_brush_left
+        state: "{{ ((states('sensor.xiaomi_vacuum_cleaner_main_brush_left') | int(0)) / 3600) | round(0) }}"
+
+      - name: Xiaomi Vacuum Cleaner 1S Side Brush Hours Remaining
+        unique_id: 667a6c98-7abe-4fc1-b966-560d6302a9a6
+        unit_of_measurement: h
+        default_entity_id: sensor.mirobot_1s_side_brush_left
+        state: "{{ ((states('sensor.xiaomi_vacuum_cleaner_side_brush_left') | int(0)) / 3600) | round(0) }}"
+
+      - name: Xiaomi Vacuum Cleaner 1S Filter Hours Remaining
+        unique_id: 1eeeae5d-4399-4016-a70b-901add7e3e88
+        unit_of_measurement: h
+        default_entity_id: sensor.mirobot_1s_filter_left
+        state: "{{ ((states('sensor.xiaomi_vacuum_cleaner_filter_left') | int(0)) / 3600) | round(0) }}"
+
+      - name: Xiaomi Vacuum Cleaner 1S Sensors Hours Remaining
+        unique_id: 4300a158-0001-405f-a106-78e8ffedb1ac
+        unit_of_measurement: h
+        default_entity_id: sensor.mirobot_1s_sensor_dirty_left
+        state: "{{ ((states('sensor.xiaomi_vacuum_cleaner_sensor_dirty_left') | int(0)) / 3600) | round(0) }}"
+
+  # Sensors
+#  sensor:
+#
+#    - platform: template
+#      sensors:
+#        mirobot_1s_current_fan_speed:
+#          value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'fan_speed') }}"
+#        mirobot_1s_battery:
+#          friendly_name: "Xiaomi Vacuum Cleaner 1S"
+#          device_class: battery
+#          unit_of_measurement: "%"
+#          icon_template: >
+#            {% if not state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}mdi:battery-unknown
+#            {% else %}{{state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon')}}
+#            {% endif %}
+#          value_template: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_level') }}"
+#        mirobot_1s_main_brush_left:
+#          friendly_name: "Main brush hours remaining"
+#          unit_of_measurement: "h"
+#          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_main_brush_left') | int(0)) / 3600) | round(0) }}"
+#        mirobot_1s_side_brush_left:
+#          friendly_name: "Side brush hours remaining"
+#          unit_of_measurement: "h"
+#          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_side_brush_left') | int(0)) / 3600) | round(0) }}"
+#        mirobot_1s_filter_left:
+#          friendly_name: "Filter hours remaining"
+#          unit_of_measurement: "h"
+#          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_filter_left') | int(0)) / 3600) | round(0) }}"
+#        mirobot_1s_sensor_dirty_left:
+#          friendly_name: "Sensors hours remaining"
+#          unit_of_measurement: "h"
+#          value_template: "{{ ((states('sensor.xiaomi_vacuum_cleaner_sensor_dirty_left') | int(0)) / 3600) | round(0) }}"
 
   # Scripts
   script:
@@ -333,8 +380,9 @@ vacuum_cleaner:
         value_template: >
           {{ trigger.from_state.state != 'unavailable'}}
       actions:
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: "_Mi Robot_: вернулся на базу (закончил уборку)."
 
     - alias: "Оповещение о забытом пылесосе [notify to group flat]"
@@ -346,8 +394,9 @@ vacuum_cleaner:
         for:
           minutes: 15
       actions:
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: "_Mi Robot_: потерялся и бездельничает, отправляем на базу."
         - action: vacuum.return_to_base
           target:
@@ -364,8 +413,9 @@ vacuum_cleaner:
         value_template: >
           {{ trigger.from_state.state != 'unavailable'}}
       actions:
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: |
               _Mi Robot_: Произошла *ошибка*!
               {{ state_attr('vacuum.xiaomi_vacuum_cleaner', "error") }}

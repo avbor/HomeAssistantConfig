@@ -21,8 +21,9 @@
       - condition: template
         value_template: "{{ trigger.to_state.state != trigger.from_state.state }}"
   actions:
-    - action: notify.telegram_group_flat_1
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_flat_1
         message: >
           {{ trigger.to_state.attributes.friendly_name }}
           {% if trigger.to_state.state == 'home' %}дома!
@@ -38,9 +39,10 @@
     from: "off"
     to: "on"
   actions:
-    action: notify.telegram_group_flat_1
-    data:
-      message: Открыта входная дверь!
+    - action: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_flat_1
+        message: Открыта входная дверь!
 
 - alias: Entrance Door - Closed
   id: c6df423a-a1ec-41fb-b600-3874ffef758b
@@ -50,9 +52,10 @@
     from: "on"
     to: "off"
   actions:
-    action: notify.telegram_group_flat_1
-    data:
-      message: Входная дверь закрыта.
+    - action: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_flat_1
+        message: Входная дверь закрыта.
 
 - alias: "Torrent Completed [notify to group system]"
   id: fe45c917-f489-4c38-a3a1-c66e5fedb07f
@@ -60,9 +63,10 @@
     trigger: event
     event_type: transmission_downloaded_torrent
   actions:
-    action: notify.telegram_group_system
-    data:
-      message: "Загрузка torrent-файла завершена"
+    - action: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_system
+        message: "Загрузка torrent-файла завершена"
 
 - alias: "Полнолуние [notify to group system]"
   id: d698bdcc-4ce9-4954-a118-8a1f29cf327e
@@ -71,9 +75,10 @@
     entity_id: sensor.moon
     to: "full_moon"
   actions:
-    action: notify.telegram_group_system
-    data:
-      message: "Сегодня полнолуние!"
+    - action: telegram_bot.send_message
+      data:
+        target: !secret tlg_group_system
+        message: "Сегодня полнолуние!"
 
 - alias: Gas Alert
   id: 0ca74008-65a2-4ed1-b860-e27e57b216f2
@@ -174,8 +179,9 @@
     condition: template
     value_template: "{{ (trigger.to_state.state | int) != 0 }}"
   actions:
-    - action: notify.telegram_group_flat_1
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_flat_1
         title: "*Внимание!*"
         message: |
           Температура воды в бойлере *{{ trigger.to_state.state }}*°C
@@ -189,8 +195,9 @@
       to: "off"
   conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   actions:
-    - action: notify.telegram_group_flat_1
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_flat_1
         message: Чайник *вскипел*!
 
 - alias: Washing Machine - Wash Finished Notification
@@ -202,8 +209,9 @@
       to: "off"
   conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   actions:
-    - action: notify.telegram_group_flat_1
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_flat_1
         title: "Стиральная машина:"
         message: Стирка *закончена*, не забудьте достать белье.
 
@@ -216,8 +224,9 @@
       to: "off"
   conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   actions:
-    - action: notify.telegram_group_flat_1
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_flat_1
         title: "Сушильная машина:"
         message: Сушка *закончена*, не забудьте достать белье.
 
@@ -230,8 +239,9 @@
       to: "off"
   conditions: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
   actions:
-    - action: notify.telegram_group_flat_1
+    - action: telegram_bot.send_message
       data:
+        target: !secret tlg_group_flat_1
         title: "Посудомоечная машина:"
         message: Программа *закончена*, посуда вымыта.
 

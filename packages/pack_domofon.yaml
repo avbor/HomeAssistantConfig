@@ -24,9 +24,10 @@ domofon_pack:
           entity_id: binary_sensor.domofon_incoming_call
           state: "on"
       actions:
-        action: notify.telegram_group_flat_1
-        data:
-          message: "_Домофон_: открыт кнопкой"
+        - action: telegram_bot.send_message
+          data:
+            target: !secret tlg_group_flat_1
+            message: "_Домофон_: открыт кнопкой"
 
     - alias: Domofon - Incoming Call Notification
       id: 741a9858-1687-4b2d-8afd-73373e8cc8ba
@@ -36,12 +37,12 @@ domofon_pack:
         to: "on"
       actions:
         - parallel:
-            - action: notify.telegram_group_flat_1
+            - action: telegram_bot.send_message
               data:
+                target: !secret tlg_group_flat_1
                 message: "_Домофон_: входящий звонок... {% if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') %}(*откроется автоматически*){% endif %}"
-                data:
-                  inline_keyboard:
-                    - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
+                inline_keyboard:
+                  - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
             - sequence:
               - condition: "{{ is_state('switch.domofon_automatically_open_once', 'off') }}"
               - action: script.domofon_alice_notify
@@ -140,8 +141,9 @@ domofon_pack:
           value_template: >-
             {{ states('sensor.ha_uptime') > '1' }}
       actions:
-        - action: notify.telegram_group_system
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_system
             message: |
               *Внимание!*
               {% if trigger.to_state.state == 'off' -%}
@@ -237,8 +239,9 @@ domofon_pack:
         - action: switch.turn_on
           target:
             entity_id: switch.domofon_mute_sound_once
-        - action: notify.telegram_group_flat_1
+        - action: telegram_bot.send_message
           data:
+            target: !secret tlg_group_flat_1
             message: "_Домофон_: включен режим однократного авто-открытия."
         - wait_for_trigger:
             - trigger: state
@@ -255,8 +258,9 @@ domofon_pack:
                 - action: switch.turn_off
                   target:
                     entity_id: switch.domofon_mute_sound_once
-                - action: notify.telegram_group_flat_1
+                - action: telegram_bot.send_message
                   data:
+                    target: !secret tlg_group_flat_1
                     message: "_Домофон_: отключен режим однократного авто-открытия."
 
   script:
@@ -306,8 +310,9 @@ domofon_pack:
                       data:
                         media_content_id: "Открываю"
                         media_content_type: text
-                    - action: notify.telegram_group_flat_1
+                    - action: telegram_bot.send_message
                       data:
+                        target: !secret tlg_group_flat_1
                         message: "_Домофон_: открыт Алисой."
             - conditions: "{{ wait.trigger.event.data.text in ['нет'] }}"
               sequence:
@@ -319,6 +324,7 @@ domofon_pack:
                       data:
                         media_content_id: "Звонок сброшен"
                         media_content_type: text
-                    - action: notify.telegram_group_flat_1
+                    - action: telegram_bot.send_message
                       data:
+                        target: !secret tlg_group_flat_1
                         message: "_Домофон_: звонок сброшен Алисой."
