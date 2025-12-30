@@ -18,7 +18,9 @@ cards:
                   <center>Входящее</center>
               - type: gauge
                 entity: sensor.rch_shellyem_34945470f5db_channel_1_voltage
-                name: ""
+                name:
+                  - type: text
+                    text: ''
                 needle: true
                 min: 100
                 max: 295
@@ -41,7 +43,9 @@ cards:
                   <center>Стабилизированное</center>
               - type: gauge
                 entity: sensor.rch_average_voltage_in_country_house
-                name: ""
+                name:
+                  - type: text
+                    text: ''
                 needle: true
                 min: 170
                 max: 280
