@@ -225,6 +225,19 @@
     }
   },
   "entity": {
+    "button": {
+      "force_update": {
+        "name": "Force map update",
+        "state_attributes": {
+          "last_update_timestamp": {
+            "name": "Last update"
+          },
+          "last_successful_update_timestamp": {
+            "name": "Last successful update"
+          }
+        }
+      }
+    },
     "camera": {
       "live_map": {
         "name": "Live map",
@@ -272,9 +285,6 @@
           },
           "last_successful_update_timestamp": {
             "name": "Last successful update"
-          },
-          "areas": {
-            "name": "Areas"
           }
         }
       }
@@ -634,6 +644,25 @@
           }
         }
       }
+    },
+    "switch": {
+      "auto_update": {
+        "name": "Update map",
+        "state_attributes": {
+          "last_update_timestamp": {
+            "name": "Last update"
+          },
+          "last_successful_update_timestamp": {
+            "name": "Last successful update"
+          }
+        }
+      }
+    }
+  },
+  "issues": {
+    "deprecated_yaml": {
+      "description": "Configuring {integration_title} using YAML is being removed.\n\nYour existing YAML configuration has been imported into the UI automatically.\n\nRemove the `{domain}` camera from your configuration.yaml file and restart Home Assistant to fix this issue.",
+      "title": "The {integration_title} YAML configuration is being removed"
     }
   }
 }

@@ -3,11 +3,11 @@ from typing import Any
 from vacuum_map_parser_base.map_data import OutputObject
 
 
-def as_list_dict(o: list[OutputObject] | None) -> list[dict[str, Any]]:
-    if o is None:
+def as_list_of_dict(o_list: list[OutputObject] | None) -> list[dict[str, Any]]:
+    if o_list is None:
         return []
-    return list(map(lambda mo: mo.as_dict(), o))
+    return [o.as_dict() for o in o_list]
 
 
-def len_len(d: list[list[Any]] | None) -> int:
-    return reduce(lambda c, l: c + len(l), d or [], 0)
+def len_len(data: list[list[Any]] | None) -> int:
+    return reduce(lambda count, sublist: count + len(sublist), data or [], 0)

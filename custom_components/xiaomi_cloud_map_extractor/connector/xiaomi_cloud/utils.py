@@ -14,15 +14,13 @@ def generate_nonce(millis: int):
 
 
 def generate_agent() -> str:
-    agent_id = "".join(
-        map(lambda i: chr(i), [random.randint(65, 69) for _ in range(13)])
-    )
-    random_text = "".join(map(lambda i: chr(i), [random.randint(97, 122) for _ in range(18)]))
-    return f"{random_text}-{agent_id} APP/com.xiaomi.mihome APPV/10.5.201"
+    agent_id = random_text(65, 69, 13)
+    prefix = random_text(97, 122, 18)
+    return f"{prefix}-{agent_id} APP/com.xiaomi.mihome APPV/10.5.201"
 
 
 def generate_device_id() -> str:
-    return "".join((chr(random.randint(97, 122)) for _ in range(6)))
+    return random_text(97, 122, 6)
 
 
 def generate_signature(url, signed_nonce: str, nonce: str, params: dict[str, str]) -> str:
@@ -70,3 +68,7 @@ def decrypt_rc4(password: str, payload: str) -> bytes:
     r = ARC4.new(base64.b64decode(password))
     r.encrypt(bytes(1024))
     return r.encrypt(base64.b64decode(payload))
+
+
+def random_text(chr_from: int, chr_to: int, length: int) -> str:
+    return "".join([chr(random.randint(chr_from, chr_to)) for _ in range(length)])

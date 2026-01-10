@@ -1,5 +1,5 @@
 import logging
-from typing import Self
+from typing import Self, Any
 
 from miio import DreameVacuum, DeviceException
 
@@ -8,6 +8,7 @@ from vacuum_map_parser_base.map_data import MapData
 from vacuum_map_parser_dreame.map_data_parser import DreameMapDataParser
 from .base.model import VacuumConfig, VacuumApi
 from .base.vacuum_v2 import BaseXiaomiCloudVacuumV2
+from ..utils.dict_operations import path_extractor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -66,10 +67,10 @@ class DreameCloudVacuum(BaseXiaomiCloudVacuumV2):
             if response is None:
                 return None
 
-            _key = response["result"]["out"][1]["value"]
+            _key = path_extractor(response, "result.out.1.value")
 
-            if len(_key) == 0:
-                self._robot_stamp = response["result"]["out"][2]["value"]
+            if _key is None or len(_key) == 0:
+                self._robot_stamp = path_extractor(response, "result.out.2.value")
                 return None
 
             _map_name = _key.split(",")
@@ -84,7 +85,6 @@ class DreameCloudVacuum(BaseXiaomiCloudVacuumV2):
                 _LOGGER.debug("Error while calling map_view: %s", e)
             return await super().get_map_name()
 
-    def store_map(self: Self, raw_map_data):
-        super().store_map(raw_map_data)
-        with open(f"{self._store_map_path}/map_data_{self.model}.enc.key", "w") as enc_key_file:
-            enc_key_file.write(self._enc_key)
+    def additional_data(self: Self) -> dict[str, Any]:
+        super_data = super().additional_data()
+        return {**super_data, "enc_key": self._enc_key}

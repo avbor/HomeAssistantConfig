@@ -1,5 +1,10 @@
 {
   "entity": {
+    "button": {
+      "force_update": {
+        "default": "mdi:cloud-refresh"
+      }
+    },
     "camera": {
       "live_map": {
         "default": "mdi:floor-plan"
@@ -78,6 +83,15 @@
       },
       "rooms": {
         "default": "mdi:floor-plan"
+      }
+    },
+    "switch": {
+      "auto_update": {
+        "default": "mdi:cloud-refresh",
+        "state": {
+          "on": "mdi:cloud-check",
+          "off": "mdi:cloud-cancel"
+        }
       }
     }
   }

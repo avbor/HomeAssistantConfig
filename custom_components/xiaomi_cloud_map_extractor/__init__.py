@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 
+from aiohttp import ClientSession
 from homeassistant.const import (
     CONF_HOST,
     CONF_TOKEN,
@@ -12,6 +13,7 @@ from homeassistant.const import (
     CONF_DEVICE_ID
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from vacuum_map_parser_base.config.color import ColorsPalette, SupportedColor
 from vacuum_map_parser_base.config.drawable import Drawable
@@ -46,7 +48,10 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: XiaomiCloudMapExtractorConfigEntry) -> bool:
     xcme_configuration = to_configuration(entry)
-    session_creator = lambda: async_create_clientsession(hass)
+
+    def session_creator() -> ClientSession:
+        return async_create_clientsession(hass)
+
     connector_config = await restore_connector_config(hass, xcme_configuration.mac)
     xcme_connector = XiaomiCloudMapExtractorConnector(session_creator, xcme_configuration, connector_config)
     xcme_update_coordinator = XiaomiCloudMapExtractorDataUpdateCoordinator(hass, xcme_connector)
@@ -70,6 +75,8 @@ def to_configuration(entry: XiaomiCloudMapExtractorConfigEntry) -> XiaomiCloudMa
     host = entry.data[CONF_HOST]
     token = entry.data[CONF_TOKEN]
     device_id = entry.data[CONF_DEVICE_ID]
+    if device_id is None:
+        raise ConfigEntryAuthFailed()
     model = entry.data[CONF_MODEL]
     mac = entry.data[CONF_MAC]
     username = entry.data[CONF_USERNAME]
@@ -91,9 +98,6 @@ def to_configuration(entry: XiaomiCloudMapExtractorConfigEntry) -> XiaomiCloudMa
     drawables = [Drawable(e) for e in entry.options[CONF_DRAWABLES]]
     sizes = Sizes({Size(k): v for k, v in entry.options[CONF_SIZES].items()})
     texts = []
-    store_map_raw = False
-    store_map_image = False
-    store_map_path = ""
 
     config = XiaomiCloudMapExtractorConnectorConfiguration(
         host,
@@ -110,8 +114,5 @@ def to_configuration(entry: XiaomiCloudMapExtractorConfigEntry) -> XiaomiCloudMa
         drawables,
         sizes,
         texts,
-        store_map_raw,
-        store_map_image,
-        store_map_path,
     )
     return config

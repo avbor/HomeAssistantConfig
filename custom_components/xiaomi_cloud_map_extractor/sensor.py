@@ -9,19 +9,18 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
+    DOMAIN,
 )
-from homeassistant.const import (
-    EntityCategory
-)
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from vacuum_map_parser_base.map_data import MapData
 
-from .entity import XiaomiCloudMapExtractorEntity
+from .connector.utils.list_operations import as_list_of_dict, len_len
 from .coordinator import XiaomiCloudMapExtractorDataUpdateCoordinator
+from .entity import XiaomiCloudMapExtractorEntity
 from .types import XiaomiCloudMapExtractorConfigEntry
-from .connector.utils.list_operations import as_list_dict, len_len
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -36,7 +35,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="no_go_areas",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.no_go_areas or []),
-        attributes_fn=lambda map_data: {"areas": as_list_dict(map_data.no_go_areas)},
+        attributes_fn=lambda map_data: {"areas": as_list_of_dict(map_data.no_go_areas)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -81,7 +80,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="no_carpet_areas",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.no_carpet_areas or []),
-        attributes_fn=lambda map_data: {"areas": as_list_dict(map_data.no_carpet_areas)},
+        attributes_fn=lambda map_data: {"areas": as_list_of_dict(map_data.no_carpet_areas)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -92,7 +91,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="no_mopping_areas",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.no_mopping_areas or []),
-        attributes_fn=lambda map_data: {"areas": as_list_dict(map_data.no_mopping_areas)},
+        attributes_fn=lambda map_data: {"areas": as_list_of_dict(map_data.no_mopping_areas)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -103,7 +102,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="cleaned_rooms_ids",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.cleaned_rooms or []),
-        attributes_fn=lambda map_data: {"rooms_ids": as_list_dict(map_data.cleaned_rooms)},
+        attributes_fn=lambda map_data: {"rooms_ids": as_list_of_dict(map_data.cleaned_rooms)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -167,7 +166,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="obstacles",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.obstacles or []),
-        attributes_fn=lambda map_data: {"obstacles": as_list_dict(map_data.obstacles)},
+        attributes_fn=lambda map_data: {"obstacles": as_list_of_dict(map_data.obstacles)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -178,7 +177,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="ignored_obstacles",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.ignored_obstacles or []),
-        attributes_fn=lambda map_data: {"obstacles": as_list_dict(map_data.ignored_obstacles)},
+        attributes_fn=lambda map_data: {"obstacles": as_list_of_dict(map_data.ignored_obstacles)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -189,7 +188,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="obstacles_with_photo",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.obstacles_with_photo or []),
-        attributes_fn=lambda map_data: {"obstacles": as_list_dict(map_data.obstacles_with_photo)},
+        attributes_fn=lambda map_data: {"obstacles": as_list_of_dict(map_data.obstacles_with_photo)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -200,7 +199,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="ignored_obstacles_with_photo",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.ignored_obstacles_with_photo or []),
-        attributes_fn=lambda map_data: {"obstacles": as_list_dict(map_data.ignored_obstacles_with_photo)},
+        attributes_fn=lambda map_data: {"obstacles": as_list_of_dict(map_data.ignored_obstacles_with_photo)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -211,7 +210,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="walls",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.walls or []),
-        attributes_fn=lambda map_data: {"walls": as_list_dict(map_data.walls)},
+        attributes_fn=lambda map_data: {"walls": as_list_of_dict(map_data.walls)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -222,7 +221,7 @@ SENSOR_TYPES: tuple[XiaomiCloudMapExtractorSensorEntityDescription, ...] = (
         translation_key="zones",
         suggested_display_precision=0,
         value_fn=lambda map_data: len(map_data.zones or []),
-        attributes_fn=lambda map_data: {"zones": as_list_dict(map_data.zones)},
+        attributes_fn=lambda map_data: {"zones": as_list_of_dict(map_data.zones)},
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
@@ -262,6 +261,7 @@ async def async_setup_entry(
         for description in SENSOR_TYPES
     )
 
+
 class XiaomiCloudMapExtractorSensorEntity(XiaomiCloudMapExtractorEntity, SensorEntity):
     entity_description: XiaomiCloudMapExtractorSensorEntityDescription
 
@@ -271,9 +271,8 @@ class XiaomiCloudMapExtractorSensorEntity(XiaomiCloudMapExtractorEntity, SensorE
             config_entry: XiaomiCloudMapExtractorConfigEntry,
             description: XiaomiCloudMapExtractorSensorEntityDescription,
     ) -> None:
-        super().__init__(coordinator, config_entry)
+        super().__init__(coordinator, config_entry, DOMAIN, description.key)
 
-        self._attr_unique_id = description.key
         self.entity_description = description
 
     @property

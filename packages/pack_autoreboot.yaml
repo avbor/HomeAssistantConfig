@@ -54,12 +54,6 @@ autoreboot_pack:
                 action: counter.increment
                 target:
                   entity_id: counter.auto_reboot
-              - if: "{{ (states('counter.auto_reboot') | int) <= 1 }}"
-                then:
-                  - alias: Silicon Labs Multiprotocol Add-On
-                    action: hassio.addon_restart
-                    data:
-                      addon: core_silabs_multiprotocol
               - alias: Restart HA
                 action: homeassistant.restart
           - alias: If Auto Reboot Counter > 2

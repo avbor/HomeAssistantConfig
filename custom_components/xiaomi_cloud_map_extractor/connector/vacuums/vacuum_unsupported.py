@@ -29,6 +29,10 @@ class UnsupportedCloudVacuum(BaseXiaomiCloudVacuumV2):
         return "unknown"
 
     @property
+    def should_update_map(self: Self) -> bool:
+        return False
+
+    @property
     def map_data_parser(self: Self) -> MapDataParser:
         return self._unsupported_map_data_parser
 

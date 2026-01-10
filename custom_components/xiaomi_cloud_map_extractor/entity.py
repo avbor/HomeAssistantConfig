@@ -11,7 +11,7 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.device_registry import DeviceInfo, CONNECTION_NETWORK_MAC
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from vacuum_map_parser_base.map_data import MapData, OutputObject
+from vacuum_map_parser_base.map_data import MapData
 
 from .connector.model import XiaomiCloudMapExtractorData
 from .connector.vacuums.base.model import VacuumApi
@@ -37,7 +37,9 @@ class XiaomiCloudMapExtractorEntity(CoordinatorEntity[XiaomiCloudMapExtractorDat
     def __init__(
             self: Self,
             coordinator: XiaomiCloudMapExtractorDataUpdateCoordinator,
-            config_entry: XiaomiCloudMapExtractorConfigEntry
+            config_entry: XiaomiCloudMapExtractorConfigEntry,
+            domain: str,
+            key: str,
     ) -> None:
         """Initialize."""
         super().__init__(coordinator)
@@ -58,7 +60,7 @@ class XiaomiCloudMapExtractorEntity(CoordinatorEntity[XiaomiCloudMapExtractorDat
             name=self._name,
             model=self._model,
         )
-        self._attr_unique_id = f"{self._device_id}"
+        self._attr_unique_id = f"{self._device_id}_{domain}_{key}"
 
     def _data(self: Self) -> XiaomiCloudMapExtractorData | None:
         return self.coordinator.data

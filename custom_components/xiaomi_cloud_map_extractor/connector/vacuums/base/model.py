@@ -26,7 +26,6 @@ class VacuumConfig:
     image_config: ImageConfig
     sizes: Sizes
     texts: list[Text]
-    store_map_path: str | None
 
 
 class VacuumApi(StrEnum):
@@ -34,6 +33,7 @@ class VacuumApi(StrEnum):
     VIOMI = "VIOMI"
     ROIDMI = "ROIDMI"
     DREAME = "DREAME"
+    IJAI = "IJAI"
     UNSUPPORTED = "UNSUPPORTED"
 
     @staticmethod
@@ -54,7 +54,8 @@ AVAILABLE_APIS = {
     VacuumApi.DREAME: ["dreame.vacuum."],
     VacuumApi.ROIDMI: ["roidmi.vacuum.", "zhimi.vacuum.", "chuangmi.vacuum."],
     VacuumApi.VIOMI: ["viomi.vacuum."],
-    VacuumApi.ROBOROCK: ["roborock.vacuum", "rockrobo.vacuum"]
+    VacuumApi.ROBOROCK: ["roborock.vacuum", "rockrobo.vacuum"],
+    VacuumApi.IJAI: ["ijai.vacuum.", "xiaomi.vacuum."],
 }
 
 API_EXCEPTIONS = {
