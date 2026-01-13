@@ -250,7 +250,7 @@ cctv_pack:
             target: !secret tlg_group_staircase
             file: /config/video/staircase_movement.mp4
             caption: !secret look_at_cam_reolinkcam_01
-            timeout: 180
+#            timeout: 180
 
     - alias: "Staircase - Motion detected - Frigate"
       id: 1550b036-824f-47d8-9dcf-674b475c5060
