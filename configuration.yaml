@@ -62,6 +62,8 @@ http:
 logger:
   default: warn
   #logs:
+    #homeassistant.components.telegram_bot: debug
+    #telegram.ext.dispatcher: debug
     #homeassistant.components.rest: debug
     #homeassistant.components.rest.switch: debug
   filters:

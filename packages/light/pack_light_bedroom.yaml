@@ -29,7 +29,8 @@ bedroom_light_pack:
           target:
             entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
           data:
-            color_temp: 454
+            #color_temp: 454
+            color_temp_kelvin: 2200
             brightness_pct: 1
         - delay: "00:00:05"
       # Go to brightness 10% in 3 min
@@ -46,7 +47,8 @@ bedroom_light_pack:
             entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
           data:
             transition: 90
-            color_temp: 415
+            #color_temp: 415
+            color_temp_kelvin: 2400
         - delay: "00:01:35"
       # To brightness 15% in 1.5 min
         - action: light.turn_on
@@ -62,7 +64,8 @@ bedroom_light_pack:
             entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
           data:
             transition: 90
-            color_temp: 384
+            #color_temp: 384
+            color_temp_kelvin: 2600
         - delay: "00:01:35"
       # Brightness 20% in 1.5 min
         - action: light.turn_on
@@ -78,7 +81,8 @@ bedroom_light_pack:
             entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
           data:
             transition: 90
-            color_temp: 357
+            #color_temp: 357
+            color_temp_kelvin: 2800
         - delay: "00:01:35"
       # Brightness 25% in 1.5 min
         - action: light.turn_on
@@ -94,7 +98,8 @@ bedroom_light_pack:
             entity_id: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
           data:
             transition: 90
-            color_temp: 333
+            #color_temp: 333
+            color_temp_kelvin: 3000
         - delay: "00:01:35"
       # Brightness 30 in 1.5 min
         - action: light.turn_on

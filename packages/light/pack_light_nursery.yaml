@@ -54,7 +54,8 @@ nursery_light_pack:
           target: 
             entity_id: light.ikea_e27_detskaia
           data:
-            color_temp: 454
+            #color_temp: 454
+            color_temp_kelvin: 2200
             brightness_pct: 1
         - delay: "00:00:05"
       # Go to brightness 10% in 3 min
@@ -71,7 +72,8 @@ nursery_light_pack:
             entity_id: light.ikea_e27_detskaia
           data:
             transition: 90
-            color_temp: 400
+            #color_temp: 400
+            color_temp_kelvin: 2500
         - delay: "00:01:35"
       # To brightness 20% in 1.5 min
         - action: light.turn_on
@@ -87,7 +89,8 @@ nursery_light_pack:
             entity_id: light.ikea_e27_detskaia
           data:
             transition: 90
-            color_temp: 350
+            #color_temp: 350
+            color_temp_kelvin: 2860
         - delay: "00:01:35"
       # Brightness 30% in 1.5 min
         - action: light.turn_on
@@ -103,7 +106,8 @@ nursery_light_pack:
             entity_id: light.ikea_e27_detskaia
           data:
             transition: 90
-            color_temp: 300
+            #color_temp: 300
+            color_temp_kelvin: 3333
         - delay: "00:01:35"
       # Brightness 40% in 1.5 min
         - action: light.turn_on
@@ -119,7 +123,8 @@ nursery_light_pack:
             entity_id: light.ikea_e27_detskaia
           data:
             transition: 90
-            color_temp: 270
+            #color_temp: 270
+            color_temp_kelvin: 3703
         - delay: "00:01:35"
       # Brightness 100 in 1.5 min
         - action: light.turn_on
@@ -233,7 +238,8 @@ nursery_light_pack:
                       target:
                         entity_id: light.ikea_e27_detskaia
                       data:
-                        color_temp: 270
+                        #color_temp: 270
+                        color_temp_kelvin: 3703
                     - delay: "00:00:00.0500"
                     - action: light.turn_on
                       target:

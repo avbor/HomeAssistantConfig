@@ -230,9 +230,12 @@ livingroom_light_pack:
                         target:
                           entity_id: "{{ target_lamp }}"
                         data:
-                          color_temp: >-
-                            {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
-                            {{ iif ((color_t - 10) > 172, color_t - 10, 172) }}
+                          #color_temp: >-
+                          #  {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
+                          #  {{ iif ((color_t - 10) > 172, color_t - 10, 172) }}
+                          color_temp_kelvin: >-
+                            {% set color_t = (state_attr(target_lamp, 'color_temp_kelvin') | int(0)) %}
+                            {{ iif ((color_t - 100) > 2202, color_t - 100, 2202) }}
                   - alias: right button
                     conditions: "{{ (trigger.event.data.args[0] | int(0)) == 256 }}"
                     sequence:
@@ -240,9 +243,12 @@ livingroom_light_pack:
                         target:
                           entity_id: "{{ target_lamp }}"
                         data:
-                          color_temp: >-
-                            {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
-                            {{ iif ((color_t + 10 ) < 454, color_t + 10, 454) }}
+                          #color_temp: >-
+                          #  {% set color_t = (state_attr(target_lamp, 'color_temp') | int(0)) %}
+                          #  {{ iif ((color_t + 10 ) < 454, color_t + 10, 454) }}
+                          color_temp_kelvin: >-
+                            {% set color_t = (state_attr(target_lamp, 'color_temp_kelvin') | int(0)) %}
+                            {{ iif ((color_t + 100 ) < 4000, color_t + 100, 4000) }}
             - alias: hold
               conditions: "{{ trigger.event.data.command == 'hold' }}"
               sequence:
