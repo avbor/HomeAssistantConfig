@@ -37,6 +37,8 @@ homeassistant:
     - /config/www/weather_icons/
     - /config/www/cam_snapshots/
     - /config/video/
+    - /config/downloads/
+    - /config/downloads/doorbell/
 
 #################################################
 # Features

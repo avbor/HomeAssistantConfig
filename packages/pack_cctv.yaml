@@ -231,10 +231,42 @@ cctv_pack:
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
             - sequence:
+                - variables:
+                    now_time: "{{ now().strftime('%Y%m%d-%H%M%S') }}"
+                    msg_tag: "{{ range(0,65535)|random }}"
+                - action: downloader.download_file
+                  data:
+                    url: !secret go2rtc_reolinkcam_01_mp4_7s
+                    subdir: doorbell
+                    filename: record_{{ now_time }}.mp4
+                - wait_for_trigger:
+                  - trigger: event
+                    event_type: "downloader_download_completed"
+                    event_data:
+                      filename: record_{{ now_time }}.mp4
+                  timeout:
+                    seconds: 10
+                  continue_on_timeout: false
                 - action: telegram_bot.send_video
                   data:
                     target: !secret tlg_group_staircase
-                    url: !secret go2rtc_reolinkcam_01_mp4_7s
+                    file: /config/downloads/doorbell/record_{{ now_time }}.mp4
+                    message_tag: "{{ msg_tag }}"
+                  continue_on_error: true
+                - wait_for_trigger:
+                  - platform: event
+                    event_type: telegram_sent
+                    event_data:
+                      message_tag: "{{ msg_tag }}"
+                  timeout:
+                    seconds: 15
+                - action: shell_command.delete_file_by_path
+                  data:
+                    file_path: /config/downloads/doorbell/record_{{ now_time }}.mp4
+                #- action: telegram_bot.send_video
+                #  data:
+                #    target: !secret tlg_group_staircase
+                #    url: !secret go2rtc_reolinkcam_01_mp4_7s
 
     - alias: "Staircase - Send recorded video"
       id: 692afba6-c94d-477f-9ac4-d064643898ce
