@@ -156,6 +156,8 @@ class Device(CustomConfigHelper):
     miot_results = None
     _local_fails = 0
     _local_state = None
+    _cloud_fails = 0
+    _cloud_state = None
     _proxy_device = None
     _miot_mapping = None
     _exclude_miot_services = None
@@ -405,24 +407,26 @@ class Device(CustomConfigHelper):
                             self.log.debug('Add converter: %s', conv)
 
                     for pc in cfg.get('converters') or []:
-                        if not (props := pc.get('props')):
+                        if not (names := pc.get('props')):
                             continue
+                        only_format = pc.get('only_format')
                         exclude_format = pc.get('exclude_format')
-                        for p in props:
-                            if '.' in p:
-                                prop = self.spec.get_property(p, exclude_format=exclude_format)
+                        for p in names:
+                            if '.' in p or pc.get('all_services'):
+                                props = self.spec.get_properties(p, only_format=only_format, exclude_format=exclude_format)
                             else:
-                                prop = service.get_property(p)
-                            if not prop:
+                                props = service.get_properties(p, only_format=only_format, exclude_format=exclude_format)
+                            if not props:
                                 continue
-                            attr = pc.get('attr', prop.full_name)
-                            c = pc.get('class', MiotPropConv)
-                            d = pc.get('domain', None)
-                            ac = c(attr, domain=d, prop=prop, desc=pc.get('desc'))
-                            self.add_converter(ac)
-                            self.log.debug('Add converter: %s', [ac, pc])
-                            if conv and ac.full_name not in conv.attrs:
-                                conv.attrs.append(ac.full_name)
+                            for prop in props:
+                                attr = pc.get('attr', prop.full_name)
+                                c = pc.get('class', MiotPropConv)
+                                d = pc.get('domain', None)
+                                ac = c(attr, domain=d, prop=prop, desc=pc.get('desc'))
+                                self.add_converter(ac)
+                                self.log.debug('Add converter: %s', [ac, pc])
+                                if conv and ac.full_name not in conv.attrs:
+                                    conv.attrs.append(ac.full_name)
 
         for d in [
             'button', 'sensor', 'binary_sensor', 'switch', 'number', 'select', 'text',
@@ -891,14 +895,24 @@ class Device(CustomConfigHelper):
             try:
                 self.miot_results.updater = 'cloud'
                 results = await self.cloud.async_get_properties_for_mapping(self.did, mapping)
+                if results is None:
+                    raise MiCloudException('Cloud API returned None response, possible timeout or empty data')
                 if check_lan and self.local:
                     await self.local.async_info()
                 self.available = True
+                self._cloud_fails = 0
+                self._cloud_state = True
                 self.miot_results.set_results(results, mapping)
             except MiCloudException as exc:
-                self.available = False
+                self._cloud_fails += 1
+                self._cloud_state = self._cloud_fails <= 3
                 self.miot_results.errors = exc
-                self.log.error('%s MiCloudException: %s, mapping: %s', self.name, exc, mapping)
+
+                if not self._cloud_state:
+                    self.available = False
+                    self.log.error('Cloud request failed %s times, marking unavailable. %s', self._cloud_fails, exc)
+                else:
+                    self.log.info('Cloud request failed (%sth time), will retry. %s', self._cloud_fails, exc)
 
         if results and self.miot_results.is_empty:
             self.log.warning(
@@ -1114,7 +1128,7 @@ class Device(CustomConfigHelper):
                         action = self.spec.services.get(siid, {}).actions.get(aiid)
                     pms['in'] = action.in_params(params or [])
                 result = await self.local.async_send('action', pms)
-            result = MiotResult(result)
+            result = MiotResult(result or {})
         except (DeviceException, MiCloudException) as exc:
             self.log.warning('Call miot action %s failed: %s', pms, exc)
             return MiotResult({}, code=-1, error=str(exc))
