@@ -1,10 +1,10 @@
-"definition of constants"
+"""Definition of constants."""
 
 from homeassistant.const import Platform
 
 DOMAIN = "watchman"
 DOMAIN_DATA = "watchman_data"
-VERSION = "0.6.5"
+VERSION = "0.7.0-beta.1"
 
 CONFIG_ENTRY_VERSION = 2
 CONFIG_ENTRY_MINOR_VERSION = 1
@@ -14,6 +14,7 @@ DEFAULT_HEADER = "-== WATCHMAN REPORT ==- "
 DEFAULT_CHUNK_SIZE = 3500
 
 PACKAGE_NAME = "custom_components.watchman"
+REPORT_SERVICE_NAME = "report"
 
 HASS_DATA_PARSED_ENTITY_LIST = "entity_list"
 HASS_DATA_PARSED_SERVICE_LIST = "service_list"
@@ -53,7 +54,6 @@ CONF_PARSE_CONFIG = "parse_config"
 CONF_COLUMNS_WIDTH = "columns_width"
 CONF_STARTUP_DELAY = "startup_delay"
 CONF_FRIENDLY_NAMES = "friendly_names"
-CONF_TEST_MODE = "test_mode"
 # configuration parameters allowed in watchman.report service data
 CONF_ALLOWED_SERVICE_PARAMS = [
     CONF_SERVICE_NAME,
@@ -63,7 +63,6 @@ CONF_ALLOWED_SERVICE_PARAMS = [
     CONF_SEND_NOTIFICATION,
     CONF_PARSE_CONFIG,
     CONF_SERVICE_DATA,
-    CONF_TEST_MODE,
 ]
 
 CONF_SECTION_APPEARANCE_LOCATION = "appearance_location_options"
@@ -76,7 +75,7 @@ SENSOR_LAST_UPDATE = "watchman_last_updated"
 SENSOR_MISSING_ENTITIES = "watchman_missing_entities"
 SENSOR_MISSING_SERVICES = "watchman_missing_services"
 SENSOR_MISSING_ACTIONS = "watchman_missing_actions"
-MONITORED_STATES = ["unavailable", "unknown", "missing"]
+MONITORED_STATES = ["unavailable", "unknown", "missing", "disabled"]
 
 TRACKED_EVENT_DOMAINS = [
     "homeassistant",
@@ -98,6 +97,8 @@ BUNDLED_IGNORED_ITEMS = [
     "timer.started",
     "timer.restarted",
     "timer.paused",
+    "event.*",
+    "date.*",
 ]
 
 # Platforms
@@ -113,7 +114,7 @@ DEFAULT_OPTIONS = {
     CONF_SECTION_APPEARANCE_LOCATION: {
         CONF_HEADER: "-== Watchman Report ==-",
         CONF_REPORT_PATH: "",
-        CONF_COLUMNS_WIDTH: "30, 7, 60",
+        CONF_COLUMNS_WIDTH: "30, 8, 60",
         CONF_FRIENDLY_NAMES: False,
     },
 }
@@ -140,3 +141,6 @@ DEFAULT_HA_DOMAINS = [
     "zone",
     "schedule",
 ]
+
+# Watchman will ignore lines started from these words followed by :
+PARSER_STOP_WORDS = ["description", "example", "icon", "title"]

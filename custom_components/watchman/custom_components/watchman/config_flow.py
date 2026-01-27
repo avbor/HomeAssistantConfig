@@ -1,42 +1,41 @@
-"ConfigFlow definition for watchman"
+"""ConfigFlow definition for Watchman."""
 
-import os
 from types import MappingProxyType
 from typing import Any, Dict
+
+import anyio
+import voluptuous as vol
+from homeassistant import data_entry_flow
 from homeassistant.config_entries import (
     ConfigFlow,
-    OptionsFlow,
-    ConfigEntry,
     ConfigFlowResult,
+    OptionsFlow,
 )
-from homeassistant import data_entry_flow
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import config_validation as cv, selector
-import voluptuous as vol
-import anyio
-from .utils.utils import async_get_report_path, get_val
-
-from .utils.logger import _LOGGER
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import selector
 
 from .const import (
+    CONF_CHECK_LOVELACE,
+    CONF_COLUMNS_WIDTH,
+    CONF_FRIENDLY_NAMES,
+    CONF_HEADER,
+    CONF_IGNORED_FILES,
+    CONF_IGNORED_ITEMS,
+    CONF_IGNORED_STATES,
+    CONF_INCLUDED_FOLDERS,
+    CONF_REPORT_PATH,
+    CONF_SECTION_APPEARANCE_LOCATION,
+    CONF_STARTUP_DELAY,
     CONFIG_ENTRY_MINOR_VERSION,
     CONFIG_ENTRY_VERSION,
-    DOMAIN,
-    CONF_IGNORED_FILES,
-    CONF_HEADER,
-    CONF_REPORT_PATH,
-    CONF_IGNORED_ITEMS,
-    CONF_INCLUDED_FOLDERS,
-    CONF_CHECK_LOVELACE,
-    CONF_IGNORED_STATES,
-    CONF_COLUMNS_WIDTH,
-    CONF_STARTUP_DELAY,
-    CONF_FRIENDLY_NAMES,
-    CONF_SECTION_APPEARANCE_LOCATION,
-    MONITORED_STATES,
     DEFAULT_OPTIONS,
+    DEFAULT_REPORT_FILENAME,
+    DOMAIN,
+    MONITORED_STATES,
 )
-
+from .utils.logger import _LOGGER
+from .utils.utils import async_is_valid_path, get_val
 
 INCLUDED_FOLDERS_SCHEMA = vol.Schema(vol.All(cv.ensure_list, [cv.string]))
 IGNORED_ITEMS_SCHEMA = vol.Schema(vol.All(cv.ensure_list, [cv.string]))
@@ -92,17 +91,18 @@ def _get_data_schema() -> vol.Schema:
 
 async def _async_validate_input(
     hass: HomeAssistant,
-    user_input: dict[str, Any] | None = None,
+    user_input: dict[str, Any],
 ) -> tuple[MappingProxyType[str, str], MappingProxyType[str, str]]:
     errors: Dict[str, str] = {}
     placeholders: Dict[str, str] = {}
+
     # check user supplied folders
     if CONF_INCLUDED_FOLDERS in user_input:
         included_folders_list = [
             x.strip() for x in user_input[CONF_INCLUDED_FOLDERS].split(",") if x.strip()
         ]
         for path in included_folders_list:
-            if not await anyio.Path(path).exists():
+            if not await anyio.Path(path.strip()).exists():
                 errors |= {
                     CONF_INCLUDED_FOLDERS: "{} is not a valid path ".format(path)
                 }
@@ -118,16 +118,15 @@ async def _async_validate_input(
             if len(columns_width) != 3:
                 raise ValueError()
             columns_width = COLUMNS_WIDTH_SCHEMA(columns_width)
-            # user_input[CONF_COLUMNS_WIDTH] = get_columns_width(columns_width)
         except (ValueError, vol.Invalid):
             errors["base"] = "invalid_columns_width"
 
-    report_path = get_val(
-        user_input, CONF_REPORT_PATH, CONF_SECTION_APPEARANCE_LOCATION
-    )
-    if report_path:
-        folder, _ = os.path.split(report_path)
-        if not await anyio.Path(folder).exists():
+    if (
+        CONF_SECTION_APPEARANCE_LOCATION in user_input
+        and CONF_REPORT_PATH in user_input[CONF_SECTION_APPEARANCE_LOCATION]
+    ):
+        report_path = user_input[CONF_SECTION_APPEARANCE_LOCATION][CONF_REPORT_PATH]
+        if not await async_is_valid_path(report_path):
             errors["base"] = "invalid_report_path"
 
     return (
@@ -137,19 +136,18 @@ async def _async_validate_input(
 
 
 class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
-    """
-    Config flow used to set up new instance of integration
-    """
+    """Config flow used to set up new instance of integration."""
 
     VERSION = CONFIG_ENTRY_VERSION
     MINOR_VERSION = CONFIG_ENTRY_MINOR_VERSION
 
     async def async_step_user(self, user_input=None) -> ConfigFlowResult:
+        """Create new Watchman entry via UI."""
         _LOGGER.debug("::async_step_user::")
         options = DEFAULT_OPTIONS
-        options[CONF_SECTION_APPEARANCE_LOCATION][
-            CONF_REPORT_PATH
-        ] = await async_get_report_path(self.hass, None)
+        options[CONF_SECTION_APPEARANCE_LOCATION][CONF_REPORT_PATH] = (
+            self.hass.config.path(DEFAULT_REPORT_FILENAME)
+        )
         options[CONF_INCLUDED_FOLDERS] = self.hass.config.path()
         options[CONF_IGNORED_FILES] = DEFAULT_OPTIONS[CONF_IGNORED_FILES]
         return self.async_create_entry(title="Watchman", data=options)
@@ -158,19 +156,14 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow for this handler."""
-        return OptionsFlowHandler(config_entry)
+        return OptionsFlowHandler()
 
 
 class OptionsFlowHandler(OptionsFlow):
-    """
-    Options flow used to change configuration (options) of existing instance of integration
-    """
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        _LOGGER.debug("::OptionsFlowHandler.__init::")
-        self.config_entry = config_entry
+    """Options flow used to change configuration (options) of existing instance of integration."""
 
     async def async_get_key_in_section(self, data, key, section=None):
+        """Return value of a key in ConfigEntry.data."""
         if section:
             if section in data:
                 return section[data].get(key, None)
@@ -179,8 +172,9 @@ class OptionsFlowHandler(OptionsFlow):
         return None
 
     async def async_step_init(self, user_input=None) -> ConfigFlowResult:
-        """
-        Manage the options form. This method is invoked twice:
+        """Manage the options form.
+
+        This method is invoked twice.
         1. To populate form with default values (user_input=None)
         2. To validate values entered by user (user_imput = {user_data})
            If no errors found, it should return creates_entry
