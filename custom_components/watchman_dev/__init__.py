@@ -1,10 +1,8 @@
 """The Watchman integration."""
 
 import os
-from datetime import timedelta
 from dataclasses import dataclass
 from homeassistant.util import dt as dt_util
-from homeassistant.helpers.event import async_track_point_in_utc_time
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -24,6 +22,7 @@ from .const import (
     CONFIG_ENTRY_VERSION,
     DEFAULT_OPTIONS,
     DEFAULT_REPORT_FILENAME,
+    DEFAULT_DELAY,
     DB_FILENAME,
     LOCK_FILENAME,
     DOMAIN,
@@ -60,41 +59,30 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: WMConfigEntry):
 
     async def async_on_home_assistant_started(event):  # pylint: disable=unused-argument
         """
-        update watchman sensors anf start listening to HA events when Home Assistant started
+        Update watchman sensors and start listening to HA events when Home Assistant started.
         """
+        coordinator = config_entry.runtime_data.coordinator
 
-        async def async_delayed_refresh_states(timedate):  # pylint: disable=unused-argument
-            """Refresh sensors state."""
-            # Use runtime data directly
-            coordinator = config_entry.runtime_data.coordinator
-
-            # Start listening to events only after delay
-            coordinator.subscribe_to_events(config_entry)
-            _LOGGER.debug("Subscribed to HA events to keep actual state of sensors.")
-
-            # Trigger first full scan
-            await coordinator.async_request_refresh()
-
-        async def async_schedule_refresh_states(delay):
-            """Schedule delayed refresh of the sensors state."""
-            _LOGGER.debug("async_schedule_refresh_states")
-            now = dt_util.utcnow()
-            next_interval = now + timedelta(seconds=delay)
-            async_track_point_in_utc_time(hass, async_delayed_refresh_states, next_interval)
-
-        _LOGGER.debug("async_on_home_assistant_started")
-        startup_delay = get_config(hass, CONF_STARTUP_DELAY, 0)
-        if startup_delay > 0:
-            _LOGGER.info(f"User set startup delay for {startup_delay} sec, waiting.")
-
-        if not config_entry.runtime_data.coordinator.safe_mode:
-            await async_schedule_refresh_states(startup_delay)
-        else:
+        if coordinator.safe_mode:
             _LOGGER.info("Watchman is in Safe Mode. Skipping event subscriptions and initial scan.")
+            return
+
+        coordinator.subscribe_to_events(config_entry)
+        _LOGGER.debug("Subscribed to HA events.")
+
+        if event:
+            startup_delay = get_config(hass, CONF_STARTUP_DELAY, 0)
+            _LOGGER.debug(f"Watchman started during HA startup). Initial parse in: {startup_delay}s.")
+        else:
+            startup_delay = DEFAULT_DELAY
+            _LOGGER.debug(f"Watchman installed (HA running). Initial parse in: {startup_delay}s.")
+
+        coordinator.request_parser_rescan(reason="startup", delay=startup_delay)
 
     _LOGGER.info("Watchman integration started [%s]", VERSION)
     db_path = hass.config.path(".storage", DB_FILENAME)
     hub = WatchmanHub(hass, db_path)
+    await hub.async_init()
     coordinator = WatchmanCoordinator(hass, _LOGGER, name=config_entry.title, hub=hub)
     config_entry.runtime_data = WMData(coordinator, hub)
 
@@ -127,11 +115,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: WMConfigEntry):
 
     if hass.is_running:
         # HA is already up and running, don't need to wait until it is booted
-        _LOGGER.debug("Home assistant is up and running, proceed with async_on_home_assistant_started")
+        _LOGGER.debug("Home assistant is up, proceed with async_on_home_assistant_started")
         await async_on_home_assistant_started(None)
     else:
         # integration started during HA startup, wait until it is fully loaded
-        _LOGGER.debug("Home assistant is starting, waiting until it's up and running.")
+        _LOGGER.debug("Waiting for Home Assistant to be up and running...")
         if not coordinator.safe_mode:
             config_entry.runtime_data.coordinator.update_status(STATE_WAITING_HA)
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, async_on_home_assistant_started)
@@ -171,11 +159,12 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     if config_entry.version > CONFIG_ENTRY_VERSION:
         # the user has downgraded from a future version
         _LOGGER.error(
-            "Unable to migratre Watchman entry from version %d.%d. If integration version was downgraded, use backup to restore its data.",
+            "Unable to migratre Watchman entry from version %d.%d. If integration version was downgraded, either reinstall or use backup to restore its data.",
             config_entry.version,
             config_entry.minor_version,
         )
         return False
+
     if config_entry.version == 1:
         # migrate from ConfigEntry.options to ConfigEntry.data
         _LOGGER.info(
@@ -235,31 +224,44 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             version=CONFIG_ENTRY_VERSION,
         )
         return True
-    if config_entry.version == CONFIG_ENTRY_VERSION and (
-        config_entry.minor_version < CONFIG_ENTRY_MINOR_VERSION
-    ):
-        _LOGGER.info(
-            "Start Watchman configuration entry migration to minor version %d. Source data: %s",
-            CONFIG_ENTRY_MINOR_VERSION,
-            config_entry.data,
-        )
-        data = {**config_entry.data}
-        if CONF_IGNORED_LABELS not in data:
-            data[CONF_IGNORED_LABELS] = DEFAULT_OPTIONS[CONF_IGNORED_LABELS]
 
-        hass.config_entries.async_update_entry(
-            config_entry,
-            data=data,
-            options={**config_entry.options},
-            minor_version=CONFIG_ENTRY_MINOR_VERSION,
-            version=CONFIG_ENTRY_VERSION,
-        )
-        _LOGGER.info(
-            "Successfully migrated Watchman configuration entry to version %d.%d",
-            config_entry.version,
-            CONFIG_ENTRY_MINOR_VERSION,
-        )
-        return True
+    if config_entry.version == CONFIG_ENTRY_VERSION:
+        data = {**config_entry.data}
+        current_minor = config_entry.minor_version
+
+        # Sequential migration logic for minor versions
+        if current_minor < 2:
+            _LOGGER.info("Migrating Watchman entry to minor version 2")
+
+            if CONF_IGNORED_LABELS not in data:
+                data[CONF_IGNORED_LABELS] = DEFAULT_OPTIONS[CONF_IGNORED_LABELS]
+
+            # Enforce minimum startup delay
+            current_delay = data.get(CONF_STARTUP_DELAY, 0)
+            min_delay = DEFAULT_OPTIONS[CONF_STARTUP_DELAY]
+            if current_delay < min_delay:
+                _LOGGER.info(
+                    "Enforcing minimum startup delay of %ss (was %ss)",
+                    min_delay,
+                    current_delay,
+                )
+                data[CONF_STARTUP_DELAY] = min_delay
+
+            current_minor = 2
+
+        if current_minor != config_entry.minor_version:
+            hass.config_entries.async_update_entry(
+                config_entry,
+                data=data,
+                minor_version=current_minor,
+                version=CONFIG_ENTRY_VERSION,
+            )
+            _LOGGER.info(
+                "Successfully migrated Watchman configuration entry to version %d.%d",
+                config_entry.version,
+                current_minor,
+            )
+
     return True
 
 

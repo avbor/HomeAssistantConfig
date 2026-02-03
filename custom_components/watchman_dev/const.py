@@ -4,7 +4,7 @@ from homeassistant.const import Platform
 
 DOMAIN = "watchman_dev"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.8.3-dev2"
+VERSION = "0.8.3-dev10"
 
 CONFIG_ENTRY_VERSION = 2
 CONFIG_ENTRY_MINOR_VERSION = 2
@@ -15,6 +15,10 @@ LOCK_FILENAME = f"{DOMAIN}.lock"
 DEFAULT_HEADER = "-== WATCHMAN REPORT ==- "
 DEFAULT_CHUNK_SIZE = 3500
 DB_TIMEOUT = 5
+# parsing runs at most once per interval.
+PARSE_COOLDOWN = 60
+# delay before start parsing
+DEFAULT_DELAY = 10
 
 PACKAGE_NAME = f"custom_components.{DOMAIN}"
 REPORT_SERVICE_NAME = "report"
@@ -70,18 +74,19 @@ CONF_SECTION_NOTIFY_ACTION = "notify_action_options"
 EVENT_AUTOMATION_RELOADED = "automation_reloaded"
 EVENT_SCENE_RELOADED = "scene_reloaded"
 
-SENSOR_LAST_UPDATE = f"{DOMAIN}_last_updated"
-SENSOR_MISSING_ENTITIES = f"{DOMAIN}_missing_entities"
-SENSOR_MISSING_ACTIONS = f"{DOMAIN}_missing_actions"
-SENSOR_STATUS = f"{DOMAIN}_status"
-SENSOR_PARSE_DURATION = f"{DOMAIN}_parse_duration"
-SENSOR_LAST_PARSE = f"{DOMAIN}_last_parse"
-SENSOR_PROCESSED_FILES = f"{DOMAIN}_processed_files"
-SENSOR_IGNORED_FILES = f"{DOMAIN}_ignored_files"
+SENSOR_LAST_UPDATE = "last_updated"
+SENSOR_MISSING_ENTITIES = "missing_entities"
+SENSOR_MISSING_ACTIONS = "missing_actions"
+SENSOR_STATUS = "status"
+SENSOR_PARSE_DURATION = "parse_duration"
+SENSOR_LAST_PARSE = "last_parse"
+SENSOR_PROCESSED_FILES = "processed_files"
+SENSOR_IGNORED_FILES = "ignored_files"
 MONITORED_STATES = ["unavailable", "unknown", "missing", "disabled"]
 
 STATE_WAITING_HA = "waiting_for_ha"
 STATE_PARSING = "parsing"
+STATE_PENDING = "pending"
 STATE_IDLE = "idle"
 STATE_SAFE_MODE = "safe_mode"
 
@@ -118,7 +123,7 @@ DEFAULT_OPTIONS = {
     CONF_IGNORED_STATES: [],
     CONF_EXCLUDE_DISABLED_AUTOMATION: False,
     CONF_IGNORED_FILES: "*.cache*, */custom_components/*, *.git*",
-    CONF_STARTUP_DELAY: 0,
+    CONF_STARTUP_DELAY: 30,
     CONF_SECTION_APPEARANCE_LOCATION: {
         CONF_HEADER: "-== Watchman Report ==-",
         CONF_REPORT_PATH: "",

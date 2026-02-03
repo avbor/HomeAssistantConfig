@@ -13,6 +13,7 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.core import callback
 from homeassistant.const import MATCH_ALL
 from .entity import WatchmanEntity
+from .utils.logger import _LOGGER
 
 from .const import (
     COORD_DATA_ENTITY_ATTRS,
@@ -35,6 +36,7 @@ from .const import (
     SENSOR_IGNORED_FILES,
     STATE_WAITING_HA,
     STATE_PARSING,
+    STATE_PENDING,
     STATE_IDLE,
     STATE_SAFE_MODE,
 )
@@ -68,7 +70,7 @@ SENSORS_CONFIGURATION = [
         translation_key="status",
         device_class=SensorDeviceClass.ENUM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        options=[STATE_WAITING_HA, STATE_PARSING, STATE_IDLE, STATE_SAFE_MODE],
+        options=[STATE_WAITING_HA, STATE_PARSING, STATE_PENDING, STATE_IDLE, STATE_SAFE_MODE],
     ),
     SensorEntityDescription(
         key=SENSOR_PARSE_DURATION,
@@ -102,20 +104,42 @@ SENSORS_CONFIGURATION = [
     ),
 ]
 
+async def update_or_cleanup_entity(ent_reg, old_uid, new_uid):
+    if old_entity_id := ent_reg.async_get_entity_id("sensor", DOMAIN, old_uid):
+        # we found entities with old-style uid in registry, apply migration logic
+        if ent_reg.async_get_entity_id("sensor", DOMAIN, new_uid):
+            ent_reg.async_remove(old_entity_id)
+            _LOGGER.debug(f"async_setup_entry: 2 entities found in registry. Will remove {old_uid} in favor of {new_uid}.")
+        else:
+            _LOGGER.debug(f"async_setup_entry: Entity with old uid {old_uid} was migrated to {new_uid}.")
+            ent_reg.async_update_entity(old_entity_id, new_unique_id=new_uid)
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Set up sensor platform."""
+    _LOGGER.debug("async_setup_entry called")
     coordinator = hass.data[DOMAIN][entry.entry_id]
     ent_reg = er.async_get(hass)
     entities = []
 
     for description in SENSORS_CONFIGURATION:
-        # Migration logic
-        old_uid = f"{entry.entry_id}_{description.key}"
+        # migration logic
+        # fixing the bug in WM prior to 8.x where sensor uids were generated using entry uid
+        # which led to duplication of entities after integration reinstall
+        # e.g. 0A3F1123_watchman_status -> watchman_status
+        old_uid = f"{entry.entry_id}_{DOMAIN}_{description.key}"
         new_uid = f"{DOMAIN}_{description.key}"
+        await update_or_cleanup_entity(ent_reg, old_uid, new_uid)
 
-        if entity_id := ent_reg.async_get_entity_id("sensor", DOMAIN, old_uid):
-            ent_reg.async_update_entity(entity_id, new_unique_id=new_uid)
+
+        # fix for duplicated domain uid, introduced by first dev versions of 0.8
+        # e.g. watchman_watchman_status -> watchman_status
+        # FIXME: for development versions only, remove this code after 0.8.3 is released
+        dub_uid = f"{DOMAIN}_{DOMAIN}_{description.key}"
+        await update_or_cleanup_entity(ent_reg, dub_uid, new_uid)
+
+        # if entity_id := ent_reg.async_get_entity_id("sensor", DOMAIN, dub_uid):
+        #     _LOGGER.debug(f"async_setup_entry: Entity with dub uid {dub_uid} was migrated to {new_uid}.")
+        #     ent_reg.async_update_entity(entity_id, new_unique_id=new_uid)
 
         # Instantiate sensor classes
         if description.key == SENSOR_LAST_UPDATE:
@@ -262,6 +286,8 @@ class StatusSensor(WatchmanEntity, SensorEntity):
         """Return dynamic icon based on status."""
         if self.coordinator.status == STATE_PARSING:
             return "mdi:progress-clock"
+        if self.coordinator.status == STATE_PENDING:
+            return "mdi:timer-sand"
         if self.coordinator.status == STATE_IDLE:
             return "mdi:sleep"
         if self.coordinator.status == STATE_SAFE_MODE:

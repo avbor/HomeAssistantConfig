@@ -11,11 +11,12 @@ from .const import (
     DOMAIN,
     REPORT_SERVICE_NAME,
 )
+from .utils.logger import _LOGGER
 from .utils.report import async_report_to_file, async_report_to_notification
 from .utils.utils import get_config
 
 from homeassistant.exceptions import ServiceValidationError
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, SupportsResponse
 from homeassistant.config_entries import ConfigEntry
 
 
@@ -34,7 +35,10 @@ class WatchmanServicesSetup:
         """Initialise the services in Hass."""
 
         self.hass.services.async_register(
-            DOMAIN, REPORT_SERVICE_NAME, self.async_handle_report
+            DOMAIN, 
+            REPORT_SERVICE_NAME, 
+            self.async_handle_report,
+            supports_response=SupportsResponse.OPTIONAL
         )
 
     async def async_handle_report(self, call):
@@ -54,20 +58,19 @@ class WatchmanServicesSetup:
             CONF_ACTION_NAME, call.data.get(CONF_SERVICE_NAME, None)
         )
 
-        if not (action_name or create_file):
-            raise ServiceValidationError(
-                f"Either [{CONF_ACTION_NAME}] or [{CONF_CREATE_FILE}] should be specified."
-            )
-
         if action_data and not action_name:
             raise ServiceValidationError(
                 f"Missing [{CONF_ACTION_NAME}] parameter. The [{CONF_SERVICE_DATA}] parameter can only be used "
                 f"in conjunction with [{CONF_ACTION_NAME}] parameter."
             )
 
+        _LOGGER.debug(f"User requested report params={call.data}")
+
         if call.data.get(CONF_PARSE_CONFIG, False):
-            #await self.coordinator.async_parse_config(reason="service call")
-            self.coordinator.request_parser_rescan(reason="service call")
+            # Blocking wait for a fresh scan
+            await self.coordinator.async_force_parse()
+        else:
+            # Just refresh sensors from existing DB (in case something changed externally)
             await self.coordinator.async_request_refresh()
 
         # call notification action even when send notification = False
@@ -83,3 +86,6 @@ class WatchmanServicesSetup:
                 raise ServiceValidationError(
                     f"Unable to write report to file '{exception.filename}': {exception.strerror} [Error:{exception.errno}]"
                 )
+
+        return await self.coordinator.async_get_detailed_report_data()
+
