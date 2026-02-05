@@ -13,6 +13,9 @@ esphome:
   libraries:
     - IRremoteESP8266
 
+esp8266:
+  enable_serial: true
+
 external_components:
 #  - source:
 #      type: git

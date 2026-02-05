@@ -1,5 +1,95 @@
 {
   "title": "Monitor de plantas",
+  "entity": {
+    "sensor": {
+      "moisture": {
+        "name": "Humedad del suelo"
+      },
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "conductivity": {
+        "name": "Conductividad"
+      },
+      "illuminance": {
+        "name": "Iluminancia"
+      },
+      "humidity": {
+        "name": "Humedad del aire"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "soil_temperature": {
+        "name": "Temperatura del suelo"
+      },
+      "ppfd": {
+        "name": "PPFD"
+      },
+      "total_light_integral": {
+        "name": "Integral de luz total"
+      },
+      "daily_light_integral": {
+        "name": "Integral de luz diaria"
+      },
+      "dli_24h": {
+        "name": "DLI (24h móvil)"
+      }
+    },
+    "number": {
+      "max_moisture": {
+        "name": "Máx. humedad del suelo"
+      },
+      "min_moisture": {
+        "name": "Mín. humedad del suelo"
+      },
+      "max_temperature": {
+        "name": "Máx. temperatura"
+      },
+      "min_temperature": {
+        "name": "Mín. temperatura"
+      },
+      "max_illuminance": {
+        "name": "Máx. iluminancia"
+      },
+      "min_illuminance": {
+        "name": "Mín. iluminancia"
+      },
+      "max_dli": {
+        "name": "Máx. DLI"
+      },
+      "min_dli": {
+        "name": "Mín. DLI"
+      },
+      "max_conductivity": {
+        "name": "Máx. conductividad"
+      },
+      "min_conductivity": {
+        "name": "Mín. conductividad"
+      },
+      "max_humidity": {
+        "name": "Máx. humedad del aire"
+      },
+      "min_humidity": {
+        "name": "Mín. humedad del aire"
+      },
+      "max_co2": {
+        "name": "Máx. CO2"
+      },
+      "min_co2": {
+        "name": "Mín. CO2"
+      },
+      "max_soil_temperature": {
+        "name": "Máx. temperatura del suelo"
+      },
+      "min_soil_temperature": {
+        "name": "Mín. temperatura del suelo"
+      },
+      "lux_to_ppfd": {
+        "name": "Factor Lux a PPFD"
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -8,44 +98,46 @@
         "data": {
           "name": "Nombre de la planta",
           "species": "Especie",
-          "temperature_sensor": "Sensor de Temperatura",
-          "moisture_sensor": "Sensor de Humedad del suelo",
-          "conductivity_sensor": "Sensor Conductividad",
-          "illuminance_sensor": "Sensor de Iluminación",
-          "humidity_sensor": "Sensor de humedad ambiente"
+          "temperature_sensor": "Sensor de temperatura",
+          "moisture_sensor": "Sensor de humedad del suelo",
+          "conductivity_sensor": "Sensor de conductividad",
+          "illuminance_sensor": "Sensor de iluminación",
+          "humidity_sensor": "Sensor de humedad del aire",
+          "co2_sensor": "Sensor de CO2",
+          "soil_temperature_sensor": "Sensor de temperatura del suelo"
         },
         "data_description": {
-          "species": "Se usara para buscar en OpenPlantbook"
+          "species": "Se usará para buscar en OpenPlantbook"
         }
       },
       "select_species": {
-        "title": "Seleciona la especie en OpenPlantbook",
+        "title": "Seleccionar especie en OpenPlantbook",
         "description": "{desc}",
         "data": {
           "species": "Especie"
         },
         "menu_options": {
-          "user": "Ir hacia atras"
+          "user": "Volver atrás"
         }
       },
       "limits": {
         "title": "Establecer límites",
-        "description": "# {name}\n![Planta]({entity_picture}){br}\n{extra_desc}La unidad de Temperatura es {temperature_unit}",
+        "description": "# {name}\n![Planta]({entity_picture}){br}\n{extra_desc}La unidad de temperatura es {temperature_unit}",
         "data": {
           "right_plant": "Esta es la planta que estaba buscando",
-          "display_pid": "Especies vegetales a exponer",
-          "max_moisture": "Humedad máxima del suelo (%)",
-          "min_moisture": "Humedad mínima del suelo (%)",
-          "max_illuminance": "Iluminación máxima (lx)",
-          "min_illuminance": "Iluminación mínima (lx)",
-          "max_dli": "DLI máximo (mol/d⋅m²)",
-          "min_dli": "DLI mínimo (mol/d⋅m²)",
-          "max_temperature": "Temperatura máxima (véase más arriba)",
-          "min_temperature": "Temperatura mínima (véase más arriba)",
-          "max_conductivity": "Conductividad máxima (uS/cm)",
-          "min_conductivity": "Conductividad mínima (uS/cm)",
-          "max_humidity": "Humedad del aire máxima (%)",
-          "min_humidity": "Humedad del aire mínima (%)",
+          "display_pid": "Especie de planta a mostrar",
+          "max_moisture": "Máx. humedad del suelo (%)",
+          "min_moisture": "Mín. humedad del suelo (%)",
+          "max_illuminance": "Máx. iluminación (lx)",
+          "min_illuminance": "Mín. iluminación (lx)",
+          "max_dli": "Máx. DLI (mol/d⋅m²)",
+          "min_dli": "Mín. DLI (mol/d⋅m²)",
+          "max_temperature": "Máx. temperatura (ver arriba)",
+          "min_temperature": "Mín. temperatura (ver arriba)",
+          "max_conductivity": "Máx. conductividad (uS/cm)",
+          "min_conductivity": "Mín. conductividad (uS/cm)",
+          "max_humidity": "Máx. humedad del aire (%)",
+          "min_humidity": "Mín. humedad del aire (%)",
           "entity_picture": "URL de la imagen"
         }
       }
@@ -55,24 +147,26 @@
     "step": {
       "init": {
         "title": "Opciones",
-        "description": "",
+        "description": "**{plant_name}**",
         "data": {
-          "check_days": "Días de control de la iluminación",
+          "check_days": "Días de control de iluminación",
           "species": "Especie",
-          "force_update": "Forzar la actualización de los datos de OpenPlantbook",
-          "display_pid": "Especies vegetales para mostrar",
-          "temperature_sensor": "Sensor de Temperatura",
-          "moisture_sensor": "Sensor de Humedad del suelo",
-          "conductivity_sensor": "Sensor Conductividad",
-          "illuminance_sensor": "Sensor de Iluminación",
-          "humidity_sensor": "Sensor de humedad ambiente",
+          "force_update": "Forzar actualización de datos de OpenPlantbook",
+          "display_pid": "Especie de planta a mostrar",
+          "temperature_sensor": "Sensor de temperatura",
+          "moisture_sensor": "Sensor de humedad del suelo",
+          "conductivity_sensor": "Sensor de conductividad",
+          "illuminance_sensor": "Sensor de iluminación",
+          "humidity_sensor": "Sensor de humedad del aire",
           "entity_picture": "URL de la imagen. Se actualizará automáticamente si la especie se encuentra en OpenPlantbook",
-          "illuminance_trigger": "Utilizar la iluminación como desencadenante de problema",
-          "dli_trigger": "Utilizar la luz diaria integral (dli) como desencadenante de problema",
-          "humidity_trigger": "Utilizar la humedad del aire como desencadenante de problema",
-          "conductivity_trigger": "Utilizar la conductividad como desencadenante de problema",
-          "moisture_trigger": "Utilizar la humedad del suelo como desencadenante de problema",
-          "temperature_trigger": "Utilizar la temperatura como desencadenante de problema"
+          "illuminance_trigger": "Usar iluminación como desencadenante de problema",
+          "dli_trigger": "Usar integral de luz diaria (DLI) como desencadenante de problema",
+          "humidity_trigger": "Usar humedad del aire como desencadenante de problema",
+          "conductivity_trigger": "Usar conductividad como desencadenante de problema",
+          "moisture_trigger": "Usar humedad del suelo como desencadenante de problema",
+          "temperature_trigger": "Usar temperatura como desencadenante de problema",
+          "co2_trigger": "Usar CO2 como desencadenante de problema",
+          "soil_temperature_trigger": "Usar temperatura del suelo como desencadenante de problema"
         }
       }
     }
@@ -84,11 +178,11 @@
       "fields": {
         "meter_entity": {
           "name": "Entidad de medición",
-          "description": "Sustitución del sensor de medición."
+          "description": "La entidad de medición cuyo sensor se sustituirá."
         },
         "new_sensor": {
-          "name": "Sensor de entidad",
-          "description": "Id del nuevo sensor. Dejar en blanco para eliminar el sensor."
+          "name": "Entidad del sensor",
+          "description": "ID de la entidad del nuevo sensor. Dejar en blanco para eliminar el sensor."
         }
       }
     }

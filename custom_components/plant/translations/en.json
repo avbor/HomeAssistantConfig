@@ -1,5 +1,95 @@
 {
   "title": "Plant monitor",
+  "entity": {
+    "sensor": {
+      "moisture": {
+        "name": "Soil moisture"
+      },
+      "temperature": {
+        "name": "Temperature"
+      },
+      "conductivity": {
+        "name": "Conductivity"
+      },
+      "illuminance": {
+        "name": "Illuminance"
+      },
+      "humidity": {
+        "name": "Air humidity"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "soil_temperature": {
+        "name": "Soil temperature"
+      },
+      "ppfd": {
+        "name": "PPFD"
+      },
+      "total_light_integral": {
+        "name": "Total light integral"
+      },
+      "daily_light_integral": {
+        "name": "Daily light integral"
+      },
+      "dli_24h": {
+        "name": "DLI (24h rolling)"
+      }
+    },
+    "number": {
+      "max_moisture": {
+        "name": "Max soil moisture"
+      },
+      "min_moisture": {
+        "name": "Min soil moisture"
+      },
+      "max_temperature": {
+        "name": "Max temperature"
+      },
+      "min_temperature": {
+        "name": "Min temperature"
+      },
+      "max_illuminance": {
+        "name": "Max illuminance"
+      },
+      "min_illuminance": {
+        "name": "Min illuminance"
+      },
+      "max_dli": {
+        "name": "Max DLI"
+      },
+      "min_dli": {
+        "name": "Min DLI"
+      },
+      "max_conductivity": {
+        "name": "Max conductivity"
+      },
+      "min_conductivity": {
+        "name": "Min conductivity"
+      },
+      "max_humidity": {
+        "name": "Max air humidity"
+      },
+      "min_humidity": {
+        "name": "Min air humidity"
+      },
+      "max_co2": {
+        "name": "Max CO2"
+      },
+      "min_co2": {
+        "name": "Min CO2"
+      },
+      "max_soil_temperature": {
+        "name": "Max soil temperature"
+      },
+      "min_soil_temperature": {
+        "name": "Min soil temperature"
+      },
+      "lux_to_ppfd": {
+        "name": "Lux to PPFD factor"
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -12,7 +102,9 @@
           "moisture_sensor": "Soil moisture sensor",
           "conductivity_sensor": "Conductivity sensor",
           "illuminance_sensor": "Illuminance sensor",
-          "humidity_sensor": "Air humidity sensor"
+          "humidity_sensor": "Air humidity sensor",
+          "co2_sensor": "CO2 sensor",
+          "soil_temperature_sensor": "Soil temperature sensor"
         },
         "data_description": {
           "species": "Will be used for searching OpenPlantbook"
@@ -34,18 +126,18 @@
         "data": {
           "right_plant": "This is the plant I was looking for",
           "display_pid": "Plant species to display",
-          "max_moisture": "Maximum soil moisture (%)",
-          "min_moisture": "Minimum soil moisture (%)",
-          "max_illuminance": "Maximum illuminance (lx)",
-          "min_illuminance": "Minimum illuminance (lx)",
-          "max_dli": "Maximum DLI (mol/d⋅m²)",
-          "min_dli": "Minimum DLI (mol/d⋅m²)",
-          "max_temperature": "Maximum temperature (see above)",
-          "min_temperature": "Minimum temperature (see above)",
-          "max_conductivity": "Maximum conductivity (uS/cm)",
-          "min_conductivity": "Minimum conductivity (uS/cm)",
-          "max_humidity": "Maximum air humidity (%)",
-          "min_humidity": "Minimum air humidity (%)",
+          "max_moisture": "Max soil moisture (%)",
+          "min_moisture": "Min soil moisture (%)",
+          "max_illuminance": "Max illuminance (lx)",
+          "min_illuminance": "Min illuminance (lx)",
+          "max_dli": "Max DLI (mol/d⋅m²)",
+          "min_dli": "Min DLI (mol/d⋅m²)",
+          "max_temperature": "Max temperature (see above)",
+          "min_temperature": "Min temperature (see above)",
+          "max_conductivity": "Max conductivity (uS/cm)",
+          "min_conductivity": "Min conductivity (uS/cm)",
+          "max_humidity": "Max air humidity (%)",
+          "min_humidity": "Min air humidity (%)",
           "entity_picture": "Image URL"
         }
       }
@@ -55,7 +147,7 @@
     "step": {
       "init": {
         "title": "Options",
-        "description": "",
+        "description": "Configure options for **{plant_name}**",
         "data": {
           "check_days": "Illuminance check days",
           "species": "Species",
@@ -68,11 +160,13 @@
           "humidity_sensor": "Air humidity sensor",
           "entity_picture": "Image URL. Will be automatically updated if species is found in OpenPlantbook",
           "illuminance_trigger": "Use illuminance as problem trigger",
-          "dli_trigger": "Use daily light integral (dli) as problem trigger",
+          "dli_trigger": "Use daily light integral (DLI) as problem trigger",
           "humidity_trigger": "Use air humidity as problem trigger",
           "conductivity_trigger": "Use conductivity as problem trigger",
           "moisture_trigger": "Use soil moisture as problem trigger",
-          "temperature_trigger": "Use temperature as problem trigger"
+          "temperature_trigger": "Use temperature as problem trigger",
+          "co2_trigger": "Use CO2 as problem trigger",
+          "soil_temperature_trigger": "Use soil temperature as problem trigger"
         }
       }
     }

@@ -2,7 +2,7 @@
 # Lovelace configuration
 #################################################
 
-mode: yaml
+resource_mode: yaml
 resources:
   - url: /hacsfiles/flex-table-card/flex-table-card.js
     type: module
@@ -27,6 +27,12 @@ resources:
   - url: /hacsfiles/lovelace-card-mod/card-mod.js
     type: module
 dashboards:
+  lovelace:
+    mode: yaml
+    filename: ui-lovelace.yaml
+    title: Overview
+    icon: mdi:view-dashboard
+    show_in_sidebar: true
   dash-chouse:
     mode: yaml
     filename: lovelace/dash-chouse.yaml
