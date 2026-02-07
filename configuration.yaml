@@ -63,8 +63,8 @@ http:
 
 logger:
   default: warn
-  logs:
-    homeassistant.components.telegram_bot: debug
+  #logs:
+    #homeassistant.components.telegram_bot: debug
     #telegram.ext.dispatcher: debug
     #homeassistant.components.rest: debug
     #homeassistant.components.rest.switch: debug
@@ -268,8 +268,8 @@ yandex_smart_home: !include entities/yandex_smart_home/yandex_smart_home.yaml
 
 vacuum_zones: !include entities/vacuum_zones/vacuum_zones.yaml
 
-additional_ca:
-  root-ca: root-ca.crt
+#additional_ca:
+#  root-ca: root-ca.crt
 
 #################################################
 # Inclusions

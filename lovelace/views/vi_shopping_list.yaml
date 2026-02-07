@@ -1,6 +1,6 @@
 title: Shopping List
 path: list
-icon: mdi:basket
+icon: mdi:basket-outline
 cards:
   - type: vertical-stack
     cards:

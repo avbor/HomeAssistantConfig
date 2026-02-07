@@ -1,6 +1,6 @@
 title: Water
 path: water
-icon: mdi:water
+icon: mdi:water-outline
 cards:
   - type: vertical-stack
     cards:

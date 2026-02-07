@@ -1,6 +1,7 @@
 title: Home
 path: home
-icon: "hass:home-assistant"
+#icon: "hass:home-assistant"
+icon: mdi:home-circle-outline
 cards:
   - type: vertical-stack
     cards:

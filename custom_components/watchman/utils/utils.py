@@ -1,37 +1,34 @@
 """Miscellaneous support functions for Watchman."""
 
-import anyio
-import re
+from collections.abc import AsyncGenerator
 import fnmatch
-
 import os
-from typing import Any
+import re
 from types import MappingProxyType
+from typing import Any
 
-from homeassistant.exceptions import HomeAssistantError
-from homeassistant.core import HomeAssistant, split_entity_id
+import anyio
+
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, split_entity_id
 from homeassistant.helpers import entity_registry as er
 
-from .logger import _LOGGER, INDENT
 from ..const import (
-    CONF_CHECK_LOVELACE,
+    CONF_COLUMNS_WIDTH,
+    CONF_EXCLUDE_DISABLED_AUTOMATION,
+    CONF_FRIENDLY_NAMES,
+    CONF_HEADER,
     CONF_IGNORED_FILES,
+    CONF_IGNORED_ITEMS,
+    CONF_IGNORED_STATES,
     CONF_INCLUDED_FOLDERS,
     CONF_REPORT_PATH,
     CONF_SECTION_APPEARANCE_LOCATION,
     CONF_STARTUP_DELAY,
-    DOMAIN,
-    DOMAIN_DATA,
-    CONF_HEADER,
-    CONF_IGNORED_ITEMS,
-    CONF_IGNORED_STATES,
-    CONF_COLUMNS_WIDTH,
-    CONF_FRIENDLY_NAMES,
-    HASS_DATA_PARSED_ENTITY_LIST,
-    HASS_DATA_PARSED_SERVICE_LIST,
     DEFAULT_OPTIONS,
+    DOMAIN_DATA,
 )
+from .logger import _LOGGER, INDENT
 
 
 def get_val(
@@ -52,13 +49,21 @@ def get_val(
     return val
 
 
-def to_lists(options, key, section=None):
+def to_lists(
+    options: MappingProxyType[str, Any] | dict[str, Any], key: str, section: str | None = None
+) -> list[str]:
     """Transform configuration value to the list of strings."""
     val = get_val(options, key, section)
+    if isinstance(val, list):
+        return val
+    if not val:
+        return []
     return [x.strip() for x in val.split(",") if x.strip()]
 
 
-def to_listi(options, key, section=None):
+def to_listi(
+    options: MappingProxyType[str, Any] | dict[str, Any], key: str, section: str | None = None
+) -> list[int]:
     """Transform configuration value to the list of integers."""
     val = get_val(options, key, section)
     return [int(x) for x in val.split(",") if x.strip()]
@@ -66,6 +71,8 @@ def to_listi(options, key, section=None):
 
 def get_entry(hass: HomeAssistant) -> Any:
     """Return Watchman's ConfigEntry instance."""
+    if DOMAIN_DATA not in hass.data:
+        return None
     return hass.config_entries.async_get_entry(
         hass.data[DOMAIN_DATA]["config_entry_id"]
     )
@@ -73,33 +80,42 @@ def get_entry(hass: HomeAssistant) -> Any:
 
 def get_config(hass: HomeAssistant, key: str, default: Any | None = None) -> Any:
     """Get configuration value from ConfigEntry."""
-    assert hass.data.get(DOMAIN_DATA)
+    if DOMAIN_DATA not in hass.data:
+        return default
+
     entry = hass.config_entries.async_get_entry(
         hass.data[DOMAIN_DATA]["config_entry_id"]
     )
 
-    assert isinstance(entry, ConfigEntry)
+    if not isinstance(entry, ConfigEntry):
+        return default
 
-    if key in [CONF_INCLUDED_FOLDERS, CONF_IGNORED_ITEMS, CONF_IGNORED_FILES]:
+    if key in [
+        CONF_INCLUDED_FOLDERS,
+        CONF_IGNORED_ITEMS,
+        CONF_IGNORED_FILES,
+    ]:
         return to_lists(entry.data, key)
 
-    if key in [CONF_IGNORED_STATES, CONF_CHECK_LOVELACE, CONF_STARTUP_DELAY]:
+    if key in [
+        CONF_IGNORED_STATES,
+        CONF_EXCLUDE_DISABLED_AUTOMATION,
+        CONF_STARTUP_DELAY,
+    ]:
         return get_val(entry.data, key)
 
     if key in [CONF_HEADER, CONF_REPORT_PATH, CONF_COLUMNS_WIDTH, CONF_FRIENDLY_NAMES]:
         section_name = CONF_SECTION_APPEARANCE_LOCATION
         if key == CONF_COLUMNS_WIDTH:
             return to_listi(entry.data, CONF_COLUMNS_WIDTH, section_name)
-        else:
-            return get_val(entry.data, key, section_name)
+        return get_val(entry.data, key, section_name)
 
-    assert False, "Unknown key {}".format(key)
+    return default
 
 
-async def async_is_valid_path(path) -> bool:
+async def async_is_valid_path(path: str) -> bool:
     """Validate the report path."""
     folder, f_name = os.path.split(path)
-    _LOGGER.debug(f"@@@[{folder}] [{f_name}] [{path}]")
     if is_valid := (
         folder.strip() and f_name.strip() and await anyio.Path(folder).exists()
     ):
@@ -107,7 +123,9 @@ async def async_is_valid_path(path) -> bool:
     return is_valid
 
 
-async def async_get_next_file(folder_tuples, ignored_files):
+async def async_get_next_file(
+    folder_tuples: list[tuple[str, str]], ignored_files: list[str]
+) -> AsyncGenerator[tuple[str, bool]]:
     """Return next file from scan queue."""
     if not ignored_files:
         ignored_files = ""
@@ -125,15 +143,32 @@ async def async_get_next_file(folder_tuples, ignored_files):
             )
 
 
-def is_action(hass, entry):
+def get_included_folders(hass: HomeAssistant) -> list[tuple[str, str]]:
+    """Gather the list of folders to parse."""
+    folders = []
+
+    included = get_config(hass, CONF_INCLUDED_FOLDERS, None)
+    if not included:
+        # Default to config dir if nothing specified
+        folders.append((hass.config.config_dir, "**"))
+    else:
+        for fld in included:
+            folders.append((fld, "**"))
+
+    return folders
+
+
+def is_action(hass: HomeAssistant, entry: str) -> bool:
     """Check whether config entry is an action."""
     if not isinstance(entry, str):
         return False
-    domain, service = entry.split(".")[0], ".".join(entry.split(".")[1:])
+    domain, service = entry.split(".", maxsplit=1)[0], ".".join(entry.split(".")[1:])
     return hass.services.has_service(domain, service)
 
 
-def get_entity_state(hass, entry, friendly_names=False):
+def get_entity_state(
+    hass: HomeAssistant, entry: str, *, friendly_names: bool = False
+) -> tuple[str, str | None]:
     """Return entity state or 'missing' if entity does not extst."""
     entity_state = hass.states.get(entry)
     entity_registry = er.async_get(hass)
@@ -155,52 +190,26 @@ def get_entity_state(hass, entry, friendly_names=False):
     return state, name
 
 
-def renew_missing_actions_list(hass):
-    """Update list of missing actions when an action gets registered or removed."""
-    services_missing = {}
-    _LOGGER.debug("::check_services:: Triaging list of found actions")
-    if "missing" in get_config(hass, CONF_IGNORED_STATES, []):
-        _LOGGER.debug(
-            f"{INDENT}MISSING state set as ignored in config, so final list of reported actions is empty."
-        )
-        return services_missing
-    if (
-        DOMAIN not in hass.data
-        or HASS_DATA_PARSED_SERVICE_LIST not in hass.data[DOMAIN]
-    ):
-        raise HomeAssistantError("Service list not found")
-    parsed_service_list = hass.data[DOMAIN][HASS_DATA_PARSED_SERVICE_LIST]
-    for entry, occurrences in parsed_service_list.items():
-        if not is_action(hass, entry):
-            services_missing[entry] = occurrences
-            _LOGGER.debug(f"{INDENT}service {entry} added to the report")
-    return services_missing
+def obfuscate_id(item_id: str) -> str:
+    """Obfuscate entity or action ID for logging."""
+    if not isinstance(item_id, str) or "." not in item_id:
+        return item_id
 
+    parts = item_id.split(".", 1)
+    domain = parts[0]
+    name = parts[1]
 
-def renew_missing_entities_list(hass):
-    """Update list of missing entities when a service from a config file changed its state."""
-    _LOGGER.debug("::check_entities:: Triaging list of found entities")
+    if len(name) <= 3:
+        return f"{domain}.{name}"
 
-    ignored_states = [
-        "unavail" if s == "unavailable" else s
-        for s in get_config(hass, CONF_IGNORED_STATES, [])
-    ]
-    if DOMAIN not in hass.data or HASS_DATA_PARSED_ENTITY_LIST not in hass.data[DOMAIN]:
-        _LOGGER.error(f"{INDENT}Entity list not found")
-        raise Exception("Entity list not found")
-    parsed_entity_list = hass.data[DOMAIN][HASS_DATA_PARSED_ENTITY_LIST]
-    entities_missing = {}
-    for entry, occurrences in parsed_entity_list.items():
-        if is_action(hass, entry):  # this is a service, not entity
-            _LOGGER.debug(f"{INDENT}entry {entry} is service, skipping")
-            continue
-        state, _ = get_entity_state(hass, entry)
-        if state in ignored_states:
-            _LOGGER.debug(
-                f"{INDENT}entry {entry} with state {state} skipped due to ignored_states"
-            )
-            continue
-        if state in ["missing", "unknown", "unavail", "disabled"]:
-            entities_missing[entry] = occurrences
-            _LOGGER.debug(f"{INDENT}entry {entry} added to the report")
-    return entities_missing
+    prefix = name[:3]
+    suffix = name[3:]
+
+    masked_suffix = ""
+    for char in suffix:
+        if char.isalnum():
+            masked_suffix += "*"
+        else:
+            masked_suffix += char
+
+    return f"{domain}.{prefix}{masked_suffix}"

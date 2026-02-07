@@ -1,6 +1,7 @@
 title: Security
 path: cctv
-icon: mdi:cctv
+#icon: mdi:cctv
+icon: mdi:video-outline
 cards:
   - type: vertical-stack
     cards:

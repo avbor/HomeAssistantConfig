@@ -1,6 +1,6 @@
 title: New Year
 path: new-year
-icon: mdi:pine-tree
+icon: mdi:pine-tree-variant-outline
 cards:
   - type: vertical-stack
     cards:

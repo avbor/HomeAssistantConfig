@@ -1,4 +1,10 @@
-from custom_components.watchman.const import (
+from typing import Any
+
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
+from homeassistant.exceptions import ServiceValidationError
+
+from .const import (
     CONF_ACTION_NAME,
     CONF_ALLOWED_SERVICE_PARAMS,
     CONF_CHUNK_SIZE,
@@ -11,14 +17,9 @@ from custom_components.watchman.const import (
     DOMAIN,
     REPORT_SERVICE_NAME,
 )
-from custom_components.watchman.utils.parser import parse_config
+from .utils.logger import _LOGGER
 from .utils.report import async_report_to_file, async_report_to_notification
 from .utils.utils import get_config
-
-from custom_components.watchman.coordinator import WatchmanCoordinator
-from homeassistant.exceptions import ServiceValidationError
-from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
 
 
 class WatchmanServicesSetup:
@@ -28,18 +29,20 @@ class WatchmanServicesSetup:
         """Initialise services."""
         self.hass = hass
         self.config_entry = config_entry
-        self.coordinator: WatchmanCoordinator = hass.data[DOMAIN][config_entry.entry_id]
+        self.coordinator = config_entry.runtime_data.coordinator
 
         self.setup_services()
 
-    def setup_services(self):
+    def setup_services(self) -> None:
         """Initialise the services in Hass."""
-
         self.hass.services.async_register(
-            DOMAIN, REPORT_SERVICE_NAME, self.async_handle_report
+            DOMAIN,
+            REPORT_SERVICE_NAME,
+            self.async_handle_report,
+            supports_response=SupportsResponse.OPTIONAL
         )
 
-    async def async_handle_report(self, call):
+    async def async_handle_report(self, call: ServiceCall) -> dict[str, Any]:
         """Handle the action call."""
         path = get_config(self.hass, CONF_REPORT_PATH)
         send_notification = call.data.get(CONF_SEND_NOTIFICATION, False)
@@ -56,20 +59,20 @@ class WatchmanServicesSetup:
             CONF_ACTION_NAME, call.data.get(CONF_SERVICE_NAME, None)
         )
 
-        if not (action_name or create_file):
-            raise ServiceValidationError(
-                f"Either [{CONF_ACTION_NAME}] or [{CONF_CREATE_FILE}] should be specified."
-            )
-
         if action_data and not action_name:
             raise ServiceValidationError(
                 f"Missing [{CONF_ACTION_NAME}] parameter. The [{CONF_SERVICE_DATA}] parameter can only be used "
                 f"in conjunction with [{CONF_ACTION_NAME}] parameter."
             )
 
+        _LOGGER.debug(f"User requested report params={call.data}")
+
         if call.data.get(CONF_PARSE_CONFIG, False):
-            await parse_config(self.hass, reason="service call")
-            await self.config_entry.runtime_data.coordinator.async_refresh()
+            # Blocking wait for a fresh scan
+            await self.coordinator.async_force_parse()
+        else:
+            # Just refresh sensors from existing DB (in case something changed externally)
+            await self.coordinator.async_request_refresh()
 
         # call notification action even when send notification = False
         if send_notification or action_name:
@@ -84,3 +87,6 @@ class WatchmanServicesSetup:
                 raise ServiceValidationError(
                     f"Unable to write report to file '{exception.filename}': {exception.strerror} [Error:{exception.errno}]"
                 )
+
+        return await self.coordinator.async_get_detailed_report_data()
+

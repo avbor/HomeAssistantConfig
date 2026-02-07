@@ -1,6 +1,6 @@
 title: Plants
 path: plants
-icon: mdi:flower-tulip
+icon: mdi:flower-tulip-outline
 cards:
   # Детская
   - type: vertical-stack
