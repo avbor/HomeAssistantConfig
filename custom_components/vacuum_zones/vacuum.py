@@ -1,17 +1,13 @@
 from homeassistant.components.vacuum import (
-    StateVacuumEntity,
-    VacuumEntityFeature,
     DOMAIN as VACUUM_DOMAIN,
-    STATE_CLEANING,
-    STATE_RETURNING,
-    STATE_DOCKED,
+    StateVacuumEntity,
+    VacuumActivity,
+    VacuumEntityFeature,
 )
 from homeassistant.const import (
-    CONF_SEQUENCE,
-    STATE_IDLE,
-    STATE_PAUSED,
-    EVENT_STATE_CHANGED,
     ATTR_ENTITY_ID,
+    CONF_SEQUENCE,
+    EVENT_STATE_CHANGED,
 )
 from homeassistant.core import Context, Event, State
 from homeassistant.helpers import entity_registry
@@ -32,7 +28,7 @@ async def async_setup_platform(hass, _, async_add_entities, discovery_info=None)
             return
 
         new_state: State = event.data.get("new_state")
-        if new_state.state not in (STATE_RETURNING, STATE_DOCKED):
+        if new_state.state not in (VacuumActivity.RETURNING, VacuumActivity.DOCKED):
             return
 
         prev: ZoneVacuum = queue.pop(0)
@@ -48,7 +44,7 @@ async def async_setup_platform(hass, _, async_add_entities, discovery_info=None)
 
 
 class ZoneVacuum(StateVacuumEntity):
-    _attr_state = STATE_IDLE
+    _attr_activity = VacuumActivity.IDLE
     _attr_supported_features = VacuumEntityFeature.START | VacuumEntityFeature.STOP
 
     domain: str = None
@@ -96,7 +92,7 @@ class ZoneVacuum(StateVacuumEntity):
             self.service = "vacuum_goto"
 
     async def internal_start(self, context: Context) -> None:
-        self._attr_state = STATE_CLEANING
+        self._attr_activity = VacuumActivity.CLEANING
         self.async_write_ha_state()
 
         if self.script:
@@ -108,15 +104,15 @@ class ZoneVacuum(StateVacuumEntity):
             )
 
     async def internal_stop(self):
-        self._attr_state = STATE_IDLE
+        self._attr_activity = VacuumActivity.IDLE
         self.async_write_ha_state()
 
     async def async_start(self):
         self.queue.append(self)
 
         state = self.hass.states.get(self.vacuum_entity_id)
-        if len(self.queue) > 1 or state == STATE_CLEANING:
-            self._attr_state = STATE_PAUSED
+        if len(self.queue) > 1 or state == VacuumActivity.CLEANING:
+            self._attr_activity = VacuumActivity.PAUSED
             self.async_write_ha_state()
             return
 

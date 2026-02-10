@@ -90,7 +90,7 @@ humidifiers_pack:
               {{ state_attr('humidifier.smartmi_humidifier_01_detskaia', 'mode') }}
             {% else %}
               off
-            {% endif %}"
+            {% endif %}
 
       - name: Режим работы увлажнителя 02 (Спальня)
         unique_id: 18475090-1676-45a3-8448-916158b9a052
@@ -100,7 +100,7 @@ humidifiers_pack:
               {{ state_attr('humidifier.smartmi_humidifier_02_spalnia', 'mode') }}
             {% else %}
               off
-            {% endif %}"
+            {% endif %}
 
   # Sensors
 #  sensor:
