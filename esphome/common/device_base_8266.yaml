@@ -17,6 +17,7 @@ api:
 ota:
   - platform: esphome
     password: !secret esphome_ota_password
+  - platform: web_server
 
 time:
   - platform: homeassistant

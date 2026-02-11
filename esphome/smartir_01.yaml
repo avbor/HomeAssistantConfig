@@ -9,12 +9,15 @@ packages:
 
 esphome:
   includes: 
-    - include/daikin_ir_v2.1.h
+    - include/daikin_ir_v2.h
   libraries:
     - IRremoteESP8266
 
 esp8266:
   enable_serial: true
+
+web_server:
+  port: 80
 
 external_components:
 #  - source:

@@ -199,7 +199,9 @@ class PlantCurrentStatus(RestoreSensor):
         self._tracker = []
         self._follow_external = True
         self.entity_id = async_generate_entity_id(
-            f"{DOMAIN}.{{}}", self._entity_id_key, current_ids={}
+            f"{DOMAIN}.{{}}",
+            f"{self._plant.name} {self._entity_id_key}",
+            current_ids={},
         )
         if (
             not self._attr_native_value
@@ -248,6 +250,13 @@ class PlantCurrentStatus(RestoreSensor):
             self._update_config_entry(new_sensor)
 
         self.async_write_ha_state()
+
+        if (
+            self._plant
+            and getattr(self._plant, "plant_complete", False)
+            and not self.hass.is_stopping
+        ):
+            self._plant.update_entity_disabled_state(self)
 
     def _update_config_entry(self, new_sensor: str | None) -> None:
         """Update the config entry with the new sensor value."""
@@ -588,7 +597,9 @@ class PlantCurrentPpfd(PlantCurrentStatus):
         super().__init__(hass, config, plantdevice)
         self._follow_unit = False
         self.entity_id = async_generate_entity_id(
-            f"{DOMAIN_SENSOR}.{{}}", self._entity_id_key, current_ids={}
+            f"{DOMAIN_SENSOR}.{{}}",
+            f"{self._plant.name} {self._entity_id_key}",
+            current_ids={},
         )
 
     def _is_ppfd_source(self) -> bool:
@@ -712,7 +723,9 @@ class PlantTotalLightIntegral(IntegrationSensor):
             max_sub_interval=None,
         )
         self.entity_id = async_generate_entity_id(
-            f"{DOMAIN_SENSOR}.{{}}", f"Total {READING_PPFD} Integral", current_ids={}
+            f"{DOMAIN_SENSOR}.{{}}",
+            f"{self._plant.name} Total {READING_PPFD} Integral",
+            current_ids={},
         )
 
     @property
@@ -819,7 +832,9 @@ class PlantDailyLightIntegral(UtilityMeterSensor):
             periodically_resetting=True,
         )
         self.entity_id = async_generate_entity_id(
-            f"{DOMAIN_SENSOR}.{{}}", READING_DLI, current_ids={}
+            f"{DOMAIN_SENSOR}.{{}}",
+            f"{self._plant.name} {READING_DLI}",
+            current_ids={},
         )
 
     @property
@@ -926,7 +941,9 @@ class PlantDailyLightIntegral24h(StatisticsSensor):
             percentile=50,  # Not used for "change" characteristic
         )
         self.entity_id = async_generate_entity_id(
-            f"{DOMAIN_SENSOR}.{{}}", f"{READING_DLI}_24h", current_ids={}
+            f"{DOMAIN_SENSOR}.{{}}",
+            f"{self._plant.name} {READING_DLI}_24h",
+            current_ids={},
         )
 
     @property
