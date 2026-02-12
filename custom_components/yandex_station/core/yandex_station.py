@@ -18,7 +18,6 @@ from homeassistant.components.media_player import (
     MediaPlayerState,
     MediaType,
     RepeatMode,
-    async_process_play_media_url,
 )
 from homeassistant.components.media_source.models import BrowseMediaSource
 from homeassistant.core import callback
@@ -31,6 +30,7 @@ from homeassistant.helpers.restore_state import (
     RestoredExtraData,
 )
 from homeassistant.helpers.template import Template
+from homeassistant.util import slugify
 
 from . import stream, utils
 from .const import DATA_CONFIG, DOMAIN
@@ -210,7 +210,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             self.entity_id += "yandex_tv"
         else:
             self.entity_id += "yandex_station"
-        self.entity_id += f"_{self._attr_unique_id.lower()}"
+        self.entity_id += f"_{slugify(self._attr_unique_id)}"
 
         quasar.subscribe_update(device["id"], self.on_update)
 
@@ -363,6 +363,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
                 "cucumber",
                 "plum",
                 "bergamot",
+                "orion",
             ):
                 raise HomeAssistantError("Поддерживаются только станции с часами")
 
@@ -376,7 +377,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
 
         # https://github.com/AlexxIT/YandexStation/issues/697
         if "visualization" in kwargs:
-            if self.device_platform != "yandexstation_2":
+            if self.device_platform not in ("yandexstation_2", "orion"):
                 raise HomeAssistantError("Поддерживаются только станции с экраном")
 
             visualization = led.setdefault(
@@ -708,7 +709,7 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
         if self.local_state:
             await self.glagol.send(utils.external_command("sound_quiter"))
         else:
-            await super().async_volume_up()
+            await super().async_volume_down()
 
     async def async_media_seek(self, position):
         if self.local_state:

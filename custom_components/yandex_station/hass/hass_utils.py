@@ -7,6 +7,7 @@ from homeassistant.core import HomeAssistant
 
 from ..climate import INCLUDE_TYPES as CLIMATE
 from ..core.const import DATA_CONFIG, DOMAIN
+from ..core.entity import extract_instance
 from ..core.yandex_quasar import YandexQuasar
 from ..cover import INCLUDE_TYPES as COVER
 from ..humidifier import INCLUDE_TYPES as HUMIDIFIER
@@ -85,7 +86,7 @@ def build_include_config(device: dict) -> dict:
     else:
         return {}
 
-    caps = [i["parameters"].get("instance", "on") for i in device["capabilities"]]
+    caps = [extract_instance(i) for i in device["capabilities"]]
     props = [i["parameters"]["instance"] for i in device["properties"]]
 
     return {
@@ -101,6 +102,6 @@ async def load_fake_devies(hass: HomeAssistant, quasar: YandexQuasar):
 
     def job():
         with open(path, "rb") as f:
-            quasar.devices += json.load(f)
+            quasar.devices = json.load(f)
 
     await hass.async_add_executor_job(job)

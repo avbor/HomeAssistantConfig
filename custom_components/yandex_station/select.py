@@ -2,9 +2,10 @@ import logging
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.util import slugify
 
 from .core.const import DOMAIN
-from .core.entity import YandexCustomEntity
+from .core.entity import YandexCustomEntity, extract_instance
 from .core.yandex_quasar import YandexQuasar
 from .hass import hass_utils
 
@@ -66,7 +67,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             for instance in device["capabilities"]:
                 if instance["type"] not in INCLUDE_CAPABILITIES:
                     continue
-                if instance["parameters"].get("instance", "on") in instances:
+                if extract_instance(instance) in instances:
                     entities.append(YandexCustomSelect(quasar, device, instance))
 
     async_add_entities(entities)
@@ -91,7 +92,7 @@ class YandexEqualizer(SelectEntity):
         self._attr_name = device["name"] + " Эквалайзер"
         self._attr_unique_id = device["quasar_info"]["device_id"] + f"_equalizer"
 
-        self.entity_id = f"select.yandex_station_{self._attr_unique_id.lower()}"
+        self.entity_id = f"select.yandex_station_{slugify(self._attr_unique_id)}"
 
     async def async_update(self):
         try:

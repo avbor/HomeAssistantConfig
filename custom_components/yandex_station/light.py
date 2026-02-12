@@ -42,26 +42,33 @@ class YandexLight(LightEntity, YandexEntity):
     def internal_init(self, capabilities: dict, properties: dict):
         self._attr_color_mode = ColorMode.ONOFF
 
-        if item := capabilities.get("brightness"):
-            self.max_brightness = item["range"]["max"]
-            self.min_brightness = item["range"]["min"]
+        if bright := capabilities.get("brightness"):
+            self.max_brightness = bright["range"]["max"]
+            self.min_brightness = bright["range"]["min"]
             self._attr_color_mode = ColorMode.BRIGHTNESS
 
-        if item := capabilities.get("color"):
+        modes = set()
+
+        if color := capabilities.get("color"):
             self.effects = []
 
-            if items := item["palette"]:
-                self.effects += items
-                self._attr_color_mode = ColorMode.HS
+            if palette := color.get("palette"):
+                self.effects.extend(palette)
+                modes.add(ColorMode.HS)
 
-            if items := item["scenes"]:
-                self.effects += items
+            if scenes := color.get("scenes"):
+                self.effects.extend(scenes)
+
+            if temp := color.get("temperature_k"):
+                self._attr_max_color_temp_kelvin = temp["max"]
+                self._attr_min_color_temp_kelvin = temp["min"]
+                modes.add(ColorMode.COLOR_TEMP)
 
             if self.effects:
                 self._attr_effect_list = [i["name"] for i in self.effects]
                 self._attr_supported_features = LightEntityFeature.EFFECT
 
-        self._attr_supported_color_modes = {self._attr_color_mode}
+        self._attr_supported_color_modes = modes or {self._attr_color_mode}
 
     def internal_update(self, capabilities: dict, properties: dict):
         if "on" in capabilities:
@@ -76,25 +83,46 @@ class YandexLight(LightEntity, YandexEntity):
             )
 
         # check if color exists in update
-        if "color" in capabilities:
-            item = capabilities["color"]
-            value = item.get("value")
+        if color := capabilities.get("color"):
+            value = color.get("value")
+
             if isinstance(value, dict):
                 self._attr_hs_color = (value["h"], value["s"])
+                self._attr_color_mode = ColorMode.HS
             elif isinstance(value, int):
                 # fix https://github.com/AlexxIT/YandexStation/issues/465
-                self._attr_hs_color = color_temperature_to_hs(value)
+                # self._attr_hs_color = color_temperature_to_hs(value)
+                self._attr_color_temp_kelvin = value
+                self._attr_color_mode = ColorMode.COLOR_TEMP
             else:
                 self._attr_hs_color = None
-            self._attr_effect = item["name"]
+
+            if name := color.get("name"):
+                self._attr_effect = name
+            elif id := color.get("id"):
+                self._attr_effect = next(
+                    i["name"] for i in self.effects if i["id"] == id
+                )
+            else:
+                self._attr_effect = None
 
     async def async_turn_on(
         self,
         brightness: int = None,
         effect: str = None,
+        color_temp_kelvin: int = None,
         hs_color: tuple = None,
         **kwargs,
     ):
+        if color_temp_kelvin:
+            await self.device_color(temperature_k=color_temp_kelvin)
+            return
+
+        if hs_color:
+            hsv = {"h": round(hs_color[0]), "s": round(hs_color[1]), "v": 100}
+            await self.device_color(hsv=hsv)
+            return
+
         payload = {}
 
         if brightness is not None:
@@ -104,16 +132,8 @@ class YandexLight(LightEntity, YandexEntity):
 
         if effect is not None:
             color: dict = next(i for i in self.effects if i["name"] == effect)
-            payload["color" if "value" in color else "scene"] = color["id"]
-        elif hs_color is not None:
-            if colors := [color for color in self.effects if "value" in color]:
-                h, s = hs_color
-                # search best match (minimum diff for HS)
-                color = min(
-                    colors,
-                    key=lambda i: abs(i["value"]["h"] - h) + abs(i["value"]["s"] - s),
-                )
-                payload["color"] = color["id"]
+            key = "color" if "value" in color else "scene"
+            payload[key] = color["id"]
 
         if not payload:
             payload["on"] = True

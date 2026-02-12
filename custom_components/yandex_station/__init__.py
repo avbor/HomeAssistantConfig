@@ -50,6 +50,7 @@ SPEAKER_PLATFORMS = [
 ]
 # for import section
 PLATFORMS = [
+    "binary_sensor",
     "button",
     "calendar",
     "camera",
@@ -240,8 +241,12 @@ async def _init_services(hass: HomeAssistant):
         from homeassistant.helpers import service
 
         async def send_command(call: ServiceCall) -> ServiceResponse:
-            selected = service.async_extract_referenced_entity_ids(hass, call)
-            entity_ids = selected.referenced | selected.indirectly_referenced
+            try:
+                # from HA 2025.10
+                entity_ids = await service.async_extract_entity_ids(call)
+            except TypeError:
+                # for HA before 2025.10
+                entity_ids = await service.async_extract_entity_ids(hass, call)
             for speaker in speakers.values():
                 entity: YandexStationBase = speaker.get("entity")
                 if (

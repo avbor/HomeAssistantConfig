@@ -28,6 +28,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
         for quasar, device, config in hass_utils.incluce_devices(hass, entry)
         if device["type"] in INCLUDE_TYPES
     )
+    # this should be fixed someday
+    async_add_entities(
+        YandexRemoteCarSeat(quasar, device, config)
+        for quasar, device, config in hass_utils.incluce_devices(hass, entry)
+        if device["type"] == "devices.types.remote_car.seat"
+    )
 
 
 # HA: auto, cool, dry, fan_only, heat; heat_cool, off
@@ -203,3 +209,35 @@ class YandexClimate(ClimateEntity, YandexEntity):
                     raise e
 
         return False
+
+
+class YandexRemoteCarSeat(ClimateEntity, YandexEntity):
+    _attr_temperature_unit = UnitOfTemperature.CELSIUS
+    _attr_supported_features = (
+        ClimateEntityFeature.TURN_ON
+        | ClimateEntityFeature.TURN_OFF
+        | ClimateEntityFeature.PRESET_MODE
+    )
+    _attr_hvac_modes = [HVACMode.OFF, HVACMode.HEAT]
+
+    def internal_init(self, capabilities: dict, properties: dict):
+        # {'instance': 'heating_mode', 'looped': False, 'name': 'режим обогрева', 'random_access': True, 'range': {'max': 3, 'min': 1, 'precision': 1}, 'retrievable': True, 'unit': ''}
+        if mode := capabilities.get("heating_mode"):
+            modes = range(mode["range"]["min"], mode["range"]["max"] + 1)
+            self._attr_preset_modes = [str(i) for i in modes]
+
+    def internal_update(self, capabilities: dict, properties: dict):
+        if (value := capabilities.get("on")) is not None:
+            self._attr_hvac_mode = HVACMode.HEAT if value else HVACMode.OFF
+
+        if value := capabilities.get("heating_mode"):
+            self._attr_preset_mode = str(value)
+
+    async def async_set_hvac_mode(self, hvac_mode: HVACMode):
+        if hvac_mode == HVACMode.OFF:
+            await self.device_action("on", False)
+        elif hvac_mode == HVACMode.HEAT:
+            await self.device_action("on", True)
+
+    async def async_set_preset_mode(self, preset_mode: str):
+        await self.device_action("heating_mode", int(preset_mode))

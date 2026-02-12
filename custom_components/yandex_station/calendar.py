@@ -9,6 +9,7 @@ from homeassistant.components.calendar import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.util import slugify
 
 from .core.const import DOMAIN
 from .core.yandex_quasar import YandexQuasar
@@ -41,7 +42,7 @@ class YandexCalendar(CalendarEntity):
         self._attr_name = device["name"] + " Будильники"
         self._attr_unique_id = device["quasar_info"]["device_id"] + f"_calendar"
 
-        self.entity_id = f"calendar.yandex_station_{self._attr_unique_id.lower()}"
+        self.entity_id = f"calendar.yandex_station_{slugify(self._attr_unique_id)}"
 
         self.events: list[CalendarEvent] = []
         self.next_event: CalendarEvent | None = None

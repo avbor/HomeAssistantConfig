@@ -1,6 +1,6 @@
 title: Home
 path: ch-home
-icon: "hass:home-assistant"
+icon: "mdi:home-circle-outline"
 cards:
   - type: vertical-stack
     cards:

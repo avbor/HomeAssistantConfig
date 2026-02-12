@@ -70,7 +70,10 @@ class YandexStationFlowHandler(ConfigFlow, domain=DOMAIN):
         if method == "qr":
             return self.async_show_form(
                 step_id="qr",
-                description_placeholders={"qr_url": await self.yandex.get_qr()},
+                description_placeholders={
+                    "qr_url": await self.yandex.get_qr(),
+                    "ya_url": "https://passport.yandex.ru/profile",
+                },
             )
 
         if method == "auth":
@@ -87,21 +90,24 @@ class YandexStationFlowHandler(ConfigFlow, domain=DOMAIN):
         if method == "email":
             return self.async_show_form(
                 step_id=method,
-                data_schema=vol.Schema(
-                    {
-                        vol.Required("username"): str,
-                    }
-                ),
+                data_schema=vol.Schema({vol.Required("username"): str}),
+            )
+
+        if method == "cookies":
+            return self.async_show_form(
+                step_id=method,
+                data_schema=vol.Schema({vol.Required(method): str}),
+                description_placeholders={
+                    # hassfest prohibits the use of links in translation files
+                    "ex_url": "https://chrome.google.com/webstore/detail/copy-cookies/jcbpglbplpblnagieibnemmkiamekcdg",
+                    "ya_url": "https://passport.yandex.ru/profile",
+                },
             )
 
         # cookies, token
         return self.async_show_form(
             step_id=method,
-            data_schema=vol.Schema(
-                {
-                    vol.Required(method): str,
-                }
-            ),
+            data_schema=vol.Schema({vol.Required(method): str}),
         )
 
     async def async_step_qr(self, user_input):

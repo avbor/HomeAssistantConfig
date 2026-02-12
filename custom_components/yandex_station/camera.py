@@ -9,6 +9,7 @@ from homeassistant.components.media_player import MediaPlayerState, MediaType
 from homeassistant.const import CONTENT_TYPE_MULTIPART
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.util import slugify
 
 from .core.const import DOMAIN
 from .core.entity import YandexEntity
@@ -101,7 +102,7 @@ class YandexLyrics(Camera):
         self._attr_name = device["name"] + " Текст"
         self._attr_unique_id = device["quasar_info"]["device_id"] + f"_lyrics"
 
-        self.entity_id = f"select.yandex_station_{self._attr_unique_id.lower()}"
+        self.entity_id = f"select.yandex_station_{slugify(self._attr_unique_id)}"
 
     async def async_camera_image(
         self, width: int | None = None, height: int | None = None
