@@ -1,0 +1,16 @@
+#################################################
+# Package for test things
+#################################################
+
+test_pack:
+
+template:
+  - trigger:
+    - trigger: event
+      event_type: zha_event
+      event_data:
+        device_ieee: "d0:cf:5e:ff:fe:33:93:f6"
+    sensor:
+      - name: "ZHA Last Command"
+        unique_id: 219697a7-4652-4151-bdba-1a0ee59a2976
+        state: "{{ trigger.event.data.command }}"

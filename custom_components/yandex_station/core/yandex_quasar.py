@@ -39,8 +39,10 @@ IOT_TYPES = {
     "camera_pan": "devices.capabilities.range",
     "camera_tilt": "devices.capabilities.range",
     "get_stream": "devices.capabilities.video_stream",
-    # "devices.types.remote_car.seat"
+    # devices.types.remote_car.seat
     "heating_mode": "devices.capabilities.range",
+    # devices.types.smart_speaker.yandex.station.orion
+    "led_array": "devices.capabilities.led_mask",
     # don't work
     "hsv": "devices.capabilities.color_setting",
     "rgb": "devices.capabilities.color_setting",
@@ -398,6 +400,8 @@ class YandexQuasar(Dispatcher):
         self.dispatch_update(device["id"], device)
 
     async def get_device_action(self, device: dict, instance: str, value) -> list[dict]:
+        _LOGGER.debug(f"Device action: {instance}={value}")
+
         action = {
             "state": {"instance": instance, "value": value},
             "type": IOT_TYPES[instance],
@@ -437,6 +441,8 @@ class YandexQuasar(Dispatcher):
         self.dispatch_update(device["id"], device)
 
     async def device_color(self, device: dict, **kwargs):
+        _LOGGER.debug(f"Device color: {kwargs}")
+
         r = await self.session.post(
             f"https://iot.quasar.yandex.ru/m/v3/user/custom/group/color/apply",
             json={"device_ids": [device['id']], **kwargs},

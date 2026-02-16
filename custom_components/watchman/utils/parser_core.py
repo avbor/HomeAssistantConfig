@@ -1,6 +1,7 @@
 import asyncio
 from collections.abc import Awaitable, Callable, Generator
 import contextlib
+from dataclasses import dataclass
 import datetime
 import fnmatch
 import logging
@@ -9,10 +10,8 @@ from pathlib import Path
 import re
 import sqlite3
 import time
-from dataclasses import dataclass
-from typing import Any, Generator, TypedDict
+from typing import Any, TypedDict
 
-import anyio
 import yaml
 
 from homeassistant.core import HomeAssistant
@@ -20,18 +19,24 @@ from homeassistant.core import HomeAssistant
 from ..const import DB_TIMEOUT
 from .logger import _LOGGER
 from .parser_const import (
+    ACTION_KEYS,
     BUNDLED_IGNORED_ITEMS,
+    CONFIG_ENTRY_DOMAINS,
     ESPHOME_ALLOWED_KEYS,
     ESPHOME_PATH_SEGMENT,
     HA_DOMAINS,
+    IGNORED_BRANCH_KEYS,
     IGNORED_DIRS,
-    IGNORED_KEYS,
+    IGNORED_VALUE_KEYS,
     JSON_FILE_EXTS,
     MAX_FILE_SIZE,
     PLATFORMS,
-    STORAGE_WHITELIST,
+    REGEX_ENTITY_BOUNDARY,
+    REGEX_ENTITY_SUFFIX,
+    REGEX_OPTIONAL_STATES,
+    REGEX_STRICT_SERVICE,
+    STORAGE_WHITELIST_PATTERNS,
     YAML_FILE_EXTS,
-    CONFIG_ENTRY_DOMAINS,
 )
 from .yaml_loader import LineLoader
 
@@ -76,7 +81,7 @@ def get_domains(hass: HomeAssistant | None = None) -> list[str]:
     """Return a list of valid domains."""
     platforms = PLATFORMS
     try:
-        from homeassistant.const import Platform
+        from homeassistant.const import Platform #noqa: PLC0415, I001
         platforms = [platform.value for platform in Platform]
     except ImportError:
         pass
@@ -90,11 +95,18 @@ def get_domains(hass: HomeAssistant | None = None) -> list[str]:
 
 _ALL_DOMAINS = get_domains()
 
+def _compile_entity_pattern(domains: list[str]) -> re.Pattern:
+    """Compile entity regex from a list of domains (factory method)."""
+    domain_part = "|".join(domains)
+    pattern = (
+        f"{REGEX_ENTITY_BOUNDARY}{REGEX_OPTIONAL_STATES}(({domain_part})"
+        f"{REGEX_ENTITY_SUFFIX})"
+    )
+    return re.compile(pattern, re.IGNORECASE)
+
+
 # Regex patterns to identify entitites definitions
-_ENTITY_PATTERN = re.compile(
-    r"(?:^|[^a-zA-Z0-9_./\\])(?:states\.)?((" + "|".join(_ALL_DOMAINS) + r")\.[a-z0-9_]+)",
-    re.IGNORECASE
-)
+_ENTITY_PATTERN = _compile_entity_pattern(_ALL_DOMAINS)
 
 # Regex patterns to identify actions (services) definitions
 _SERVICE_PATTERN = re.compile(
@@ -108,21 +120,24 @@ _SERVICE_PATTERN = re.compile(
 def _detect_file_type(filepath: str) -> str:
     path = Path(filepath)
     filename = path.name
-    if filename in STORAGE_WHITELIST:
-        return "json"
+    ext = path.suffix.lower()
 
-    # Check for ESPHome path segment
+    # 1. Check for ESPHome path segment (Specific YAML)
     if ESPHOME_PATH_SEGMENT in path.parts:
-        # Still check extension to ensure it is yaml
-        ext = path.suffix.lower()
+        # Ensure it is actually a yaml file
         if ext in YAML_FILE_EXTS:
             return "esphome_yaml"
 
-    ext = path.suffix.lower()
-
+    # 2. Standard YAML files (Prioritize over 'lovelace' prefix)
     if ext in YAML_FILE_EXTS:
         return "yaml"
 
+    # 3. Specific JSON storage whitelist
+    for pattern in STORAGE_WHITELIST_PATTERNS:
+        if fnmatch.fnmatch(filename, pattern):
+            return "json"
+
+    # 4. Standard JSON files
     if ext in JSON_FILE_EXTS:
         return "json"
 
@@ -147,6 +162,92 @@ def _is_script(node: dict) -> bool:
     return "sequence" in node
 
 
+def is_template(value: str) -> bool:
+    """Check if the string contains Jinja2 or JS template markers.
+
+    Detects markers anywhere in the string to handle inline templates.
+    """
+    # Fast string search is more efficient than regex for this
+    return (
+        "{{" in value
+        or "{%" in value
+        or "{#" in value
+        or "[[[" in value
+    )
+
+
+def _scan_string_for_entities(
+    content: str,
+    results: list[FoundItem],
+    line_no: int,
+    key_name: str | None,
+    context: ParserContext,
+    entity_pattern: re.Pattern,
+    expected_item_type: str = "entity",
+) -> None:
+    """Scan a string for entities using various heuristics."""
+    matches = list(entity_pattern.finditer(content))
+    for match in matches:
+        entity_id = match.group(1)
+
+        if _is_part_of_concatenation(content, match):
+            continue
+
+        if match.end(1) < len(content) and content[match.end(1)] == "*":
+            continue
+
+        if entity_id.endswith("_"):
+            continue
+
+        # Word Boundary Check (Heuristic 18)
+        end_idx = match.end(1)
+        if end_idx < len(content):
+            next_char = content[end_idx]
+            if next_char in ("-", "{", "["):
+                continue
+            if next_char == ".":
+                if "states." not in match.group(0).lower():
+                    continue
+
+        remaining_text = content[match.end(1) :].lstrip()
+        if remaining_text.startswith("("):
+            continue
+
+        results.append(
+            {
+                "line": line_no or 0,
+                "entity_id": entity_id,
+                "item_type": expected_item_type,
+                "is_key": False,
+                "key_name": key_name,
+                "is_automation_context": context.is_active,
+                "parent_type": context.parent_type,
+                "parent_id": context.parent_id,
+                "parent_alias": context.parent_alias,
+            }
+        )
+
+
+def _yield_template_lines(content: str) -> Generator[tuple[str, str, int], None, None]:
+    """Yields lines from a template with their heuristic type and line offset.
+
+    Yields:
+        (line_content, item_type, line_offset_index)
+    """
+    for i, line in enumerate(content.splitlines()):
+        line_stripped = line.strip()
+        if not line_stripped:
+            continue
+
+        # Reuse is_template to avoid DRY violation
+        if is_template(line_stripped):
+            yield line_stripped, "entity", i
+        elif REGEX_STRICT_SERVICE.match(line_stripped):
+            yield line_stripped, "service", i
+        else:
+            yield line_stripped, "entity", i
+
+
 def _derive_context(
     node: dict, parent_context: ParserContext, parent_key: str | None = None
 ) -> ParserContext:
@@ -158,10 +259,9 @@ def _derive_context(
     if not isinstance(node, dict):
         return parent_context
 
-    # Guard clause: If already inside an automation, preserve it.
-    # This prevents nested 'choose' or 'repeat' blocks (which look like scripts)
-    # from overwriting the automation context.
-    if parent_context.is_active and parent_context.parent_type == "automation":
+    # guard: if we are already inside a defined context (Automation or Script),
+    # do not allow nested structures (like repeat, choose) to redefine it.
+    if parent_context.is_active:
         return parent_context
 
     c_id = node.get("id")
@@ -268,8 +368,8 @@ def _recursive_search(
         for key, value in data.items():
             line_no = getattr(key, "line", None)
 
-            # Check for Ignored Keys
-            if isinstance(key, str) and key.lower() in IGNORED_KEYS:
+            # exclude whole branch with key name from IGNORED_BRANCH_KEYS
+            if isinstance(key, str) and key.lower() in IGNORED_BRANCH_KEYS:
                 continue
 
             # 1. Check Key (Skip if ESPHome mode)
@@ -318,7 +418,7 @@ def _recursive_search(
             # Determine expected type for value
             is_action_key = (
                 isinstance(key, str)
-                and key.lower() in ["service", "action", "service_template"]
+                and key.lower() in ACTION_KEYS
             )
             next_type = "service" if is_action_key else "entity"
 
@@ -365,52 +465,65 @@ def _recursive_search(
         line_no = getattr(data, "line", None)
         key_name = parent_key
 
+        # ignore _values_ of the key from IGNORED_VALUE_KEYS
+        # this does not prevent parser to traverse in if there are nested keys
+        if key_name and str(key_name).lower() in IGNORED_VALUE_KEYS:
+            return
+
         # ESPHome Mode: Only process value if key_name is allowed
         if is_esphome:
             if not key_name or str(key_name).lower() not in ESPHOME_ALLOWED_KEYS:
                 return
 
+        # Handle Action Templates
+        if expected_item_type == "service" and is_template(data):
+            # Check if this is a block scalar (starts with > or |)
+            # If so, the content physically starts on the next line relative to line_no
+            is_block_scalar = getattr(data, "style", None) in (">", "|")
+            base_offset = 1 if is_block_scalar else 0
+
+            for line, line_type, offset in _yield_template_lines(data):
+                # Calculate precise line number
+                current_line = (line_no or 0) + offset + base_offset
+
+                if line_type == "service":
+                    # Add directly as service
+                    results.append(
+                        {
+                            "line": current_line,
+                            "entity_id": line,
+                            "item_type": "service",
+                            "is_key": False,
+                            "key_name": key_name,
+                            "is_automation_context": current_context.is_active,
+                            "parent_type": current_context.parent_type,
+                            "parent_id": current_context.parent_id,
+                            "parent_alias": current_context.parent_alias,
+                        }
+                    )
+                else:
+                    # Scan for entities within this line
+                    _scan_string_for_entities(
+                        line,
+                        results,
+                        current_line,
+                        key_name,
+                        current_context,
+                        entity_pattern,
+                    )
+            return  # Done processing this string
+
+        # Standard Processing
         # Check for Entities
-        matches = list(entity_pattern.finditer(data))
-        for match in matches:
-            entity_id = match.group(1)
-
-            if _is_part_of_concatenation(data, match):
-                continue
-
-            if match.end(1) < len(data) and data[match.end(1)] == "*":
-                continue
-
-            if entity_id.endswith("_"):
-                continue
-
-            # Word Boundary Check (Heuristic 18)
-            end_idx = match.end(1)
-            if end_idx < len(data):
-                next_char = data[end_idx]
-                if next_char == "-":
-                    continue
-                if next_char == ".":
-                    if "states." not in match.group(0).lower():
-                        continue
-
-            remaining_text = data[match.end(1) :].lstrip()
-            if remaining_text.startswith("("):
-                continue
-
-            results.append(
-                {
-                    "line": line_no or 0,
-                    "entity_id": entity_id,
-                    "item_type": expected_item_type,
-                    "is_key": False,
-                    "key_name": key_name,
-                    "is_automation_context": current_context.is_active,
-                    "parent_type": current_context.parent_type,
-                    "parent_id": current_context.parent_id,
-                    "parent_alias": current_context.parent_alias,
-                }
-            )
+        _scan_string_for_entities(
+            data,
+            results,
+            line_no or 0,
+            key_name,
+            current_context,
+            entity_pattern,
+            expected_item_type,
+        )
 
         # Check for Services (e.g. "service: light.turn_on" inside a string template)
         matches_svc = list(_SERVICE_PATTERN.finditer(data))
@@ -457,8 +570,8 @@ def _parse_config_entries_file(
         # Create Context
         context = ParserContext(
             is_active=True,
-            parent_type=domain,
-            parent_alias=entry.get("title"),
+            parent_type=f"helper_{domain}",
+            parent_alias=entry.get("title") or entry.get("options", {}).get("name"),
             parent_id=entry.get("entry_id"),
         )
 
@@ -558,8 +671,26 @@ async def default_async_executor(func: Callable, *args: Any) -> Any:
     """Default executor that runs the synchronous function in a thread."""
     return await asyncio.to_thread(func, *args)
 
+
+def _is_file_ignored(path_obj: Path, cwd: Path, ignored_patterns: list[str]) -> bool:
+    """Check if file path matches any ignored pattern."""
+    abs_path_str = str(path_obj)
+    try:
+        rel_path_cwd = str(path_obj.relative_to(cwd))
+    except ValueError:
+        rel_path_cwd = abs_path_str
+
+    for pattern in ignored_patterns:
+        if fnmatch.fnmatch(abs_path_str, pattern) or fnmatch.fnmatch(
+            rel_path_cwd, pattern
+        ):
+            _LOGGER.debug(f"Parser: file {abs_path_str} skipped due to ignored pattern")
+            return True
+    return False
+
+
 def _scan_files_sync(root_path: str, ignored_patterns: list[str]) -> tuple[list[dict[str, Any]], int]:
-    """Synchronous, blocking file scanner using os.walk.
+    """Scan files syncronously using os.walk (blocking).
 
     Executed as a single job in the executor.
     """
@@ -580,22 +711,7 @@ def _scan_files_sync(root_path: str, ignored_patterns: list[str]) -> tuple[list[
             if abs_path_obj.suffix.lower() not in YAML_FILE_EXTS:
                 continue
 
-            # User ignore patterns
-            abs_path_str = str(abs_path_obj)
-            try:
-                rel_path_cwd = str(abs_path_obj.relative_to(cwd))
-            except ValueError:
-                rel_path_cwd = abs_path_str
-
-            is_ignored = False
-            for pattern in ignored_patterns:
-                if fnmatch.fnmatch(abs_path_str, pattern) or fnmatch.fnmatch(
-                    rel_path_cwd, pattern
-                ):
-                    is_ignored = True
-                    break
-
-            if is_ignored:
+            if _is_file_ignored(abs_path_obj, cwd, ignored_patterns):
                 ignored_count += 1
                 continue
 
@@ -604,23 +720,37 @@ def _scan_files_sync(root_path: str, ignored_patterns: list[str]) -> tuple[list[
                 stat_res = abs_path_obj.stat()
                 scanned_files.append(
                     {
-                        "path": abs_path_str,
+                        "path": str(abs_path_obj),
                         "mtime": stat_res.st_mtime,
                         "size": stat_res.st_size,
                     }
                 )
             except OSError as e:
                 if abs_path_obj.is_symlink():
-                    _LOGGER.warning(f"Skipping broken symlink: {abs_path_str}")
+                    _LOGGER.warning(f"Skipping broken symlink: {abs_path_obj}")
                 else:
-                    _LOGGER.error(f"Error accessing file {abs_path_str}: {e}")
+                    _LOGGER.error(f"Error accessing file {abs_path_obj}: {e}")
 
     # 2. Targeted scan of .storage
     storage_path_obj = Path(root_path) / ".storage"
     if storage_path_obj.is_dir():
-        for filename in STORAGE_WHITELIST:
-            file_path_obj = storage_path_obj / filename
-            if file_path_obj.is_file():
+        for file_path_obj in storage_path_obj.iterdir():
+            if not file_path_obj.is_file():
+                continue
+
+            filename = file_path_obj.name
+
+            is_whitelisted = False
+            for pattern in STORAGE_WHITELIST_PATTERNS:
+                if fnmatch.fnmatch(filename, pattern):
+                    is_whitelisted = True
+                    break
+
+            if is_whitelisted:
+                if _is_file_ignored(file_path_obj, cwd, ignored_patterns):
+                    ignored_count += 1
+                    continue
+
                 try:
                     stat_res = file_path_obj.stat()
                     scanned_files.append(
@@ -639,6 +769,8 @@ def _scan_files_sync(root_path: str, ignored_patterns: list[str]) -> tuple[list[
 # --- WatchmanParser ---
 
 class WatchmanParser:
+    """Parses HA configuration files to extract entities and actions."""
+
     def __init__(self, db_path: str, executor: Callable[[Callable, Any], Awaitable[Any]] | None = None) -> None:
         self.db_path = db_path
         # default_async_executor is used by parser CLI
@@ -657,63 +789,26 @@ class WatchmanParser:
             _LOGGER.error(f"Database error in {self.db_path}: {e}")
             raise
 
-    def check_and_fix_db(self) -> None:
-        """Check if database is valid, delete and recreate if corrupted."""
-        try:
-            with self._db_session() as conn:
-                conn.execute("SELECT 1")
-        except sqlite3.DatabaseError as e:
-            msg = str(e).lower()
-            if "locked" in msg or "busy" in msg:
-                _LOGGER.warning(f"Database locked during check, skipping repair: {e}")
-                return
+    def _configure_connection(self, conn: sqlite3.Connection) -> None:
+        """Apply runtime settings to the connection.
 
-            _LOGGER.error(f"Database corrupted ({e}), deleting {self.db_path}")
-            path = Path(self.db_path)
-            if path.exists():
-                try:
-                    path.unlink()
-                except OSError as remove_err:
-                    _LOGGER.error(f"Failed to remove corrupted DB: {remove_err}")
+        These operations should not trigger extra i/o writes and
+        can be applied each time database is opened"""
 
-            # Re-init (will create new file)
-            try:
-                self._init_db(self.db_path).close()
-            except Exception as init_err:
-                _LOGGER.error(f"Failed to recreate DB: {init_err}")
+        conn.execute("PRAGMA foreign_keys = ON;")
+        conn.execute("PRAGMA journal_mode = TRUNCATE;")
+        conn.execute("PRAGMA synchronous = OFF;")
 
-    def _init_db(self, db_path: str) -> sqlite3.Connection:
-        # Ensure directory exists
-        path = Path(db_path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-
+    def _create_fresh_db(self, db_path: str) -> sqlite3.Connection:
+        """Create a fresh database with the current schema."""
         from ..const import CURRENT_DB_SCHEMA_VERSION
 
         conn = sqlite3.connect(db_path, timeout=DB_TIMEOUT)
         try:
-            # Check version
-            cursor = conn.cursor()
-            cursor.execute("PRAGMA user_version")
-            db_version = cursor.fetchone()[0]
-
-            if db_version > CURRENT_DB_SCHEMA_VERSION:
-                _LOGGER.warning(
-                    "Database version %s is newer than supported version %s. Rebuilding database.",
-                    db_version,
-                    CURRENT_DB_SCHEMA_VERSION,
-                )
-                conn.close()
-                path.unlink(missing_ok=True)
-                return self._init_db(db_path)
-
-            if db_version < CURRENT_DB_SCHEMA_VERSION:
-                self._migrate_db(conn, db_version, CURRENT_DB_SCHEMA_VERSION)
-
             c = conn.cursor()
 
-            c.execute("PRAGMA foreign_keys = ON;")
-            c.execute("PRAGMA journal_mode = TRUNCATE;")
-            c.execute("PRAGMA synchronous = OFF;")
+            # Set pragmas ensuring they are active for creation
+            self._configure_connection(conn)
 
             c.execute(
                 """CREATE TABLE IF NOT EXISTS processed_files (
@@ -759,9 +854,8 @@ class WatchmanParser:
 
             c.execute("INSERT OR IGNORE INTO scan_config (id) VALUES (1)")
 
-            # Set version if new DB
-            if db_version == 0:
-                cursor.execute(f"PRAGMA user_version = {CURRENT_DB_SCHEMA_VERSION}")
+            # Set version
+            c.execute(f"PRAGMA user_version = {CURRENT_DB_SCHEMA_VERSION}")
 
             conn.commit()
             return conn
@@ -769,96 +863,51 @@ class WatchmanParser:
             conn.close()
             raise
 
-    def _migrate_db(
-        self, conn: sqlite3.Connection, from_version: int, to_version: int
-    ) -> None:
-        """Handle database migrations."""
-        _LOGGER.info("Migrating database from version %s to %s", from_version, to_version)
-        if from_version == 0 and to_version == 2:
-            # Migration 0 -> 2 (Passive): just bump version
-            # Dead columns remain in scan_config but are ignored by named SELECTs
-            cursor = conn.cursor()
-            cursor.execute("PRAGMA user_version = 2")
-            conn.commit()
+    def _init_db(self, db_path: str) -> sqlite3.Connection:
+        """Initialize the database connection, handling creation and migrations."""
+        # Ensure directory exists
+        path = Path(db_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
 
-    async def _async_scan_files_legacy(self, root_path: str, ignored_patterns: list[str]) -> tuple[list[dict[str, Any]], int]:
-        """Phase 1: Asynchronous file scanning using anyio.
+        # 1. File Missing -> Fresh Create
+        if not path.exists():
+            return self._create_fresh_db(db_path)
 
-        Returns a list of file metadata and a count of ignored files.
-        """
-        scanned_files = []
-        ignored_count = 0
-        cwd = Path.cwd()
-        root = anyio.Path(root_path)
+        from ..const import CURRENT_DB_SCHEMA_VERSION
 
-
-
-        # rglob("**/*.yaml") iterates recursively
-        # also need to filter against _IGNORED_DIRS and ignored_patterns
+        conn = None
         try:
-            # 1. Glob all YAML files
-            async for path in root.glob("**/*.yaml"):
-                # Check _IGNORED_DIRS
-                # We must check relative path to avoid matching parents of root (like /tmp in tests)
+            # 2. File Exists -> Check Version
+            conn = sqlite3.connect(db_path, timeout=DB_TIMEOUT)
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA user_version")
+            db_version = cursor.fetchone()[0]
+
+            if db_version != CURRENT_DB_SCHEMA_VERSION:
+                _LOGGER.info(
+                    "Cache DB version mismatch (found %s, expected %s), recreating cache. First parse may take some time.",
+                    db_version,
+                    CURRENT_DB_SCHEMA_VERSION,
+                )
+                conn.close()
+                path.unlink(missing_ok=True)
+                return self._create_fresh_db(db_path)
+
+            # 3. Version Match -> Setup Runtime Pragmas & Return
+            self._configure_connection(conn)
+            return conn
+
+        except (sqlite3.DatabaseError, Exception) as e:
+            _LOGGER.error(f"Database error during init ({e}), recreating cache.")
+            # Ensure connection is closed if it was opened
+            if conn:
                 try:
-                    rel_path = path.relative_to(root)
-                except ValueError:
-                    # Should not happen with glob from root, but safe fallback
-                    continue
+                    conn.close()
+                except Exception:
+                    pass
 
-                # If any parent directory in the relative path is ignored, skip
-                # we exclude the last part (filename) to allow files named like ignored dirs (unlikely but safe)
-                if any(part in IGNORED_DIRS for part in rel_path.parts[:-1]):
-                    continue
-
-                abs_path = str(path)
-
-                # Check ignored_patterns (user config)
-                is_ignored_user = False
-                try:
-                    rel_path_cwd = str(path.relative_to(cwd))
-                except ValueError:
-                    rel_path_cwd = abs_path
-
-                for pattern in ignored_patterns:
-                    if fnmatch.fnmatch(abs_path, pattern) or fnmatch.fnmatch(rel_path_cwd, pattern):
-                        is_ignored_user = True
-                        break
-
-                if is_ignored_user:
-                    ignored_count += 1
-                    continue
-
-                # Stat the file to get mtime
-                try:
-                    stat_result = await path.stat()
-                    mtime = stat_result.st_mtime
-                    scanned_files.append({'path': abs_path, 'mtime': mtime, 'size': stat_result.st_size})
-                except OSError as e:
-                    if await path.is_symlink():
-                         _LOGGER.warning(f"Skipping broken symlink: {abs_path}")
-                    else:
-                         _LOGGER.error(f"Error accessing file {abs_path}: {e}")
-                    continue
-
-            # 2. Targeted scan of .storage (whitelist)
-            # This handles extensionless JSON files like 'lovelace_dashboards'
-            storage_path = root / ".storage"
-            if await storage_path.exists() and await storage_path.is_dir():
-                for whitelist_name in STORAGE_WHITELIST:
-                    file_path = storage_path / whitelist_name
-                    if await file_path.exists() and await file_path.is_file():
-                         try:
-                            abs_path = str(file_path)
-                            stat_result = await file_path.stat()
-                            scanned_files.append({'path': abs_path, 'mtime': stat_result.st_mtime, 'size': stat_result.st_size})
-                         except OSError as e:
-                            _LOGGER.error(f"Error accessing whitelist file {abs_path}: {e}")
-
-        except OSError as e:
-            _LOGGER.error(f"Error during file scan: {e}")
-
-        return scanned_files, ignored_count
+            path.unlink(missing_ok=True)
+            return self._create_fresh_db(db_path)
 
     async def _async_scan_files(self, root_path: str, ignored_patterns: list[str]) -> tuple[list[dict[str, Any]], int]:
         """Phase 1: Synchronous file scanning (offloaded to thread).
@@ -884,25 +933,22 @@ class WatchmanParser:
         try:
             # --- Phase 0: Setup ---
             # Build Entity Pattern
-            entity_pattern = _ENTITY_PATTERN
-            if custom_domains:
-                entity_pattern = re.compile(
-                    r"(?:^|[^a-zA-Z0-9_.])(?:states\.)?(("
-                    + "|".join(custom_domains)
-                    + r")\.[a-z0-9_]+)",
-                    re.IGNORECASE,
-                )
+            entity_pattern = (
+                _compile_entity_pattern(custom_domains)
+                if custom_domains
+                else _ENTITY_PATTERN
+            )
 
             # --- Phase 1: Async File Scanning ---
             _LOGGER.debug(
-                f"Phase 1 (Scan): Starting scan of {root_path} with patterns {ignored_files}"
+                f"Parser (Scan): Starting scan of {root_path} with ignore patterns: {ignored_files}"
             )
             scan_time = time.monotonic()
             files_scanned, ignored_count = await self._async_scan_files(
                 root_path, ignored_files
             )
             _LOGGER.debug(
-                f"Phase 1 (Scan): Found {len(files_scanned)} files in {(time.monotonic() - scan_time):.3f} sec"
+                f"Parser (Scan): Found {len(files_scanned)} files in {(time.monotonic() - scan_time):.3f} sec"
             )
 
             # --- Phase 2: Reconciliation (DB Check) ---
@@ -963,7 +1009,7 @@ class WatchmanParser:
                     actual_file_ids.append(file_id)
 
             _LOGGER.debug(
-                f"Phase 2 (Reconciliation): Identified {len(files_to_parse)} files to parse ({total_size_to_parse} bytes). Skipped {skipped_count}. Took {(time.monotonic() - reconcile_time):.3f} sec"
+                f"Parser (Reconciliation): Identified {len(files_to_parse)} files to parse ({total_size_to_parse} bytes). Skipped {skipped_count}. Took {(time.monotonic() - reconcile_time):.3f} sec"
             )
 
             # --- Phase 3: Sequential Parsing & Persistence ---
@@ -1050,9 +1096,9 @@ class WatchmanParser:
             # Update last parse stats
             duration = time.monotonic() - start_time
             _LOGGER.debug(
-                f"Phase 3 (Parse): finished in {(time.monotonic() - parse_time):.3f} sec"
+                f"Parser (Parsing): finished in {(time.monotonic() - parse_time):.3f} sec"
             )
-            _LOGGER.debug(f"Total Scan finished in {duration:.3f} sec")
+            _LOGGER.debug(f"Parser: total scan finished in {duration:.3f} sec, force refresh sensors now.")
 
             current_timestamp = datetime.datetime.now().isoformat()
 

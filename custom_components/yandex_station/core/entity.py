@@ -9,28 +9,31 @@ from .yandex_quasar import YandexQuasar
 _LOGGER = logging.getLogger(__name__)
 
 
-def extract_instance(item: dict) -> str:
+def extract_instance(item: dict) -> str | None:
     if item["type"] == "devices.capabilities.on_off":
         return "on"
     if item["type"] == "devices.capabilities.lock":
         return "lock"
+    if item["type"] == "devices.capabilities.zigbee_node":
+        return "zigbee"
     return item["parameters"].get("instance")
 
 
 def extract_parameters(items: list[dict]) -> dict:
     result = {}
     for item in items:
-        instance = extract_instance(item)
-        result[instance] = {"retrievable": item["retrievable"], **item["parameters"]}
+        # skip none (unknown) instances
+        if instance := extract_instance(item):
+            result[instance] = {"retrievable": item["retrievable"], **item["parameters"]}
     return result
 
 
 def extract_state(items: list[dict]) -> dict:
     result = {}
     for item in items:
-        instance = extract_instance(item)
-        value = item["state"]["value"] if item["state"] else None
-        result[instance] = value
+        if instance := extract_instance(item):
+            value = item["state"]["value"] if item["state"] else None
+            result[instance] = value
     return result
 
 

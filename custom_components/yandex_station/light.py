@@ -1,5 +1,4 @@
 from homeassistant.components.light import ColorMode, LightEntity, LightEntityFeature
-from homeassistant.util.color import color_temperature_to_hs
 
 from .core.entity import YandexEntity
 from .hass import hass_utils
@@ -11,6 +10,7 @@ INCLUDE_TYPES = (
     "devices.types.light.garland",
     "devices.types.light.lamp",
     "devices.types.light.strip",
+    "devices.types.smart_speaker.yandex.station.orion",
 )
 
 
@@ -38,9 +38,16 @@ class YandexLight(LightEntity, YandexEntity):
     max_brightness: int
     min_brightness: int
     effects: list
+    on_instance: str
 
     def internal_init(self, capabilities: dict, properties: dict):
         self._attr_color_mode = ColorMode.ONOFF
+
+        # backlight for Yandex Station 3 and maybe some others
+        for instance in ("on", "backlight"):
+            if instance in capabilities:
+                self.on_instance = instance
+                break
 
         if bright := capabilities.get("brightness"):
             self.max_brightness = bright["range"]["max"]
@@ -71,8 +78,8 @@ class YandexLight(LightEntity, YandexEntity):
         self._attr_supported_color_modes = modes or {self._attr_color_mode}
 
     def internal_update(self, capabilities: dict, properties: dict):
-        if "on" in capabilities:
-            self._attr_is_on = capabilities["on"]
+        if self.on_instance in capabilities:
+            self._attr_is_on = capabilities[self.on_instance]
 
         if "brightness" in capabilities:
             value = capabilities["brightness"]
@@ -82,8 +89,23 @@ class YandexLight(LightEntity, YandexEntity):
                 else None
             )
 
-        # check if color exists in update
-        if color := capabilities.get("color"):
+        if animation := capabilities.get("color_animation"):
+            animation_type = animation["current_animation_type"]
+            if animation_type == "color":
+                color = animation["animations"]["color"]
+                state = color["internal_state"]
+                if state["instance"] == "hsv":
+                    value = state["value"]
+                    self._attr_hs_color = (value["h"], value["s"])
+                    self._attr_color_mode = ColorMode.HS
+            elif animation_type == "scene":
+                scene = animation["animations"]["scene"]
+                id = scene["variant"]
+                self._attr_effect = next(
+                    i["name"] for i in self.effects if i["id"] == id
+                )
+
+        elif color := capabilities.get("color"):
             value = color.get("value")
 
             if isinstance(value, dict):
@@ -95,6 +117,7 @@ class YandexLight(LightEntity, YandexEntity):
                 self._attr_color_temp_kelvin = value
                 self._attr_color_mode = ColorMode.COLOR_TEMP
             else:
+                self._attr_color_temp_kelvin = None
                 self._attr_hs_color = None
 
             if name := color.get("name"):
@@ -136,9 +159,9 @@ class YandexLight(LightEntity, YandexEntity):
             payload[key] = color["id"]
 
         if not payload:
-            payload["on"] = True
+            payload[self.on_instance] = True
 
         await self.device_actions(**payload)
 
     async def async_turn_off(self, **kwargs):
-        await self.device_actions(on=False)
+        await self.device_action(self.on_instance, False)

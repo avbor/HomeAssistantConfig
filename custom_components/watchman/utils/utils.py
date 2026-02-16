@@ -22,6 +22,7 @@ from ..const import (
     CONF_IGNORED_ITEMS,
     CONF_IGNORED_STATES,
     CONF_INCLUDED_FOLDERS,
+    CONF_LOG_OBFUSCATE,
     CONF_REPORT_PATH,
     CONF_SECTION_APPEARANCE_LOCATION,
     CONF_STARTUP_DELAY,
@@ -29,6 +30,14 @@ from ..const import (
     DOMAIN_DATA,
 )
 from .logger import _LOGGER, INDENT
+
+_OBFUSCATE_ENABLED = True
+
+
+def set_obfuscation_config(enabled: bool) -> None:
+    """Set the global obfuscation enabled state."""
+    global _OBFUSCATE_ENABLED
+    _OBFUSCATE_ENABLED = enabled
 
 
 def get_val(
@@ -78,7 +87,7 @@ def get_entry(hass: HomeAssistant) -> Any:
     )
 
 
-def get_config(hass: HomeAssistant, key: str, default: Any | None = None) -> Any:
+def get_config(hass: HomeAssistant, key: str, default: Any | None = None) -> Any: # noqa: PLR0911
     """Get configuration value from ConfigEntry."""
     if DOMAIN_DATA not in hass.data:
         return default
@@ -101,6 +110,7 @@ def get_config(hass: HomeAssistant, key: str, default: Any | None = None) -> Any
         CONF_IGNORED_STATES,
         CONF_EXCLUDE_DISABLED_AUTOMATION,
         CONF_STARTUP_DELAY,
+        CONF_LOG_OBFUSCATE,
     ]:
         return get_val(entry.data, key)
 
@@ -162,16 +172,23 @@ def is_action(hass: HomeAssistant, entry: str) -> bool:
     """Check whether config entry is an action."""
     if not isinstance(entry, str):
         return False
-    domain, service = entry.split(".", maxsplit=1)[0], ".".join(entry.split(".")[1:])
-    return hass.services.has_service(domain, service)
+    try:
+        domain, service = split_entity_id(entry)
+    except ValueError:
+        return False
+    return bool(service) and hass.services.has_service(domain, service)
 
 
 def get_entity_state(
-    hass: HomeAssistant, entry: str, *, friendly_names: bool = False
+    hass: HomeAssistant,
+    entry: str,
+    *,
+    friendly_names: bool = False,
+    registry_entry: er.RegistryEntry | None = None,
 ) -> tuple[str, str | None]:
-    """Return entity state or 'missing' if entity does not extst."""
+    """Return entity state or 'missing' if entity does not exist."""
     entity_state = hass.states.get(entry)
-    entity_registry = er.async_get(hass)
+
     name = None
     if entity_state and entity_state.attributes.get("friendly_name", None):
         if friendly_names:
@@ -179,9 +196,12 @@ def get_entity_state(
 
     if not entity_state:
         state = "missing"
-        if regentry := entity_registry.async_get(entry):
-            if regentry.disabled_by:
-                state = "disabled"
+        if registry_entry is None:
+            entity_registry = er.async_get(hass)
+            registry_entry = entity_registry.async_get(entry)
+
+        if registry_entry and registry_entry.disabled_by:
+            state = "disabled"
     else:
         state = str(entity_state.state).replace("unavailable", "unavail")
         if split_entity_id(entry)[0] == "input_button" and state == "unknown":
@@ -190,8 +210,14 @@ def get_entity_state(
     return state, name
 
 
-def obfuscate_id(item_id: str) -> str:
+def obfuscate_id(item_id: Any) -> Any:
     """Obfuscate entity or action ID for logging."""
+    if not _OBFUSCATE_ENABLED:
+        return item_id
+
+    if isinstance(item_id, (list, tuple, set)):
+        return ", ".join([str(obfuscate_id(x)) for x in item_id])
+
     if not isinstance(item_id, str) or "." not in item_id:
         return item_id
 
@@ -201,6 +227,10 @@ def obfuscate_id(item_id: str) -> str:
 
     if len(name) <= 3:
         return f"{domain}.{name}"
+
+    if len(name) > 15:
+        # Truncate to 15 chars: 3 visible + 11 stars + '~'
+        return f"{domain}.{name[:3]}***********~"
 
     prefix = name[:3]
     suffix = name[3:]
