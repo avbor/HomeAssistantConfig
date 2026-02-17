@@ -295,7 +295,11 @@ Integration "Fully Kiosk Browser"
     - xTeVe
     - PhotoPrism
     - PostgreSQL
+    - NetBox
+    - Minecraft
     - Technitium DNS Server
+    - Forgejo
+    - Forgejo Runner
 
 - NUC7:
   - Ubuntu Server 24.04 LTS
@@ -303,8 +307,6 @@ Integration "Fully Kiosk Browser"
   - Docker
   - Containers:
     - Watchtower
-    - Minecraft
-    - NetBox
 
 **Storage:**
 - DSM 7.2
@@ -342,7 +344,7 @@ Integration "Fully Kiosk Browser"
 - PostgeSQL
 - InfluxDB
 
-**Used HA Add-ons:**
+**Used HA Apps:**
 - ESPHome
 - Grafana
 - InfluxDB
@@ -353,10 +355,11 @@ Integration "Fully Kiosk Browser"
 - Glances
 - phpMyAdmin
 - Silicon Labs Multiprotocol
-- [Multipan Flasher](https://github.com/darkxst/multipan_flasher)
+- [SONOFF Dongle Flasher](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
 - Zigbee2MQTT (Multiple instances)
 - Matter Server
 - Frigate Proxy
+- [Telegram Bot Api](https://github.com/avbor/hassio-apps)
 
 **Mobile Apps:**
 - [Home Assistant](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android) official app on Android\
