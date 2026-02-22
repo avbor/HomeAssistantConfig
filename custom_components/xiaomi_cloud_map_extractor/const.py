@@ -10,10 +10,6 @@ DOMAIN: Final = "xiaomi_cloud_map_extractor"
 PLATFORMS: list[Platform] = [
     Platform.CAMERA,
     Platform.IMAGE,
-    Platform.SENSOR,
-    Platform.BINARY_SENSOR,
-    Platform.BUTTON,
-    Platform.SWITCH,
 ]
 
 CONTENT_TYPE: Final = "image/png"

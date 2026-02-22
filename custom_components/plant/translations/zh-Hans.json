@@ -155,16 +155,19 @@
       "init": {
         "title": "选项",
         "description": "**{plant_name}**",
+        "menu_options": {
+          "plant_properties": "植物属性",
+          "replace_sensor": "替换传感器"
+        }
+      },
+      "plant_properties": {
+        "title": "植物属性",
+        "description": "**{plant_name}**",
         "data": {
           "check_days": "光照检查天数",
           "species": "植物种类",
           "force_update": "强制从OpenPlantbook刷新数据",
           "display_pid": "要显示的植物种类",
-          "temperature_sensor": "温度传感器",
-          "moisture_sensor": "土壤湿度传感器",
-          "conductivity_sensor": "电导率传感器",
-          "illuminance_sensor": "光照传感器",
-          "humidity_sensor": "空气湿度传感器",
           "entity_picture": "图片URL。如果在OpenPlantbook中找到种类，将自动更新",
           "illuminance_trigger": "使用光照作为问题触发器",
           "dli_trigger": "使用每日光照积分(DLI)作为问题触发器",
@@ -174,6 +177,19 @@
           "temperature_trigger": "使用温度作为问题触发器",
           "co2_trigger": "使用二氧化碳作为问题触发器",
           "soil_temperature_trigger": "使用土壤温度作为问题触发器"
+        }
+      },
+      "replace_sensor": {
+        "title": "替换传感器",
+        "description": "Replace external sensors for **{plant_name}**. Clear a field to remove that sensor.",
+        "data": {
+          "temperature_sensor": "温度传感器",
+          "moisture_sensor": "土壤湿度传感器",
+          "conductivity_sensor": "电导率传感器",
+          "illuminance_sensor": "光照传感器",
+          "humidity_sensor": "空气湿度传感器",
+          "co2_sensor": "CO2传感器",
+          "soil_temperature_sensor": "土壤温度传感器"
         }
       }
     }

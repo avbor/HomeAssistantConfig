@@ -155,16 +155,19 @@
       "init": {
         "title": "Innstillinger",
         "description": "**{plant_name}**",
+        "menu_options": {
+          "plant_properties": "Planteegenskaper",
+          "replace_sensor": "Erstatt sensorer"
+        }
+      },
+      "plant_properties": {
+        "title": "Planteegenskaper",
+        "description": "**{plant_name}**",
         "data": {
           "check_days": "Dager for lysstyrkekontroll",
           "species": "Art",
           "force_update": "Tving oppdatering av data fra OpenPlantbook",
           "display_pid": "Planteart som skal vises",
-          "temperature_sensor": "Temperatursensor",
-          "moisture_sensor": "Jordfuktighetssensor",
-          "conductivity_sensor": "Ledningsevnesensor",
-          "illuminance_sensor": "Lyssensor",
-          "humidity_sensor": "Luftfuktighetssensor",
           "entity_picture": "Bilde-URL. Oppdateres automatisk hvis arten finnes i OpenPlantbook",
           "illuminance_trigger": "Bruk lysstyrke som problemutløser",
           "dli_trigger": "Bruk daglig lysintegral (DLI) som problemutløser",
@@ -174,6 +177,19 @@
           "temperature_trigger": "Bruk temperatur som problemutløser",
           "co2_trigger": "Bruk CO2 som problemutløser",
           "soil_temperature_trigger": "Bruk jordtemperatur som problemutløser"
+        }
+      },
+      "replace_sensor": {
+        "title": "Erstatt sensorer",
+        "description": "Erstatt eksterne sensorer for **{plant_name}**. Tøm et felt for å fjerne sensoren.",
+        "data": {
+          "temperature_sensor": "Temperatursensor",
+          "moisture_sensor": "Jordfuktighetssensor",
+          "conductivity_sensor": "Ledningsevnesensor",
+          "illuminance_sensor": "Lyssensor",
+          "humidity_sensor": "Luftfuktighetssensor",
+          "co2_sensor": "CO2-sensor",
+          "soil_temperature_sensor": "Jordtemperatursensor"
         }
       }
     }

@@ -155,16 +155,19 @@
       "init": {
         "title": "Options",
         "description": "Configure options for **{plant_name}**",
+        "menu_options": {
+          "plant_properties": "Plant properties",
+          "replace_sensor": "Replace sensors"
+        }
+      },
+      "plant_properties": {
+        "title": "Plant properties",
+        "description": "Configure options for **{plant_name}**",
         "data": {
           "check_days": "Illuminance check days",
           "species": "Species",
           "force_update": "Force refresh data from OpenPlantbook",
           "display_pid": "Plant species to display",
-          "temperature_sensor": "Temperature sensor",
-          "moisture_sensor": "Soil moisture sensor",
-          "conductivity_sensor": "Conductivity sensor",
-          "illuminance_sensor": "Illuminance sensor",
-          "humidity_sensor": "Air humidity sensor",
           "entity_picture": "Image URL. Will be automatically updated if species is found in OpenPlantbook",
           "illuminance_trigger": "Use illuminance as problem trigger",
           "dli_trigger": "Use daily light integral (DLI) as problem trigger",
@@ -174,6 +177,19 @@
           "temperature_trigger": "Use temperature as problem trigger",
           "co2_trigger": "Use CO2 as problem trigger",
           "soil_temperature_trigger": "Use soil temperature as problem trigger"
+        }
+      },
+      "replace_sensor": {
+        "title": "Replace sensors",
+        "description": "Replace external sensors for **{plant_name}**. Clear a field to remove that sensor.",
+        "data": {
+          "temperature_sensor": "Temperature sensor",
+          "moisture_sensor": "Soil moisture sensor",
+          "conductivity_sensor": "Conductivity sensor",
+          "illuminance_sensor": "Illuminance sensor",
+          "humidity_sensor": "Air humidity sensor",
+          "co2_sensor": "CO2 sensor",
+          "soil_temperature_sensor": "Soil temperature sensor"
         }
       }
     }

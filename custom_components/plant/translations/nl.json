@@ -155,16 +155,19 @@
       "init": {
         "title": "Opties",
         "description": "**{plant_name}**",
+        "menu_options": {
+          "plant_properties": "Planteigenschappen",
+          "replace_sensor": "Sensoren vervangen"
+        }
+      },
+      "plant_properties": {
+        "title": "Planteigenschappen",
+        "description": "**{plant_name}**",
         "data": {
           "check_days": "Lichtsterktecontroledagen",
           "species": "Soort",
           "force_update": "Forceer ophalen data van OpenPlantbook",
           "display_pid": "Te tonen plantsoort",
-          "temperature_sensor": "Temperatuursensor",
-          "moisture_sensor": "Bodemvochtsensor",
-          "conductivity_sensor": "Geleidbaarheidssensor",
-          "illuminance_sensor": "Lichtsensor",
-          "humidity_sensor": "Luchtvochtigheidssensor",
           "entity_picture": "Afbeeldings-URL. Wordt automatisch ingevuld als soort is gevonden in OpenPlantbook",
           "illuminance_trigger": "Gebruik lichtsterkte als trigger voor probleem",
           "dli_trigger": "Gebruik dagelijkse lichtintegraal (DLI) als trigger voor probleem",
@@ -174,6 +177,19 @@
           "temperature_trigger": "Gebruik temperatuur als trigger voor probleem",
           "co2_trigger": "Gebruik CO2 als trigger voor probleem",
           "soil_temperature_trigger": "Gebruik bodemtemperatuur als trigger voor probleem"
+        }
+      },
+      "replace_sensor": {
+        "title": "Sensoren vervangen",
+        "description": "Replace external sensors for **{plant_name}**. Clear a field to remove that sensor.",
+        "data": {
+          "temperature_sensor": "Temperatuursensor",
+          "moisture_sensor": "Bodemvochtsensor",
+          "conductivity_sensor": "Geleidbaarheidssensor",
+          "illuminance_sensor": "Lichtsensor",
+          "humidity_sensor": "Luchtvochtigheidssensor",
+          "co2_sensor": "CO2-sensor",
+          "soil_temperature_sensor": "Bodemtemperatuursensor"
         }
       }
     }

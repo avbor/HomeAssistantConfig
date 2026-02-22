@@ -4,13 +4,12 @@
       "already_configured": "Device is already configured",
       "already_in_progress": "Configuration flow is already in progress",
       "unknown": "Unexpected error",
-      "cloud_no_devices": "No vacuums found for this Xiaomi Cloud account.",
       "reauth_successful": "Re-authentication was successful"
     },
     "error": {
       "invalid_captcha": "Invalid captcha provided, try again.",
-      "cloud_login_error": "Could not login to Xiaomi Cloud, check the credentials.",
-      "cloud_no_devices": "No vacuums found for this Xiaomi Cloud account.",
+      "cloud_login_error": "Could not login to Xiaomi Miio Cloud, check the credentials.",
+      "cloud_no_devices": "No vacuums found in this Xiaomi Miio cloud account.",
       "invalid_vacuum": "Connection to vacuum failed, please check the configuration."
     },
     "flow_title": "{name}",
@@ -19,15 +18,22 @@
         "description": "Choose login method.",
         "menu_options": {
           "auth_credentials": "Credentials",
-          "auth_qr": "QR code/login link"
+          "auth_qr_server": "QR code/login link"
         }
       },
       "auth_credentials": {
         "data": {
+          "country": "Server",
           "password": "Password",
           "username": "Username"
         },
-        "description": "Please provide Xiaomi Cloud credentials"
+        "description": "Log in to the Xiaomi Miio cloud, see https://www.openhab.org/addons/bindings/miio/#country-servers for the cloud server to use."
+      },
+      "auth_qr_server": {
+        "data": {
+          "username": "Username"
+        },
+        "description": "Choose the server of Xiaomi Miio cloud, see https://www.openhab.org/addons/bindings/miio/#country-servers for more info."
       },
       "auth_captcha": {
         "data": {
@@ -60,12 +66,9 @@
       },
       "select_vacuum": {
         "data": {
-          "select_vacuum": "Available vacuums"
+          "select_vacuum": "Vacuum"
         },
-        "description": "Select the vacuum to set up.",
-        "data_description": {
-          "select_vacuum": "[server] Name - model code (MAC address)"
-        }
+        "description": "Select the vacuum to set up."
       }
     },
     "progress": {
@@ -222,447 +225,6 @@
         "virtual_walls": "Virtual walls",
         "zones": "Zones"
       }
-    }
-  },
-  "entity": {
-    "button": {
-      "force_update": {
-        "name": "Force map update",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          }
-        }
-      }
-    },
-    "camera": {
-      "live_map": {
-        "name": "Live map",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "calibration_points": {
-            "name": "Calibration points"
-          },
-          "rooms": {
-            "name": "Rooms"
-          }
-        }
-      }
-    },
-    "image": {
-      "live_map": {
-        "name": "Live map",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "calibration_points": {
-            "name": "Calibration points"
-          },
-          "rooms": {
-            "name": "Rooms"
-          }
-        }
-      }
-    },
-    "binary_sensor": {
-      "is_map_empty": {
-        "name": "Is map empty",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          }
-        }
-      }
-    },
-    "sensor": {
-      "no_go_areas": {
-        "name": "No-go areas",
-        "unit_of_measurement": "areas",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "areas": {
-            "name": "Areas"
-          }
-        }
-      },
-      "charger_position": {
-        "name": "Charger position",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "x": {
-            "name": "X"
-          },
-          "y": {
-            "name": "Y"
-          },
-          "a": {
-            "name": "Angle"
-          }
-        }
-      },
-      "vacuum_position": {
-        "name": "Vacuum position",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "x": {
-            "name": "X"
-          },
-          "y": {
-            "name": "Y"
-          },
-          "a": {
-            "name": "Angle"
-          }
-        }
-      },
-      "vacuum_room_id": {
-        "name": "Vacuum room ID",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          }
-        }
-      },
-      "vacuum_room_name": {
-        "name": "Vacuum room name",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          }
-        }
-      },
-      "no_carpet_areas": {
-        "name": "No carpet areas",
-        "unit_of_measurement": "areas",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "areas": {
-            "name": "Areas"
-          }
-        }
-      },
-      "no_mopping_areas": {
-        "name": "No mopping areas",
-        "unit_of_measurement": "areas",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "areas": {
-            "name": "Areas"
-          }
-        }
-      },
-      "cleaned_rooms_ids": {
-        "name": "Cleaned rooms",
-        "unit_of_measurement": "rooms",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "rooms_ids": {
-            "name": "Rooms' IDs"
-          }
-        }
-      },
-      "goto_position": {
-        "name": "Go-to position",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "x": {
-            "name": "X"
-          },
-          "y": {
-            "name": "Y"
-          },
-          "a": {
-            "name": "Angle"
-          }
-        }
-      },
-      "goto_path": {
-        "name": "Go-to path",
-        "unit_of_measurement": "points",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "point_length": {
-            "name": "Point length"
-          },
-          "point_size": {
-            "name": "Point size"
-          },
-          "angle": {
-            "name": "Angle"
-          },
-          "path": {
-            "name": "Path"
-          }
-        }
-      },
-      "goto_predicted_path": {
-        "name": "Go-to predicted path",
-        "unit_of_measurement": "points",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "point_length": {
-            "name": "Point length"
-          },
-          "point_size": {
-            "name": "Point size"
-          },
-          "angle": {
-            "name": "Angle"
-          },
-          "path": {
-            "name": "Path"
-          }
-        }
-      },
-      "mop_path": {
-        "name": "Mop path",
-        "unit_of_measurement": "points",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "point_length": {
-            "name": "Point length"
-          },
-          "point_size": {
-            "name": "Point size"
-          },
-          "angle": {
-            "name": "Angle"
-          },
-          "path": {
-            "name": "Path"
-          }
-        }
-      },
-      "path": {
-        "name": "Vacuum path",
-        "unit_of_measurement": "points",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "point_length": {
-            "name": "Point length"
-          },
-          "point_size": {
-            "name": "Point size"
-          },
-          "angle": {
-            "name": "Angle"
-          },
-          "path": {
-            "name": "Path"
-          }
-        }
-      },
-      "obstacles": {
-        "name": "Obstacles",
-        "unit_of_measurement": "obstacles",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "obstacles": {
-            "name": "Obstacles"
-          }
-        }
-      },
-      "ignored_obstacles": {
-        "name": "Ignored obstacles",
-        "unit_of_measurement": "obstacles",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "obstacles": {
-            "name": "Obstacles"
-          }
-        }
-      },
-      "obstacles_with_photo": {
-        "name": "Obstacles with photo",
-        "unit_of_measurement": "obstacles",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "obstacles": {
-            "name": "Obstacles"
-          }
-        }
-      },
-      "ignored_obstacles_with_photo": {
-        "name": "Ignored obstacles with photo",
-        "unit_of_measurement": "obstacles",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "obstacles": {
-            "name": "Obstacles"
-          }
-        }
-      },
-      "walls": {
-        "name": "Virtual walls",
-        "unit_of_measurement": "walls",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "walls": {
-            "name": "Walls"
-          }
-        }
-      },
-      "zones": {
-        "name": "Zones",
-        "unit_of_measurement": "zones",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "zones": {
-            "name": "Zones"
-          }
-        }
-      },
-      "map_name": {
-        "name": "Map name",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          }
-        }
-      },
-      "rooms": {
-        "name": "Rooms",
-        "unit_of_measurement": "rooms",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          },
-          "rooms": {
-            "name": "Rooms"
-          }
-        }
-      }
-    },
-    "switch": {
-      "auto_update": {
-        "name": "Update map",
-        "state_attributes": {
-          "last_update_timestamp": {
-            "name": "Last update"
-          },
-          "last_successful_update_timestamp": {
-            "name": "Last successful update"
-          }
-        }
-      }
-    }
-  },
-  "issues": {
-    "deprecated_yaml": {
-      "description": "Configuring {integration_title} using YAML is being removed.\n\nYour existing YAML configuration has been imported into the UI automatically.\n\nRemove the `{domain}` camera from your configuration.yaml file and restart Home Assistant to fix this issue.",
-      "title": "The {integration_title} YAML configuration is being removed"
     }
   }
 }

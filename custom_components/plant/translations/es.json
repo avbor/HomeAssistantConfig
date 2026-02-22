@@ -155,16 +155,19 @@
       "init": {
         "title": "Opciones",
         "description": "**{plant_name}**",
+        "menu_options": {
+          "plant_properties": "Propiedades de la planta",
+          "replace_sensor": "Reemplazar sensores"
+        }
+      },
+      "plant_properties": {
+        "title": "Propiedades de la planta",
+        "description": "**{plant_name}**",
         "data": {
           "check_days": "Días de control de iluminación",
           "species": "Especie",
           "force_update": "Forzar actualización de datos de OpenPlantbook",
           "display_pid": "Especie de planta a mostrar",
-          "temperature_sensor": "Sensor de temperatura",
-          "moisture_sensor": "Sensor de humedad del suelo",
-          "conductivity_sensor": "Sensor de conductividad",
-          "illuminance_sensor": "Sensor de iluminación",
-          "humidity_sensor": "Sensor de humedad del aire",
           "entity_picture": "URL de la imagen. Se actualizará automáticamente si la especie se encuentra en OpenPlantbook",
           "illuminance_trigger": "Usar iluminación como desencadenante de problema",
           "dli_trigger": "Usar integral de luz diaria (DLI) como desencadenante de problema",
@@ -174,6 +177,19 @@
           "temperature_trigger": "Usar temperatura como desencadenante de problema",
           "co2_trigger": "Usar CO2 como desencadenante de problema",
           "soil_temperature_trigger": "Usar temperatura del suelo como desencadenante de problema"
+        }
+      },
+      "replace_sensor": {
+        "title": "Reemplazar sensores",
+        "description": "Replace external sensors for **{plant_name}**. Clear a field to remove that sensor.",
+        "data": {
+          "temperature_sensor": "Sensor de temperatura",
+          "moisture_sensor": "Sensor de humedad del suelo",
+          "conductivity_sensor": "Sensor de conductividad",
+          "illuminance_sensor": "Sensor de iluminación",
+          "humidity_sensor": "Sensor de humedad del aire",
+          "co2_sensor": "Sensor de CO2",
+          "soil_temperature_sensor": "Sensor de temperatura del suelo"
         }
       }
     }

@@ -155,16 +155,19 @@
       "init": {
         "title": "Optionen",
         "description": "**{plant_name}**",
+        "menu_options": {
+          "plant_properties": "Pflanzeneigenschaften",
+          "replace_sensor": "Sensoren ersetzen"
+        }
+      },
+      "plant_properties": {
+        "title": "Pflanzeneigenschaften",
+        "description": "**{plant_name}**",
         "data": {
           "check_days": "Beleuchtungsstärke-Kontrolltage",
           "species": "Art",
           "force_update": "Aktualisierung der Daten aus OpenPlantbook erzwingen",
           "display_pid": "Anzuzeigende Pflanzenart",
-          "temperature_sensor": "Temperatursensor",
-          "moisture_sensor": "Bodenfeuchtesensor",
-          "conductivity_sensor": "Leitfähigkeitssensor",
-          "illuminance_sensor": "Beleuchtungsstärkesensor",
-          "humidity_sensor": "Luftfeuchtigkeitssensor",
           "entity_picture": "Bild-URL. Wird automatisch aktualisiert, wenn die Art in OpenPlantbook gefunden wird",
           "illuminance_trigger": "Beleuchtungsstärke als Problemauslöser verwenden",
           "dli_trigger": "Tägliches Lichtintegral (DLI) als Problemauslöser verwenden",
@@ -174,6 +177,19 @@
           "temperature_trigger": "Temperatur als Problemauslöser verwenden",
           "co2_trigger": "CO2 als Problemauslöser verwenden",
           "soil_temperature_trigger": "Bodentemperatur als Problemauslöser verwenden"
+        }
+      },
+      "replace_sensor": {
+        "title": "Sensoren ersetzen",
+        "description": "Externe Sensoren für **{plant_name}** ersetzen. Feld leeren, um den Sensor zu entfernen.",
+        "data": {
+          "temperature_sensor": "Temperatursensor",
+          "moisture_sensor": "Bodenfeuchtesensor",
+          "conductivity_sensor": "Leitfähigkeitssensor",
+          "illuminance_sensor": "Beleuchtungsstärkesensor",
+          "humidity_sensor": "Luftfeuchtigkeitssensor",
+          "co2_sensor": "CO2-Sensor",
+          "soil_temperature_sensor": "Bodentemperatursensor"
         }
       }
     }

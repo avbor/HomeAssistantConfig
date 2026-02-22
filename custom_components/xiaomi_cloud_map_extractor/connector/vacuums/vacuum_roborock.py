@@ -8,7 +8,6 @@ from .base.model import VacuumConfig, VacuumApi
 from .base.vacuum_base import BaseXiaomiCloudVacuum
 from ..utils.backoff import Backoff
 from ..utils.exceptions import InvalidDeviceTokenException
-from ..utils.dict_operations import path_extractor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +40,13 @@ class RoborockCloudVacuum(BaseXiaomiCloudVacuum):
             "data": '{"obj_name":"' + map_name + '"}'
         }
         api_response = await self._connector.execute_api_call_encrypted(url, params)
-        return path_extractor(api_response, "result.url")
+        if (
+                api_response is None
+                or "result" not in api_response
+                or api_response["result"] is None
+                or "url" not in api_response["result"]):
+            return None
+        return api_response["result"]["url"]
 
     @property
     def should_update_map(self: Self) -> bool:

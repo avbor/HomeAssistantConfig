@@ -27,7 +27,6 @@ from .vacuums.vacuum_roborock import RoborockCloudVacuum
 from .vacuums.vacuum_roidmi import RoidmiCloudVacuum
 from .vacuums.vacuum_unsupported import UnsupportedCloudVacuum
 from .vacuums.vacuum_viomi import ViomiCloudVacuum
-from .vacuums.vacuum_ijai import IjaiCloudVacuum
 from .xiaomi_cloud.connector import (
     XiaomiCloudConnector,
     XiaomiCloudDeviceInfo,
@@ -41,7 +40,6 @@ AVAILABLE_VACUUM_PLATFORMS: dict[VacuumApi, Type[BaseXiaomiCloudVacuum]] = {v.va
     ViomiCloudVacuum,
     RoidmiCloudVacuum,
     DreameCloudVacuum,
-    IjaiCloudVacuum,
     UnsupportedCloudVacuum
 ]}
 
@@ -56,8 +54,6 @@ class XiaomiCloudMapExtractorConnector:
     _server: str | None
     _session_creator: Callable[[], ClientSession]
     _connector_config: XiaomiCloudConnectorConfig | None
-    _forced_refresh: bool
-    _auto_update: bool
 
     def __init__(
         self: Self,
@@ -74,8 +70,6 @@ class XiaomiCloudMapExtractorConnector:
         self._status: XiaomiCloudMapExtractorConnectorStatus = XiaomiCloudMapExtractorConnectorStatus.UNINITIALIZED
         self._server = None
         self._used_api = self._config.used_api
-        self._forced_refresh = False
-        self._auto_update = True
 
     async def get_data(self: Self) -> XiaomiCloudMapExtractorData:
         if self._should_get_map():
@@ -98,9 +92,7 @@ class XiaomiCloudMapExtractorConnector:
 
         if not self._is_authenticated():
             _LOGGER.debug("Logging in...")
-            if self._config.username is None or self._config.password is None:
-                raise FailedLoginException()
-            await self._cloud_connector.login_with_credentials(self._config.username, self._config.password)
+            await self._cloud_connector.login_with_credentials(self._username, self._password)
             if not self._is_authenticated():
                 _LOGGER.error("Not authenticated!")
                 raise FailedLoginException()
@@ -111,11 +103,12 @@ class XiaomiCloudMapExtractorConnector:
             _LOGGER.debug("Initialized.")
 
         _LOGGER.debug("Downloading map...")
-        map_data, map_raw_data = await self._vacuum_connector.get_map()
+        map_data, map_saved, map_raw_data = await self._vacuum_connector.get_map()
         _LOGGER.debug("Downloaded map.")
         if map_data is None:
             raise FailedMapDownloadException()
         self._map_cache.map_data = map_data
+        self._map_cache.map_saved = map_saved
         self._map_cache.map_image = to_image(map_data)
         self._map_cache.map_data_raw = map_raw_data
 
@@ -124,7 +117,7 @@ class XiaomiCloudMapExtractorConnector:
 
     async def _initialize(self: Self) -> None:
         _LOGGER.debug("Retrieving device info, server: %s", self._config.server)
-        device_details = await self._cloud_connector.get_device_details(self._config.device_id, self._config.server)
+        device_details = await self._cloud_connector.get_device_details(self._config.token, self._config.server)
 
         if device_details is not None:
             self._server = device_details.server
@@ -137,33 +130,23 @@ class XiaomiCloudMapExtractorConnector:
             raise DeviceNotFoundException()
 
     def _should_get_map(self: Self) -> bool:
-        if self._forced_refresh:
-            self._forced_refresh = False
-            return True
-        return (
-            self._map_cache is None or
-            self._vacuum_connector is None or
-            (self._vacuum_connector.should_update_map and self._auto_update)
-        )
+        return self._map_cache is None or self._vacuum_connector is None or self._vacuum_connector.should_update_map
 
     async def _get_map(self: Self) -> None:
+        self._map_cache.last_update_timestamp = datetime.now()
         try:
             await self._update()
             self._map_cache.status = XiaomiCloudMapExtractorConnectorStatus.OK
             self._map_cache.last_successful_update_timestamp = datetime.now()
             self._map_cache.two_factor_url = None
-        except DeviceNotFoundException as e:
+        except DeviceNotFoundException:
             self._map_cache.status = XiaomiCloudMapExtractorConnectorStatus.DEVICE_NOT_FOUND
-            raise e
-        except InvalidCredentialsException as e:
+        except InvalidCredentialsException:
             self._map_cache.status = XiaomiCloudMapExtractorConnectorStatus.INVALID_CREDENTIALS
-            raise e
-        except FailedLoginException as e:
+        except FailedLoginException:
             self._map_cache.status = XiaomiCloudMapExtractorConnectorStatus.FAILED_LOGIN
-            raise e
-        except InvalidDeviceTokenException as e:
+        except InvalidDeviceTokenException:
             self._map_cache.status = XiaomiCloudMapExtractorConnectorStatus.INVALID_TOKEN
-            raise e
         except FailedMapDownloadException:
             self._map_cache.status = XiaomiCloudMapExtractorConnectorStatus.FAILED_MAP_DOWNLOAD
         except FailedMapParseException:
@@ -171,13 +154,9 @@ class XiaomiCloudMapExtractorConnector:
         except TwoFactorAuthRequiredException as e:
             self._map_cache.status = XiaomiCloudMapExtractorConnectorStatus.TWO_FACTOR_REQUIRED
             self._map_cache.two_factor_url = e.url
-            raise e
-        finally:
-            self._map_cache.last_update_timestamp = datetime.now()
-            if self._vacuum_connector:
-                self._map_cache.additional_vacuum_data = self._vacuum_connector.additional_data()
 
     def _create_device(self: Self, device_details: XiaomiCloudDeviceInfo) -> BaseXiaomiCloudVacuum:
+        store_map_path = self._config.store_map_path if self._config.store_map_raw else None
         vacuum_config = VacuumConfig(
             self._cloud_connector,
             device_details,
@@ -191,15 +170,7 @@ class XiaomiCloudMapExtractorConnector:
             self._config.image_config,
             self._config.sizes,
             self._config.texts,
+            store_map_path
         )
         vacuum_class = AVAILABLE_VACUUM_PLATFORMS.get(self._used_api, UnsupportedCloudVacuum)
         return vacuum_class(vacuum_config)
-
-    def force_refresh(self):
-        self._forced_refresh = True
-
-    def set_auto_updating(self, updating: bool) -> None:
-        self._auto_update = updating
-
-    def is_auto_updating(self) -> bool:
-        return self._auto_update

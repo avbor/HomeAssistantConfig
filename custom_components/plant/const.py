@@ -186,6 +186,11 @@ OPB_SEARCH_RESULT = "search_result"
 OPB_PID = "pid"
 OPB_DISPLAY_PID = "display_pid"
 
+# Hysteresis: fraction of (max - min) range that the value must clear
+# before a problem state is removed. Prevents flapping when a sensor
+# value oscillates near a threshold.
+HYSTERESIS_FRACTION = 0.05
+
 # PPFD to DLI: /1000000 * 3600 to get from microseconds to hours
 PPFD_DLI_FACTOR = 0.0036
 # See https://www.apogeeinstruments.com/conversion-ppfd-to-lux/

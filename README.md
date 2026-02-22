@@ -359,7 +359,7 @@ Integration "Fully Kiosk Browser"
 - Zigbee2MQTT (Multiple instances)
 - Matter Server
 - Frigate Proxy
-- [Telegram Bot Api](https://github.com/avbor/hassio-apps)
+- [Telegram Bot API](https://github.com/avbor/hassio-apps)
 
 **Mobile Apps:**
 - [Home Assistant](https://play.google.com/store/apps/details?id=io.homeassistant.companion.android) official app on Android\

@@ -155,16 +155,19 @@
       "init": {
         "title": "Beállítások",
         "description": "**{plant_name}**",
+        "menu_options": {
+          "plant_properties": "Növény tulajdonságai",
+          "replace_sensor": "Érzékelők cseréje"
+        }
+      },
+      "plant_properties": {
+        "title": "Növény tulajdonságai",
+        "description": "**{plant_name}**",
         "data": {
           "check_days": "Megvilágítás ellenőrzési napok",
           "species": "Faj",
           "force_update": "OpenPlantbook adatok frissítésének kényszerítése",
           "display_pid": "Megjelenítendő növényfaj",
-          "temperature_sensor": "Hőmérséklet-érzékelő",
-          "moisture_sensor": "Talajnedvesség-érzékelő",
-          "conductivity_sensor": "Vezetőképesség-érzékelő",
-          "illuminance_sensor": "Fényérzékelő",
-          "humidity_sensor": "Páratartalom-érzékelő",
           "entity_picture": "Kép URL. Automatikusan frissül, ha a faj megtalálható az OpenPlantbook-ban",
           "illuminance_trigger": "Megvilágítás használata problémajelzőként",
           "dli_trigger": "Napi fényintegrál (DLI) használata problémajelzőként",
@@ -174,6 +177,19 @@
           "temperature_trigger": "Hőmérséklet használata problémajelzőként",
           "co2_trigger": "CO2 használata problémajelzőként",
           "soil_temperature_trigger": "Talajhőmérséklet használata problémajelzőként"
+        }
+      },
+      "replace_sensor": {
+        "title": "Érzékelők cseréje",
+        "description": "Replace external sensors for **{plant_name}**. Clear a field to remove that sensor.",
+        "data": {
+          "temperature_sensor": "Hőmérséklet-érzékelő",
+          "moisture_sensor": "Talajnedvesség-érzékelő",
+          "conductivity_sensor": "Vezetőképesség-érzékelő",
+          "illuminance_sensor": "Fényérzékelő",
+          "humidity_sensor": "Páratartalom-érzékelő",
+          "co2_sensor": "CO2-érzékelő",
+          "soil_temperature_sensor": "Talajhőmérséklet-érzékelő"
         }
       }
     }

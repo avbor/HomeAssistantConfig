@@ -155,16 +155,19 @@
       "init": {
         "title": "Options",
         "description": "**{plant_name}**",
+        "menu_options": {
+          "plant_properties": "Propriétés de la plante",
+          "replace_sensor": "Remplacer les capteurs"
+        }
+      },
+      "plant_properties": {
+        "title": "Propriétés de la plante",
+        "description": "**{plant_name}**",
         "data": {
           "check_days": "Jours de contrôle de luminosité",
           "species": "Espèce",
           "force_update": "Forcer la mise à jour des données depuis OpenPlantbook",
           "display_pid": "Espèce de plante à afficher",
-          "temperature_sensor": "Capteur de température",
-          "moisture_sensor": "Capteur d'humidité du sol",
-          "conductivity_sensor": "Capteur de conductivité",
-          "illuminance_sensor": "Capteur de luminosité",
-          "humidity_sensor": "Capteur d'humidité de l'air",
           "entity_picture": "URL de l'image. Sera automatiquement mise à jour si l'espèce est trouvée dans OpenPlantbook",
           "illuminance_trigger": "Utiliser la luminosité comme déclencheur de problème",
           "dli_trigger": "Utiliser l'intégrale quotidienne de lumière (DLI) comme déclencheur de problème",
@@ -174,6 +177,19 @@
           "temperature_trigger": "Utiliser la température comme déclencheur de problème",
           "co2_trigger": "Utiliser le CO2 comme déclencheur de problème",
           "soil_temperature_trigger": "Utiliser la température du sol comme déclencheur de problème"
+        }
+      },
+      "replace_sensor": {
+        "title": "Remplacer les capteurs",
+        "description": "Replace external sensors for **{plant_name}**. Clear a field to remove that sensor.",
+        "data": {
+          "temperature_sensor": "Capteur de température",
+          "moisture_sensor": "Capteur d'humidité du sol",
+          "conductivity_sensor": "Capteur de conductivité",
+          "illuminance_sensor": "Capteur de luminosité",
+          "humidity_sensor": "Capteur d'humidité de l'air",
+          "co2_sensor": "Capteur de CO2",
+          "soil_temperature_sensor": "Capteur de température du sol"
         }
       }
     }

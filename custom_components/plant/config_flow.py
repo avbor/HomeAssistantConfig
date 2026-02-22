@@ -89,6 +89,37 @@ from .plant_helpers import PlantHelper
 
 _LOGGER = logging.getLogger(__name__)
 
+SENSOR_SCHEMA_FIELDS = [
+    (FLOW_SENSOR_TEMPERATURE, SensorDeviceClass.TEMPERATURE),
+    (FLOW_SENSOR_MOISTURE, SensorDeviceClass.MOISTURE),
+    (FLOW_SENSOR_CONDUCTIVITY, SensorDeviceClass.CONDUCTIVITY),
+    (FLOW_SENSOR_ILLUMINANCE, SensorDeviceClass.ILLUMINANCE),
+    (FLOW_SENSOR_HUMIDITY, SensorDeviceClass.HUMIDITY),
+    (FLOW_SENSOR_CO2, SensorDeviceClass.CO2),
+    (FLOW_SENSOR_SOIL_TEMPERATURE, SensorDeviceClass.TEMPERATURE),
+]
+
+
+def _build_sensor_schema(defaults: dict[str, Any] | None = None) -> dict:
+    """Build sensor selection schema, optionally pre-filled with current values."""
+    defaults = defaults or {}
+    schema = {}
+    for key, device_class in SENSOR_SCHEMA_FIELDS:
+        current = defaults.get(key)
+        if current:
+            vol_key = vol.Optional(key, description={"suggested_value": current})
+        else:
+            vol_key = vol.Optional(key)
+        schema[vol_key] = selector(
+            {
+                ATTR_ENTITY: {
+                    ATTR_DEVICE_CLASS: device_class,
+                    ATTR_DOMAIN: DOMAIN_SENSOR,
+                }
+            }
+        )
+    return schema
+
 
 class PlantConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Plants."""
@@ -227,67 +258,9 @@ class PlantConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.debug("Plant_info: %s", self.plant_info)
             return await self.async_step_limits()
 
-        data_schema = {}
-        data_schema[FLOW_SENSOR_TEMPERATURE] = selector(
-            {
-                ATTR_ENTITY: {
-                    ATTR_DEVICE_CLASS: SensorDeviceClass.TEMPERATURE,
-                    ATTR_DOMAIN: DOMAIN_SENSOR,
-                }
-            }
-        )
-        data_schema[FLOW_SENSOR_MOISTURE] = selector(
-            {
-                ATTR_ENTITY: {
-                    ATTR_DEVICE_CLASS: SensorDeviceClass.MOISTURE,
-                    ATTR_DOMAIN: DOMAIN_SENSOR,
-                }
-            }
-        )
-        data_schema[FLOW_SENSOR_CONDUCTIVITY] = selector(
-            {
-                ATTR_ENTITY: {
-                    ATTR_DEVICE_CLASS: SensorDeviceClass.CONDUCTIVITY,
-                    ATTR_DOMAIN: DOMAIN_SENSOR,
-                }
-            }
-        )
-        data_schema[FLOW_SENSOR_ILLUMINANCE] = selector(
-            {
-                ATTR_ENTITY: {
-                    ATTR_DEVICE_CLASS: SensorDeviceClass.ILLUMINANCE,
-                    ATTR_DOMAIN: DOMAIN_SENSOR,
-                }
-            }
-        )
-        data_schema[FLOW_SENSOR_HUMIDITY] = selector(
-            {
-                ATTR_ENTITY: {
-                    ATTR_DEVICE_CLASS: SensorDeviceClass.HUMIDITY,
-                    ATTR_DOMAIN: DOMAIN_SENSOR,
-                }
-            }
-        )
-        data_schema[FLOW_SENSOR_CO2] = selector(
-            {
-                ATTR_ENTITY: {
-                    ATTR_DEVICE_CLASS: SensorDeviceClass.CO2,
-                    ATTR_DOMAIN: DOMAIN_SENSOR,
-                }
-            }
-        )
-        data_schema[FLOW_SENSOR_SOIL_TEMPERATURE] = selector(
-            {
-                ATTR_ENTITY: {
-                    ATTR_DEVICE_CLASS: SensorDeviceClass.TEMPERATURE,
-                    ATTR_DOMAIN: DOMAIN_SENSOR,
-                }
-            }
-        )
-
         return self.async_show_form(
             step_id="sensors",
-            data_schema=vol.Schema(data_schema),
+            data_schema=vol.Schema(_build_sensor_schema()),
         )
 
     async def async_step_limits(
@@ -563,6 +536,17 @@ class PlantConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return True
 
 
+_SENSOR_ATTR_MAP = {
+    FLOW_SENSOR_TEMPERATURE: "sensor_temperature",
+    FLOW_SENSOR_MOISTURE: "sensor_moisture",
+    FLOW_SENSOR_CONDUCTIVITY: "sensor_conductivity",
+    FLOW_SENSOR_ILLUMINANCE: "sensor_illuminance",
+    FLOW_SENSOR_HUMIDITY: "sensor_humidity",
+    FLOW_SENSOR_CO2: "sensor_co2",
+    FLOW_SENSOR_SOIL_TEMPERATURE: "sensor_soil_temperature",
+}
+
+
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handling options for plant."""
 
@@ -571,6 +555,17 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.plant = None
 
     async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Show menu to choose between plant properties and sensor replacement."""
+        self.plant = self.hass.data[DOMAIN][self.config_entry.entry_id]["plant"]
+        return self.async_show_menu(
+            step_id="init",
+            menu_options=["plant_properties", "replace_sensor"],
+            description_placeholders={"plant_name": self.plant.name},
+        )
+
+    async def async_step_plant_properties(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Manage the options."""
@@ -590,7 +585,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
             return self.async_create_entry(title="", data=user_input)
 
-        self.plant = self.hass.data[DOMAIN][self.config_entry.entry_id]["plant"]
         plant_helper = PlantHelper(hass=self.hass)
         data_schema = {}
         data_schema[
@@ -652,8 +646,44 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         ] = cv.boolean
 
         return self.async_show_form(
-            step_id="init",
+            step_id="plant_properties",
             data_schema=vol.Schema(data_schema),
+            description_placeholders={"plant_name": self.plant.name},
+        )
+
+    async def async_step_replace_sensor(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle sensor replacement."""
+        if user_input is not None:
+            plant_info = self.config_entry.data.get(FLOW_PLANT_INFO, {})
+            for key, attr_name in _SENSOR_ATTR_MAP.items():
+                new_val = user_input.get(key)
+                old_val = plant_info.get(key)
+                if new_val != old_val:
+                    sensor = getattr(self.plant, attr_name, None)
+                    if sensor and sensor.hass is not None:
+                        sensor.replace_external_sensor(new_val)
+                    else:
+                        # Sensor entity is disabled (not added to HA).
+                        # Update config_entry.data directly; the entity
+                        # will pick up the new sensor when enabled.
+                        new_data = dict(self.config_entry.data)
+                        new_plant_info = dict(new_data.get(FLOW_PLANT_INFO, {}))
+                        new_plant_info[key] = new_val
+                        new_data[FLOW_PLANT_INFO] = new_plant_info
+                        self.hass.config_entries.async_update_entry(
+                            self.config_entry, data=new_data
+                        )
+            # Preserve existing options (triggers, image, species, etc.)
+            return self.async_create_entry(
+                title="", data=dict(self.config_entry.options)
+            )
+
+        plant_info = self.config_entry.data.get(FLOW_PLANT_INFO, {})
+        return self.async_show_form(
+            step_id="replace_sensor",
+            data_schema=vol.Schema(_build_sensor_schema(defaults=plant_info)),
             description_placeholders={"plant_name": self.plant.name},
         )
 

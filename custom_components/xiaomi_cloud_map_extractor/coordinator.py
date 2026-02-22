@@ -14,7 +14,6 @@ from .connector.utils.exceptions import (
     InvalidDeviceTokenException,
     InvalidCredentialsException,
     CaptchaRequiredException,
-    DeviceNotFoundException,
 )
 from .const import DOMAIN, DEFAULT_UPDATE_INTERVAL
 
@@ -41,7 +40,6 @@ class XiaomiCloudMapExtractorDataUpdateCoordinator(DataUpdateCoordinator[XiaomiC
                 InvalidDeviceTokenException,
                 TwoFactorAuthRequiredException,
                 CaptchaRequiredException,
-                DeviceNotFoundException,
         ) as err:
             _LOGGER.error(err)
             _LOGGER.debug("Triggering reauth flow...")
@@ -49,13 +47,3 @@ class XiaomiCloudMapExtractorDataUpdateCoordinator(DataUpdateCoordinator[XiaomiC
         except XiaomiCloudMapExtractorException as err:
             _LOGGER.error(err)
             raise UpdateFailed(err) from err
-
-    async def force_update_data(self) -> None:
-        self.connector.force_refresh()
-        await self.async_request_refresh()
-
-    async def set_auto_updating(self, updating: bool) -> None:
-        self.connector.set_auto_updating(updating)
-
-    def is_auto_updating(self) -> bool:
-        return self.connector.is_auto_updating()

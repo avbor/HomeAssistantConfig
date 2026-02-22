@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Self, Any
+from typing import Self
 
 from vacuum_map_parser_base.config.color import ColorsPalette
 from vacuum_map_parser_base.config.drawable import Drawable
@@ -28,6 +28,7 @@ class BaseXiaomiCloudVacuum(ABC):
     _image_config: ImageConfig
     _sizes: Sizes
     _texts: list[Text]
+    _store_map_path: str | None
 
     def __init__(self: Self, vacuum_config: VacuumConfig) -> None:
         self.model = vacuum_config.model
@@ -40,6 +41,7 @@ class BaseXiaomiCloudVacuum(ABC):
         self._image_config = vacuum_config.image_config
         self._sizes = vacuum_config.sizes
         self._texts = vacuum_config.texts
+        self._store_map_path = vacuum_config.store_map_path
 
     @staticmethod
     @abstractmethod
@@ -71,7 +73,7 @@ class BaseXiaomiCloudVacuum(ABC):
     async def get_map_name(self: Self) -> str | None:
         return "0"
 
-    async def get_map(self: Self) -> tuple[MapData, bytes]:
+    async def get_map(self: Self) -> tuple[MapData, bool, bytes]:
         _LOGGER.debug("Getting map name...")
         map_name = await self.get_map_name()
         _LOGGER.debug("Got map name: \"%s\".", map_name)
@@ -81,6 +83,10 @@ class BaseXiaomiCloudVacuum(ABC):
             _LOGGER.error("FailedMapDownloadException")
             raise FailedMapDownloadException()
         _LOGGER.debug("Downloaded raw map: \"%d\".", len(raw_map_data))
+        map_stored = False
+        if self._store_map_path is not None:
+            self.store_map(raw_map_data)
+            map_stored = True
         _LOGGER.debug("Parsing map...")
         map_data = self.decode_and_parse(raw_map_data)
         _LOGGER.debug("Parsed map: (%d x %d)", map_data.image.dimensions.height, map_data.image.dimensions.width)
@@ -89,7 +95,7 @@ class BaseXiaomiCloudVacuum(ABC):
         else:
             _LOGGER.error("FailedMapParseException")
             raise FailedMapParseException()
-        return map_data, raw_map_data
+        return map_data, map_stored, raw_map_data
 
     async def get_raw_map_data(self: Self, map_name: str | None) -> bytes | None:
         if map_name is None:
@@ -97,5 +103,6 @@ class BaseXiaomiCloudVacuum(ABC):
         map_url = await self.get_map_url(map_name)
         return await self._connector.get_raw_map_data(map_url)
 
-    def additional_data(self: Self) -> dict[str, Any]:
-        return {}
+    def store_map(self: Self, raw_map_data: bytes) -> None:
+        with open(f"{self._store_map_path}/map_data_{self.model}.{self.map_archive_extension}", "wb") as raw_map_file:
+            raw_map_file.write(raw_map_data)
