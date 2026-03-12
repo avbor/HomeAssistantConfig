@@ -15,7 +15,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         disable_web_page_preview: true
         message: |
           *Внимание!*
@@ -36,7 +36,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         disable_web_page_preview: true
         message: |
           *Внимание!*
@@ -68,7 +68,7 @@
       timeout: "00:00:01"
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         message: |
           _INFO:_ Home Assistant *запущен* за {{ states('sensor.start_time') }} сек.
           Ошибок: *{{ states('sensor.errors_in_system_log_command_line') }}*, Предупреждений: *{{ states('sensor.warnings_in_system_log_command_line') }}*
@@ -93,7 +93,7 @@
         entity_id: input_boolean.ha_shutdown
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         message: "_INFO:_ Home Assistant *остановлен*."
 
 - alias: "HASS: ERRORs in System Log [notify to group system]"
@@ -107,7 +107,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: "HASS: WARNINGs in System Log [notify to group system]"
@@ -121,7 +121,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         message: "_{{ trigger.event.data.level }}:_ {{ trigger.event.data.message }}"
 
 - alias: "HASS: System Config Errors [notify to group system]"
@@ -143,7 +143,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         message: |
           *Внимание, конфигурация содержит ошибки!*
           {% if trigger.event.data.service_data.notification_id == 'homeassistant.check_config' -%}
@@ -174,7 +174,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         parse_mode: html
         message: |
           <i>INFO:</i> Ошибка выполнения автоматизации: 
@@ -195,7 +195,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         parse_mode: html
         message: |
           Критическая ошибка системы:
@@ -312,14 +312,14 @@
       then:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             parse_mode: html
             message: |
               <i>INFO:</i> <b>{{ friendlyname }}</b> - обновлен (<i>{{ old_installed_version }}</i> -> <i>{{ latest_version }}</i>).
       else:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             parse_mode: html
             message: |
               <i>INFO:</i> <b>{{ friendlyname }}</b> - доступно обновление (<i>{{ installed_version }}</i> -> <i>{{ latest_version }}</i>).
@@ -406,7 +406,7 @@
       value_template: "{{ states('input_boolean.ha_shutdown') == 'off' }}"
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         parse_mode: html
         disable_notification: true
         message: |
@@ -439,7 +439,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         parse_mode: html
         title: "<b>Внимание, низкий заряд батареи!</b>"
         message: |
@@ -454,7 +454,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         parse_mode: html
         title: <b>Найдено новое устройство в сети!</b>
         message: |
@@ -468,7 +468,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         parse_mode: html
         message: |
           <i>INFO:</i> Создание резервной копии завершилось успешно.
@@ -482,7 +482,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         parse_mode: html
         title: "<b>Внимание!</b>"
         message: |

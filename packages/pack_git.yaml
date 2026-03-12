@@ -129,7 +129,7 @@ git_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             parse_mode: html
             disable_web_page_preview: true
             title: "<b>GitHub HA Repo</b>:"

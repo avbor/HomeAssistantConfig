@@ -26,7 +26,7 @@ domofon_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "_Домофон_: открыт кнопкой"
 
     - alias: Domofon - Incoming Call Notification
@@ -39,7 +39,7 @@ domofon_pack:
         - parallel:
             - action: telegram_bot.send_message
               data:
-                target: !secret tlg_group_flat_1
+                chat_id: !secret tlg_group_flat_1
                 message: "_Домофон_: входящий звонок... {% if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') %}(*откроется автоматически*){% endif %}"
                 inline_keyboard:
                   - "{{ '-' if is_state('switch.domofon_automatically_open', 'on') or is_state('switch.domofon_automatically_open_once', 'on') else 'Открыть:/domofon_open, Отклонить:/domofon_reject' }}"
@@ -143,7 +143,7 @@ domofon_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             message: |
               *Внимание!*
               {% if trigger.to_state.state == 'off' -%}
@@ -194,7 +194,7 @@ domofon_pack:
             entity_id: switch.domofon_automatically_open_once
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "_Домофон_: Курьер уже в пути, домофон откроется автоматически."
             inline_keyboard:
               - "Отключить звук:/domofon_mute_once"
@@ -241,7 +241,7 @@ domofon_pack:
             entity_id: switch.domofon_mute_sound_once
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "_Домофон_: включен режим однократного авто-открытия."
         - wait_for_trigger:
             - trigger: state
@@ -260,7 +260,7 @@ domofon_pack:
                     entity_id: switch.domofon_mute_sound_once
                 - action: telegram_bot.send_message
                   data:
-                    target: !secret tlg_group_flat_1
+                    chat_id: !secret tlg_group_flat_1
                     message: "_Домофон_: отключен режим однократного авто-открытия."
 
   script:
@@ -312,7 +312,7 @@ domofon_pack:
                         media_content_type: text
                     - action: telegram_bot.send_message
                       data:
-                        target: !secret tlg_group_flat_1
+                        chat_id: !secret tlg_group_flat_1
                         message: "_Домофон_: открыт Алисой."
             - conditions: "{{ wait.trigger.event.data.text in ['нет'] }}"
               sequence:
@@ -326,5 +326,5 @@ domofon_pack:
                         media_content_type: text
                     - action: telegram_bot.send_message
                       data:
-                        target: !secret tlg_group_flat_1
+                        chat_id: !secret tlg_group_flat_1
                         message: "_Домофон_: звонок сброшен Алисой."

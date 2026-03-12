@@ -11,7 +11,7 @@
   actions:
     - action: telegram_bot.send_message
       data:
-        target: !secret tlg_group_system
+        chat_id: !secret tlg_group_system
         message: |
           *{{ trigger.event.data.from_first }} {{ trigger.event.data.from_last }} [{{ trigger.event.data.user_id }}] пишет:*
           {{ trigger.event.data.text }}
@@ -30,7 +30,7 @@
   actions:
     action: telegram_bot.send_message
     data:
-      target: "{{ trigger.event.data.user_id }}"
+      chat_id: "{{ trigger.event.data.user_id }}"
       message: "Привет! Помощь - /help"
 # ---- /help
 - alias: "Telegram Bot - Help"
@@ -47,7 +47,7 @@
   actions:
     action: telegram_bot.send_message
     data:
-      target: "{{ trigger.event.data.user_id }}"
+      chat_id: "{{ trigger.event.data.user_id }}"
       parse_mode: html
       message: |
         Доступные комманды:
@@ -71,7 +71,7 @@
   actions:
     action: telegram_bot.send_message
     data:
-      target: "{{ trigger.event.data.user_id }}"
+      chat_id: "{{ trigger.event.data.user_id }}"
       message: |
         Pong! _{{ now().strftime("%d.%m.%Y %H:%M:%S") }}_
         Current version: {{ states('sensor.current_version') }}
@@ -92,7 +92,7 @@
   actions:
     action: telegram_bot.send_message
     data:
-      target: "{{ trigger.event.data.chat_id }}"
+      chat_id: "{{ trigger.event.data.chat_id }}"
       message: |
         Сейчас дома:
         {%- set entites = expand('group.family_persons') %}{% for prs in entites %}{% if prs.state == "home" %}
@@ -113,7 +113,7 @@
   actions:
     - action: telegram_bot.send_photo
       data:
-        target: "{{ trigger.event.data.user_id }}"
+        chat_id: "{{ trigger.event.data.user_id }}"
         file: '/config/www/weather_icons/{{ states("weather.danilovskii") }}.webp'
         caption: |
           Температура {{ states('sensor.danilovskii_temperature') }}°C
@@ -135,7 +135,7 @@
   actions:
     - action: telegram_bot.send_photo
       data:
-        target: "{{ trigger.event.data.user_id }}"
+        chat_id: "{{ trigger.event.data.user_id }}"
         file: '/config/www/weather_icons/{{ states("weather.nivki_2") }}.webp'
         caption: |
           Температура {{ states('sensor.nivki_2_temperature') }}°C
@@ -157,7 +157,7 @@
   actions:
     action: telegram_bot.send_message
     data:
-      target: "{{ trigger.event.data.user_id }}"
+      chat_id: "{{ trigger.event.data.user_id }}"
       message: |
         *Климат*
         Гостинная: *{{ states('sensor.temperature_in_livingroom') }}°C*, {{ states('sensor.humidity_in_livingroom') }}%

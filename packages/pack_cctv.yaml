@@ -78,7 +78,7 @@ cctv_pack:
                     {% endif -%}
             - action: telegram_bot.send_photo
               data:
-                target: !secret tlg_group_flat_1
+                chat_id: !secret tlg_group_flat_1
                 url: >-
                   http://srv01.home.intra:3000/api/storage/matches/{{ match_filename }}?box=true
 
@@ -96,7 +96,7 @@ cctv_pack:
         - parallel:
             - action: telegram_bot.send_message
               data:
-                target: !secret tlg_group_system
+                chat_id: !secret tlg_group_system
                 title: "*Frigate Warning!*"
                 message: |
                   Возможна проблема с камерой Reolink 02,
@@ -114,23 +114,23 @@ cctv_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "В *Детской* обнаружено движение:"
         - action: telegram_bot.send_photo
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             url: !secret dafangcam_03_snapshot_url
         - delay:
             seconds: 1
         - action: telegram_bot.send_photo
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             url: !secret dafangcam_03_snapshot_url
         - delay:
             seconds: 1
         - action: telegram_bot.send_photo
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             url: !secret dafangcam_03_snapshot_url
 
     - alias: "Вкл контроль движения в детской"
@@ -169,25 +169,25 @@ cctv_pack:
             seconds: 3
         - action: telegram_bot.send_photo
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 1
         - action: telegram_bot.send_photo
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 2
         - action: telegram_bot.send_photo
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             url: !secret dafangcam_02_snapshot_url
         - delay:
             seconds: 3
         - action: telegram_bot.send_photo
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             url: !secret dafangcam_02_snapshot_url
 
     - alias: "DafangCam-02 Turn Off Night Mode by Light"
@@ -221,13 +221,13 @@ cctv_pack:
                     seconds: 1
                 - action: telegram_bot.send_message
                   data:
-                    target: !secret tlg_group_staircase
+                    chat_id: !secret tlg_group_staircase
                     message: |
                       {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
                       Обнаружен человек на лестничной клетке:
                 - action: telegram_bot.send_photo
                   data:
-                    target: !secret tlg_group_staircase
+                    chat_id: !secret tlg_group_staircase
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
             - sequence:
@@ -249,7 +249,7 @@ cctv_pack:
                 #  continue_on_timeout: false
                 #- action: telegram_bot.send_video
                 #  data:
-                #    target: !secret tlg_group_staircase
+                #    chat_id: !secret tlg_group_staircase
                 #    file: /config/downloads/doorbell/record_{{ now_time }}.mp4
                 #    message_tag: "{{ msg_tag }}"
                 #  continue_on_error: true
@@ -265,7 +265,7 @@ cctv_pack:
                 #    file_path: /config/downloads/doorbell/record_{{ now_time }}.mp4
                 - action: telegram_bot.send_video
                   data:
-                    target: !secret tlg_group_staircase
+                    chat_id: !secret tlg_group_staircase
                     url: !secret go2rtc_reolinkcam_01_mp4_10s
 
     - alias: "Staircase - Send recorded video"
@@ -279,7 +279,7 @@ cctv_pack:
       actions:
         - action: telegram_bot.send_video
           data:
-            target: !secret tlg_group_staircase
+            chat_id: !secret tlg_group_staircase
             file: /config/video/staircase_movement.mp4
             caption: !secret look_at_cam_reolinkcam_01
 #            timeout: 180
@@ -304,14 +304,14 @@ cctv_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: "{{ target_chat }}"
+            chat_id: "{{ target_chat }}"
             message: |
               {{ now().strftime('%d.%m.%Y, %H:%M:%S') }}
               Обнаружено движение на лестничной клетке,
               (ID: {{ id }}):
         - action: telegram_bot.send_photo
           data:
-            target: "{{ target_chat }}"
+            chat_id: "{{ target_chat }}"
             url: >-
               {{base_url}}/api/frigate/notifications/{{id}}/snapshot.jpg
         - repeat:
@@ -328,7 +328,7 @@ cctv_pack:
                 value_template: "{{ wait.trigger.payload_json['type'] == 'end' }}"
               - action: telegram_bot.send_video
                 data:
-                  target: "{{ target_chat }}"
+                  chat_id: "{{ target_chat }}"
                   url: >-
                     {{base_url}}/api/frigate/notifications/{{id}}/{{camera}}/clip.mp4
             until: "{{ wait.trigger.payload_json['type'] == 'end' }}"

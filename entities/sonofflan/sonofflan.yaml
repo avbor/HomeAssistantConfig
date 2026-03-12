@@ -34,7 +34,7 @@ devices:
 
   "1001322978":
     reporting:
-      current: [5, 3600, 1] # min seconds, max seconds, min delta value
+      current: [5, 3600, 0.1] # min seconds, max seconds, min delta value
       power: [5, 3600, 1]
       voltage: [60, 3600, 1]
 

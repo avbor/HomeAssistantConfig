@@ -162,11 +162,11 @@ recorder:
       - call_service
 
 influxdb:
-  host: a0d7b954-influxdb
-  port: 8086
-  database: homeassistant
-  username: !secret influxdb_user
-  password: !secret influxdb_pass
+#  host: a0d7b954-influxdb
+#  port: 8086
+#  database: homeassistant
+#  username: !secret influxdb_user
+#  password: !secret influxdb_pass
   max_retries: 5
   default_measurement: state
   tags_attributes:

@@ -664,7 +664,7 @@ ch_energy_pack:
             sequence:
               - action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_country_house
+                  chat_id: !secret tlg_group_country_house
                   title: "*Электроэнергия:*"
                   message: |
                     📩 Выполняется передача показаний в МЭС.
@@ -679,7 +679,7 @@ ch_energy_pack:
                         then:
                           - action: telegram_bot.send_message
                             data:
-                              target: !secret tlg_group_country_house
+                              chat_id: !secret tlg_group_country_house
                               title: "*Электроэнергия:*"
                               message: |
                                 ❌ Ошибка передачи показаний - таймаут ожидания ответа.
@@ -689,14 +689,14 @@ ch_energy_pack:
                                 sequence:
                                   - action: telegram_bot.send_message
                                     data:
-                                      target: !secret tlg_group_country_house
+                                      chat_id: !secret tlg_group_country_house
                                       title: "*Электроэнергия:*"
                                       message: |
                                         ✅ Показания успешно переданы.
                             default:
                               - action: telegram_bot.send_message
                                 data:
-                                  target: !secret tlg_group_country_house
+                                  chat_id: !secret tlg_group_country_house
                                   parse_mode: html
                                   disable_web_page_preview: true
                                   title: "<b>Электроэнергия:</b>"
@@ -716,7 +716,7 @@ ch_energy_pack:
             sequence:
               - action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_country_house
+                  chat_id: !secret tlg_group_country_house
                   title: "*Электроэнергия:*"
                   message: |
                     Ошибка, передача показаний в МЭС возможна с 15 по 26 число.
@@ -800,7 +800,7 @@ ch_energy_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_country_house
+            chat_id: !secret tlg_group_country_house
             title: "*Электроэнергия:*"
             message: |
               Зафиксировано новое значение кВт⋅ч для передачи в МЭС.
@@ -826,7 +826,7 @@ ch_energy_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_country_house
+            chat_id: !secret tlg_group_country_house
             title: "*Электроэнергия:*"
             message: |
               Переданные показания учтены в МЭС ({{ states('sensor.mes_55384_014_37_meter_44259893_zone_t1_period_indication') }} кВт⋅ч).

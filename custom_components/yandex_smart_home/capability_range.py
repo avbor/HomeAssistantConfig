@@ -90,26 +90,23 @@ class RangeCapability(Capability[RangeCapabilityInstanceActionState], Protocol):
     @property
     def parameters(self) -> RangeCapabilityParameters:
         """Return parameters for a devices list request."""
-        if self.support_random_access:
-            return RangeCapabilityParameters(instance=self.instance, random_access=True, range=self._range)
-
-        if self.instance in [
+        if self.instance in (
             RangeCapabilityInstance.BRIGHTNESS,
             RangeCapabilityInstance.HUMIDITY,
             RangeCapabilityInstance.OPEN,
             RangeCapabilityInstance.TEMPERATURE,
-        ]:
+        ) or (self._range and self.support_random_access):
             return RangeCapabilityParameters(
                 instance=self.instance, random_access=self.support_random_access, range=self._range
             )
 
-        return RangeCapabilityParameters(instance=self.instance, random_access=False)
+        return RangeCapabilityParameters(instance=self.instance, random_access=self.support_random_access)
 
     def get_value(self) -> float | None:
         """Return the current capability value."""
         value = self._get_value()
 
-        if self.support_random_access and value is not None:
+        if self.support_random_access and value is not None and self._range:
             if not (self._range.min <= value <= self._range.max):
                 _LOGGER.debug(
                     f"Value {value} is not in range {self._range} for instance {self.instance.value} "
@@ -137,9 +134,15 @@ class RangeCapability(Capability[RangeCapabilityInstanceActionState], Protocol):
         return state.value
 
     @cached_property
-    def _range(self) -> RangeCapabilityRange:
+    def _range(self) -> RangeCapabilityRange | None:
         """Return supporting value range."""
-        return RangeCapabilityRange(min=0, max=100, precision=1)
+        match self.instance:
+            case RangeCapabilityInstance.HUMIDITY | RangeCapabilityInstance.OPEN | RangeCapabilityInstance.TEMPERATURE:
+                return RangeCapabilityRange(min=0, max=100, precision=1)
+            case RangeCapabilityInstance.BRIGHTNESS:
+                return RangeCapabilityRange(min=1, max=100, precision=1)
+
+        return None
 
     def _convert_to_float(self, value: Any, strict: bool = True) -> float | None:
         """Return float of a value, ignore some states, catch errors."""
@@ -167,6 +170,9 @@ class StateRangeCapability(RangeCapability, StateCapability[RangeCapabilityInsta
                 raise APIError(ResponseCode.DEVICE_OFF, f"Device {self.state.entity_id} probably turned off")
 
             raise APIError(ResponseCode.NOT_SUPPORTED_IN_CURRENT_MODE, f"Missing current value for {self}")
+
+        if not self._range:
+            return value + relative_value
 
         return max(min(value + relative_value, self._range.max), self._range.min)
 
@@ -211,8 +217,17 @@ class TemperatureCapability(StateRangeCapability, ABC):
         """Test if the capability accept arbitrary values to be set."""
         return True
 
+    @cached_property
+    def _range(self) -> RangeCapabilityRange:
+        """Return supporting value range."""
+        return RangeCapabilityRange(
+            min=self._attribute_as_float(climate.ATTR_MIN_TEMP, 0),
+            max=self._attribute_as_float(climate.ATTR_MAX_TEMP, 100),
+            precision=self._attribute_as_float(climate.ATTR_TARGET_TEMP_STEP, 0.5),
+        )
 
-class TemperatureCapabilityWaterHeater(TemperatureCapability):
+
+class WaterHeaterTargetTemperatureCapability(TemperatureCapability):
     """Capability to control a water heater target temperature."""
 
     @property
@@ -236,17 +251,8 @@ class TemperatureCapabilityWaterHeater(TemperatureCapability):
         """Return the current capability value (unguarded)."""
         return self._convert_to_float(self.state.attributes.get(ATTR_TEMPERATURE))
 
-    @cached_property
-    def _range(self) -> RangeCapabilityRange:
-        """Return supporting value range."""
-        return RangeCapabilityRange(
-            min=self.state.attributes.get(water_heater.ATTR_MIN_TEMP, 0),
-            max=self.state.attributes.get(water_heater.ATTR_MAX_TEMP, 100),
-            precision=0.5,
-        )
 
-
-class TemperatureCapabilityClimate(TemperatureCapability):
+class ClimateTargetTemperatureCapability(TemperatureCapability):
     """Capability to control a climate device target temperature."""
 
     @property
@@ -270,14 +276,69 @@ class TemperatureCapabilityClimate(TemperatureCapability):
         """Return the current capability value (unguarded)."""
         return self._convert_to_float(self.state.attributes.get(ATTR_TEMPERATURE))
 
-    @cached_property
-    def _range(self) -> RangeCapabilityRange:
-        """Return supporting value range."""
-        return RangeCapabilityRange(
-            min=self.state.attributes.get(climate.ATTR_MIN_TEMP, 0),
-            max=self.state.attributes.get(climate.ATTR_MAX_TEMP, 100),
-            precision=self.state.attributes.get(climate.ATTR_TARGET_TEMP_STEP, 0.5),
+
+class ClimateTargetTemperatureLowCapability(TemperatureCapability):
+    """Capability to control a climate device min temperature setpoint."""
+
+    instance = RangeCapabilityInstance.VOLUME
+
+    @property
+    def supported(self) -> bool:
+        """Test if the capability is supported."""
+        return (
+            self.state.domain == climate.DOMAIN
+            and bool(self._state_features & ClimateEntityFeature.TARGET_TEMPERATURE_RANGE)
+            and not bool(self._state_features & ClimateEntityFeature.TARGET_TEMPERATURE)
         )
+
+    async def set_instance_state(self, context: Context, state: RangeCapabilityInstanceActionState) -> None:
+        """Change the capability state."""
+        await self._hass.services.async_call(
+            climate.DOMAIN,
+            climate.SERVICE_SET_TEMPERATURE,
+            {
+                ATTR_ENTITY_ID: self.state.entity_id,
+                climate.ATTR_TARGET_TEMP_LOW: self._get_service_call_value(state),
+                climate.ATTR_TARGET_TEMP_HIGH: self.state.attributes.get(climate.ATTR_TARGET_TEMP_HIGH),
+            },
+            blocking=self._wait_for_service_call,
+            context=context,
+        )
+
+    def _get_value(self) -> float | None:
+        """Return the current capability value (unguarded)."""
+        return self._convert_to_float(self.state.attributes.get(climate.ATTR_TARGET_TEMP_LOW))
+
+
+class ClimateTargetTemperatureHighCapability(TemperatureCapability):
+    """Capability to control a climate device max temperature setpoint."""
+
+    @property
+    def supported(self) -> bool:
+        """Test if the capability is supported."""
+        return (
+            self.state.domain == climate.DOMAIN
+            and bool(self._state_features & ClimateEntityFeature.TARGET_TEMPERATURE_RANGE)
+            and not bool(self._state_features & ClimateEntityFeature.TARGET_TEMPERATURE)
+        )
+
+    async def set_instance_state(self, context: Context, state: RangeCapabilityInstanceActionState) -> None:
+        """Change the capability state."""
+        await self._hass.services.async_call(
+            climate.DOMAIN,
+            climate.SERVICE_SET_TEMPERATURE,
+            {
+                ATTR_ENTITY_ID: self.state.entity_id,
+                climate.ATTR_TARGET_TEMP_LOW: self.state.attributes.get(climate.ATTR_TARGET_TEMP_LOW),
+                climate.ATTR_TARGET_TEMP_HIGH: self._get_service_call_value(state),
+            },
+            blocking=self._wait_for_service_call,
+            context=context,
+        )
+
+    def _get_value(self) -> float | None:
+        """Return the current capability value (unguarded)."""
+        return self._convert_to_float(self.state.attributes.get(climate.ATTR_TARGET_TEMP_HIGH))
 
 
 class HumidityCapability(StateRangeCapability, ABC):
@@ -317,8 +378,8 @@ class HumidityCapabilityHumidifier(HumidityCapability):
     def _range(self) -> RangeCapabilityRange:
         """Return supporting value range."""
         return RangeCapabilityRange(
-            min=self.state.attributes.get(humidifier.ATTR_MIN_HUMIDITY, 0),
-            max=self.state.attributes.get(humidifier.ATTR_MAX_HUMIDITY, 100),
+            min=self._attribute_as_float(humidifier.ATTR_MIN_HUMIDITY, 0),
+            max=self._attribute_as_float(humidifier.ATTR_MAX_HUMIDITY, 100),
             precision=1,
         )
 
@@ -389,11 +450,6 @@ class BrightnessCapability(StateRangeCapability):
             return int(100 * (brightness / 255))
 
         return None
-
-    @cached_property
-    def _range(self) -> RangeCapabilityRange:
-        """Return supporting value range."""
-        return RangeCapabilityRange(min=1, max=100, precision=1)
 
 
 class WhiteLightBrightnessCapability(StateRangeCapability, LightState):
@@ -692,11 +748,7 @@ class ChannelCapability(StateRangeCapability):
     @cached_property
     def _range(self) -> RangeCapabilityRange:
         """Return supporting value range."""
-        return RangeCapabilityRange(
-            min=0,
-            max=999,
-            precision=1,
-        )
+        return RangeCapabilityRange(min=0, max=999, precision=1)
 
 
 class ValvePositionCapability(StateRangeCapability):
@@ -730,8 +782,10 @@ class ValvePositionCapability(StateRangeCapability):
 
 
 STATE_CAPABILITIES_REGISTRY.register(CoverPositionCapability)
-STATE_CAPABILITIES_REGISTRY.register(TemperatureCapabilityWaterHeater)
-STATE_CAPABILITIES_REGISTRY.register(TemperatureCapabilityClimate)
+STATE_CAPABILITIES_REGISTRY.register(WaterHeaterTargetTemperatureCapability)
+STATE_CAPABILITIES_REGISTRY.register(ClimateTargetTemperatureCapability)
+STATE_CAPABILITIES_REGISTRY.register(ClimateTargetTemperatureLowCapability)
+STATE_CAPABILITIES_REGISTRY.register(ClimateTargetTemperatureHighCapability)
 STATE_CAPABILITIES_REGISTRY.register(HumidityCapabilityHumidifier)
 STATE_CAPABILITIES_REGISTRY.register(HumidityCapabilityXiaomiFan)
 STATE_CAPABILITIES_REGISTRY.register(BrightnessCapability)

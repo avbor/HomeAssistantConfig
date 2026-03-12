@@ -45,7 +45,7 @@ common_light_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             title: "*Внимание!*"
             message: |
               Дома никого нет, но остался включенным свет:
@@ -75,5 +75,5 @@ common_light_pack:
             inline_keyboard: []
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "Свет выключен."

@@ -312,7 +312,7 @@ vacuum_cleaner:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "_Mi Robot_: начал уборку."
             inline_keyboard:
               - "Остановить:/vacuum_stop, На базу:/vacuum_go_home"
@@ -382,7 +382,7 @@ vacuum_cleaner:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "_Mi Robot_: вернулся на базу (закончил уборку)."
 
     - alias: "Оповещение о забытом пылесосе [notify to group flat]"
@@ -396,7 +396,7 @@ vacuum_cleaner:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: "_Mi Robot_: потерялся и бездельничает, отправляем на базу."
         - action: vacuum.return_to_base
           target:
@@ -415,7 +415,7 @@ vacuum_cleaner:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: |
               _Mi Robot_: Произошла *ошибка*!
               {{ state_attr('vacuum.xiaomi_vacuum_cleaner', "error") }}

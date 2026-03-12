@@ -37,7 +37,7 @@ ch_tlg_ctrl:
           continue_on_timeout: false
         - action: telegram_bot.send_message
           data:
-            target: "{{ trigger.event.data.chat_id }}"
+            chat_id: "{{ trigger.event.data.chat_id }}"
             message: "Насос включен."
 
     - alias: 'Дача - Telegram Control - Turn On Away Mode'
@@ -62,5 +62,5 @@ ch_tlg_ctrl:
             inline_keyboard: []
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_country_house
+            chat_id: !secret tlg_group_country_house
             message: "Включен Away Mode"

@@ -396,7 +396,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             title: "*Внимание!*"
             message: |
               {%- if trigger.id == "nursery" %}{% set room = "детской" %}{% set temp = states('sensor.lumi_lumi_weather_824e9807_temperature') %}
@@ -423,7 +423,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: >-
               В *Детской*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -445,7 +445,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: >-
               В *Гостиной*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -467,7 +467,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: >-
               В *Спальне*
               {% if (trigger.to_state.state | float(0)) > 23 -%} жарко,
@@ -491,7 +491,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: >
               Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше 8 часов.
 
@@ -510,7 +510,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: >
               Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *16* часов.
 
@@ -529,7 +529,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: >
               Внимание, *{{ trigger.to_state.attributes.friendly_name.replace('Геркон ','').replace(' on_off','') }}* работает больше *24* часов.
 
@@ -554,7 +554,7 @@ climate_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             title: "*Внимание!*"
             message: |
               Повышенное содержание углекислого газа в 

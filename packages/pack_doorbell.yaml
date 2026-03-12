@@ -54,13 +54,13 @@ doorbell_pack:
                     entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
                 - action: telegram_bot.send_photo
                   data:
-                    target: !secret tlg_group_flat_1
+                    chat_id: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
                     caption: "*Внимание*, в дверь звонят! _(звонок отключен)_"
                 - action: telegram_bot.send_message
                   data:
-                    target: !secret tlg_group_flat_1
+                    chat_id: !secret tlg_group_flat_1
                     message: !secret look_at_cam_reolinkcam_01
                 - action: media_player.play_media
                   target:
@@ -88,13 +88,13 @@ doorbell_pack:
                     entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
                 - action: telegram_bot.send_photo
                   data:
-                    target: !secret tlg_group_flat_1
+                    chat_id: !secret tlg_group_flat_1
                     url: !secret reolinkcam_01_snapshot_url
                     verify_ssl: false
                     caption: "*Внимание*, в дверь звонят!"
                 - action: telegram_bot.send_message
                   data:
-                    target: !secret tlg_group_flat_1
+                    chat_id: !secret tlg_group_flat_1
                     message: !secret look_at_cam_reolinkcam_01
 
     - alias: "Doorbell - Mute and UnMute by Time"
@@ -136,5 +136,5 @@ doorbell_pack:
 #      actions:
 #        - action: telegram_bot.send_video
 #          data:
-#            target: !secret tlg_group_flat_1
+#            chat_id: !secret tlg_group_flat_1
 #            file: /config/video/doorbel.mp4

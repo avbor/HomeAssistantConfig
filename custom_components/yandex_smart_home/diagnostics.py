@@ -5,7 +5,6 @@ from typing import Any
 from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import issue_registry
 
 from . import DOMAIN, YandexSmartHome
 from .const import CONF_CLOUD_INSTANCE, CONF_SKILL
@@ -20,7 +19,6 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, config_entry: 
     diag: dict[str, Any] = {
         "entry": async_redact_data(config_entry.as_dict(), [CONF_CLOUD_INSTANCE, CONF_SKILL]),
         "devices": {},
-        "issues": [i.to_json() for i in issue_registry.async_get(hass).issues.values() if i.domain == DOMAIN],
     }
     diag.update(component.get_diagnostics())
 

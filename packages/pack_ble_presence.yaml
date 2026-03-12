@@ -93,7 +93,7 @@ ble_presence_pack:
             - parallel:
                 - action: telegram_bot.send_message
                   data:
-                    target: !secret tlg_stall_id
+                    chat_id: !secret tlg_stall_id
                     parse_mode: html
                     title: "<b>Внимание!</b>"
                     message: "Возможно, ты забыл ключ от машины!"
@@ -138,7 +138,7 @@ ble_presence_pack:
             - parallel:
                 - action: telegram_bot.send_message
                   data:
-                    target: !secret tlg_group_flat_1
+                    chat_id: !secret tlg_group_flat_1
                     parse_mode: html
                     title: "<b>Внимание!</b>"
                     message: "Возможно, Егор забыл пропуск в школу..."

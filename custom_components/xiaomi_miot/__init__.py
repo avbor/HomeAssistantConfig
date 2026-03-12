@@ -34,7 +34,7 @@ import homeassistant.helpers.device_registry as dr
 import homeassistant.helpers.config_validation as cv
 
 from .core.const import *
-from .core.utils import DeviceException, wildcard_models
+from .core.utils import DeviceException, slugify_object_id, wildcard_models
 from .core import HassEntry, BasicEntity, XEntity # noqa
 from .core.device import Device, AsyncMiIO
 from .core.miot_spec import (
@@ -897,7 +897,8 @@ class MiotEntity(MiioEntity):
         if not self.entity_id and self.model:
             mls = f'{self.model}..'.split('.')
             mac = re.sub(r'[\W_]+', '', self.unique_mac)
-            self.entity_id = f'{DOMAIN}.{mls[0]}_{mls[2]}_{mac[-4:]}_{mls[1]}'
+            obj = f'{mls[0]}_{mls[2]}_{mac[-4:]}_{mls[1]}'
+            self.entity_id = f'{DOMAIN}.{slugify_object_id(obj)}'
         self._success_code = 0
         self.logger.info('%s: Initializing miot device with mapping: %s', self.name_model, self._miot_mapping)
 
@@ -1170,11 +1171,12 @@ class BaseSubEntity(BaseEntity):
         if entity_id is None:
             pass
         elif f'{domain}.' in entity_id:
-            self.entity_id = entity_id
+            obj = hass_core.split_entity_id(entity_id)[1]
+            self.entity_id = f'{domain}.{slugify_object_id(obj)}'
         else:
             if '.' in entity_id:
                 entity_id = hass_core.split_entity_id(entity_id)[1]
-            self.entity_id = f'{domain}.{entity_id}'
+            self.entity_id = f'{domain}.{slugify_object_id(entity_id)}'
 
     @property
     def unique_id(self):

@@ -364,7 +364,7 @@ class ColorSceneCapability(Capability[SceneInstanceActionState]):
 
         raise APIError(
             ResponseCode.INVALID_VALUE,
-            f"Unsupported scene '{yandex_scene}' for {self}, see https://docs.yaha-cloud.ru/v1.0.x/config/modes/",
+            f"Unsupported scene '{yandex_scene}' for {self}, see https://docs.yaha-cloud.ru/v1.1.x/config/modes/",
         )
 
     def get_description(self) -> None:
@@ -417,7 +417,7 @@ class ColorSceneStateCapability(ColorSceneCapability, StateCapability[SceneInsta
     @property
     def supported_ha_scenes(self) -> list[str]:
         """Returns a list of supported Yandex scenes."""
-        return list(map(str, self.state.attributes.get(ATTR_EFFECT_LIST, []) or []))
+        return list(map(str, self.state.attributes.get(ATTR_EFFECT_LIST) or []))
 
     def get_value(self) -> ColorScene | None:
         """Return the current capability value."""

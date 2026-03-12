@@ -21,12 +21,14 @@ from . import (
     HassEntry,
     MiotEntity,
     async_setup_config_entry,
-    bind_services_to_entries,
 )
-from .core.utils import get_translations, DeviceException
-from .core.miot_spec import (
-    MiotSpec,
+from .core.utils import (
+    split_entity_id,
+    slugify_object_id,
+    get_translations,
+    DeviceException,
 )
+from .core.miot_spec import MiotSpec
 from .core.xiaomi_cloud import (
     MiotCloud,
     MiCloudException,
@@ -87,6 +89,9 @@ class MiotRemoteEntity(MiotEntity, RemoteEntity):
         self._attr_should_poll = False
         self._supported_features = RemoteEntityFeature.LEARN_COMMAND
         self._translations = get_translations('ir_devices')
+        if self.entity_id:
+            obj = split_entity_id(self.entity_id)[1]
+            self.entity_id = f'{ENTITY_DOMAIN}.{slugify_object_id(obj)}'
 
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
@@ -124,7 +129,7 @@ class MiotRemoteEntity(MiotEntity, RemoteEntity):
                         ols.append(nam)
                     self._subs[ird] = SelectSubEntity(self, ird, option={
                         'name': d.get('name'),
-                        'entity_id': f'remote_{ird}'.replace('.', '_'),
+                        'entity_id': slugify_object_id(f'remote_{ird}'),
                         'options': ols,
                         'async_select_option': self.async_press_ir_key,
                     })

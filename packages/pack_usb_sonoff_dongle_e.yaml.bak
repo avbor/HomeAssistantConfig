@@ -68,7 +68,7 @@ usb_sonoff_dongle_e_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             title: "*Внимание!*"
             message: |
               Sonoff Dongle E отключен от VM, будет запущен процесс автоматического подключения.
@@ -91,7 +91,7 @@ usb_sonoff_dongle_e_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             title: "*Внимание!*"
             message: |
               Sonoff Dongle E подключен.

@@ -151,7 +151,7 @@
             addon: 4b41db2d_zigbee2mqtt
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             parse_mode: html
             title: "<b>Внимание!</b>"
             message: "<b>Z2M-2</b> похоже завис, перезапускаем..."

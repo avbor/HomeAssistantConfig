@@ -24,7 +24,7 @@ mgts_gpon_pack:
           then:
             - action: telegram_bot.send_message
               data:
-                target: !secret tlg_group_system
+                chat_id: !secret tlg_group_system
                 title: "*Внимание!*"
                 message: |
                   Перезагрузка терминал МГТС не удалась, устройство обесточено.
@@ -32,5 +32,5 @@ mgts_gpon_pack:
           else:
             - action: telegram_bot.send_message
               data:
-                target: !secret tlg_group_system
+                chat_id: !secret tlg_group_system
                 message: "Терминал МГТС успешно перезагружен."

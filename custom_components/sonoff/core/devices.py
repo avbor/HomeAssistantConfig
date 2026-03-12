@@ -30,7 +30,7 @@ from ..binary_sensor import (
 from ..button import XButton
 from ..climate import XClimateNS, XClimateTH, XThermostat, XThermostatTRVZB
 from ..core.entity import XEntity
-from ..cover import XCover, XCoverDualR3, XCoverOP, XCoverT5, XZigbeeCover
+from ..cover import XCover, XCoverDualR3, XCoverOP, XCoverT5, XZBCover, XZigbeeCover
 from ..fan import XDiffuserFan, XFan, XFanDualR3, XToggleFan
 from ..light import (
     XDiffuserLight,
@@ -188,6 +188,10 @@ DoorLock = spec(XBinarySensor, param="lock", uid="", default_class="door")
 
 XT5Alarm = spec(XButton, param="soundAction", value=1, uid="alarm", enabled=False)
 XT5Bell = spec(XButton, param="soundAction", value=2, uid="bell", enabled=False)
+
+# XRemoteButton - used when the button is the main element of the device
+# XRemoteAction - used when the button is an additional element of the device
+XRemoteAction = spec(XRemoteButton, uid="action")
 
 # https://github.com/CoolKit-Technologies/eWeLink-API/blob/main/en/UIIDProtocol.md
 DEVICES = {
@@ -398,7 +402,7 @@ DEVICES = {
         LED,
         RSSI,
         spec(XIntSwitch, param="relaySeparation", uid="detach", enabled=False),
-        spec(XRemoteButton, param="action"),
+        XRemoteAction,
     ],
     # DW2-Wi-Fi-L, https://github.com/AlexxIT/SonoffLAN/issues/808
     154: [XWiFiDoor, Battery, RSSI],
@@ -575,6 +579,7 @@ DEVICES = {
         Startup2,
         LED,
         RSSI,
+        XRemoteAction,
     ],
     # Sonoff S61STPF:
     276: [
@@ -697,6 +702,8 @@ DEVICES = {
         XTodayWaterUsage,
         ZRSSI,
     ],
+    # MINI-ZB2GS-L https://github.com/AlexxIT/SonoffLAN/issues/1701
+    7029: [Switch1, Switch2, XRemoteAction],
     # S60ZBTPF, https://github.com/AlexxIT/SonoffLAN/issues/1615
     7032: [
         Switch1,
@@ -709,7 +716,7 @@ DEVICES = {
     # SNZB-02WD, https://github.com/AlexxIT/SonoffLAN/issues/1612
     7033: [XTempCorrection, XHumCorrection, Battery, ZRSSI],
     # MINI-ZBRBS, https://github.com/AlexxIT/SonoffLAN/issues/1666
-    7034: [XCover, LED, RSSI],
+    7034: [XZBCover, LED, RSSI],
     # SNZB-02DR2
     7038: [
         spec(XTempCorrection, multiply=0.01),

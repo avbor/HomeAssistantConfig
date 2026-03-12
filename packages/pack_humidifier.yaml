@@ -174,7 +174,7 @@ humidifiers_pack:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             message: >-
               {% if '_01_' in trigger.entity_id -%}
               *Smartmi Humidifier 01* (Детская): заканчивается вода (осталось *{{ trigger.to_state.state }}*%)!
@@ -204,7 +204,7 @@ humidifiers_pack:
               {% endif -%}
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_system
+            chat_id: !secret tlg_group_system
             message: >-
               {% if '_01_' in trigger.entity_id -%}
               *Smartmi Humidifier 01* (Детская): выключен (остаток воды *{{ trigger.to_state.state }}*%)!

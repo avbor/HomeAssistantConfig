@@ -42,7 +42,7 @@ autoreboot_pack:
               - alias: Send Notification
                 action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_system
+                  chat_id: !secret tlg_group_system
                   title: "*Внимание!*"
                   message: |
                     Home Assistant будет автоматически перезагружен через 15 секунд из за ошибок во время загрузки.
@@ -64,7 +64,7 @@ autoreboot_pack:
               - alias: Send Notification
                 action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_system
+                  chat_id: !secret tlg_group_system
                   title: "*Внимание!*"
                   message: |
                     Автоматическая перезагрузка Home Assistant остановлена.

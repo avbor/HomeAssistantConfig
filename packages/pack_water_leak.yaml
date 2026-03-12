@@ -165,7 +165,7 @@ water_leak_protection:
             entity_id: switch.sonoff_1000b68886
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: |
               _INFO:_ Нептун был перезапущен.
 
@@ -253,7 +253,7 @@ water_leak_protection:
             sequence:
               - action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_flat_1
+                  chat_id: !secret tlg_group_flat_1
                   title: "*Внимание!*"
                   message: |
                     Сработал датчик протечки *Нептун*.
@@ -268,7 +268,7 @@ water_leak_protection:
             sequence:
               - action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_flat_1
+                  chat_id: !secret tlg_group_flat_1
                   title: "*Внимание!*"
                   message: |
                     Сработал датчик протечки Aqara в *Кладовой*.
@@ -283,7 +283,7 @@ water_leak_protection:
             sequence:
               - action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_flat_1
+                  chat_id: !secret tlg_group_flat_1
                   title: "*Внимание!*"
                   message: |
                     Сработал датчик протечки Aqara в *Ванной*.
@@ -298,7 +298,7 @@ water_leak_protection:
             sequence:
               - action: telegram_bot.send_message
                 data:
-                  target: !secret tlg_group_flat_1
+                  chat_id: !secret tlg_group_flat_1
                   title: "*Внимание!*"
                   message: |
                     Сработал датчик протечки Aqara в *Ванной*.
@@ -316,7 +316,7 @@ water_leak_protection:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             message: Нептун деактивирован.
 
     - alias: Оповещение об отключенном Нептуне (>2 мин)
@@ -329,7 +329,7 @@ water_leak_protection:
       actions:
         - action: telegram_bot.send_message
           data:
-            target: !secret tlg_group_flat_1
+            chat_id: !secret tlg_group_flat_1
             title: "*Внимание!*"
             message: |
               Питание контроллера Нептун отключено более 2х минут!
@@ -389,5 +389,5 @@ water_leak_protection:
           continue_on_timeout: false
         - action: telegram_bot.send_message
           data:
-            target: '{{ trigger.event.data.chat_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
             message: "Водопроводные краны открыты."

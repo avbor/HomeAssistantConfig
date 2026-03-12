@@ -8,6 +8,8 @@ https://yandex.ru/dev/dialogs/smart-home/doc/reference/post-action.html
 from enum import StrEnum
 from typing import Any, Literal
 
+from pydantic import BaseModel
+
 from .base import APIModel
 from .capability import (
     CapabilityDescription,
@@ -32,11 +34,15 @@ class DeviceType(StrEnum):
     LIGHT_CEILING = "devices.types.light.ceiling"
     LIGHT_LAMP = "devices.types.light.lamp"
     LIGHT_GARLAND = "devices.types.light.garland"
+    LIGHT_SCONCE = "devices.types.light.sconce"
+    LIGHT_TORCHERE = "devices.types.light.torchere"
+    LIGHT_DIMMABLE = "devices.types.light.dimmable"
     SOCKET = "devices.types.socket"
     SWITCH = "devices.types.switch"
     SWITCH_RELAY = "devices.types.switch.relay"
     THERMOSTAT = "devices.types.thermostat"
     THERMOSTAT_AC = "devices.types.thermostat.ac"
+    THERMOSTAT_HEATER = "devices.types.thermostat.heater"
     MEDIA_DEVICE = "devices.types.media_device"
     MEDIA_DEVICE_TV = "devices.types.media_device.tv"
     MEDIA_DEVICE_TV_BOX = "devices.types.media_device.tv_box"
@@ -46,8 +52,13 @@ class DeviceType(StrEnum):
     COFFEE_MAKER = "devices.types.cooking.coffee_maker"
     KETTLE = "devices.types.cooking.kettle"
     MULTICOOKER = "devices.types.cooking.multicooker"
+    REFRIGERATOR = "devices.types.refrigerator"
+    REMOTE_CAR = "devices.types.remote_car"
     OPENABLE = "devices.types.openable"
+    OPENABLE_BARRIER = "devices.types.openable.barrier"
     OPENABLE_CURTAIN = "devices.types.openable.curtain"
+    OPENABLE_DOOR_LOCK = "devices.types.openable.door_lock"
+    OPENABLE_INTERCOM = "devices.types.openable.intercom"
     OPENABLE_VALVE = "devices.types.openable.valve"
     HUMIDIFIER = "devices.types.humidifier"
     PURIFIER = "devices.types.purifier"
@@ -183,7 +194,7 @@ class ActionResultCapability(APIModel):
     state: ActionResultCapabilityState
 
 
-class ActionResultDevice(APIModel):
+class ActionResultDevice(BaseModel):
     """Device for a state change response."""
 
     id: str
