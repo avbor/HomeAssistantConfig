@@ -1,0 +1,60 @@
+#################################################
+# Package SonoffLAN
+#################################################
+
+sonofflan_pack:
+
+  # Integration settings
+  sonoff:
+
+    username: !secret sonoff_username
+    password: !secret sonoff_pass
+    devices:
+      1000b6831b:
+        device_class: light
+
+      1000b72483:
+        device_class: light
+
+      1000ab3c28:
+        device_class: light
+
+      1000f3035d:
+        device_class: light
+
+      1000f30a9e:
+        device_class: light
+
+      1000f2f14a:
+        device_class: light
+
+      1000f2a500:
+        device_class: light
+
+      "1001045426":
+        device_class: light
+
+      "1001053235":
+        device_class: light
+
+      "1001322978":
+        reporting:
+          current: [5, 3600, 0.1] # min seconds, max seconds, min delta value
+          power: [5, 3600, 1]
+          voltage: [60, 3600, 1]
+
+      1000b68886:
+        device_class: switch
+
+  # Automations
+  automation:
+
+    - alias: Force update PowerMeter-01 states
+      id: d3fdd842-e7b7-4858-83d1-e067cbdb4ce5
+      triggers:
+        - trigger: time_pattern
+          seconds: "/5"
+      actions:
+        action: homeassistant.update_entity
+        target:
+          entity_id: sensor.sonoff_1001322978_current

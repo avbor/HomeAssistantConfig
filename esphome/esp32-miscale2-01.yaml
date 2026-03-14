@@ -162,6 +162,7 @@ globals:
 sensor:
   - platform: xiaomi_miscale
     mac_address: '5C:CA:D3:55:67:7F'
+    clear_impedance: true
     weight:
       name: "${board_name} Current Weight"
       id: sens_miscale_weight_current
