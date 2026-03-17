@@ -36,12 +36,20 @@ from .const import (
     FLOW_DOWNLOAD_IMAGES,
     FLOW_DOWNLOAD_PATH,
     FLOW_UPLOAD_DATA,
+    MMOL_LUX_RATIO_MAX,
+    MMOL_LUX_RATIO_MIN,
+    MMOL_TO_DLI_FACTOR,
     OPB_ATTR_RESULTS,
     OPB_ATTR_SEARCH_RESULT,
     OPB_ATTR_TIMESTAMP,
     OPB_CURRENT_INFO_MESSAGE,
     OPB_DISPLAY_PID,
     OPB_INFO_MESSAGE,
+    OPB_MAX_DLI,
+    OPB_MAX_LIGHT_LUX,
+    OPB_MAX_LIGHT_MMOL,
+    OPB_MIN_DLI,
+    OPB_MIN_LIGHT_MMOL,
     OPB_PID,
     OPB_SERVICE_CLEAN_CACHE,
     OPB_SERVICE_GET,
@@ -56,6 +64,55 @@ from .uploader import (
 
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 _LOGGER = logging.getLogger(__name__)
+
+
+def _enrich_plant_data_with_dli(plant_data: dict) -> None:
+    """Convert OpenPlantbook mmol light values to DLI (mol/d/m²).
+
+    Adds max_dli and min_dli attributes to the plant data dict.
+
+    The conversion depends on what the mmol values represent, detected via
+    the mmol/lux ratio:
+    - Ratio 0.02–0.5: mmol encodes PPFD × photoperiod → multiply by 0.0036
+    - Ratio > 0.5: mmol is likely a daily integral in mmol/d/m² → divide by 1000
+    - Ratio < 0.02 or no lux data: use × 0.0036 as default, log a warning
+    """
+    max_mmol = plant_data.get(OPB_MAX_LIGHT_MMOL)
+    min_mmol = plant_data.get(OPB_MIN_LIGHT_MMOL)
+    max_lux = plant_data.get(OPB_MAX_LIGHT_LUX)
+
+    # Determine conversion method via ratio check
+    factor = MMOL_TO_DLI_FACTOR  # default: × 0.0036
+    if max_mmol is not None and max_lux and float(max_lux) > 0:
+        ratio = float(max_mmol) / float(max_lux)
+        if ratio > MMOL_LUX_RATIO_MAX:
+            # mmol values are likely daily integrals in mmol/d/m²
+            factor = 0.001  # / 1000
+            _LOGGER.info(
+                "mmol/lux ratio %.4f for %s is above %.2f — interpreting "
+                "mmol values as daily integrals (DLI = mmol / 1000). "
+                "max_mmol=%s, max_lux=%s",
+                ratio,
+                plant_data.get(OPB_DISPLAY_PID, "unknown"),
+                MMOL_LUX_RATIO_MAX,
+                max_mmol,
+                max_lux,
+            )
+        elif ratio < MMOL_LUX_RATIO_MIN:
+            _LOGGER.warning(
+                "Unusual mmol/lux ratio %.4f for %s (below %.2f). "
+                "DLI thresholds may be inaccurate. max_mmol=%s, max_lux=%s",
+                ratio,
+                plant_data.get(OPB_DISPLAY_PID, "unknown"),
+                MMOL_LUX_RATIO_MIN,
+                max_mmol,
+                max_lux,
+            )
+
+    if max_mmol is not None:
+        plant_data[OPB_MAX_DLI] = round(float(max_mmol) * factor, 1)
+    if min_mmol is not None:
+        plant_data[OPB_MIN_DLI] = round(float(min_mmol) * factor, 1)
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -134,6 +191,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
             if plant_data:
                 _LOGGER.debug("Got data for %s", species)
+                _enrich_plant_data_with_dli(plant_data)
                 plant_data[OPB_ATTR_TIMESTAMP] = datetime.now().isoformat()
                 hass.data[DOMAIN][ATTR_SPECIES][species] = plant_data
                 entity_id = async_generate_entity_id(
@@ -251,13 +309,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     hass.states.async_remove(entity_id)
                     hass.data[DOMAIN][ATTR_SPECIES].pop(species)
 
+    def _write_file(path: str, data: bytes) -> None:
+        """Write binary data to a file (runs in executor)."""
+        with open(path, "wb") as fil:
+            fil.write(data)
+
     async def async_download_image(url: str, download_to: str) -> str | bool:
         _LOGGER.debug(
             "Going to download image %s to %s",
             url,
             download_to,
         )
-        if os.path.isfile(download_to):
+        if await hass.async_add_executor_job(os.path.isfile, download_to):
             _LOGGER.warning(
                 "File %s already exists. Will not download again", download_to
             )
@@ -273,8 +336,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 return False
 
         data = await resp.read()
-        with open(download_to, "wb") as fil:
-            fil.write(data)
+        await hass.async_add_executor_job(_write_file, download_to, data)
 
         _LOGGER.debug("Downloading of %s done", url)
         return download_to
