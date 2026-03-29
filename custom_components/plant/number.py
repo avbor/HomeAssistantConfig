@@ -24,6 +24,7 @@ from homeassistant.helpers.entity import (
     async_generate_entity_id,
 )
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_registry import async_get as er_async_get
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_conversion import TemperatureConverter
 
@@ -72,6 +73,13 @@ from .const import (
     DOMAIN,
     FLOW_PLANT_INFO,
     FLOW_PLANT_LIMITS,
+    FLOW_SENSOR_CO2,
+    FLOW_SENSOR_CONDUCTIVITY,
+    FLOW_SENSOR_HUMIDITY,
+    FLOW_SENSOR_ILLUMINANCE,
+    FLOW_SENSOR_MOISTURE,
+    FLOW_SENSOR_SOIL_TEMPERATURE,
+    FLOW_SENSOR_TEMPERATURE,
     ICON_CO2,
     ICON_CONDUCTIVITY,
     ICON_DLI,
@@ -157,6 +165,25 @@ async def async_setup_entry(
         pminmm,
         plux_ppfd,
     ]
+
+    # Default-disable threshold entities when no corresponding sensor is configured.
+    # HA only applies entity_registry_enabled_default on first registration,
+    # so user-enabled entities survive config entry reloads.
+    plant_info = entry.data.get(FLOW_PLANT_INFO, {})
+    sensor_groups = {
+        FLOW_SENSOR_MOISTURE: [pmaxm, pminm],
+        FLOW_SENSOR_TEMPERATURE: [pmaxt, pmint],
+        FLOW_SENSOR_ILLUMINANCE: [pmaxb, pminb, pmaxmm, pminmm, plux_ppfd],
+        FLOW_SENSOR_CONDUCTIVITY: [pmaxc, pminc],
+        FLOW_SENSOR_HUMIDITY: [pmaxh, pminh],
+        FLOW_SENSOR_CO2: [pmaxco2, pminco2],
+        FLOW_SENSOR_SOIL_TEMPERATURE: [pmaxst, pminst],
+    }
+    for sensor_key, entities in sensor_groups.items():
+        has_sensor = plant_info.get(sensor_key) is not None
+        for entity in entities:
+            entity._attr_entity_registry_enabled_default = has_sensor
+
     async_add_entities(number_entities)
 
     hass.data[DOMAIN][entry.entry_id][ATTR_THRESHOLDS] = number_entities
@@ -203,11 +230,16 @@ class PlantMinMax(RestoreNumber):
         self._config = config
         self.hass = hass
         self._plant = plantdevice
-        self.entity_id = async_generate_entity_id(
-            f"{DOMAIN}.{{}}",
-            f"{self._plant.name} {self._entity_id_key}",
-            current_ids={},
-        )
+        # Only force entity_id for existing entities (backwards compat).
+        # New entities let has_entity_name derive the entity_id automatically,
+        # which enables auto-rename when the device is renamed.
+        ent_reg = er_async_get(hass)
+        if ent_reg.async_get_entity_id("number", DOMAIN, self._attr_unique_id):
+            self.entity_id = async_generate_entity_id(
+                f"{DOMAIN}.{{}}",
+                f"{self._plant.name} {self._entity_id_key}",
+                current_ids={},
+            )
         # pylint: disable=no-member
         if (
             not hasattr(self, "_attr_native_value")
@@ -221,6 +253,7 @@ class PlantMinMax(RestoreNumber):
         """Device info for devices"""
         return DeviceInfo(
             identifiers={(DOMAIN, self._plant.unique_id)},
+            name=self._plant.name,
         )
 
     async def async_set_native_value(self, value: float) -> None:
@@ -251,7 +284,13 @@ class PlantMinMax(RestoreNumber):
             new_state,
             self._attr_native_value,
         )
-        self._attr_native_value = new_state
+        if new_state is not None:
+            try:
+                self._attr_native_value = float(new_state)
+            except (ValueError, TypeError):
+                self._attr_native_value = new_state
+        else:
+            self._attr_native_value = new_state
 
     def state_attributes_changed(
         self, old_attributes: dict[str, Any], new_attributes: dict[str, Any]
@@ -279,6 +318,12 @@ class PlantMinMax(RestoreNumber):
                 "No restore data for %s, keeping default %s",
                 self.entity_id,
                 self._default_value,
+            )
+            self.async_write_ha_state()
+            async_track_state_change_event(
+                self.hass,
+                [self.entity_id],
+                self._state_changed_event,
             )
             return
         _LOGGER.debug(

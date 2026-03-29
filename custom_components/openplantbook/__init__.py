@@ -9,9 +9,7 @@ from asyncio import timeout as async_timeout
 from datetime import datetime, timedelta
 
 import voluptuous as vol
-from homeassistant.components.persistent_notification import (
-    create as create_notification,
-)
+from homeassistant import exceptions
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
 from homeassistant.core import (
@@ -24,6 +22,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.util import raise_if_invalid_filename, slugify
 from openplantbook_sdk import MissingClientIdOrSecret, OpenPlantBookApi
+from openplantbook_sdk.sdk import RateLimitError
 
 from .const import (
     ATTR_ALIAS,
@@ -35,16 +34,14 @@ from .const import (
     DOMAIN,
     FLOW_DOWNLOAD_IMAGES,
     FLOW_DOWNLOAD_PATH,
-    FLOW_UPLOAD_DATA,
+    FLOW_SEND_LANG,
     MMOL_LUX_RATIO_MAX,
     MMOL_LUX_RATIO_MIN,
     MMOL_TO_DLI_FACTOR,
     OPB_ATTR_RESULTS,
     OPB_ATTR_SEARCH_RESULT,
     OPB_ATTR_TIMESTAMP,
-    OPB_CURRENT_INFO_MESSAGE,
     OPB_DISPLAY_PID,
-    OPB_INFO_MESSAGE,
     OPB_MAX_DLI,
     OPB_MAX_LIGHT_LUX,
     OPB_MAX_LIGHT_MMOL,
@@ -55,6 +52,7 @@ from .const import (
     OPB_SERVICE_GET,
     OPB_SERVICE_SEARCH,
     OPB_SERVICE_UPLOAD,
+    PLANTBOOK_BASEURL,
 )
 from .plantbook_exception import OpenPlantbookException
 from .uploader import (
@@ -128,36 +126,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if ATTR_API not in hass.data[DOMAIN]:
         hass.data[DOMAIN][ATTR_API] = OpenPlantBookApi(
-            entry.data.get(CONF_CLIENT_ID), entry.data.get(CONF_CLIENT_SECRET)
+            entry.data.get(CONF_CLIENT_ID),
+            entry.data.get(CONF_CLIENT_SECRET),
+            base_url=PLANTBOOK_BASEURL,
         )
 
     if ATTR_SPECIES not in hass.data[DOMAIN]:
         hass.data[DOMAIN][ATTR_SPECIES] = {}
-
-    # Display one-off notification about new functionality after upgrade
-    if not entry.data.get(OPB_INFO_MESSAGE):
-        hass.config_entries.async_update_entry(
-            entry, data={**entry.data, OPB_INFO_MESSAGE: OPB_CURRENT_INFO_MESSAGE}
-        )
-        if not entry.options.get(FLOW_UPLOAD_DATA):
-            _LOGGER.debug(
-                "Trigger after upgrade notification: %s", OPB_CURRENT_INFO_MESSAGE
-            )
-            create_notification(
-                hass=hass,
-                title="New Feature available in OpenPlantbook Integration",
-                message="Plant-sensors data uploading is available now. Please consider enabling it in ["
-                "OpenPlantbook Integration's settings]("
-                "https://github.com/Olen/home-assistant-openplantbook?tab=readme-ov-file#configuration) to "
-                "contribute to a creation of a Worldwide [Browsable]("
-                "https://open.plantbook.io/ui/sensor-data/) dataset. [More info.]("
-                "https://open.plantbook.io/ui/sensor-data/)",
-            )
-        else:
-            _LOGGER.debug(
-                "Skipping after upgrade notification: %s because UPLOAD option is enabled",
-                OPB_CURRENT_INFO_MESSAGE,
-            )
 
     async def get_plant(call: ServiceCall) -> ServiceResponse:
         if DOMAIN not in hass.data:
@@ -178,9 +153,38 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             _LOGGER.debug("I am the first process to get %s", species)
             hass.data[DOMAIN][ATTR_SPECIES][species] = {}
             try:
-                plant_data = await hass.data[DOMAIN][ATTR_API].async_plant_detail_get(
-                    species
+                # Optionally pass Home Assistant language to OpenPlantbook API
+                send_lang = entry.options.get(FLOW_SEND_LANG, True)
+                if send_lang:
+                    lang_code = hass.config.language or "en"
+                    if isinstance(lang_code, str):
+                        lang_code = lang_code.split("-")[0].lower()
+                    else:
+                        lang_code = "en"
+                    plant_data = await hass.data[DOMAIN][
+                        ATTR_API
+                    ].async_plant_detail_get(species, lang=lang_code)
+                else:
+                    plant_data = await hass.data[DOMAIN][
+                        ATTR_API
+                    ].async_plant_detail_get(species)
+            except RateLimitError as err:
+                plant_data = None
+                _LOGGER.warning(
+                    "Rate limit reached while fetching data for %s", species
                 )
+                del hass.data[DOMAIN][ATTR_SPECIES][species]
+                raise exceptions.HomeAssistantError(
+                    "OpenPlantbook API rate limit exceeded. Please try again later."
+                ) from err
+            except PermissionError as err:
+                plant_data = None
+                _LOGGER.error(
+                    "Authentication failed while fetching data for %s. Please reconfigure the integration",
+                    species,
+                )
+                del hass.data[DOMAIN][ATTR_SPECIES][species]
+                raise InvalidAuth("Authentication failed") from err
             except MissingClientIdOrSecret:
                 plant_data = None
                 _LOGGER.error(
@@ -275,6 +279,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.info("Searching for %s", alias)
         try:
             plant_data = await hass.data[DOMAIN][ATTR_API].async_plant_search(alias)
+        except RateLimitError as err:
+            _LOGGER.warning("Rate limit reached while searching for %s", alias)
+            raise exceptions.HomeAssistantError(
+                "OpenPlantbook API rate limit exceeded. Please try again later."
+            ) from err
+        except PermissionError as err:
+            _LOGGER.error(
+                "Authentication failed while searching for %s. Please reconfigure the integration",
+                alias,
+            )
+            raise InvalidAuth("Authentication failed") from err
         except MissingClientIdOrSecret:
             _LOGGER.error(
                 "Missing client ID or secret. Please set up the integration again"
@@ -290,7 +305,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         return attrs
 
     async def plant_data_upload_service(call: ServiceCall) -> ServiceResponse:
-        return {"result": await plant_data_upload(hass, entry=entry, call=call)}
+        try:
+            return {"result": await plant_data_upload(hass, entry=entry, call=call)}
+        except RateLimitError as err:
+            _LOGGER.warning("Rate limit reached while uploading plant data")
+            raise exceptions.HomeAssistantError(
+                "OpenPlantbook API rate limit exceeded. Please try again later."
+            ) from err
 
     async def clean_cache(call: ServiceCall) -> None:
         hours = call.data.get(ATTR_HOURS)
@@ -336,7 +357,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 return False
 
         data = await resp.read()
-        await hass.async_add_executor_job(_write_file, download_to, data)
+        try:
+            await hass.async_add_executor_job(_write_file, download_to, data)
+        except PermissionError:
+            _LOGGER.warning(
+                "Cannot write image to %s due to permission error", download_to
+            )
+            return False
 
         _LOGGER.debug("Downloading of %s done", url)
         return download_to
@@ -396,3 +423,7 @@ async def config_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> Non
 
     _LOGGER.debug("Options update: %s, %s", entry.entry_id, entry.options)
     await async_setup_upload_schedule(hass, entry)
+
+
+class InvalidAuth(exceptions.HomeAssistantError):
+    """Error to indicate there is invalid auth."""

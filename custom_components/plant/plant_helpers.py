@@ -354,16 +354,26 @@ class PlantHelper:
                 UnitOfTemperature.CELSIUS,
                 0,
             )
-            opb_mmol = opb_plant.get(CONF_PLANTBOOK_MAPPING[CONF_MAX_MMOL])
-            if opb_mmol:
-                max_dli = round(float(opb_mmol) * PPFD_DLI_FACTOR)
+            # Prefer pre-computed DLI from openplantbook integration (includes
+            # ratio-based detection). Fall back to mmol × PPFD_DLI_FACTOR.
+            opb_max_dli = opb_plant.get(CONF_PLANTBOOK_MAPPING[CONF_MAX_DLI])
+            if opb_max_dli is not None:
+                max_dli = round(float(opb_max_dli))
             else:
-                max_dli = DEFAULT_MAX_DLI
-            opb_mmol = opb_plant.get(CONF_PLANTBOOK_MAPPING[CONF_MIN_MMOL])
-            if opb_mmol:
-                min_dli = round(float(opb_mmol) * PPFD_DLI_FACTOR)
+                opb_mmol = opb_plant.get(CONF_PLANTBOOK_MAPPING[CONF_MAX_MMOL])
+                if opb_mmol:
+                    max_dli = round(float(opb_mmol) * PPFD_DLI_FACTOR)
+                else:
+                    max_dli = DEFAULT_MAX_DLI
+            opb_min_dli = opb_plant.get(CONF_PLANTBOOK_MAPPING[CONF_MIN_DLI])
+            if opb_min_dli is not None:
+                min_dli = round(float(opb_min_dli))
             else:
-                min_dli = DEFAULT_MIN_DLI
+                opb_mmol = opb_plant.get(CONF_PLANTBOOK_MAPPING[CONF_MIN_MMOL])
+                if opb_mmol:
+                    min_dli = round(float(opb_mmol) * PPFD_DLI_FACTOR)
+                else:
+                    min_dli = DEFAULT_MIN_DLI
             max_conductivity = _to_int(
                 opb_plant.get(CONF_PLANTBOOK_MAPPING[CONF_MAX_CONDUCTIVITY]),
                 DEFAULT_MAX_CONDUCTIVITY,

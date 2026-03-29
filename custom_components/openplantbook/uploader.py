@@ -1,4 +1,5 @@
 import logging
+import random
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -17,10 +18,14 @@ from homeassistant.const import (
 )
 from homeassistant.core import Event, HassJob, HomeAssistant, callback
 from homeassistant.helpers import device_registry, entity_registry
-from homeassistant.helpers.event import async_call_later, async_track_time_interval
+from homeassistant.helpers.event import (
+    async_call_later,
+    async_track_time_change,
+)
 from homeassistant.util import dt
 from json_timeseries import JtsDocument, TimeSeries, TsRecord
 from openplantbook_sdk import ValidationError
+from openplantbook_sdk.sdk import RateLimitError
 
 from .const import (
     ATTR_API,
@@ -33,7 +38,7 @@ from .const import (
 from .plantbook_exception import OpenPlantbookException
 
 UPLOAD_TIME_INTERVAL = timedelta(days=1)
-UPLOAD_WAIT_AFTER_RESTART = timedelta(minutes=5)
+UPLOAD_WAIT_AFTER_RESTART = timedelta(hours=4)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,13 +50,19 @@ def get_supported_state_value(state) -> tuple:
 
         if unit_of_measurement != supported_unit:
             _LOGGER.debug(
-                f"Unit '{unit_of_measurement}' of '{current_measurement}' measurement is not supported. Its value '{supported_state}' disregarded"
+                "Unit '%s' of '%s' measurement is not supported. Its value '%s' disregarded",
+                unit_of_measurement,
+                current_measurement,
+                supported_state,
             )
             state_error = current_measurement
 
         elif supported_state < value_range[0] or supported_state > value_range[1]:
             _LOGGER.debug(
-                f"Value '{supported_state}' of {current_measurement} is out of range {value_range} - disregarded"
+                "Value '%s' of %s is out of range %s - disregarded",
+                supported_state,
+                current_measurement,
+                value_range,
             )
             state_error = current_measurement
 
@@ -65,18 +76,21 @@ def get_supported_state_value(state) -> tuple:
         supported_state = round(float(state.state))
     except (ValueError, TypeError):
         _LOGGER.debug(
-            f"State is not a number - disregarded: state_value: '{state.state}', state: {state}"
+            "State is not a number - disregarded: state_value: '%s', state: %s",
+            state.state,
+            state,
         )
         return None, current_measurement
 
     # temperature
     if current_measurement == "temperature":
-
         # Convert Fahrenheit to Celsius
         if unit_of_measurement == UnitOfTemperature.FAHRENHEIT:
             supported_state = round((supported_state - 32) * 5 / 9)
             _LOGGER.debug(
-                f"Temperature converted from {state.state} °F to {supported_state} °C"
+                "Temperature converted from %s °F to %s °C",
+                state.state,
+                supported_state,
             )
             unit_of_measurement = UnitOfTemperature.CELSIUS
 
@@ -84,7 +98,9 @@ def get_supported_state_value(state) -> tuple:
         elif unit_of_measurement == UnitOfTemperature.KELVIN:
             supported_state = round(supported_state - 273.15)
             _LOGGER.debug(
-                f"Temperature converted from {state.state} K to {supported_state} °C"
+                "Temperature converted from %s K to %s °C",
+                state.state,
+                supported_state,
             )
             unit_of_measurement = UnitOfTemperature.CELSIUS
 
@@ -108,7 +124,7 @@ def get_supported_state_value(state) -> tuple:
 
     # unsupported device_class
     else:
-        _LOGGER.debug(f"Unsupported device_class: {state}")
+        _LOGGER.debug("Unsupported device_class: %s", state)
         state_error = "device_class"
 
     return supported_state, state_error
@@ -160,24 +176,25 @@ async def plant_data_upload(
         # It's hard to get to the PID for Plantbook so getting it via Plant-Device's entity_id and its states
         plant_device_state = None
         plant_entity_id = None
-        for entry in plant_sensors_entries:
-            if entry.domain == "plant":
-                plant_entity_id = entry.entity_id
+        for plant_entry in plant_sensors_entries:
+            if plant_entry.domain == "plant":
+                plant_entity_id = plant_entry.entity_id
 
                 # Get OPB component's config state
                 plant_device_state = await get_instance(hass).async_add_executor_job(
                     get_last_state_changes, hass, 1, plant_entity_id
                 )
                 break
-
         if not plant_device_state or not plant_entity_id:
             _LOGGER.error(
-                f"Unable to query because Config-state is not found for Plant-device {i.name} - {i.model}"
+                "Unable to query because Config-state is not found for Plant-device %s - %s",
+                i.name,
+                i.model,
             )
             continue
 
         # Corresponding PID(Plant_ID)
-        _LOGGER.debug(f"Plant_device_state: {plant_device_state}")
+        _LOGGER.debug("Plant_device_state: %s", plant_device_state)
         plant_attributes = plant_device_state[plant_entity_id][0].attributes
         opb_pid = plant_attributes.get("species_original")
         if not opb_pid:
@@ -194,7 +211,7 @@ async def plant_data_upload(
 
         # Registering Plant-instance
         reg_map = {plant_instance_id: opb_pid}
-        _LOGGER.debug(f"Registering Plant-instance: {reg_map}")
+        _LOGGER.debug("Registering Plant-instance: %s", reg_map)
 
         res = None
         caught_exception = None
@@ -208,12 +225,10 @@ async def plant_data_upload(
 
         # OPB ValidationFailure
         except ValidationError as ex:
-
             caught_exception = ex
             opb_errors = ex.errors
 
             if opb_errors[0]["code"] == "invalid_pid":
-
                 # workaround for case when HASS original_species is set to DISPLAY_PID rather than PID attempt to find
                 # the plant using PID as DISPLAY_PID and if found only 1 plant and DISPLAY_PID match they retry
                 try:
@@ -222,7 +237,6 @@ async def plant_data_upload(
                     )
 
                     if search_res["count"] == 1:
-
                         if opb_pid == search_res["results"][0]["display_pid"]:
                             opb_disp_pid = opb_pid
                             opb_pid = search_res["results"][0]["pid"]
@@ -238,37 +252,55 @@ async def plant_data_upload(
                             )
 
                             _LOGGER.debug(
-                                f"The workaround found match between display_pid '{opb_disp_pid}' and pid: '{opb_pid}'. The "
-                                f"Plant-instance has been registered with {opb_pid}"
+                                "The workaround found match between display_pid '%s' and pid: '%s'. The "
+                                "Plant-instance has been registered with %s",
+                                opb_disp_pid,
+                                opb_pid,
+                                opb_pid,
                             )
                             caught_exception = None
 
+                except RateLimitError:
+                    raise
                 except Exception as ex_in:
                     _LOGGER.debug(
-                        f"The 'display_pid workaround' failed to register Plant-instance: {reg_map} due to Exception: {ex_in}"
+                        "The 'display_pid workaround' failed to register Plant-instance: %s due to Exception: %s",
+                        reg_map,
+                        ex_in,
                     )
 
+        except RateLimitError:
+            raise
         except Exception as ex:
             caught_exception = ex
 
         if caught_exception:
             _LOGGER.error(
-                f"Cannot upload sensor data for plant '{reg_map}' because unable to register Plant-instance due to exception: {caught_exception}"
+                "Cannot upload sensor data for plant '%s' because unable to register Plant-instance due to exception: %s",
+                reg_map,
+                caught_exception,
             )
             continue
 
-        _LOGGER.debug(f"Registration is successful with response: {res}")
+        if res is None:
+            _LOGGER.error(
+                "Unable to register Plant-instance %s: API returned no response (check credentials/token)",
+                reg_map,
+            )
+            continue
+
+        _LOGGER.debug("Registration is successful with response: %s", res)
         # Error out if unexpected response has been received
         try:
             # Get OpenPlantbook generated ID for the Plant-instance
             custom_id = res[0]["id"]
         except (IndexError, KeyError, TypeError):
-            _LOGGER.error(f"Cannot parse API response: {res}")
+            _LOGGER.error("Cannot parse API response: %s", res)
             continue
 
         # Get the latest_data timestamp from OPB response
         latest_data = res[0].get("latest_data")
-        _LOGGER.debug(f"Latest_data timestamp from OPB (in UTC): {latest_data}")
+        _LOGGER.debug("Latest_data timestamp from OPB (in UTC): %s", latest_data)
 
         query_period_end_timestamp = dt_util.now(dt.UTC)
 
@@ -291,7 +323,9 @@ async def plant_data_upload(
             )
 
         _LOGGER.debug(
-            f"Querying plant-sensors data from {dt_util.as_local(query_period_start_timestamp)} to {dt_util.as_local(query_period_end_timestamp)}"
+            "Querying plant-sensors data from %s to %s",
+            dt_util.as_local(query_period_start_timestamp),
+            dt_util.as_local(query_period_end_timestamp),
         )
 
         # Create time_series for each measurement of the same "plant_id"
@@ -304,11 +338,11 @@ async def plant_data_upload(
         }
 
         # Go through sensors entries
-        for entry in plant_sensors_entries:
+        for sensor_entry in plant_sensors_entries:
             # process supported measurements of the sensor
             if (
-                entry.domain == "sensor"
-                and entry.original_device_class in OPB_MEASUREMENTS_TO_UPLOAD
+                sensor_entry.domain == "sensor"
+                and sensor_entry.original_device_class in OPB_MEASUREMENTS_TO_UPLOAD
             ):
                 # Get sensors states (history) over the period of time
                 sensor_entity_states = await get_instance(hass).async_add_executor_job(
@@ -316,16 +350,15 @@ async def plant_data_upload(
                     hass,
                     query_period_start_timestamp,
                     query_period_end_timestamp,
-                    [entry.entity_id],
+                    [sensor_entry.entity_id],
                 )
 
-                _LOGGER.debug(f"Parsing states of: {entry}")
+                _LOGGER.debug("Parsing states of: %s", sensor_entry)
 
                 measurement_errors = []
 
                 # Convert HASS state to JTS time_series excluding 'unknown' states
                 for entity_states in sensor_entity_states.values():
-
                     for state in entity_states:
                         # check if it is meaningful state
                         if state.state in ("unknown", "unavailable"):
@@ -352,20 +385,24 @@ async def plant_data_upload(
                             continue
 
                         # Add a state to TimeSeries
-                        measurements[entry.original_device_class].insert(
+                        measurements[sensor_entry.original_device_class].insert(
                             TsRecord(
                                 dt_util.as_local(state.last_updated),
                                 supported_state_value,
                             )
                         )
                         _LOGGER.debug(
-                            f"Added Time-Series Record: {dt_util.as_local(state.last_updated)} {supported_state_value}"
+                            "Added Time-Series Record: %s %s",
+                            dt_util.as_local(state.last_updated),
+                            supported_state_value,
                         )
 
                 if measurement_errors:
                     _LOGGER.info(
-                        f"Plant (Entity) {entry} has errors in measurements: {measurement_errors}. The invalid values were disregarded. You may "
-                        "enable debug logging for more information."
+                        "Plant (Entity) %s has errors in measurements: %s. The invalid values were disregarded. You may "
+                        "enable debug logging for more information.",
+                        sensor_entry,
+                        measurement_errors,
                     )
 
         # Remove empty measurements
@@ -374,13 +411,15 @@ async def plant_data_upload(
                 jts_doc.addSeries(m)
 
     if len(jts_doc) > 0:
-        _LOGGER.debug(f"Payload to upload: {jts_doc.toJSONString()}")
+        _LOGGER.debug("Payload to upload: %s", jts_doc.toJSONString())
         _LOGGER.debug("Calling OPB SDK to upload data")
         res = await hass.data[DOMAIN][ATTR_API].async_plant_data_upload(
             jts_doc, dry_run=False
         )
         _LOGGER.info(
-            f"Uploading data from {len(jts_doc)} sensors was {'successful' if res else 'failure'}"
+            "Uploading data from %s sensors was %s",
+            len(jts_doc),
+            "successful" if res else "failure",
         )
         return {"result": res}
     else:
@@ -392,11 +431,12 @@ async def plant_data_upload(
             ).astimezone(dt.UTC)
             if (days_since_upload.days > 3) and dt_util.now(dt.UTC).weekday() == 4:
                 _LOGGER.warning(
-                    f"The last time plant sensors data was successfully uploaded {days_since_upload.days} days ago. This may indicate a "
+                    "The last time plant sensors data was successfully uploaded %s days ago. This may indicate a "
                     "problem with Plants sensors or this integration. Please enable OpenPlantbook integration's debug "
                     "logging for more information. "
                     "You may report this issue via GitHub or support@plantbook.io attaching the debug log if you "
-                    "believe it is a bug."
+                    "believe it is a bug.",
+                    days_since_upload.days,
                 )
         else:
             # no latest_data in the OPB API indicates that the data has never been uploaded successfully for the plant
@@ -419,13 +459,17 @@ async def async_setup_upload_schedule(hass: HomeAssistant, entry: ConfigEntry) -
     async def upload_data(now: datetime) -> None:
         # now = dt_util.as_local(now)
         _LOGGER.info("Plant-sensors data upload initiated")
-        await plant_data_upload(hass, entry)
+        try:
+            await plant_data_upload(hass, entry)
+        except RateLimitError:
+            _LOGGER.warning(
+                "Rate limit reached during scheduled upload; skipping until next scheduled run"
+            )
 
     # Check if upload is enabled via OptionFlow
     upload_sensors = entry.options.get(FLOW_UPLOAD_DATA)
 
     if upload_sensors:
-        _LOGGER.info("Plant-sensors data upload schedule is active")
 
         @callback
         def start_schedule(_event: Event | None = None) -> None:
@@ -441,13 +485,25 @@ async def async_setup_upload_schedule(hass: HomeAssistant, entry: ConfigEntry) -
                 ),
             )
 
-            # Upload on UPLOAD_TIME_INTERVAL interval
-            remove_upload_listener = async_track_time_interval(
+            # Daily upload at a randomized time (stable per config entry)
+            random_seconds = random.Random(entry.entry_id).randrange(
+                int(UPLOAD_TIME_INTERVAL.total_seconds())
+            )
+            hour, remainder = divmod(random_seconds, 3600)
+            minute, second = divmod(remainder, 60)
+            _LOGGER.info(
+                "Plant-sensors daily upload scheduled at %02d:%02d:%02d",
+                hour,
+                minute,
+                second,
+            )
+
+            remove_upload_listener = async_track_time_change(
                 hass,
                 upload_data,
-                UPLOAD_TIME_INTERVAL,
-                name="opb sensors upload daily",
-                cancel_on_shutdown=True,
+                hour=hour,
+                minute=minute,
+                second=second,
             )
             hass.data[DOMAIN]["remove_upload_listener"] = remove_upload_listener
             entry.async_on_unload(remove_upload_listener)

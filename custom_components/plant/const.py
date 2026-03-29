@@ -252,4 +252,6 @@ CONF_PLANTBOOK_MAPPING = {
     CONF_MAX_HUMIDITY: "max_env_humid",
     CONF_MIN_MMOL: "min_light_mmol",
     CONF_MAX_MMOL: "max_light_mmol",
+    CONF_MIN_DLI: "min_dli",
+    CONF_MAX_DLI: "max_dli",
 }
