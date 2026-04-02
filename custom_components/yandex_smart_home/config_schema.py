@@ -54,10 +54,12 @@ from .const import (
     CONF_PRESSURE_UNIT,
     CONF_SETTINGS,
     CONF_SLOW,
+    CONF_SPLIT_ON_OFF,
     CONF_STATE_UNKNOWN,
     CONF_SUPPORT_SET_CHANNEL,
     CONF_TURN_OFF,
     CONF_TURN_ON,
+    DOCS_URL,
     MediaPlayerFeature,
     PropertyInstanceType,
 )
@@ -83,23 +85,25 @@ def property_type(value: str) -> str:
         instance = value.split(".", 1)[1]
         try:
             EventPropertyInstance(instance)
-            return value
         except ValueError:
             raise vol.Invalid(
                 f"Event property type '{instance}' is not supported, "
-                f"see valid event types at https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/event/#type"
+                f"see valid event types at {DOCS_URL}/devices/sensor/event/#type"
             )
+        else:
+            return value
 
     if value.startswith(f"{PropertyInstanceType.FLOAT}."):
         instance = value.split(".", 1)[1]
         try:
             FloatPropertyInstance(instance)
-            return value
         except ValueError:
             raise vol.Invalid(
                 f"Float property type '{instance}' is not supported, "
-                f"see valid float types at https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/float/#type"
+                f"see valid float types at {DOCS_URL}/devices/sensor/float/#type"
             )
+        else:
+            return value
 
     for enum in [FloatPropertyInstance, EventPropertyInstance]:
         with suppress(ValueError):
@@ -121,8 +125,8 @@ def property_type(value: str) -> str:
 
     raise vol.Invalid(
         f"Property type '{value}' is not supported, "
-        f"see valid types at https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/event/#type and "
-        f"https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/float/#type"
+        f"see valid types at {DOCS_URL}/devices/sensor/event/#type and "
+        f"{DOCS_URL}/devices/sensor/float/#type"
     )
 
 
@@ -155,7 +159,7 @@ def property_attributes(value: ConfigType) -> ConfigType:
             raise vol.Invalid(
                 f"Target unit of measurement '{target_unit_of_measurement}' is not supported "
                 f"for {property_type_value} property, see valid values "
-                f"at https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/float/#property-target-unit-of-measurement"
+                f"at {DOCS_URL}/devices/sensor/float/#property-target-unit-of-measurement"
             )
 
     return value
@@ -170,7 +174,7 @@ def mode_instance(value: str) -> str:
     except ValueError:
         _LOGGER.error(
             f"Mode instance '{value}' is not supported, "
-            f"see valid modes at https://docs.yaha-cloud.ru/v1.1.x/advanced/capabilities/mode/#instance"
+            f"see valid modes at {DOCS_URL}/advanced/capabilities/mode/#instance"
         )
         raise vol.Invalid(f"Mode instance '{value}' is not supported")
 
@@ -181,14 +185,15 @@ def mode(value: str) -> str:
     for enum in [ModeCapabilityMode, ColorScene]:
         try:
             enum(value)
-            return value
         except ValueError:
             pass
+        else:
+            return value
 
     _LOGGER.error(
         f"Mode '{value}' is not supported, "
         f"see valid modes at https://yandex.ru/dev/dialogs/smart-home/doc/concepts/mode-instance-modes.html and "
-        f"https://docs.yaha-cloud.ru/v1.1.x/devices/light/#scene-list"
+        f"{DOCS_URL}/devices/light/#scene-list"
     )
 
     raise vol.Invalid(f"Mode '{value}' is not supported")
@@ -200,7 +205,7 @@ def event_instance(value: str) -> str:
     except ValueError:
         _LOGGER.error(
             f"Event instance '{value}' is not supported, "
-            f"see valid event types at https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/event/#event-types"
+            f"see valid event types at {DOCS_URL}/devices/sensor/event/#event-types"
         )
         raise vol.Invalid(f"Event instance '{value}' is not supported")
 
@@ -214,7 +219,7 @@ def event_map(value: dict[str, dict[str, list[str]]]) -> dict[str, dict[str, lis
             if event not in supported_events:
                 _LOGGER.error(
                     f"Event '{event}' is not supported for '{instance}' event instance, "
-                    f"see valid event types at https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/event/#event-types"
+                    f"see valid event types at {DOCS_URL}/devices/sensor/event/#event-types"
                 )
                 raise vol.Invalid(f"Event '{event}' is not supported for '{instance}' event instance")
 
@@ -227,7 +232,7 @@ def toggle_instance(value: str) -> str:
     except ValueError:
         _LOGGER.error(
             f"Toggle instance '{value}' is not supported, "
-            f"see valid values at https://docs.yaha-cloud.ru/v1.1.x/advanced/capabilities/toggle/#instance"
+            f"see valid values at {DOCS_URL}/advanced/capabilities/toggle/#instance"
         )
         raise vol.Invalid(f"Toggle instance '{value}' is not supported")
 
@@ -240,7 +245,7 @@ def range_instance(value: str) -> str:
     except ValueError:
         _LOGGER.error(
             f"Range instance '{value}' is not supported, "
-            f"see valid values at https://docs.yaha-cloud.ru/v1.1.x/advanced/capabilities/range/#instance"
+            f"see valid values at {DOCS_URL}/advanced/capabilities/range/#instance"
         )
         raise vol.Invalid(f"Range instance '{value}' is not supported")
 
@@ -284,8 +289,7 @@ def color_name(value: str) -> str:
         ColorName(value)
     except ValueError:
         _LOGGER.error(
-            f"Color name '{value}' is not supported, "
-            f"see valid values at https://docs.yaha-cloud.ru/v1.1.x/devices/light/#color-profile-config"
+            f"Color name '{value}' is not supported, see valid values at {DOCS_URL}/devices/light/#color-profile-config"
         )
         raise vol.Invalid(f"Color name '{value}' is not supported")
 
@@ -417,6 +421,7 @@ ENTITY_SCHEMA = vol.All(
             vol.Optional(CONF_STATE_TEMPLATE): cv.template,
             vol.Optional(CONF_TURN_ON): vol.Any(cv.SERVICE_SCHEMA, cv.boolean),
             vol.Optional(CONF_TURN_OFF): vol.Any(cv.SERVICE_SCHEMA, cv.boolean),
+            vol.Optional(CONF_SPLIT_ON_OFF): cv.boolean,
             vol.Optional(CONF_DEVICE_CLASS): vol.In(EventDeviceClass.BUTTON),
             vol.Optional(CONF_FEATURES): vol.All(cv.ensure_list, entity_features),
             vol.Optional(CONF_ENTITY_PROPERTIES): [ENTITY_PROPERTY_SCHEMA],

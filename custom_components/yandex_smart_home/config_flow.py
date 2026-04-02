@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from enum import StrEnum
 import logging
+import re
 from typing import TYPE_CHECKING, cast
+from uuid import UUID
 
 from aiohttp import ClientConnectorError, ClientResponseError
 from homeassistant.auth.const import GROUP_ID_READ_ONLY
@@ -44,6 +46,7 @@ from .const import (
     CONF_LINKED_PLATFORMS,
     CONF_SKILL,
     CONF_USER_ID,
+    DOCS_URL,
     ConnectionType,
     EntityFilterSource,
 )
@@ -60,6 +63,20 @@ _LOGGER = logging.getLogger(__name__)
 DEFAULT_CONFIG_ENTRY_TITLE = "Yandex Smart Home"
 PRE_V1_DIRECT_CONFIG_ENTRY_TITLE = "YSH: Direct"  # TODO: remove after v1.1 release
 USER_NONE = "none"
+APPS_URLS = {
+    "ya_iot_app_url": "https://ya.cc/iot_app",
+    "vk_marusia_app_url": "https://trk.mail.ru/c/u2dc49",
+}
+YANDEX_SKILL_URLS = {
+    "dialogs_url": "https://dialogs.yandex.ru/developer/smart-home",
+    "social_url": "https://social.yandex.net/",
+    "oauth_authorize_url": "https://oauth.yandex.ru/authorize?response_type=token&client_id=c473ca268cd749d3a8371351a8f2bcbd",
+    "skill_icon_url": "https://community-assets.home-assistant.io/original/3X/6/a/6a99ebb8d0b585a00b407123ff76964cb3e18780.png",
+}
+VK_SKILL_URLS = {
+    "vk_platform_url": "https://platform.vk.com",
+    "vc_url": "https://vc.go.mail.ru",
+}
 
 
 class MaintenanceAction(StrEnum):
@@ -122,7 +139,13 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
     ) -> ConfigFlowResult:
         """Choose skill settings for direct connection."""
         errors = {}
-        description_placeholders = {"external_url": self._get_external_url()}
+        description_placeholders = {"external_url": self._get_external_url(), "docs_url": DOCS_URL}
+        match platform:
+            case SmartHomePlatform.YANDEX:
+                description_placeholders.update(YANDEX_SKILL_URLS)
+            case SmartHomePlatform.VK:
+                description_placeholders.update(VK_SKILL_URLS)
+
         entry_skill = self._options.get(CONF_SKILL, {})
 
         if DOMAIN not in self.hass.data:
@@ -136,30 +159,40 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
                 description_placeholders["entry_title"] = existed_entry.title
                 errors["base"] = "already_configured"
             else:
-                self._options[CONF_SKILL] = user_input
+                errors, self._options[CONF_SKILL] = _validate_skill_config(platform, user_input)
 
-                if self._entry:
-                    if user_input[CONF_ID] != entry_skill.get(CONF_ID) or user_input[CONF_USER_ID] != entry_skill.get(
-                        CONF_USER_ID
-                    ):
-                        self._data[CONF_LINKED_PLATFORMS] = []
-                        self.hass.config_entries.async_update_entry(
-                            self._entry,
-                            title=await async_config_entry_title(self.hass, self._data, self._options),
-                            data=self._data,
-                        )
+                if not errors:
+                    if self._entry:
+                        if user_input[CONF_ID] != entry_skill.get(CONF_ID) or user_input[
+                            CONF_USER_ID
+                        ] != entry_skill.get(CONF_USER_ID):
+                            self._data[CONF_LINKED_PLATFORMS] = []
+                            self.hass.config_entries.async_update_entry(
+                                self._entry,
+                                title=await async_config_entry_title(self.hass, self._data, self._options),
+                                data=self._data,
+                            )
 
-                    return await self.async_step_done()
+                        return await self.async_step_done()
 
-                return await self.async_step_expose_settings()
+                    return await self.async_step_expose_settings()
+        else:
+            user_input = {}
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_USER_ID, default=entry_skill.get(CONF_USER_ID)): await _async_get_user_selector(
-                    self.hass, mode=SelectSelectorMode.DROPDOWN, required=True
-                ),
-                vol.Required(CONF_ID, default=entry_skill.get(CONF_ID)): TextSelector(),
-                vol.Required(CONF_TOKEN, default=entry_skill.get(CONF_TOKEN)): TextSelector(),
+                vol.Required(
+                    CONF_USER_ID,
+                    default=user_input.get(CONF_USER_ID, entry_skill.get(CONF_USER_ID)),
+                ): await _async_get_user_selector(self.hass, mode=SelectSelectorMode.DROPDOWN, required=True),
+                vol.Required(
+                    CONF_ID,
+                    default=user_input.get(CONF_ID, entry_skill.get(CONF_ID)),
+                ): TextSelector(),
+                vol.Required(
+                    CONF_TOKEN,
+                    default=user_input.get(CONF_TOKEN, entry_skill.get(CONF_TOKEN)),
+                ): TextSelector(),
             },
         )
 
@@ -196,34 +229,53 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
         description_placeholders = {
             "cloud_base_url": CLOUD_BASE_URL,
             "instance_id": self._data[CONF_CLOUD_INSTANCE][CONF_CLOUD_INSTANCE_ID],
+            "docs_url": DOCS_URL,
         }
+        match platform:
+            case SmartHomePlatform.YANDEX:
+                description_placeholders.update(YANDEX_SKILL_URLS)
+            case SmartHomePlatform.VK:
+                description_placeholders.update(VK_SKILL_URLS)
+
         entry_skill = self._options.get(CONF_SKILL, {})
 
         if user_input is not None:
-            self._options[CONF_SKILL] = user_input
+            errors, self._options[CONF_SKILL] = _validate_skill_config(platform, user_input)
 
-            if self._entry:
-                if user_input[CONF_ID] != entry_skill.get(CONF_ID):
-                    self._data[CONF_LINKED_PLATFORMS] = []
+            if not errors:
+                if self._entry:
+                    if user_input[CONF_ID] != entry_skill.get(CONF_ID):
+                        self._data[CONF_LINKED_PLATFORMS] = []
 
-                if user_input[CONF_ID] != entry_skill.get(CONF_ID) or user_input[CONF_NAME] != entry_skill.get(
-                    CONF_NAME
-                ):
-                    self.hass.config_entries.async_update_entry(
-                        self._entry,
-                        title=await async_config_entry_title(self.hass, self._data, self._options),
-                        data=self._data,
-                    )
+                    if user_input[CONF_ID] != entry_skill.get(CONF_ID) or user_input[CONF_NAME] != entry_skill.get(
+                        CONF_NAME
+                    ):
+                        self.hass.config_entries.async_update_entry(
+                            self._entry,
+                            title=await async_config_entry_title(self.hass, self._data, self._options),
+                            data=self._data,
+                        )
 
-                return await self.async_step_done()
+                    return await self.async_step_done()
 
-            return await self.async_step_expose_settings()
+                return await self.async_step_expose_settings()
+        else:
+            user_input = {}
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_NAME, default=entry_skill.get(CONF_NAME)): TextSelector(),
-                vol.Required(CONF_ID, default=entry_skill.get(CONF_ID)): TextSelector(),
-                vol.Required(CONF_TOKEN, default=entry_skill.get(CONF_TOKEN)): TextSelector(),
+                vol.Required(
+                    CONF_NAME,
+                    default=user_input.get(CONF_NAME, entry_skill.get(CONF_NAME)),
+                ): TextSelector(),
+                vol.Required(
+                    CONF_ID,
+                    default=user_input.get(CONF_ID, entry_skill.get(CONF_ID)),
+                ): TextSelector(),
+                vol.Required(
+                    CONF_TOKEN,
+                    default=user_input.get(CONF_TOKEN, entry_skill.get(CONF_TOKEN)),
+                ): TextSelector(),
             }
         )
 
@@ -279,6 +331,7 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
                     ): BooleanSelector(),
                 }
             ),
+            description_placeholders={"docs_url": DOCS_URL},
         )
 
     async def async_step_update_filter(self, user_input: ConfigType | None = None) -> ConfigFlowResult:
@@ -346,9 +399,9 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
             if user_input[CONF_ENTITIES]:
                 self._options[CONF_FILTER] = {CONF_INCLUDE_ENTITIES: user_input[CONF_ENTITIES]}
                 return await self.async_step_done()
-            else:
-                errors["base"] = "entities_not_selected"
-                entities.clear()
+
+            errors["base"] = "entities_not_selected"
+            entities.clear()
 
         return self.async_show_form(
             step_id="include_entities",
@@ -360,6 +413,7 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
                 }
             ),
             errors=errors,
+            description_placeholders={"docs_url": DOCS_URL},
         )
 
     async def async_step_choose_label(self, user_input: ConfigType | None = None) -> ConfigFlowResult:
@@ -377,6 +431,7 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
                     )
                 }
             ),
+            description_placeholders={"docs_url": DOCS_URL},
         )
 
     async def async_step_done(self, _: ConfigType | None = None) -> ConfigFlowResult:
@@ -390,13 +445,12 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
             if self._entry and self._entry.entry_id == entry.entry_id:
                 continue
 
-            if CONF_SKILL in entry.options:
-                if (
-                    ConnectionType.DIRECT == entry.data[CONF_CONNECTION_TYPE]
-                    and platform == entry.data[CONF_PLATFORM]
-                    and user_id == entry.options[CONF_SKILL][CONF_USER_ID]
-                ):
-                    return entry
+            if CONF_SKILL in entry.options and (
+                entry.data[CONF_CONNECTION_TYPE] == ConnectionType.DIRECT
+                and platform == entry.data[CONF_PLATFORM]
+                and user_id == entry.options[CONF_SKILL][CONF_USER_ID]
+            ):
+                return entry
 
         return None
 
@@ -405,7 +459,13 @@ class BaseFlowHandler(FlowHandler["ConfigFlowContext", ConfigFlowResult]):
         try:
             return network.get_url(self.hass, allow_internal=False)
         except network.NoURLAvailableError:
-            raise AbortFlow("missing_external_url")
+            raise AbortFlow(
+                "missing_external_url",
+                description_placeholders={
+                    "my_redirect_network_url": "https://my.home-assistant.io/redirect/network/",
+                    "external_url_docs_url": "https://www.home-assistant.io/integrations/homeassistant/#external_url",
+                },
+            )
 
 
 class ConfigFlowHandler(BaseFlowHandler, ConfigFlow, domain=DOMAIN):
@@ -424,7 +484,13 @@ class ConfigFlowHandler(BaseFlowHandler, ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             return await self.async_step_connection_type()
 
-        return self.async_show_form(step_id="user")
+        return self.async_show_form(
+            step_id="user",
+            description_placeholders={
+                "docs_url": DOCS_URL,
+                "tg_chat_url": "https://t.me/yandex_smart_home",
+            },
+        )
 
     async def async_step_connection_type(self, user_input: ConfigType | None = None) -> ConfigFlowResult:
         """Choose connection type."""
@@ -459,6 +525,10 @@ class ConfigFlowHandler(BaseFlowHandler, ConfigFlow, domain=DOMAIN):
                 {vol.Required(CONF_CONNECTION_TYPE, default=ConnectionType.CLOUD): CONNECTION_TYPE_SELECTOR}
             ),
             errors=errors,
+            description_placeholders={
+                "docs_url": DOCS_URL,
+                "yaha_cloud_skill_url": "https://dialogs.yandex.ru/store/skills/cef326b2-home-assistant",
+            },
         )
 
     async def async_step_platform_direct(self, user_input: ConfigType | None = None) -> ConfigFlowResult:
@@ -470,7 +540,10 @@ class ConfigFlowHandler(BaseFlowHandler, ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="platform_direct",
-            description_placeholders={"external_url": self._get_external_url()},
+            description_placeholders={
+                "external_url": self._get_external_url(),
+                "docs_url": DOCS_URL,
+            },
             data_schema=vol.Schema({vol.Required(CONF_PLATFORM): PLATFORM_SELECTOR}),
         )
 
@@ -505,6 +578,8 @@ class ConfigFlowHandler(BaseFlowHandler, ConfigFlow, domain=DOMAIN):
         """Finish the flow."""
         description = self._data[CONF_CONNECTION_TYPE]
         description_placeholders: dict[str, str] = self._data.get(CONF_CLOUD_INSTANCE, {}).copy()
+        description_placeholders["docs_url"] = DOCS_URL
+        description_placeholders.update(APPS_URLS)
 
         if self._data[CONF_CONNECTION_TYPE] in (ConnectionType.DIRECT, ConnectionType.CLOUD_PLUS):
             description += f"_{self._data[CONF_PLATFORM]}"
@@ -574,6 +649,7 @@ class OptionsFlowHandler(OptionsFlow, BaseFlowHandler):
             CONF_CLOUD_INSTANCE_ID: self._data[CONF_CLOUD_INSTANCE][CONF_CLOUD_INSTANCE_ID],
             CONF_CLOUD_INSTANCE_PASSWORD: self._data[CONF_CLOUD_INSTANCE][CONF_CLOUD_INSTANCE_PASSWORD],
             CONF_CLOUD_INSTANCE_OTP: "-",
+            **APPS_URLS,
         }
         if self._data[CONF_CONNECTION_TYPE] == ConnectionType.CLOUD_PLUS:
             description_placeholders[CONF_SKILL] = self._options[CONF_SKILL][CONF_NAME]
@@ -616,7 +692,7 @@ class OptionsFlowHandler(OptionsFlow, BaseFlowHandler):
     async def async_step_maintenance(self, user_input: ConfigType | None = None) -> ConfigFlowResult:
         """Show maintenance actions."""
         errors: dict[str, str] = {}
-        description_placeholders = {}
+        description_placeholders = {"docs_url": DOCS_URL}
 
         component: YandexSmartHome = self.hass.data[DOMAIN]
         entity_filter = component.get_entity_filter_from_yaml()
@@ -631,7 +707,7 @@ class OptionsFlowHandler(OptionsFlow, BaseFlowHandler):
                                 self._data[CONF_CLOUD_INSTANCE][CONF_CLOUD_INSTANCE_ID],
                                 self._data[CONF_CLOUD_INSTANCE][CONF_CLOUD_INSTANCE_CONNECTION_TOKEN],
                             )
-                        except Exception as e:
+                        except Exception as e:  # noqa: BLE001
                             errors[MaintenanceAction.REVOKE_OAUTH_TOKENS] = "unknown"
                             description_placeholders["error"] = str(e)
 
@@ -655,7 +731,7 @@ class OptionsFlowHandler(OptionsFlow, BaseFlowHandler):
                         CONF_CLOUD_INSTANCE_CONNECTION_TOKEN: instance.connection_token,
                     }
                     self.hass.config_entries.async_update_entry(self._entry, data=self._data)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     errors[MaintenanceAction.RESET_CLOUD_INSTANCE_CONNECTION_TOKEN] = "unknown"
                     description_placeholders["error"] = str(e)
 
@@ -756,6 +832,30 @@ async def async_config_entry_title(hass: HomeAssistant, data: ConfigType, option
         if skill_id := skill.get(CONF_ID, ""):
             parts.append(skill_id[:8])
         if parts:
-            title += f' ({" / ".join(parts)})'
+            title += f" ({' / '.join(parts)})"
 
     return title
+
+
+def _validate_skill_config(
+    platform: SmartHomePlatform, config: dict[str, str]
+) -> tuple[dict[str, str], dict[str, str]]:
+    """Validate the skill config and return errors and updated config."""
+    errors: dict[str, str] = {}
+    if platform != SmartHomePlatform.YANDEX:
+        return errors, config
+
+    skill_id = config[CONF_ID]
+    dialog_url_re = r"/developer/skills/([0-9a-f-]+)/"
+    match = re.search(dialog_url_re, config[CONF_ID])
+    if match:
+        skill_id = match.group(1)
+
+    try:
+        UUID(skill_id, version=4)
+    except ValueError:
+        errors[CONF_ID] = "invalid_skill_id"
+    else:
+        config[CONF_ID] = skill_id
+
+    return errors, config

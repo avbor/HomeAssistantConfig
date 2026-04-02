@@ -3,6 +3,7 @@
 from enum import StrEnum
 
 DOMAIN = "yandex_smart_home"
+DOCS_URL = "https://docs.yaha-cloud.ru/v1.1.x"
 
 CONF_SETTINGS = "settings"
 CONF_PRESSURE_UNIT = "pressure_unit"
@@ -29,6 +30,7 @@ CONF_TURN_OFF = "turn_off"
 CONF_FEATURES = "features"
 CONF_SUPPORT_SET_CHANNEL = "support_set_channel"
 CONF_STATE_UNKNOWN = "state_unknown"
+CONF_SPLIT_ON_OFF = "split_on_off"
 CONF_BACKLIGHT_ENTITY_ID = "backlight_entity_id"
 CONF_ERROR_CODE_TEMPLATE = "error_code_template"
 CONF_SLOW = "slow"

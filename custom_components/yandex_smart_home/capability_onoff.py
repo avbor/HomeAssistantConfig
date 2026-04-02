@@ -1,7 +1,8 @@
 """Implement the Yandex Smart Home on_off capability."""
 
 from abc import ABC, abstractmethod
-from typing import Protocol
+from functools import cached_property
+from typing import Protocol, override
 
 from homeassistant.components import (
     automation,
@@ -42,6 +43,7 @@ from homeassistant.const import (
     STATE_OFF,
     STATE_ON,
     STATE_OPEN,
+    STATE_OPENING,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
@@ -51,13 +53,14 @@ from homeassistant.helpers.service import async_call_from_config
 from .capability import STATE_CAPABILITIES_REGISTRY, ActionOnlyCapabilityMixin, StateCapability
 from .const import (
     CONF_FEATURES,
+    CONF_SPLIT_ON_OFF,
     CONF_STATE_UNKNOWN,
     CONF_TURN_OFF,
     CONF_TURN_ON,
     SKYKETTLE_MODE_BOIL,
     MediaPlayerFeature,
 )
-from .helpers import ActionNotAllowed, APIError
+from .helpers import ActionNotAllowedError, APIError
 from .schema import (
     CapabilityType,
     OnOffCapabilityInstance,
@@ -82,17 +85,26 @@ class OnOffCapability(StateCapability[OnOffCapabilityInstanceActionState], Proto
         ...
 
     @property
-    def retrievable(self) -> bool:
-        """Test if the capability can return the current value."""
-        if self._entity_config.get(CONF_STATE_UNKNOWN):
+    def supported(self) -> bool:
+        """Test if the capability is supported (based on user config)."""
+        if (
+            self._entity_config.get(CONF_STATE_UNKNOWN)
+            and self._entity_config.get(CONF_TURN_OFF) is False
+            and self._entity_config.get(CONF_TURN_ON) is False
+        ):
             return False
 
-        return True
+        return self._supported
+
+    @property
+    def retrievable(self) -> bool:
+        """Test if the capability can return the current value."""
+        return not self._entity_config.get(CONF_STATE_UNKNOWN)
 
     @property
     def parameters(self) -> OnOffCapabilityParameters | None:
         """Return parameters for a devices list request."""
-        if not self.retrievable:
+        if not self.retrievable or self._entity_config.get(CONF_SPLIT_ON_OFF):
             return OnOffCapabilityParameters(split=True)
 
         return None
@@ -109,7 +121,7 @@ class OnOffCapability(StateCapability[OnOffCapabilityInstanceActionState], Proto
         for key, call in ((CONF_TURN_ON, state.value), (CONF_TURN_OFF, not state.value)):
             if key in self._entity_config and call:
                 if self._entity_config[key] is False:
-                    raise ActionNotAllowed
+                    raise ActionNotAllowedError
 
                 await async_call_from_config(
                     self._hass, self._entity_config[key], blocking=self._wait_for_service_call, context=context
@@ -125,6 +137,12 @@ class OnOffCapability(StateCapability[OnOffCapabilityInstanceActionState], Proto
             return SERVICE_TURN_ON
 
         return SERVICE_TURN_OFF
+
+    @property
+    @abstractmethod
+    def _supported(self) -> bool:
+        """Test if the capability is supported."""
+        ...
 
     def _is_on(self) -> bool:
         """Return true if capability is on."""
@@ -148,7 +166,7 @@ class OnOffCapabilityBasic(OnOffCapability):
     """Capability to turn on or off a device."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain in (light.DOMAIN, fan.DOMAIN, switch.DOMAIN, humidifier.DOMAIN, input_boolean.DOMAIN)
 
@@ -167,7 +185,7 @@ class OnOffCapabilityAutomation(OnOffCapability):
     """Capability to enable or disable an automation."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return bool(self.state.domain == automation.DOMAIN)
 
@@ -190,7 +208,7 @@ class OnOffCapabilityGroup(OnOffCapability):
     """Capability to turn on or off a group of devices."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain in group.DOMAIN
 
@@ -209,7 +227,7 @@ class OnOffCapabilityScript(OnlyOnCapability):
     """Capability to call a script or scene."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain in (scene.DOMAIN, script.DOMAIN)
 
@@ -221,6 +239,7 @@ class OnOffCapabilityScript(OnlyOnCapability):
 
         return super()._wait_for_service_call
 
+    @override
     async def _set_instance_state(self, context: Context, state: OnOffCapabilityInstanceActionState) -> None:
         """Change the capability state."""
         await self._hass.services.async_call(
@@ -236,10 +255,11 @@ class OnOffCapabilityButton(OnlyOnCapability):
     """Capability to press a button."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain == button.DOMAIN
 
+    @override
     async def _set_instance_state(self, context: Context, state: OnOffCapabilityInstanceActionState) -> None:
         """Change the capability state."""
         await self._hass.services.async_call(
@@ -255,10 +275,11 @@ class OnOffCapabilityInputButton(OnlyOnCapability):
     """Capability to press a input_button."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain == input_button.DOMAIN
 
+    @override
     async def _set_instance_state(self, context: Context, state: OnOffCapabilityInstanceActionState) -> None:
         """Change the capability state."""
         await self._hass.services.async_call(
@@ -274,7 +295,7 @@ class OnOffCapabilityLock(OnOffCapability):
     """Capability to lock or unlock a lock."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain == lock.DOMAIN
 
@@ -302,13 +323,18 @@ class OnOffCapabilityCover(OnOffCapability):
     """Capability to open or close a cover."""
 
     @property
-    def supported(self) -> bool:
+    def parameters(self) -> OnOffCapabilityParameters | None:
+        """Return parameters for a devices list request."""
+        return OnOffCapabilityParameters(split=True)
+
+    @property
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain == cover.DOMAIN
 
     def _is_on(self) -> bool:
         """Return true if capability is on."""
-        return self.state.state == STATE_OPEN
+        return self.state.state in (STATE_OPEN, STATE_OPENING)
 
     async def _set_instance_state(self, context: Context, state: OnOffCapabilityInstanceActionState) -> None:
         """Change the capability state."""
@@ -330,7 +356,7 @@ class OnOffCapabilityRemote(ActionOnlyCapabilityMixin, OnOffCapability):
     """Capability to turn on or off a remote."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain == remote.DOMAIN
 
@@ -354,7 +380,7 @@ class OnOffCapabilityMediaPlayer(OnOffCapability):
     """Capability to turn on or off a media player device."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         if self.state.domain == media_player.DOMAIN:
             if CONF_TURN_ON in self._entity_config or CONF_TURN_OFF in self._entity_config:
@@ -385,7 +411,7 @@ class OnOffCapabilityVacuum(OnOffCapability):
     """Capability to start or stop cleaning by a vacuum."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         if self.state.domain != vacuum.DOMAIN:
             return False
@@ -396,14 +422,13 @@ class OnOffCapabilityVacuum(OnOffCapability):
         if self._state_features & VacuumEntityFeature.TURN_ON and self._state_features & VacuumEntityFeature.TURN_OFF:
             return True
 
-        if self._state_features & VacuumEntityFeature.START:
-            if (
+        return bool(
+            self._state_features & VacuumEntityFeature.START
+            and (
                 self._state_features & VacuumEntityFeature.RETURN_HOME
                 or self._state_features & VacuumEntityFeature.STOP
-            ):
-                return True
-
-        return False
+            )
+        )
 
     def _is_on(self) -> bool:
         """Return true if capability is on."""
@@ -437,9 +462,9 @@ class OnOffCapabilityClimate(OnOffCapability):
     """Capability to turn on or off a climate device."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
-        return self.state.domain == climate.DOMAIN
+        return self.state.domain == climate.DOMAIN and len(self._hvac_modes) > 1
 
     def _is_on(self) -> bool:
         """Return true if capability is on."""
@@ -452,9 +477,8 @@ class OnOffCapabilityClimate(OnOffCapability):
         if state.value:
             service = SERVICE_TURN_ON
 
-            hvac_modes = self.state.attributes.get(climate.ATTR_HVAC_MODES) or []
             for mode in (HVACMode.HEAT_COOL, HVACMode.AUTO):
-                if mode not in hvac_modes:
+                if mode not in self._hvac_modes:
                     continue
 
                 service_data[climate.ATTR_HVAC_MODE] = mode
@@ -467,6 +491,11 @@ class OnOffCapabilityClimate(OnOffCapability):
             climate.DOMAIN, service, service_data, blocking=self._wait_for_service_call, context=context
         )
 
+    @cached_property
+    def _hvac_modes(self) -> list[HVACMode]:
+        """Return the list of available HVAC modes."""
+        return self.state.attributes.get(climate.ATTR_HVAC_MODES) or []
+
 
 class OnOffCapabilityWaterHeater(OnOffCapability):
     """Capability to turn on or off a water heater."""
@@ -477,7 +506,7 @@ class OnOffCapabilityWaterHeater(OnOffCapability):
     }
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return self.state.domain == water_heater.DOMAIN
 
@@ -538,7 +567,7 @@ class OnOffCapabilityValve(OnOffCapability):
     """Capability to open or close a valve."""
 
     @property
-    def supported(self) -> bool:
+    def _supported(self) -> bool:
         """Test if the capability is supported."""
         return bool(self.state.domain == valve.DOMAIN)
 

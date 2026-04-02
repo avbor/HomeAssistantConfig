@@ -50,6 +50,7 @@ from .const import (
     CONF_SETTINGS,
     CONF_SKILL,
     CONF_USER_ID,
+    DOCS_URL,
     DOMAIN,
     ISSUE_ID_DEPRECATED_PRESSURE_UNIT,
     ISSUE_ID_DEPRECATED_YAML_NOTIFIER,
@@ -135,7 +136,8 @@ class ConfigEntryData:
                 is_fixable=False,
                 severity=ir.IssueSeverity.WARNING,
                 translation_key=ISSUE_ID_DEPRECATED_PRESSURE_UNIT,
-                learn_more_url="https://docs.yaha-cloud.ru/v1.1.x/devices/sensor/float/#unit-conversion",
+                translation_placeholders={"docs_url": DOCS_URL},
+                learn_more_url=f"{DOCS_URL}/devices/sensor/float/#unit-conversion",
             )
         else:
             ir.async_delete_issue(self._hass, DOMAIN, "deprecated_pressure_unit")
@@ -149,7 +151,8 @@ class ConfigEntryData:
                 is_fixable=False,
                 severity=ir.IssueSeverity.WARNING,
                 translation_key=issue_id,
-                learn_more_url="https://docs.yaha-cloud.ru/v1.1.x/breaking-changes/#v1-notifier",
+                translation_placeholders={"docs_url": DOCS_URL},
+                learn_more_url=f"{DOCS_URL}/breaking-changes/#v1-notifier",
             )
         else:
             ir.async_delete_issue(self._hass, DOMAIN, ISSUE_ID_DEPRECATED_YAML_NOTIFIER)
@@ -166,11 +169,9 @@ class ConfigEntryData:
         if tasks:
             await asyncio.wait(tasks)
 
-        return None
-
     async def async_get_context_user_id(self) -> str | None:
         """Return user id for service calls (cloud connection only)."""
-        if user_id := self.entry.options.get(CONF_USER_ID):
+        if user_id := self.entry.options.get(CONF_USER_ID):  # noqa: SIM102
             if user := await self._hass.auth.async_get_user(user_id):
                 return user.id
 
@@ -280,7 +281,7 @@ class ConfigEntryData:
             return
 
         data = self.entry.data.copy()
-        data[CONF_LINKED_PLATFORMS] = data.get(CONF_LINKED_PLATFORMS, []) + [platform]
+        data[CONF_LINKED_PLATFORMS] = [*data.get(CONF_LINKED_PLATFORMS, []), platform]
 
         self._hass.config_entries.async_update_entry(self.entry, data=data)
 
@@ -302,11 +303,11 @@ class ConfigEntryData:
         issue_id = ISSUE_ID_PREFIX_UNEXPOSED_ENTITY_FOUND + self.entry.options[CONF_FILTER_SOURCE]
 
         formatted_entities: list[str] = []
-        for entity_id in sorted(self.unexposed_entities):
+        for unexposed_entity_id in sorted(self.unexposed_entities):
             if self.entry.options[CONF_FILTER_SOURCE] == EntityFilterSource.YAML:
-                formatted_entities.append(f"* `- {entity_id}`")
+                formatted_entities.append(f"* `- {unexposed_entity_id}`")
             else:
-                state = self._hass.states.get(entity_id) or State(entity_id, STATE_UNKNOWN)
+                state = self._hass.states.get(unexposed_entity_id) or State(unexposed_entity_id, STATE_UNKNOWN)
                 formatted_entities.append(f"* `{state.entity_id}` ({state.name})")
 
         ir.async_create_issue(
@@ -321,8 +322,9 @@ class ConfigEntryData:
             translation_placeholders={
                 "entry_title": self.entry.title,
                 "entities": "\n".join(formatted_entities),
+                "docs_url": DOCS_URL,
             },
-            learn_more_url="https://docs.yaha-cloud.ru/v1.1.x/config/filter/",
+            learn_more_url=f"{DOCS_URL}/config/filter/",
         )
 
     async def _async_setup_notifiers(self, *_: Any) -> None:
@@ -387,8 +389,6 @@ class ConfigEntryData:
 
         if self._notifiers:
             await asyncio.wait([asyncio.create_task(n.async_setup()) for n in self._notifiers])
-
-        return None
 
     async def _async_setup_cloud_connection(self) -> None:
         """Set up the cloud connection."""
