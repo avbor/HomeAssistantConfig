@@ -5,14 +5,16 @@ from homeassistant.const import Platform
 MIN_REQUIRED_HA_VERSION = "2023.9.0"
 NAME = "BodyMiScale"
 DOMAIN = "bodymiscale"
-VERSION = "2024.6.0"
+VERSION = "2026.4.1"
 
 ISSUE_URL = "https://github.com/dckiller51/bodymiscale/issues"
 
 CONF_BIRTHDAY = "birthday"
+CONF_CALCULATION_MODE = "calculation_mode"
 CONF_GENDER = "gender"
 CONF_HEIGHT = "height"
 CONF_SENSOR_IMPEDANCE = "impedance"
+CONF_SENSOR_LAST_MEASUREMENT_TIME = "last_measurement_time"
 CONF_SENSOR_WEIGHT = "weight"
 CONF_SCALE = "scale"
 
@@ -60,6 +62,8 @@ MIN = "min"
 MAX = "max"
 COMPONENT = "component"
 HANDLERS = "handlers"
+
+CALCULATION_MODE_OPTIONS = ["xiaomi", "science"]
 
 PLATFORMS: set[Platform] = {Platform.SENSOR}
 UPDATE_DELAY = 2.0

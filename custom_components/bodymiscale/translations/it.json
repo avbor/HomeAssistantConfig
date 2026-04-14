@@ -9,12 +9,15 @@
     "step": {
       "options": {
         "data": {
+          "calculation_mode": "Metodo di calcolo",
           "height": "Altezza",
           "impedance": "Sensore impedenza",
+          "last_measurement_time": "Sensore dell'ultima ora di pesatura",
           "weight": "Sensore peso"
         },
         "data_description": {
-          "impedance": "Se la tua bilancia non fornisce il valore di impedenza lascia questo campo vuoto."
+          "impedance": "Se la tua bilancia non fornisce il valore di impedenza lascia questo campo vuoto.",
+          "last_measurement_time": "Se non hai un sensore per l'ultima ora di pesatura, lascia questo campo vuoto."
         }
       },
       "user": {
@@ -33,6 +36,7 @@
       "body_fat": { "name": "Grasso corporeo" },
       "body_score": { "name": "Punteggio corpo" },
       "bone_mass": { "name": "Massa ossea" },
+      "last_measurement_time": { "name": "Ultima ora di pesatura" },
       "lean_body_mass": { "name": "Massa corporea magra" },
       "metabolic_age": { "name": "Età metabolica" },
       "muscle_mass": { "name": "Massa muscolare" },
@@ -96,6 +100,7 @@
         "height": { "name": "Altezza" },
         "ideal": { "name": "Ideale" },
         "impedance": { "name": "Impedenza" },
+        "last_measurement_time": { "name": "Ultima ora di pesatura" },
         "lean_body_mass": { "name": "Massa corporea magra" },
         "metabolic_age": { "name": "Età metabolica" },
         "muscle_mass": { "name": "Massa muscolare" },
@@ -127,13 +132,24 @@
     "step": {
       "init": {
         "data": {
+          "calculation_mode": "Metodo di calcolo",
           "height": "Altezza",
           "impedance": "Sensore impedenza",
+          "last_measurement_time": "Sensore dell'ultima ora di pesatura",
           "weight": "Sensore peso"
         },
         "data_description": {
-          "impedance": "Se la tua bilancia non fornisce il valore di impedenza lascia questo campo vuoto."
+          "impedance": "Se la tua bilancia non fornisce il valore di impedenza lascia questo campo vuoto.",
+          "last_measurement_time": "Se non hai un sensore per l'ultima ora di pesatura, lascia questo campo vuoto."
         }
+      }
+    }
+  },
+  "selector": {
+    "calculation_mode": {
+      "options": {
+        "science": "Scientifico",
+        "xiaomi": "Xiaomi (Legacy 2017)"
       }
     }
   },

@@ -2,19 +2,22 @@
   "config": {
     "error": {
       "already_configured": "Уже настроено",
-      "height_limit": "Рост слишком большой (предел: 220 см)",
-      "height_low": "Рост слишком низкая (min : 50 см)",
+      "height_limit": "Рост слишком большой (макс: 220 см)",
+      "height_low": "Рост слишком низкий (мин: 50 см)",
       "invalid_date": "Неверная дата"
     },
     "step": {
       "options": {
         "data": {
+          "calculation_mode": "Метод расчета",
           "height": "Рост",
           "impedance": "Датчик сопротивления",
+          "last_measurement_time": "Датчик последнего времени взвешивания",
           "weight": "Датчик веса"
         },
         "data_description": {
-          "impedance": "Если Ваши весы не измеряют сопротивление, оставьте это поле пустым."
+          "impedance": "Если Ваши весы не измеряют сопротивление, оставьте это поле пустым.",
+          "last_measurement_time": "Если у вас нет датчика последнего времени взвешивания, оставьте это поле пустым."
         }
       },
       "user": {
@@ -33,6 +36,7 @@
       "body_fat": { "name": "Жировая ткань" },
       "body_score": { "name": "Оценка тела" },
       "bone_mass": { "name": "Костная масса" },
+      "last_measurement_time": { "name": "Последнее время взвешивания" },
       "lean_body_mass": { "name": "Сухая масса тела" },
       "metabolic_age": { "name": "Метаболический возраст" },
       "muscle_mass": { "name": "Мышечная масса" },
@@ -96,6 +100,7 @@
         "height": { "name": "Рост" },
         "ideal": { "name": "Идеальный вес" },
         "impedance": { "name": "Импеданс" },
+        "last_measurement_time": { "name": "Последнее время взвешивания" },
         "lean_body_mass": { "name": "Сухая масса тела" },
         "metabolic_age": { "name": "Метаболический возраст" },
         "muscle_mass": { "name": "Мышечная масса" },
@@ -127,13 +132,24 @@
     "step": {
       "init": {
         "data": {
+          "calculation_mode": "Метод расчета",
           "height": "Рост",
           "impedance": "Датчик сопротивления",
+          "last_measurement_time": "Датчик последнего времени взвешивания",
           "weight": "Датчик веса"
         },
         "data_description": {
-          "impedance": "Если Ваши весы не измеряют сопротивление, оставьте это поле пустым."
+          "impedance": "Если Ваши весы не измеряют сопротивление, оставьте это поле пустым.",
+          "last_measurement_time": "Если у вас нет датчика последнего времени взвешивания, оставьте это поле пустым."
         }
+      }
+    }
+  },
+  "selector": {
+    "calculation_mode": {
+      "options": {
+        "science": "Научный",
+        "xiaomi": "Xiaomi (Legacy 2017)"
       }
     }
   },

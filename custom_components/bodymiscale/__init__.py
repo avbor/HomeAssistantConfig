@@ -1,14 +1,16 @@
 """Support for bodymiscale."""
+
 import asyncio
 import logging
 from collections.abc import MutableMapping
+from datetime import datetime
 from functools import partial
+from types import MappingProxyType
 from typing import Any
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from awesomeversion import AwesomeVersion
-from cachetools import TTLCache
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, CONF_SENSORS, STATE_OK, STATE_PROBLEM
 from homeassistant.const import __version__ as HA_VERSION
@@ -33,6 +35,7 @@ from .const import (
     CONF_GENDER,
     CONF_HEIGHT,
     CONF_SENSOR_IMPEDANCE,
+    CONF_SENSOR_LAST_MEASUREMENT_TIME,
     CONF_SENSOR_WEIGHT,
     DOMAIN,
     HANDLERS,
@@ -50,6 +53,7 @@ SCHEMA_SENSORS = vol.Schema(
     {
         vol.Required(CONF_SENSOR_WEIGHT): cv.entity_id,
         vol.Optional(CONF_SENSOR_IMPEDANCE): cv.entity_id,
+        vol.Optional(CONF_SENSOR_LAST_MEASUREMENT_TIME): cv.entity_id,
     }
 )
 
@@ -148,8 +152,8 @@ async def async_migrate_entry(_: HomeAssistant, config_entry: ConfigEntry) -> bo
             options.pop(CONF_BIRTHDAY)
             options.pop(CONF_GENDER)
 
-        config_entry.data = data
-        config_entry.options = options
+        config_entry.data = MappingProxyType(data)
+        config_entry.options = MappingProxyType(options)
 
         config_entry.version = 2
 
@@ -171,9 +175,7 @@ class Bodymiscale(BodyScaleBaseEntity):
             EntityDescription(key="bodymiscale", name=None, icon="mdi:human"),
         )
         self._timer_handle: asyncio.TimerHandle | None = None
-        self._available_metrics: MutableMapping[str, StateType] = TTLCache(
-            maxsize=len(Metric), ttl=60
-        )
+        self._available_metrics: MutableMapping[str, StateType | datetime] = {}
 
     async def async_added_to_hass(self) -> None:
         """After being added to hass."""
@@ -181,7 +183,7 @@ class Bodymiscale(BodyScaleBaseEntity):
 
         loop = asyncio.get_event_loop()
 
-        def on_value(value: StateType, *, metric: Metric) -> None:
+        def on_value(value: StateType | datetime, *, metric: Metric) -> None:
             if metric == Metric.STATUS:
                 self._attr_state = STATE_OK if value == PROBLEM_NONE else STATE_PROBLEM
                 self._available_metrics[ATTR_PROBLEM] = value

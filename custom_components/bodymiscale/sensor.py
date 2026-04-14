@@ -1,5 +1,8 @@
 """Sensor module."""
+
+import logging
 from collections.abc import Callable, Mapping
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -29,6 +32,7 @@ from .const import (
     ATTR_VISCERAL,
     ATTR_WATER,
     CONF_SENSOR_IMPEDANCE,
+    CONF_SENSOR_LAST_MEASUREMENT_TIME,
     CONF_SENSOR_WEIGHT,
     DOMAIN,
     HANDLERS,
@@ -37,6 +41,8 @@ from .entity import BodyScaleBaseEntity
 from .metrics import BodyScaleMetricsHandler
 from .models import Metric
 from .util import get_bmi_label, get_ideal_weight
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -56,9 +62,16 @@ async def async_setup_entry(
                 key=ATTR_BMI,
                 translation_key="bmi",
                 icon="mdi:human",
+                state_class=SensorStateClass.MEASUREMENT,
             ),
             Metric.BMI,
-            lambda state, _: {ATTR_BMILABEL: get_bmi_label(state)},
+            lambda state, _: {
+                ATTR_BMILABEL: (
+                    get_bmi_label(float(state))
+                    if isinstance(state, (int, float))
+                    else None
+                )
+            },
         ),
         BodyScaleSensor(
             handler,
@@ -67,6 +80,7 @@ async def async_setup_entry(
                 translation_key="basal_metabolism",
                 suggested_display_precision=0,
                 native_unit_of_measurement="kcal",
+                state_class=SensorStateClass.MEASUREMENT,
             ),
             Metric.BMR,
         ),
@@ -76,6 +90,7 @@ async def async_setup_entry(
                 key=ATTR_VISCERAL,
                 translation_key="visceral_fat",
                 suggested_display_precision=0,
+                state_class=SensorStateClass.MEASUREMENT,
             ),
             Metric.VISCERAL_FAT,
         ),
@@ -86,9 +101,19 @@ async def async_setup_entry(
                 translation_key="weight",
                 native_unit_of_measurement=UnitOfMass.KILOGRAMS,
                 device_class=SensorDeviceClass.WEIGHT,
+                state_class=SensorStateClass.MEASUREMENT,
             ),
             Metric.WEIGHT,
             lambda _, config: {ATTR_IDEAL: get_ideal_weight(config)},
+        ),
+        BodyScaleSensor(
+            handler,
+            SensorEntityDescription(
+                key=CONF_SENSOR_LAST_MEASUREMENT_TIME,
+                translation_key="last_measurement_time",
+                device_class=SensorDeviceClass.TIMESTAMP,
+            ),
+            Metric.LAST_MEASUREMENT_TIME,
         ),
     ]
 
@@ -100,6 +125,9 @@ async def async_setup_entry(
                     SensorEntityDescription(
                         key=ATTR_LBM,
                         translation_key="lean_body_mass",
+                        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+                        device_class=SensorDeviceClass.WEIGHT,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.LBM,
                 ),
@@ -109,6 +137,7 @@ async def async_setup_entry(
                         key=ATTR_FAT,
                         translation_key="body_fat",
                         native_unit_of_measurement=PERCENTAGE,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.FAT_PERCENTAGE,
                 ),
@@ -118,6 +147,7 @@ async def async_setup_entry(
                         key=ATTR_PROTEIN,
                         translation_key="protein",
                         native_unit_of_measurement=PERCENTAGE,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.PROTEIN_PERCENTAGE,
                 ),
@@ -128,6 +158,7 @@ async def async_setup_entry(
                         translation_key="water",
                         icon="mdi:water-percent",
                         native_unit_of_measurement=PERCENTAGE,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.WATER_PERCENTAGE,
                 ),
@@ -138,6 +169,7 @@ async def async_setup_entry(
                         translation_key="bone_mass",
                         native_unit_of_measurement=UnitOfMass.KILOGRAMS,
                         device_class=SensorDeviceClass.WEIGHT,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.BONE_MASS,
                 ),
@@ -148,6 +180,7 @@ async def async_setup_entry(
                         translation_key="muscle_mass",
                         native_unit_of_measurement=UnitOfMass.KILOGRAMS,
                         device_class=SensorDeviceClass.WEIGHT,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.MUSCLE_MASS,
                 ),
@@ -157,6 +190,7 @@ async def async_setup_entry(
                         key=ATTR_METABOLIC,
                         translation_key="metabolic_age",
                         suggested_display_precision=0,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.METABOLIC_AGE,
                 ),
@@ -166,6 +200,7 @@ async def async_setup_entry(
                         key=ATTR_BODY_SCORE,
                         translation_key="body_score",
                         suggested_display_precision=0,
+                        state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.BODY_SCORE,
                 ),
@@ -175,33 +210,54 @@ async def async_setup_entry(
     async_add_entities(new_sensors)
 
 
-class BodyScaleSensor(BodyScaleBaseEntity, SensorEntity):  # type: ignore[misc]
+class BodyScaleSensor(BodyScaleBaseEntity, SensorEntity):
     """Body scale sensor."""
-
-    _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(
         self,
         handler: BodyScaleMetricsHandler,
         entity_description: SensorEntityDescription,
         metric: Metric,
-        get_attributes: None
-        | (Callable[[StateType, Mapping[str, Any]], Mapping[str, Any]]) = None,
+        get_attributes: None | (
+            Callable[[StateType | datetime, Mapping[str, Any]], Mapping[str, Any]]
+        ) = None,
     ):
         super().__init__(handler, entity_description)
         self._metric = metric
         self._get_attributes = get_attributes
 
+    _attr_native_value: StateType | datetime | None = None
+
     async def async_added_to_hass(self) -> None:
         """Set up the event listeners now that hass is ready."""
         await super().async_added_to_hass()
 
-        def on_value(value: StateType) -> None:
-            self._attr_native_value = value
+        def on_value(value: StateType | datetime) -> None:
+            if self.entity_description.key == CONF_SENSOR_LAST_MEASUREMENT_TIME:
+                if isinstance(value, datetime):
+                    self._attr_native_value = value
+                elif isinstance(value, str):
+                    try:
+                        self._attr_native_value = datetime.fromisoformat(value)
+                    except ValueError:
+                        self._attr_native_value = None
+                else:
+                    self._attr_native_value = value
+            else:
+                if isinstance(value, (int, float)):
+                    precision = self.entity_description.suggested_display_precision
+                    self._attr_native_value = round(
+                        float(value), precision if precision is not None else 2
+                    )
+                else:
+                    self._attr_native_value = value
+
             if self._get_attributes:
-                self._attr_extra_state_attributes = self._get_attributes(
-                    self._attr_native_value, self._handler.config
+                attributes = self._get_attributes(
+                    self._attr_native_value, dict(self._handler.config)
                 )
+                self._attr_extra_state_attributes = dict(attributes)
+
             self.async_write_ha_state()
 
         self.async_on_remove(self._handler.subscribe(self._metric, on_value))
