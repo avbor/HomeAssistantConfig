@@ -52,4 +52,14 @@ devices:
     friendly_name: Датчик присутствия в Туалете
   '0xd44867fffe60d52c':
     friendly_name: Датчик присутствия в Ванной - Sonoff
+  '0x00124b0024c0489a':
+    friendly_name: '0x00124b0024c0489a'
+  '0x00124b0024c335f3':
+    friendly_name: '0x00124b0024c335f3'
+  '0xcc86ecfffe1cc70b':
+    friendly_name: '0xcc86ecfffe1cc70b'
+  '0x804b50fffe08ef47':
+    friendly_name: '0x804b50fffe08ef47'
+  '0x847127fffecc7dad':
+    friendly_name: '0x847127fffecc7dad'
 version: 5
