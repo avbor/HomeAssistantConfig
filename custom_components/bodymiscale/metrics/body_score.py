@@ -101,13 +101,13 @@ def _calculate_body_fat_deduct_score(
 
 
 def _calculate_common_deduct_score(
-    min_value: float, max_value: float, value: float, is_s400: bool = False
+    min_value: float, max_value: float, value: float
 ) -> float:
-    """Calculate common deduct score. Assoupli pour S400."""
+    """Calculate common deduct score (Universal logic)."""
     if value >= max_value:
         return 0.0
 
-    penalty_max = 8.0 if is_s400 else 10.0
+    penalty_max = 10.0
 
     if value < min_value:
         return penalty_max
@@ -115,27 +115,44 @@ def _calculate_common_deduct_score(
 
 
 def _calculate_muscle_deduct_score(
-    config: Mapping[str, Any], muscle_mass: float
+    config: Mapping[str, Any], metrics: Mapping[Metric, StateType | datetime]
 ) -> float:
-    """Calculate muscle mass deduct score."""
+    """Calculate muscle mass deduct score with S400 adaptation."""
     scale = config[CONF_SCALE].muscle_mass
     is_s400 = config.get(CONF_IMPEDANCE_MODE) == IMPEDANCE_MODE_DUAL
-    return _calculate_common_deduct_score(
-        scale[0] - 5.0, scale[0], muscle_mass, is_s400
-    )
+
+    if is_s400:
+        # In S400, we use the SMM (Skeletal Muscle Mass)
+        muscle_mass = to_float(metrics.get(Metric.SKELETAL_MUSCLE_MASS))
+
+        # Guard: if SMM calculation failed or is 0, we don't apply penalty
+        if muscle_mass <= 0:
+            return 0.0
+
+        # We adjust the standard thresholds (Total Muscle Mass) to the SMM format
+        # The 0.77 ratio is a physiological estimate of skeletal muscle vs total muscle.
+        target_min = (scale[0] - 5.0) * 0.77
+        target_max = scale[0] * 0.77
+    else:
+        # Classical modes: Total muscle mass
+        muscle_mass = to_float(metrics.get(Metric.MUSCLE_MASS))
+        if muscle_mass <= 0:
+            return 0.0
+        target_min = scale[0] - 5.0
+        target_max = scale[0]
+
+    return _calculate_common_deduct_score(target_min, target_max, muscle_mass)
 
 
 def _calculate_water_deduct_score(
     config: Mapping[str, Any], water_percentage: float
 ) -> float:
     """Calculate water percentage deduct score."""
-    is_s400 = config.get(CONF_IMPEDANCE_MODE) == IMPEDANCE_MODE_DUAL
     water_percentage_normal = 55.0 if config[CONF_GENDER] == Gender.MALE else 45.0
     return _calculate_common_deduct_score(
         water_percentage_normal - 5.0,
         water_percentage_normal,
         water_percentage,
-        is_s400,
     )
 
 
@@ -226,14 +243,28 @@ def _calculate_protein_deduct_score(protein_percentage: float) -> float:
 def get_body_score(
     config: Mapping[str, Any], metrics: Mapping[Metric, StateType | datetime]
 ) -> float:
-    """Calculate the body score."""
+    """Calculate the body score (range: 10–100).
+
+    Starts at 100 and deducts penalty points for each metric that falls
+    outside its optimal physiological range. The final score is clamped
+    to a minimum of 10 (not 0) to distinguish a low-but-measurable result
+    from an unavailable or uncalculated metric.
+
+    Penalties are applied for:
+      - BMI outside healthy range
+      - Body fat percentage above/below target
+      - Muscle mass below threshold (SMM in S400 mode, total mass otherwise)
+      - Water percentage below target
+      - Visceral fat above threshold
+      - Bone mass below expected value for body weight
+      - Basal metabolic rate below expected value for age/weight
+      - Protein percentage below target
+    """
     score = 100.0
 
     score -= _calculate_bmi_deduct_score(config, metrics)
     score -= _calculate_body_fat_deduct_score(config, metrics)
-    score -= _calculate_muscle_deduct_score(
-        config, to_float(metrics.get(Metric.MUSCLE_MASS))
-    )
+    score -= _calculate_muscle_deduct_score(config, metrics)
     score -= _calculate_water_deduct_score(
         config, to_float(metrics.get(Metric.WATER_PERCENTAGE))
     )
@@ -245,8 +276,5 @@ def get_body_score(
     score -= _calculate_protein_deduct_score(
         to_float(metrics.get(Metric.PROTEIN_PERCENTAGE))
     )
-
-    if config.get(CONF_IMPEDANCE_MODE) == IMPEDANCE_MODE_DUAL:
-        score += 2.0
 
     return check_value_constraints(score, 10, 100)

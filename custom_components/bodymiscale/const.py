@@ -5,7 +5,7 @@ from homeassistant.const import Platform
 MIN_REQUIRED_HA_VERSION = "2023.9.0"
 NAME = "BodyMiScale"
 DOMAIN = "bodymiscale"
-VERSION = "2026.4.3"
+VERSION = "2026.4.5"
 
 ISSUE_URL = "https://github.com/dckiller51/bodymiscale/issues"
 
@@ -51,7 +51,7 @@ CONF_SENSOR_IMPEDANCE_LOW = "impedance_low"  # dual mode 50 kHz
 CONF_SENSOR_IMPEDANCE_HIGH = "impedance_high"  # dual mode 250 kHz
 CONF_SENSOR_LAST_MEASUREMENT_TIME = "last_measurement_time"
 
-# Attributs
+# Attributes
 ATTR_AGE = "age"
 ATTR_BMI = "bmi"
 ATTR_BMILABEL = "bmi_label"
@@ -70,6 +70,11 @@ ATTR_PROBLEM = "problem"
 ATTR_PROTEIN = "protein"
 ATTR_VISCERAL = "visceral_fat"
 ATTR_WATER = "water"
+ATTR_EXTRACELLULAR_WATER = "extracellular_water"
+ATTR_INTRACELLULAR_WATER = "intracellular_water"
+ATTR_ECW_TBW_RATIO = "ecw_tbw_ratio"
+ATTR_BCM = "bcm"
+ATTR_SKELETAL_MUSCLE_MASS = "skeletal_muscle_mass"
 
 UNIT_POUNDS = "lb"
 PROBLEM_NONE = "none"

@@ -50,14 +50,19 @@ from ..const import (
 from ..models import Gender, Metric
 from .body_score import get_body_score
 from .impedance import (
+    get_bcm,
     get_body_type,
     get_bone_mass,
+    get_ecw,
+    get_ecw_tbw_ratio,
     get_fat_mass_to_ideal_weight,
     get_fat_percentage,
+    get_icw,
     get_lbm,
     get_metabolic_age,
     get_muscle_mass,
     get_protein_percentage,
+    get_skeletal_muscle_mass,
     get_water_percentage,
 )
 from .weight import get_bmi, get_bmr, get_visceral_fat
@@ -119,12 +124,29 @@ _METRIC_DEPS: dict[Metric, MetricInfo] = {
         [Metric.MUSCLE_MASS, Metric.FAT_PERCENTAGE, Metric.AGE],
         get_body_type,
     ),
+    # dual-frequency metrics
+    # These require dual-frequency mode (IMPEDANCE_LOW + IMPEDANCE_HIGH)
+    Metric.ECW: MetricInfo([Metric.IMPEDANCE_LOW, Metric.IMPEDANCE_HIGH], get_ecw, 2),
+    # Metric.ICW, ECW_TBW_RATIO and BCM depend on WATER_PERCENTAGE (TBW)
+    # to ensure they are calculated after TBW for the subtraction logic.
+    Metric.ICW: MetricInfo([Metric.WATER_PERCENTAGE, Metric.ECW], get_icw, 2),
+    Metric.ECW_TBW_RATIO: MetricInfo(
+        [Metric.WATER_PERCENTAGE, Metric.ECW], get_ecw_tbw_ratio, 1
+    ),
+    Metric.BCM: MetricInfo([Metric.WATER_PERCENTAGE, Metric.ECW], get_bcm, 2),
+    Metric.SKELETAL_MUSCLE_MASS: MetricInfo(
+        [Metric.LBM, Metric.IMPEDANCE_LOW, Metric.IMPEDANCE_HIGH],
+        get_skeletal_muscle_mass,
+        2,
+    ),
+    # ── Body score ───────────────────────────────────────────────────────────
     Metric.BODY_SCORE: MetricInfo(
         [
             Metric.BMI,
             Metric.FAT_PERCENTAGE,
             Metric.AGE,
             Metric.MUSCLE_MASS,
+            Metric.SKELETAL_MUSCLE_MASS,
             Metric.WATER_PERCENTAGE,
             Metric.WEIGHT,
             Metric.BONE_MASS,

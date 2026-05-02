@@ -29,7 +29,7 @@
           "weight": "Датчик веса"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: как в приложении Zepp Life. Научный: формулы ВОЗ / Миффлина. Не влияет на расчеты S400.",
+          "calculation_mode": "Xiaomi: как в приложении Zepp Life. Научный: формулы ВОЗ / Шофилда. Не влияет на расчеты S400.",
           "impedance_mode": "Нет: весы без анализатора. Стандарт: одна частота (Xiaomi Gen2). Двухчастотный S400: датчики 50 кГц + 250 кГц.",
           "last_measurement_time": "Опционально. Оставьте пустым, если датчик отсутствует."
         },
@@ -48,14 +48,19 @@
     "sensor": {
       "basal_metabolism": { "name": "Базальный метаболизм" },
       "bmi": { "name": "Индекс массы тела (ИМТ)" },
+      "body_cell_mass": { "name": "Масса клеток тела" },
       "body_fat": { "name": "Жировая масса" },
       "body_score": { "name": "Оценка тела" },
       "bone_mass": { "name": "Костная масса" },
+      "ecw_tbw_ratio": { "name": "Соотношение ECW/TBW" },
+      "extracellular_water": { "name": "Экзоклеточная вода" },
+      "intracellular_water": { "name": "Инtrakлеточная вода" },
       "last_measurement_time": { "name": "Время последнего взвешивания" },
       "lean_body_mass": { "name": "Безжировая масса тела" },
       "metabolic_age": { "name": "Метаболический возраст" },
       "muscle_mass": { "name": "Мышечная масса" },
       "protein": { "name": "Белок" },
+      "skeletal_muscle_mass": { "name": "Скелетная мышечная масса" },
       "visceral_fat": { "name": "Висцеральный жир" },
       "water": { "name": "Вода в организме" },
       "weight": { "name": "Вес" }
@@ -85,6 +90,7 @@
             "underweight": "Дефицит массы тела"
           }
         },
+        "body_cell_mass": { "name": "Масса клеток тела" },
         "body_fat": { "name": "Жировая масса" },
         "body_score": { "name": "Оценка тела" },
         "body_type": {
@@ -103,6 +109,8 @@
           }
         },
         "bone_mass": { "name": "Костная масса" },
+        "ecw_tbw_ratio": { "name": "Соотношение ECW/TBW" },
+        "extracellular_water": { "name": "Экзоклеточная вода" },
         "fat_mass_to_gain": { "name": "Жировая масса для набора" },
         "fat_mass_to_lose": { "name": "Жировая масса для снижения" },
         "gender": {
@@ -117,6 +125,7 @@
         "impedance": { "name": "Биоимпеданс" },
         "impedance_high": { "name": "Биоимпеданс (250 кГц)" },
         "impedance_low": { "name": "Биоимпеданс (50 кГц)" },
+        "intracellular_water": { "name": "Интрацеллюлярная вода" },
         "last_measurement_time": { "name": "Время последнего взвешивания" },
         "lean_body_mass": { "name": "Безжировая масса тела" },
         "metabolic_age": { "name": "Метаболический возраст" },
@@ -141,6 +150,7 @@
           }
         },
         "protein": { "name": "Белок" },
+        "skeletal_muscle_mass": { "name": "Скелетная мышечная масса" },
         "visceral_fat": { "name": "Висцеральный жир" },
         "water": { "name": "Вода" },
         "weight": { "name": "Вес" }
@@ -171,9 +181,9 @@
           "weight": "Датчик веса"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: идентично Zepp Life. Научный: ВОЗ / Миффлина. Не применимо для режима S400.",
-          "impedance_mode": "Нет: без анализатора. Стандарт: одна частота (Xiaomi Gen2). Двухчастотный S400: 50 кГц + 250 кГц.",
-          "last_measurement_time": "Опционально. Оставьте пустым, если датчик не существует."
+          "calculation_mode": "Xiaomi: как в приложении Zepp Life. Научный: формулы ВОЗ / Шофилда. Не влияет на расчеты S400.",
+          "impedance_mode": "Нет: весы без анализатора. Стандарт: одна частота (Xiaomi Gen2). Двухчастотный S400: датчики 50 кГц + 250 кГц.",
+          "last_measurement_time": "Опционально. Оставьте пустым, если датчик отсутствует."
         },
         "title": "Настройка"
       }
@@ -182,7 +192,7 @@
   "selector": {
     "calculation_mode": {
       "options": {
-        "science": "Научный — ВОЗ / Миффлина",
+        "science": "Научный — ВОЗ / Шофилда",
         "xiaomi": "Xiaomi — Zepp Life (Legacy 2017)"
       }
     },

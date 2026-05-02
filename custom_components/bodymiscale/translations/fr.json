@@ -29,7 +29,7 @@
           "weight": "Capteur de poids"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi : copie conforme de l'app Zepp Life. Science : formules OMS / Mifflin. Sans effet en mode S400 (bi-fréquence).",
+          "calculation_mode": "Xiaomi : copie conforme de l'app Zepp Life. Science : formules OMS / Schofield. Sans effet en mode S400 (bi-fréquence).",
           "impedance_mode": "Aucun : balance sans impédance. Standard : mono-fréquence (Xiaomi Gen2). Bi-fréquence S400 : capteurs 50 kHz + 250 kHz.",
           "last_measurement_time": "Optionnel. Laissez vide si vous n'avez pas ce capteur."
         },
@@ -48,14 +48,19 @@
     "sensor": {
       "basal_metabolism": { "name": "Métabolisme de base" },
       "bmi": { "name": "IMC" },
+      "body_cell_mass": { "name": "Masse cellulaire corporelle" },
       "body_fat": { "name": "Graisse corporelle" },
       "body_score": { "name": "Score corporel" },
       "bone_mass": { "name": "Masse osseuse" },
+      "ecw_tbw_ratio": { "name": "Ratio ECW/TBW" },
+      "extracellular_water": { "name": "Eau extracellulaire" },
+      "intracellular_water": { "name": "Eau intracellulaire" },
       "last_measurement_time": { "name": "Dernière heure de pesée" },
       "lean_body_mass": { "name": "Masse corporelle maigre" },
       "metabolic_age": { "name": "Âge corporel" },
       "muscle_mass": { "name": "Masse musculaire" },
       "protein": { "name": "Protéine" },
+      "skeletal_muscle_mass": { "name": "Masse musculaire squelettique" },
       "visceral_fat": { "name": "Graisse viscérale" },
       "water": { "name": "Eau" },
       "weight": { "name": "Poids" }
@@ -85,6 +90,7 @@
             "underweight": "Insuffisance pondérale"
           }
         },
+        "body_cell_mass": { "name": "Masse cellulaire corporelle" },
         "body_fat": { "name": "Graisse corporelle" },
         "body_score": { "name": "Score corporel" },
         "body_type": {
@@ -103,6 +109,8 @@
           }
         },
         "bone_mass": { "name": "Masse osseuse" },
+        "ecw_tbw_ratio": { "name": "Ratio ECW/TBW" },
+        "extracellular_water": { "name": "Eau extracellulaire" },
         "fat_mass_to_gain": { "name": "Masse grasse à gagner" },
         "fat_mass_to_lose": { "name": "Masse grasse à perdre" },
         "gender": {
@@ -117,6 +125,7 @@
         "impedance": { "name": "Impédance" },
         "impedance_high": { "name": "Impédance (250 kHz)" },
         "impedance_low": { "name": "Impédance (50 kHz)" },
+        "intracellular_water": { "name": "Eau intracellulaire" },
         "last_measurement_time": { "name": "Dernière heure de pesée" },
         "lean_body_mass": { "name": "Masse corporelle maigre" },
         "metabolic_age": { "name": "Âge corporel" },
@@ -141,6 +150,7 @@
           }
         },
         "protein": { "name": "Protéine" },
+        "skeletal_muscle_mass": { "name": "Masse musculaire squelettique" },
         "visceral_fat": { "name": "Graisse viscérale" },
         "water": { "name": "Eau" },
         "weight": { "name": "Poids" }
@@ -171,7 +181,7 @@
           "weight": "Capteur de poids"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi : copie conforme de l'app Zepp Life. Science : formules OMS / Mifflin. Sans effet en mode S400 (bi-fréquence).",
+          "calculation_mode": "Xiaomi : copie conforme de l'app Zepp Life. Science : formules OMS / Schofield. Sans effet en mode S400 (bi-fréquence).",
           "impedance_mode": "Aucun : balance sans impédance. Standard : mono-fréquence (Xiaomi Gen2). Bi-fréquence S400 : capteurs 50 kHz + 250 kHz.",
           "last_measurement_time": "Optionnel. Laissez vide si vous n'avez pas ce capteur."
         },
@@ -182,7 +192,7 @@
   "selector": {
     "calculation_mode": {
       "options": {
-        "science": "Scientifique — OMS / Mifflin",
+        "science": "Scientifique — OMS / Schofield",
         "xiaomi": "Xiaomi — Zepp Life (Legacy 2017)"
       }
     },

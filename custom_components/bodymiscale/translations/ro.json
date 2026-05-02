@@ -29,7 +29,7 @@
           "weight": "Senzor greutate"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: identic cu aplicația Zepp Life. Științific: formule OMS / Mifflin. Nu are efect în modul S400 cu dublă frecvență.",
+          "calculation_mode": "Xiaomi: identic cu aplicația Zepp Life. Științific: formule OMS / Schofield. Nu are efect în modul S400 cu dublă frecvență.",
           "impedance_mode": "Niciunul: fără impedanță. Standard: frecvență unică (Xiaomi Gen2). Dual-frequency S400: senzori 50 kHz + 250 kHz.",
           "last_measurement_time": "Opțional. Lăsați gol dacă nu aveți acest senzor."
         },
@@ -48,14 +48,19 @@
     "sensor": {
       "basal_metabolism": { "name": "Metabolism bazal" },
       "bmi": { "name": "IMC" },
+      "body_cell_mass": { "name": "Masă celulară" },
       "body_fat": { "name": "Grăsime corporală" },
       "body_score": { "name": "Scor corporal" },
       "bone_mass": { "name": "Masă osoasă" },
+      "ecw_tbw_ratio": { "name": "Rație ECW/TBW" },
+      "extracellular_water": { "name": "Apă extracelulară" },
+      "intracellular_water": { "name": "Apă intracelulară" },
       "last_measurement_time": { "name": "Ultima oră de cântărire" },
       "lean_body_mass": { "name": "Masă corporală slabă" },
       "metabolic_age": { "name": "Vârstă metabolică" },
       "muscle_mass": { "name": "Masă musculară" },
       "protein": { "name": "Proteine" },
+      "skeletal_muscle_mass": { "name": "Masă musculară scheletică" },
       "visceral_fat": { "name": "Grăsime viscerală" },
       "water": { "name": "Apă corporală" },
       "weight": { "name": "Greutate" }
@@ -85,6 +90,7 @@
             "underweight": "Subponderal"
           }
         },
+        "body_cell_mass": { "name": "Masă celulară" },
         "body_fat": { "name": "Grăsime corporală" },
         "body_score": { "name": "Scor corporal" },
         "body_type": {
@@ -103,6 +109,8 @@
           }
         },
         "bone_mass": { "name": "Masă osoasă" },
+        "ecw_tbw_ratio": { "name": "Rație ECW/TBW" },
+        "extracellular_water": { "name": "Apă extracelulară" },
         "fat_mass_to_gain": { "name": "Masă grasă de acumulat" },
         "fat_mass_to_lose": { "name": "Masă grasă de pierdut" },
         "gender": {
@@ -117,6 +125,7 @@
         "impedance": { "name": "Impedanță" },
         "impedance_high": { "name": "Impedanță (250 kHz)" },
         "impedance_low": { "name": "Impedanță (50 kHz)" },
+        "intracellular_water": { "name": "Apă intracelulară" },
         "last_measurement_time": { "name": "Ultima oră de cântărire" },
         "lean_body_mass": { "name": "Masă corporală slabă" },
         "metabolic_age": { "name": "Vârstă metabolică" },
@@ -141,6 +150,7 @@
           }
         },
         "protein": { "name": "Proteine" },
+        "skeletal_muscle_mass": { "name": "Masă musculară scheletică" },
         "visceral_fat": { "name": "Grăsime viscerală" },
         "water": { "name": "Apă" },
         "weight": { "name": "Greutate" }
@@ -171,9 +181,9 @@
           "weight": "Senzor greutate"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: ca în Zepp Life. Științific: OMS / Mifflin. Fără efect în modul S400.",
-          "impedance_mode": "Niciunul: fără impedanță. Standard: frecvență unică (Xiaomi Gen2). Dual-frequency S400: 50 kHz + 250 kHz.",
-          "last_measurement_time": "Opțional. Lăsați gol dacă senzorul nu există."
+          "calculation_mode": "Xiaomi: identic cu aplicația Zepp Life. Științific: formule OMS / Schofield. Nu are efect în modul S400 cu dublă frecvență.",
+          "impedance_mode": "Niciunul: fără impedanță. Standard: frecvență unică (Xiaomi Gen2). Dual-frequency S400: senzori 50 kHz + 250 kHz.",
+          "last_measurement_time": "Opțional. Lăsați gol dacă nu aveți acest senzor."
         },
         "title": "Configurare"
       }
@@ -182,7 +192,7 @@
   "selector": {
     "calculation_mode": {
       "options": {
-        "science": "Științific — OMS / Mifflin",
+        "science": "Științific — OMS / Schofield",
         "xiaomi": "Xiaomi — Zepp Life (Legacy 2017)"
       }
     },

@@ -29,7 +29,7 @@
           "weight": "Senzor hmotnosti"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: identické s aplikáciou Zepp Life. Vedecká: vzorce WHO / Mifflin. Neovplyvňuje režim S400.",
+          "calculation_mode": "Xiaomi: identické s aplikáciou Zepp Life. Vedecká: vzorce WHO / Schofield. Neovplyvňuje režim S400.",
           "impedance_mode": "Žiadny: váha bez impedancie. Štandard: jedna frekvencia (Xiaomi Gen2). Dual-frequency S400: senzory 50 kHz + 250 kHz.",
           "last_measurement_time": "Voliteľné. Nechajte prázdne, ak tento senzor nemáte."
         },
@@ -48,14 +48,19 @@
     "sensor": {
       "basal_metabolism": { "name": "Bazálny metabolizmus" },
       "bmi": { "name": "BMI" },
+      "body_cell_mass": { "name": "Hmota bunkového tela" },
       "body_fat": { "name": "Telesný tuk" },
       "body_score": { "name": "Skóre tela" },
       "bone_mass": { "name": "Kostná hmota" },
+      "ecw_tbw_ratio": { "name": "Pomer ECW/TBW" },
+      "extracellular_water": { "name": "Extracelulárna voda" },
+      "intracellular_water": { "name": "Intracelulárna voda" },
       "last_measurement_time": { "name": "Čas posledného váženia" },
       "lean_body_mass": { "name": "Čistá telesná hmota" },
       "metabolic_age": { "name": "Metabolický vek" },
       "muscle_mass": { "name": "Svalová hmota" },
       "protein": { "name": "Bielkoviny" },
+      "skeletal_muscle_mass": { "name": "Skeletálna svalová hmota" },
       "visceral_fat": { "name": "Viscerálny tuk" },
       "water": { "name": "Voda v tele" },
       "weight": { "name": "Hmotnosť" }
@@ -85,6 +90,7 @@
             "underweight": "Podváha"
           }
         },
+        "body_cell_mass": { "name": "Hmota bunkového těla" },
         "body_fat": { "name": "Telesný tuk" },
         "body_score": { "name": "Skóre tela" },
         "body_type": {
@@ -103,6 +109,8 @@
           }
         },
         "bone_mass": { "name": "Kostná hmota" },
+        "ecw_tbw_ratio": { "name": "Pomer ECW/TBW" },
+        "extracellular_water": { "name": "Extracelulárna voda" },
         "fat_mass_to_gain": { "name": "Tuková hmota na pribratie" },
         "fat_mass_to_lose": { "name": "Tuková hmota na schudnutie" },
         "gender": {
@@ -117,6 +125,7 @@
         "impedance": { "name": "Impedancia" },
         "impedance_high": { "name": "Impedancia (250 kHz)" },
         "impedance_low": { "name": "Impedancia (50 kHz)" },
+        "intracellular_water": { "name": "Intracelulárna voda" },
         "last_measurement_time": { "name": "Čas posledného váženia" },
         "lean_body_mass": { "name": "Čistá telesná hmota" },
         "metabolic_age": { "name": "Metabolický vek" },
@@ -141,6 +150,7 @@
           }
         },
         "protein": { "name": "Bielkoviny" },
+        "skeletal_muscle_mass": { "name": "Skeletální svalová hmota" },
         "visceral_fat": { "name": "Viscerálny tuk" },
         "water": { "name": "Voda" },
         "weight": { "name": "Hmotnosť" }
@@ -171,9 +181,9 @@
           "weight": "Senzor hmotnosti"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: ako v Zepp Life. Vedecká: WHO / Mifflin. Bez efektu v režime S400.",
-          "impedance_mode": "Žiadny: bez impedancie. Štandard: jedna frekvencia (Xiaomi Gen2). Dual-frequency S400: 50 kHz + 250 kHz.",
-          "last_measurement_time": "Voliteľné. Nechajte prázdne, ak senzor neexistuje."
+          "calculation_mode": "Xiaomi: identické s aplikáciou Zepp Life. Vedecká: vzorce WHO / Schofield. Neovplyvňuje režim S400.",
+          "impedance_mode": "Žiadny: váha bez impedancie. Štandard: jedna frekvencia (Xiaomi Gen2). Dual-frequency S400: senzory 50 kHz + 250 kHz.",
+          "last_measurement_time": "Voliteľné. Nechajte prázdne, ak tento senzor nemáte."
         },
         "title": "Konfigurácia"
       }
@@ -182,7 +192,7 @@
   "selector": {
     "calculation_mode": {
       "options": {
-        "science": "Vedecká — WHO / Mifflin",
+        "science": "Vedecká — WHO / Schofield",
         "xiaomi": "Xiaomi — Zepp Life (Legacy 2017)"
       }
     },

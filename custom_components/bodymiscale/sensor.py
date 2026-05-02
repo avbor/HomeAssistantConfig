@@ -18,17 +18,22 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
 from .const import (
+    ATTR_BCM,
     ATTR_BMI,
     ATTR_BMILABEL,
     ATTR_BMR,
     ATTR_BODY_SCORE,
     ATTR_BONES,
+    ATTR_ECW_TBW_RATIO,
+    ATTR_EXTRACELLULAR_WATER,
     ATTR_FAT,
     ATTR_IDEAL,
+    ATTR_INTRACELLULAR_WATER,
     ATTR_LBM,
     ATTR_METABOLIC,
     ATTR_MUSCLE,
     ATTR_PROTEIN,
+    ATTR_SKELETAL_MUSCLE_MASS,
     ATTR_VISCERAL,
     ATTR_WATER,
     CONF_IMPEDANCE_MODE,
@@ -36,6 +41,7 @@ from .const import (
     CONF_SENSOR_WEIGHT,
     DOMAIN,
     HANDLERS,
+    IMPEDANCE_MODE_DUAL,
 )
 from .entity import BodyScaleBaseEntity
 from .metrics import BodyScaleMetricsHandler
@@ -213,6 +219,74 @@ async def async_setup_entry(
                         state_class=SensorStateClass.MEASUREMENT,
                     ),
                     Metric.BODY_SCORE,
+                ),
+            ]
+        )
+
+    if impedance_mode == IMPEDANCE_MODE_DUAL:
+        new_sensors.extend(
+            [
+                BodyScaleSensor(
+                    handler,
+                    SensorEntityDescription(
+                        key=ATTR_EXTRACELLULAR_WATER,
+                        translation_key="extracellular_water",
+                        icon="mdi:water-opacity",
+                        native_unit_of_measurement="L",
+                        state_class=SensorStateClass.MEASUREMENT,
+                        suggested_display_precision=2,
+                    ),
+                    Metric.ECW,
+                ),
+                BodyScaleSensor(
+                    handler,
+                    SensorEntityDescription(
+                        key=ATTR_INTRACELLULAR_WATER,
+                        translation_key="intracellular_water",
+                        icon="mdi:water-circle",
+                        native_unit_of_measurement="L",
+                        state_class=SensorStateClass.MEASUREMENT,
+                        suggested_display_precision=2,
+                    ),
+                    Metric.ICW,
+                ),
+                BodyScaleSensor(
+                    handler,
+                    SensorEntityDescription(
+                        key=ATTR_ECW_TBW_RATIO,
+                        translation_key="ecw_tbw_ratio",
+                        icon="mdi:chart-pie",
+                        native_unit_of_measurement=PERCENTAGE,
+                        state_class=SensorStateClass.MEASUREMENT,
+                        suggested_display_precision=1,
+                    ),
+                    Metric.ECW_TBW_RATIO,
+                ),
+                BodyScaleSensor(
+                    handler,
+                    SensorEntityDescription(
+                        key=ATTR_BCM,
+                        translation_key="body_cell_mass",
+                        icon="mdi:cellphone",
+                        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+                        device_class=SensorDeviceClass.WEIGHT,
+                        state_class=SensorStateClass.MEASUREMENT,
+                        suggested_display_precision=2,
+                    ),
+                    Metric.BCM,
+                ),
+                BodyScaleSensor(
+                    handler,
+                    SensorEntityDescription(
+                        key=ATTR_SKELETAL_MUSCLE_MASS,
+                        translation_key="skeletal_muscle_mass",
+                        icon="mdi:arm-flex",
+                        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+                        device_class=SensorDeviceClass.WEIGHT,
+                        state_class=SensorStateClass.MEASUREMENT,
+                        suggested_display_precision=2,
+                    ),
+                    Metric.SKELETAL_MUSCLE_MASS,
                 ),
             ]
         )

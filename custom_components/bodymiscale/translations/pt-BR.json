@@ -29,7 +29,7 @@
           "weight": "Sensor de peso"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: idêntico ao app Zepp Life. Científico: fórmulas OMS / Mifflin. Não tem efeito no modo S400 de dupla frequência.",
+          "calculation_mode": "Xiaomi: idêntico ao app Zepp Life. Científico: fórmulas OMS / Schofield. Não tem efeito no modo S400 de dupla frequência.",
           "impedance_mode": "Nenhum: balança sem impedância. Padrão: frequência única (Xiaomi Gen2). Dupla frequência S400: sensores de 50 kHz + 250 kHz.",
           "last_measurement_time": "Opcional. Deixe em branco se não possuir este sensor."
         },
@@ -48,14 +48,19 @@
     "sensor": {
       "basal_metabolism": { "name": "Metabolismo basal" },
       "bmi": { "name": "IMC" },
+      "body_cell_mass": { "name": "Massa celular" },
       "body_fat": { "name": "Gordura corporal" },
       "body_score": { "name": "Pontuação corporal" },
       "bone_mass": { "name": "Massa óssea" },
+      "ecw_tbw_ratio": { "name": "Relação ECW/TBW" },
+      "extracellular_water": { "name": "Água extracellulare" },
+      "intracellular_water": { "name": "Água intracellulare" },
       "last_measurement_time": { "name": "Última hora de pesagem" },
       "lean_body_mass": { "name": "Massa corporal magra" },
       "metabolic_age": { "name": "Idade metabólica" },
       "muscle_mass": { "name": "Massa muscular" },
       "protein": { "name": "Proteína" },
+      "skeletal_muscle_mass": { "name": "Massa muscolar scheletrica" },
       "visceral_fat": { "name": "Gordura visceral" },
       "water": { "name": "Água" },
       "weight": { "name": "Peso" }
@@ -85,6 +90,7 @@
             "underweight": "Abaixo do peso"
           }
         },
+        "body_cell_mass": { "name": "Massa celular" },
         "body_fat": { "name": "Gordura corporal" },
         "body_score": { "name": "Pontuação corporal" },
         "body_type": {
@@ -103,6 +109,8 @@
           }
         },
         "bone_mass": { "name": "Massa óssea" },
+        "ecw_tbw_ratio": { "name": "Relação ECW/TBW" },
+        "extracellular_water": { "name": "Água extracellulare" },
         "fat_mass_to_gain": { "name": "Massa gorda a ganhar" },
         "fat_mass_to_lose": { "name": "Massa gorda a perder" },
         "gender": {
@@ -117,6 +125,7 @@
         "impedance": { "name": "Impedância" },
         "impedance_high": { "name": "Impedância (250 kHz)" },
         "impedance_low": { "name": "Impedância (50 kHz)" },
+        "intracellular_water": { "name": "Água intracellulare" },
         "last_measurement_time": { "name": "Última hora de pesagem" },
         "lean_body_mass": { "name": "Massa corporal magra" },
         "metabolic_age": { "name": "Idade metabólica" },
@@ -141,6 +150,7 @@
           }
         },
         "protein": { "name": "Proteína" },
+        "skeletal_muscle_mass": { "name": "Massa muscolar scheletrica" },
         "visceral_fat": { "name": "Gordura visceral" },
         "water": { "name": "Água" },
         "weight": { "name": "Peso" }
@@ -171,9 +181,9 @@
           "weight": "Sensor de peso"
         },
         "data_description": {
-          "calculation_mode": "Xiaomi: idêntico ao Zepp Life. Científico: OMS / Mifflin. Sem efeito no modo S400.",
-          "impedance_mode": "Nenhum: sem impedância. Padrão: frequência única (Xiaomi Gen2). Dupla frequência S400: 50 kHz + 250 kHz.",
-          "last_measurement_time": "Opcional. Deixe em branco se o sensor não existir."
+          "calculation_mode": "Xiaomi: idêntico ao app Zepp Life. Científico: fórmulas OMS / Schofield. Não tem efeito no modo S400 de dupla frequência.",
+          "impedance_mode": "Nenhum: balança sem impedância. Padrão: frequência única (Xiaomi Gen2). Dupla frequência S400: sensores de 50 kHz + 250 kHz.",
+          "last_measurement_time": "Opcional. Deixe em branco se não possuir este sensor."
         },
         "title": "Configuração"
       }
@@ -182,7 +192,7 @@
   "selector": {
     "calculation_mode": {
       "options": {
-        "science": "Científico — OMS / Mifflin",
+        "science": "Científico — OMS / Schofield",
         "xiaomi": "Xiaomi — Zepp Life (Legado 2017)"
       }
     },
