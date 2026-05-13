@@ -1,11 +1,7 @@
 """Constants"""
 
 DOMAIN = "plant"
-DOMAIN_SENSOR = "sensor"
 DOMAIN_PLANTBOOK = "openplantbook"
-
-# Entity ID prefixes
-ENTITY_ID_PREFIX_SENSOR = f"{DOMAIN_SENSOR}."
 
 # URL patterns
 URL_SCHEME_HTTP = "http"
@@ -28,6 +24,7 @@ ATTR_MMOL = "mmol"
 ATTR_MOL = "mol"
 ATTR_DLI = "dli"
 ATTR_DLI_24H = "dli_24h"
+ATTR_VPD = "vpd"
 
 ATTR_TEMPERATURE = "temperature"
 ATTR_PROBLEM = "problem"
@@ -56,6 +53,7 @@ READING_PPFD = "ppfd (mol)"
 READING_MMOL = "mmol"
 READING_MOL = "mol"
 READING_DLI = "dli"
+READING_VPD = "vpd"
 
 # Translation keys for entity names
 TRANSLATION_KEY_MOISTURE = "moisture"
@@ -85,6 +83,9 @@ TRANSLATION_KEY_MIN_CO2 = "min_co2"
 TRANSLATION_KEY_SOIL_TEMPERATURE = "soil_temperature"
 TRANSLATION_KEY_MAX_SOIL_TEMPERATURE = "max_soil_temperature"
 TRANSLATION_KEY_MIN_SOIL_TEMPERATURE = "min_soil_temperature"
+TRANSLATION_KEY_VPD = "vpd"
+TRANSLATION_KEY_MAX_VPD = "max_vpd"
+TRANSLATION_KEY_MIN_VPD = "min_vpd"
 TRANSLATION_KEY_LUX_TO_PPFD = "lux_to_ppfd"
 
 
@@ -119,6 +120,8 @@ DEFAULT_MIN_MOL = 2
 DEFAULT_MAX_MOL = 30
 DEFAULT_MIN_DLI = 2
 DEFAULT_MAX_DLI = 30
+DEFAULT_MIN_VPD = 0.4
+DEFAULT_MAX_VPD = 1.6
 
 DEFAULT_IMAGE_PATH = "/config/www/images/plants/"
 DEFAULT_IMAGE_LOCAL_URL = "/local/images/plants/"
@@ -135,6 +138,7 @@ UNIT_PPFD = "mol/s⋅m²"
 UNIT_MICRO_PPFD = "µmol/s⋅m²"
 UNIT_TOTAL_LIGHT_INTEGRAL = "mol/m²"
 UNIT_DLI = "mol/d⋅m²"
+UNIT_VPD = "kPa"
 UNIT_MICRO_DLI = "µmol/d⋅m²"
 # Note: For conductivity, use UnitOfConductivity.MICROSIEMENS_PER_CM from homeassistant.const
 # Note: For CO2, use CONCENTRATION_PARTS_PER_MILLION from homeassistant.const
@@ -165,6 +169,7 @@ FLOW_CO2_TRIGGER = "co2_trigger"
 FLOW_TEMPERATURE_TRIGGER = "temperature_trigger"
 FLOW_SOIL_TEMPERATURE_TRIGGER = "soil_temperature_trigger"
 FLOW_DLI_TRIGGER = "dli_trigger"
+FLOW_VPD_TRIGGER = "vpd_trigger"
 FLOW_MOISTURE_TRIGGER = "moisture_trigger"
 FLOW_CONDUCTIVITY_TRIGGER = "conductivity_trigger"
 
@@ -179,6 +184,7 @@ ICON_MOISTURE = "mdi:water"
 ICON_PPFD = "mdi:white-balance-sunny"
 ICON_TEMPERATURE = "mdi:thermometer"
 ICON_SOIL_TEMPERATURE = "mdi:thermometer-probe"
+ICON_VPD = "mdi:water-thermometer-outline"
 
 OPB_GET = "get"
 OPB_SEARCH = "search"
@@ -190,6 +196,16 @@ OPB_DISPLAY_PID = "display_pid"
 # before a problem state is removed. Prevents flapping when a sensor
 # value oscillates near a threshold.
 HYSTERESIS_FRACTION = 0.05
+
+# Grace period after watering: delay before reporting moisture "high" problem
+# This prevents false alarms immediately after watering when moisture spikes
+# temporarily before stabilizing as water distributes through soil.
+DEFAULT_MOISTURE_GRACE_PERIOD = 0
+FLOW_MOISTURE_GRACE_PERIOD = "moisture_grace_period"
+# Threshold for detecting rapid moisture increase (watering event)
+# If moisture increases by this many percentage points (e.g. 40% → 50%),
+# trigger grace period. This is an absolute difference, not a relative percentage.
+MOISTURE_INCREASE_THRESHOLD = 10.0
 
 # PPFD to DLI: /1000000 * 3600 to get from microseconds to hours
 PPFD_DLI_FACTOR = 0.0036
@@ -230,6 +246,8 @@ CONF_MIN_MOL = f"min_{ATTR_MOL}"
 CONF_MAX_MOL = f"max_{ATTR_MOL}"
 CONF_MIN_DLI = f"min_{ATTR_DLI}"
 CONF_MAX_DLI = f"max_{ATTR_DLI}"
+CONF_MIN_VPD = f"min_{ATTR_VPD}"
+CONF_MAX_VPD = f"max_{ATTR_VPD}"
 CONF_MIN_BRIGHTNESS = "min_brightness"  # DEPRECATED. Only used for config migration
 CONF_MAX_BRIGHTNESS = "max_brightness"  # DEPRECATED. Only used for config migration
 

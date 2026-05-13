@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from datetime import datetime, timedelta
 
 import voluptuous as vol
 from homeassistant.components import websocket_api
+from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.components.utility_meter.const import (
     DATA_TARIFF_SENSORS,
     DATA_UTILITY,
@@ -24,12 +26,15 @@ from homeassistant.const import (
     Platform,
 )
 from homeassistant.core import HomeAssistant, ServiceCall, callback
-from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import (
+    config_validation as cv,
+    device_registry as dr,
+    entity_registry as er,
+)
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity, async_generate_entity_id
 from homeassistant.helpers.entity_component import EntityComponent
+from homeassistant.util import dt as dt_util
 
 from . import group as group  # noqa: F401 - needed for HA group discovery
 from .config_flow import update_plant_options
@@ -53,6 +58,7 @@ from .const import (
     ATTR_SOIL_TEMPERATURE,
     ATTR_SPECIES,
     ATTR_TEMPERATURE,
+    ATTR_VPD,
     CONF_MAX_BRIGHTNESS,
     CONF_MAX_CONDUCTIVITY,
     CONF_MAX_MOISTURE,
@@ -62,19 +68,22 @@ from .const import (
     CONF_MIN_MOISTURE,
     CONF_MIN_TEMPERATURE,
     DATA_SOURCE,
+    DEFAULT_MOISTURE_GRACE_PERIOD,
     DOMAIN,
     DOMAIN_PLANTBOOK,
-    ENTITY_ID_PREFIX_SENSOR,
     FLOW_CO2_TRIGGER,
     FLOW_CONDUCTIVITY_TRIGGER,
     FLOW_DLI_TRIGGER,
     FLOW_HUMIDITY_TRIGGER,
     FLOW_ILLUMINANCE_TRIGGER,
+    FLOW_MOISTURE_GRACE_PERIOD,
     FLOW_MOISTURE_TRIGGER,
     FLOW_PLANT_INFO,
     FLOW_SOIL_TEMPERATURE_TRIGGER,
     FLOW_TEMPERATURE_TRIGGER,
+    FLOW_VPD_TRIGGER,
     HYSTERESIS_FRACTION,
+    MOISTURE_INCREASE_THRESHOLD,
     OPB_DISPLAY_PID,
     SERVICE_REPLACE_SENSOR,
     STATE_HIGH,
@@ -246,7 +255,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if (
             new_sensor
             and new_sensor != ""
-            and not new_sensor.startswith(ENTITY_ID_PREFIX_SENSOR)
+            and not new_sensor.startswith(f"{SENSOR_DOMAIN}.")
         ):
             _LOGGER.warning("%s is not a sensor", new_sensor)
             return False
@@ -526,6 +535,8 @@ class PlantDevice(Entity):
         self.min_soil_temperature = None
         self.max_dli = None
         self.min_dli = None
+        self.max_vpd = None
+        self.min_vpd = None
 
         self.sensor_moisture = None
         self.sensor_temperature = None
@@ -537,6 +548,7 @@ class PlantDevice(Entity):
 
         self.dli = None
         self.dli_24h = None
+        self.vpd = None
         self.micro_dli = None
         self.ppfd = None
         self.total_integral = None
@@ -550,6 +562,11 @@ class PlantDevice(Entity):
         self.co2_status = None
         self.soil_temperature_status = None
         self.dli_status = None
+        self.vpd_status = None
+
+        # Moisture grace period tracking
+        self._moisture_grace_end_time: datetime | None = None
+        self._last_moisture_value: float | None = None
 
     def _is_ppfd_source(self) -> bool:
         """Check if illuminance source provides PPFD instead of lux.
@@ -617,6 +634,11 @@ class PlantDevice(Entity):
         return self._config.options.get(FLOW_TEMPERATURE_TRIGGER, True)
 
     @property
+    def vpd_trigger(self) -> bool:
+        """Whether we will generate alarms based on VPD"""
+        return self._config.options.get(FLOW_VPD_TRIGGER, False)
+
+    @property
     def dli_trigger(self) -> bool:
         """Whether we will generate alarms based on dli"""
         return self._config.options.get(FLOW_DLI_TRIGGER, True)
@@ -630,6 +652,13 @@ class PlantDevice(Entity):
     def conductivity_trigger(self) -> bool:
         """Whether we will generate alarms based on conductivity"""
         return self._config.options.get(FLOW_CONDUCTIVITY_TRIGGER, True)
+
+    @property
+    def moisture_grace_period(self) -> int:
+        """Grace period in seconds after watering before reporting high moisture"""
+        return self._config.options.get(
+            FLOW_MOISTURE_GRACE_PERIOD, DEFAULT_MOISTURE_GRACE_PERIOD
+        )
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -647,6 +676,7 @@ class PlantDevice(Entity):
             f"{ATTR_CO2}_status": self.co2_status,
             f"{ATTR_SOIL_TEMPERATURE}_status": self.soil_temperature_status,
             f"{ATTR_DLI}_status": self.dli_status,
+            f"{ATTR_VPD}_status": self.vpd_status,
             f"{ATTR_SPECIES}_original": self.species,
         }
         return attributes
@@ -682,10 +712,14 @@ class PlantDevice(Entity):
             _LOGGER.debug("Skipping %s: sensor %s not available", attr_name, sensor)
             return None
         try:
+            max_val = self._safe_float(max_entity.state, max_entity.entity_id)
+            min_val = self._safe_float(min_entity.state, min_entity.entity_id)
             return {
-                ATTR_MAX: max_entity.state,
-                ATTR_MIN: min_entity.state,
-                ATTR_CURRENT: sensor.state or STATE_UNAVAILABLE,
+                ATTR_MAX: max_val if max_val is not None else max_entity._default_value,
+                ATTR_MIN: min_val if min_val is not None else min_entity._default_value,
+                ATTR_CURRENT: (
+                    sensor.state if sensor.state is not None else STATE_UNAVAILABLE
+                ),
                 ATTR_ICON: self._get_entity_icon(sensor),
                 ATTR_UNIT_OF_MEASUREMENT: sensor.unit_of_measurement,
                 ATTR_SENSOR: sensor.entity_id,
@@ -774,6 +808,12 @@ class PlantDevice(Entity):
             if dli_24h_val is not None:
                 response[ATTR_DLI_24H][ATTR_CURRENT] = dli_24h_val
 
+        # Add VPD if available
+        if self._sensor_available(self.vpd):
+            info = self._sensor_info(ATTR_VPD, self.vpd, self.max_vpd, self.min_vpd)
+            if info is not None:
+                response[ATTR_VPD] = info
+
         return response
 
     @property
@@ -796,6 +836,8 @@ class PlantDevice(Entity):
             self.min_moisture,
             self.min_soil_temperature,
             self.min_temperature,
+            self.max_vpd,
+            self.min_vpd,
         ]
 
     @property
@@ -849,6 +891,8 @@ class PlantDevice(Entity):
         min_soil_temperature: Entity | None,
         max_dli: Entity | None,
         min_dli: Entity | None,
+        max_vpd: Entity | None = None,
+        min_vpd: Entity | None = None,
     ) -> None:
         """Add the threshold entities"""
         self.max_moisture = max_moisture
@@ -867,6 +911,8 @@ class PlantDevice(Entity):
         self.min_soil_temperature = min_soil_temperature
         self.max_dli = max_dli
         self.min_dli = min_dli
+        self.max_vpd = max_vpd
+        self.min_vpd = min_vpd
 
     def add_sensors(
         self,
@@ -896,6 +942,10 @@ class PlantDevice(Entity):
         self.dli = dli
         self.dli_24h = dli_24h
         self.plant_complete = True
+
+    def add_vpd(self, vpd: Entity | None) -> None:
+        """Add the VPD sensor"""
+        self.vpd = vpd
 
     def add_calculations(self, ppfd: Entity, total_integral: Entity) -> None:
         """Add the intermediate calculation entities"""
@@ -1052,23 +1102,76 @@ class PlantDevice(Entity):
             moisture_val = self._safe_float(moisture, self.sensor_moisture.entity_id)
             if moisture_val is not None:
                 known_state = True
+
+                # Detect watering event (rapid moisture increase)
+                if self._last_moisture_value is not None:
+                    moisture_increase = moisture_val - self._last_moisture_value
+                    if moisture_increase >= MOISTURE_INCREASE_THRESHOLD:
+                        grace_period_seconds = self.moisture_grace_period
+                        if grace_period_seconds > 0:
+                            self._moisture_grace_end_time = dt_util.now() + timedelta(
+                                seconds=grace_period_seconds
+                            )
+                            _LOGGER.debug(
+                                "Watering detected for %s: moisture increased by %.1f%% "
+                                "(from %.1f%% to %.1f%%). Grace period active until %s",
+                                self.entity_id,
+                                moisture_increase,
+                                self._last_moisture_value,
+                                moisture_val,
+                                self._moisture_grace_end_time,
+                            )
+
+                self._last_moisture_value = moisture_val
+
                 self.moisture_status = self._check_threshold(
                     moisture_val,
                     self.min_moisture,
                     self.max_moisture,
                     self.moisture_status,
                 )
-                if (
-                    self.moisture_status in (STATE_LOW, STATE_HIGH)
-                    and self.moisture_trigger
-                ):
-                    new_state = STATE_PROBLEM
+
+                # Apply grace period logic: only suppress "high" problems during grace period
+                # Allow "low" problems (needs water) to trigger immediately
+                if self.moisture_trigger:
+                    if self.moisture_status == STATE_LOW:
+                        new_state = STATE_PROBLEM
+                    elif self.moisture_status == STATE_HIGH:
+                        now = dt_util.now()
+                        if (
+                            self._moisture_grace_end_time is not None
+                            and now < self._moisture_grace_end_time
+                        ):
+                            # Grace period active - suppress high moisture problem
+                            remaining = (
+                                self._moisture_grace_end_time - now
+                            ).total_seconds()
+                            _LOGGER.debug(
+                                "Moisture high for %s but grace period active "
+                                "(%.0f seconds remaining) - not reporting problem",
+                                self.entity_id,
+                                remaining,
+                            )
+                        else:
+                            # Grace period expired or not active - report problem
+                            new_state = STATE_PROBLEM
+                            if self._moisture_grace_end_time is not None:
+                                _LOGGER.debug(
+                                    "Moisture grace period expired for %s - "
+                                    "reporting high moisture problem",
+                                    self.entity_id,
+                                )
+                                self._moisture_grace_end_time = None
             else:
-                # Reset status when sensor is unavailable or non-numeric
+                # Reset status and tracking when sensor is unavailable or non-numeric
                 self.moisture_status = None
+                self._last_moisture_value = None
+                self._moisture_grace_end_time = None
         else:
-            # Reset status when sensor is removed
+            # Reset status and tracking when sensor is removed
             self.moisture_status = None
+            self._last_moisture_value = None
+            self._moisture_grace_end_time = None
 
         if self.sensor_conductivity is not None:
             conductivity = getattr(
@@ -1264,6 +1367,21 @@ class PlantDevice(Entity):
             # Reset DLI status when sensor is unavailable or removed
             self.dli_status = None
 
+        # Check VPD (computed from temperature + humidity)
+        if self.vpd is not None and self.vpd.native_value is not None:
+            vpd_val = self._safe_float(self.vpd.native_value, self.vpd.entity_id)
+            if vpd_val is not None:
+                known_state = True
+                self.vpd_status = self._check_threshold(
+                    vpd_val, self.min_vpd, self.max_vpd, self.vpd_status
+                )
+                if self.vpd_status in (STATE_LOW, STATE_HIGH) and self.vpd_trigger:
+                    new_state = STATE_PROBLEM
+            else:
+                self.vpd_status = None
+        else:
+            self.vpd_status = None
+
         if not known_state:
             new_state = STATE_UNKNOWN
 
@@ -1275,7 +1393,12 @@ class PlantDevice(Entity):
                 new_state,
             )
         self._attr_state = new_state
-        self.update_registry()
+        # Note: do NOT call self.update_registry() here. update() runs in
+        # an executor thread (HA's polling), and device_registry.async_get_or_create
+        # raises in HA 2026.5+ when called off the event loop. Device-registry
+        # updates are handled by the async paths (async_added_to_hass,
+        # update_plant_options, refresh_plant_from_openplantbook), which fire
+        # whenever model/manufacturer can actually change.
 
     @property
     def data_source(self) -> str | None:

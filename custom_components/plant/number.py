@@ -5,7 +5,12 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from homeassistant.components.number import NumberDeviceClass, NumberMode, RestoreNumber
+from homeassistant.components.number import (
+    DOMAIN as NUMBER_DOMAIN,
+    NumberDeviceClass,
+    NumberMode,
+    RestoreNumber,
+)
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -36,6 +41,7 @@ from .const import (
     ATTR_MOISTURE,
     ATTR_PLANT,
     ATTR_THRESHOLDS,
+    ATTR_VPD,
     CONF_LUX_TO_PPFD,
     CONF_MAX_CO2,
     CONF_MAX_CONDUCTIVITY,
@@ -45,6 +51,7 @@ from .const import (
     CONF_MAX_MOISTURE,
     CONF_MAX_SOIL_TEMPERATURE,
     CONF_MAX_TEMPERATURE,
+    CONF_MAX_VPD,
     CONF_MIN_CO2,
     CONF_MIN_CONDUCTIVITY,
     CONF_MIN_DLI,
@@ -53,6 +60,7 @@ from .const import (
     CONF_MIN_MOISTURE,
     CONF_MIN_SOIL_TEMPERATURE,
     CONF_MIN_TEMPERATURE,
+    CONF_MIN_VPD,
     DEFAULT_LUX_TO_PPFD,
     DEFAULT_MAX_CO2,
     DEFAULT_MAX_CONDUCTIVITY,
@@ -62,6 +70,7 @@ from .const import (
     DEFAULT_MAX_MOISTURE,
     DEFAULT_MAX_SOIL_TEMPERATURE,
     DEFAULT_MAX_TEMPERATURE,
+    DEFAULT_MAX_VPD,
     DEFAULT_MIN_CO2,
     DEFAULT_MIN_CONDUCTIVITY,
     DEFAULT_MIN_DLI,
@@ -70,6 +79,7 @@ from .const import (
     DEFAULT_MIN_MOISTURE,
     DEFAULT_MIN_SOIL_TEMPERATURE,
     DEFAULT_MIN_TEMPERATURE,
+    DEFAULT_MIN_VPD,
     DOMAIN,
     FLOW_PLANT_INFO,
     FLOW_PLANT_LIMITS,
@@ -89,6 +99,7 @@ from .const import (
     ICON_PPFD,
     ICON_SOIL_TEMPERATURE,
     ICON_TEMPERATURE,
+    ICON_VPD,
     READING_CO2,
     READING_CONDUCTIVITY,
     READING_DLI,
@@ -97,6 +108,7 @@ from .const import (
     READING_MOISTURE,
     READING_SOIL_TEMPERATURE,
     READING_TEMPERATURE,
+    READING_VPD,
     TEMPERATURE_MAX_VALUE,
     TEMPERATURE_MIN_VALUE,
     TRANSLATION_KEY_LUX_TO_PPFD,
@@ -108,6 +120,7 @@ from .const import (
     TRANSLATION_KEY_MAX_MOISTURE,
     TRANSLATION_KEY_MAX_SOIL_TEMPERATURE,
     TRANSLATION_KEY_MAX_TEMPERATURE,
+    TRANSLATION_KEY_MAX_VPD,
     TRANSLATION_KEY_MIN_CO2,
     TRANSLATION_KEY_MIN_CONDUCTIVITY,
     TRANSLATION_KEY_MIN_DLI,
@@ -116,7 +129,9 @@ from .const import (
     TRANSLATION_KEY_MIN_MOISTURE,
     TRANSLATION_KEY_MIN_SOIL_TEMPERATURE,
     TRANSLATION_KEY_MIN_TEMPERATURE,
+    TRANSLATION_KEY_MIN_VPD,
     UNIT_DLI,
+    UNIT_VPD,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -144,6 +159,8 @@ async def async_setup_entry(
     pminst = PlantMinSoilTemperature(hass, entry, plant)
     pmaxmm = PlantMaxDli(hass, entry, plant)
     pminmm = PlantMinDli(hass, entry, plant)
+    pmaxvpd = PlantMaxVpd(hass, entry, plant)
+    pminvpd = PlantMinVpd(hass, entry, plant)
     plux_ppfd = PlantLuxToPpfd(hass, entry, plant)
 
     number_entities = [
@@ -163,6 +180,8 @@ async def async_setup_entry(
         pminst,
         pmaxmm,
         pminmm,
+        pmaxvpd,
+        pminvpd,
         plux_ppfd,
     ]
 
@@ -183,6 +202,14 @@ async def async_setup_entry(
         has_sensor = plant_info.get(sensor_key) is not None
         for entity in entities:
             entity._attr_entity_registry_enabled_default = has_sensor
+
+    # VPD thresholds require both temperature and humidity sensors
+    has_vpd = (
+        plant_info.get(FLOW_SENSOR_TEMPERATURE) is not None
+        and plant_info.get(FLOW_SENSOR_HUMIDITY) is not None
+    )
+    pmaxvpd._attr_entity_registry_enabled_default = has_vpd
+    pminvpd._attr_entity_registry_enabled_default = has_vpd
 
     async_add_entities(number_entities)
 
@@ -205,6 +232,8 @@ async def async_setup_entry(
         min_soil_temperature=pminst,
         max_dli=pmaxmm,
         min_dli=pminmm,
+        max_vpd=pmaxvpd,
+        min_vpd=pminvpd,
     )
     return True
 
@@ -234,9 +263,18 @@ class PlantMinMax(RestoreNumber):
         # New entities let has_entity_name derive the entity_id automatically,
         # which enables auto-rename when the device is renamed.
         ent_reg = er_async_get(hass)
-        if ent_reg.async_get_entity_id("number", DOMAIN, self._attr_unique_id):
+        # Track whether this is a brand-new config entry. HA's RestoreState
+        # keyed by entity_id preserves deleted entities' last state for ~7
+        # days, so a delete + re-add with the same plant name would restore
+        # stale values over the fresh ones from OpenPlantbook. Skip restore
+        # when the unique_id is new.
+        self._is_new_entity = (
+            ent_reg.async_get_entity_id(NUMBER_DOMAIN, DOMAIN, self._attr_unique_id)
+            is None
+        )
+        if not self._is_new_entity:
             self.entity_id = async_generate_entity_id(
-                f"{DOMAIN}.{{}}",
+                f"{NUMBER_DOMAIN}.{{}}",
                 f"{self._plant.name} {self._entity_id_key}",
                 current_ids={},
             )
@@ -312,6 +350,19 @@ class PlantMinMax(RestoreNumber):
     async def async_added_to_hass(self) -> None:
         """Restore state of thresholds on startup."""
         await super().async_added_to_hass()
+        if self._is_new_entity:
+            _LOGGER.debug(
+                "New entity %s, using default %s (skipping restore)",
+                self.entity_id,
+                self._default_value,
+            )
+            self.async_write_ha_state()
+            async_track_state_change_event(
+                self.hass,
+                [self.entity_id],
+                self._state_changed_event,
+            )
+            return
         state = await self.async_get_last_number_data()
         if not state:
             _LOGGER.debug(
@@ -668,6 +719,52 @@ class PlantMinDli(PlantMinMax):
             CONF_MIN_DLI, DEFAULT_MIN_DLI
         )
         self._attr_unique_id = f"{config.entry_id}-min-dli"
+        super().__init__(hass, config, plantdevice)
+
+
+class PlantMaxVpd(PlantMinMax):
+    """Entity class for max VPD threshold"""
+
+    _attr_device_class = f"{ATTR_VPD} threshold"
+    _attr_icon = ICON_VPD
+    _attr_native_unit_of_measurement = UNIT_VPD
+    _attr_native_max_value = 5.0
+    _attr_native_min_value = 0
+    _attr_native_step = 0.1
+    _attr_translation_key = TRANSLATION_KEY_MAX_VPD
+    _entity_id_key = f"{ATTR_MAX} {READING_VPD}"
+
+    def __init__(
+        self, hass: HomeAssistant, config: ConfigEntry, plantdevice: Entity
+    ) -> None:
+        """Initialize the component."""
+        self._default_value = config.data[FLOW_PLANT_INFO][FLOW_PLANT_LIMITS].get(
+            CONF_MAX_VPD, DEFAULT_MAX_VPD
+        )
+        self._attr_unique_id = f"{config.entry_id}-max-vpd"
+        super().__init__(hass, config, plantdevice)
+
+
+class PlantMinVpd(PlantMinMax):
+    """Entity class for min VPD threshold"""
+
+    _attr_device_class = f"{ATTR_VPD} threshold"
+    _attr_icon = ICON_VPD
+    _attr_native_unit_of_measurement = UNIT_VPD
+    _attr_native_max_value = 5.0
+    _attr_native_min_value = 0
+    _attr_native_step = 0.1
+    _attr_translation_key = TRANSLATION_KEY_MIN_VPD
+    _entity_id_key = f"{ATTR_MIN} {READING_VPD}"
+
+    def __init__(
+        self, hass: HomeAssistant, config: ConfigEntry, plantdevice: Entity
+    ) -> None:
+        """Initialize the component."""
+        self._default_value = config.data[FLOW_PLANT_INFO][FLOW_PLANT_LIMITS].get(
+            CONF_MIN_VPD, DEFAULT_MIN_VPD
+        )
+        self._attr_unique_id = f"{config.entry_id}-min-vpd"
         super().__init__(hass, config, plantdevice)
 
 
