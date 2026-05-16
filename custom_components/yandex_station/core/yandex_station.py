@@ -173,6 +173,9 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
     # true of false if device has HDMI
     hdmi_audio: Optional[bool] = None
 
+    is_on: bool = None
+    """Yandex TV screen state. None if device don't have this state."""
+
     glagol: YandexGlagol = None
 
     def __init__(self, quasar: YandexQuasar, device: dict):
@@ -212,15 +215,32 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             self.entity_id += "yandex_station"
         self.entity_id += f"_{slugify(self._attr_unique_id)}"
 
+        self.internal_update_is_on(device)
+
         quasar.subscribe_update(device["id"], self.on_update)
 
     @property
     def extra_state_attributes(self):
+        data = {}
         if self.local_state:
-            return {"alice_state": self.local_state["aliceState"]}
-        return None
+            data["alice_state"] = self.local_state["aliceState"]
+        if self.is_on is not None:
+            data["is_on"] = self.is_on
+        return data or None
+
+    def internal_update_is_on(self, device: dict):
+        """Update is_on attribute for devices with this state."""
+        for i in device["capabilities"]:
+            if (s := i["state"]) and s.get("instance") == "on":
+                self.is_on = s["value"]
+                if self.hass:
+                    self.async_write_ha_state()
+                return
 
     def on_update(self, device: dict):
+        if self.is_on is not None:
+            self.internal_update_is_on(device)
+
         if not self.hass:
             return
 
@@ -388,6 +408,22 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
 
         await self.quasar.set_device_config(self.device, config, version)
 
+    async def _set_dnd_mode(self, value: str):
+        if value == "True":
+            value = True
+        elif value == "False":
+            value = False
+        else:
+            return
+
+        config, version = await self.quasar.get_device_config(self.device)
+
+        if config.get("dndMode") is None:
+            raise HomeAssistantError("Режим 'не беспокоить' не поддерживается этим устройством")
+
+        config["dndMode"]["enabled"] = value
+        await self.quasar.set_device_config(self.device, config, version)
+
     async def _set_beta(self, value: str):
         if value == "True":
             value = True
@@ -428,6 +464,10 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
 
     def _process_alice_volume(self, alice_state: str):
         volume = None
+
+        # Fix https://github.com/AlexxIT/YandexStation/issues/740
+        if alice_state == "NONE":
+            alice_state = "SPEAKING"
 
         # если что-то пошло не так, через 30 секунд возвращаем громкость
         if time.time() > self.alice_volume["wait_ts"]:
@@ -749,7 +789,9 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             await self.quasar.send(self.device, "следующий трек")
 
     async def async_turn_on(self):
-        if self.local_state:
+        if self.is_on is not None:
+            await self.quasar.device_actions(self.device, on=True)
+        elif self.local_state:
             await self.glagol.send(
                 utils.update_form("personal_assistant.scenarios.player_continue")
             )
@@ -757,7 +799,9 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             await self.async_media_play()
 
     async def async_turn_off(self):
-        if self.local_state:
+        if self.is_on is not None:
+            await self.quasar.device_actions(self.device, on=False)
+        elif self.local_state:
             await self.glagol.send(
                 utils.update_form("personal_assistant.scenarios.quasar.go_home")
             )
@@ -810,6 +854,9 @@ class YandexStationBase(MediaBrowser, RestoreEntity):
             return
         elif media_type == "visualization":
             await self._set_led(visualization=media_id)
+            return
+        elif media_type == "dnd_mode":
+            await self._set_dnd_mode(media_id)
             return
         elif media_type == "beta":
             await self._set_beta(media_id)
