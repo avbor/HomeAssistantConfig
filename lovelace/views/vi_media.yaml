@@ -164,7 +164,8 @@ cards:
         cards:
           - type: button
             entity: input_boolean.tv_remote_show_bedroom
-            name: "\U000021E7 Пульт управления \U000021E9"
+            #name: "\U000021E7 Пульт управления \U000021E9"
+            name: "\U000021F3 Пульт управления \U000021F3"
             show_state: false
             show_icon: false
             tap_action:
@@ -242,7 +243,8 @@ cards:
         cards:
           - type: button
             entity: input_boolean.tv_remote_show_nursery
-            name: "\U000021E7 Пульт управления \U000021E9"
+            #name: "\U000021E7 Пульт управления \U000021E9"
+            name: "\U000021F3 Пульт управления \U000021F3"
             show_state: false
             show_icon: false
             tap_action:

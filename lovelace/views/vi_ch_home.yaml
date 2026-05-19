@@ -99,7 +99,8 @@ cards:
           ### <center>Видеонаблюдение</center>
       - type: button
         entity: input_boolean.country_house_show_cctv
-        name: "\U000021E7 Камера \U000021E9"
+        #name: "\U000021E7 Камера \U000021E9"
+        name: "\U000021F3 Камера \U000021F3"
         show_state: false
         show_icon: false
         tap_action:
@@ -117,7 +118,8 @@ cards:
           show_state: false
       - type: button
         entity: input_boolean.country_house_show_last_detect
-        name: "\U000021E7 Последние обнаружения \U000021E9"
+        #name: "\U000021E7 Последние обнаружения \U000021E9"
+        name: "\U000021F3 Последние обнаружения \U000021F3"
         show_state: false
         show_icon: false
         tap_action:

@@ -89,7 +89,8 @@ cards:
             cards:
               - type: button
                 entity: input_boolean.ch_energy_show_radiator_livingroom
-                name: "\U000021E7 Потребление \U000021E9"
+                #name: "\U000021E7 Потребление \U000021E9"
+                name: "\U000021F3 Потребление \U000021F3"
                 show_state: false
                 show_icon: false
                 tap_action:
@@ -233,7 +234,8 @@ cards:
             cards:
               - type: button
                 entity: input_boolean.ch_energy_show_radiator_cabinet
-                name: "\U000021E7 Потребление \U000021E9"
+                #name: "\U000021E7 Потребление \U000021E9"
+                name: "\U000021F3 Потребление \U000021F3"
                 show_state: false
                 show_icon: false
                 tap_action:
@@ -377,7 +379,8 @@ cards:
             cards:
               - type: button
                 entity: input_boolean.ch_energy_show_radiator_toilet_1st_floor
-                name: "\U000021E7 Потребление \U000021E9"
+                #name: "\U000021E7 Потребление \U000021E9"
+                name: "\U000021F3 Потребление \U000021F3"
                 show_state: false
                 show_icon: false
                 tap_action:
@@ -527,7 +530,8 @@ cards:
             cards:
               - type: button
                 entity: input_boolean.ch_energy_show_radiator_kidsrooms
-                name: "\U000021E7 Потребление \U000021E9"
+                #name: "\U000021E7 Потребление \U000021E9"
+                name: "\U000021F3 Потребление \U000021F3"
                 show_state: false
                 show_icon: false
                 tap_action:
@@ -671,7 +675,8 @@ cards:
             cards:
               - type: button
                 entity: input_boolean.ch_energy_show_radiator_bedroom
-                name: "\U000021E7 Потребление \U000021E9"
+                #name: "\U000021E7 Потребление \U000021E9"
+                name: "\U000021F3 Потребление \U000021F3"
                 show_state: false
                 show_icon: false
                 tap_action:
@@ -815,7 +820,8 @@ cards:
             cards:
               - type: button
                 entity: input_boolean.ch_energy_show_radiator_toilet_2st_floor
-                name: "\U000021E7 Потребление \U000021E9"
+                #name: "\U000021E7 Потребление \U000021E9"
+                name: "\U000021F3 Потребление \U000021F3"
                 show_state: false
                 show_icon: false
                 tap_action:

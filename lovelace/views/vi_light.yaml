@@ -107,7 +107,8 @@ cards:
                   icon: mdi:string-lights
           - type: button
             entity: input_boolean.nursery_light_show_settings
-            name: "\U000021E7 Настройки \U000021E9"
+            #name: "\U000021E7 Настройки \U000021E9"
+            name: "\U000021F3 Настройки \U000021F3"
             show_state: false
             show_icon: false
             tap_action:
@@ -226,7 +227,8 @@ cards:
 
       - type: button
         entity: input_boolean.livingroom_light_show_settings
-        name: "\U000021E7 Настройки \U000021E9"
+        #name: "\U000021E7 Настройки \U000021E9"
+        name: "\U000021F3 Настройки \U000021F3"
         show_state: false
         show_icon: false
         tap_action:
@@ -284,7 +286,8 @@ cards:
               icon: mdi:led-strip-variant
       - type: button
         entity: input_boolean.kitchen_light_show_settings
-        name: "\U000021E7 Настройки \U000021E9"
+        #name: "\U000021E7 Настройки \U000021E9"
+        name: "\U000021F3 Настройки \U000021F3"
         show_state: false
         show_icon: false
         tap_action:
@@ -380,7 +383,8 @@ cards:
                   icon: mdi:desk-lamp
       - type: button
         entity: input_boolean.bedroom_light_show_settings
-        name: "\U000021E7 Настройки \U000021E9"
+        #name: "\U000021E7 Настройки \U000021E9"
+        name: "\U000021F3 Настройки \U000021F3"
         show_state: false
         show_icon: false
         tap_action:

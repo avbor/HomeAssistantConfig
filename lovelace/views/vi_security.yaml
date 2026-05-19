@@ -11,7 +11,8 @@ cards:
         camera_image: camera.reolinkcam_01_rtsp
       - type: button
         entity: input_boolean.staircase_show_last_person
-        name: "\U000021E7 Последнее обнаружение \U000021E9"
+        #name: "\U000021E7 Последнее обнаружение \U000021E9"
+        name: "\U000021F3 Последнее обнаружение \U000021F3"
         show_state: false
         show_icon: false
         tap_action:
