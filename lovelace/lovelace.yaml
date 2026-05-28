@@ -8,7 +8,8 @@ resources:
     type: module
   - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
     type: module
-  - url: /hacsfiles/simple-thermostat/simple-thermostat.js
+  #  - url: /hacsfiles/simple-thermostat/simple-thermostat.js
+  - url: /local/community/simple-thermostat/simple-thermostat.js
     type: module
   - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
     type: module
