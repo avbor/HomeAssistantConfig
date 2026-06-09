@@ -8,6 +8,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import (
+    CONCENTRATION_PARTS_PER_MILLION,
     PERCENTAGE,
     SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     UnitOfElectricCurrent,
@@ -37,6 +38,7 @@ async def async_setup_entry(hass, config_entry, add_entities):
 DEVICE_CLASSES = {
     "battery": SensorDeviceClass.BATTERY,
     "battery_voltage": SensorDeviceClass.VOLTAGE,
+    "co2": SensorDeviceClass.CO2,
     "cpu_temperature": SensorDeviceClass.TEMPERATURE,
     "current": SensorDeviceClass.CURRENT,
     "current_supply": SensorDeviceClass.CURRENT,
@@ -53,6 +55,7 @@ DEVICE_CLASSES = {
 UNITS = {
     "battery": PERCENTAGE,
     "battery_voltage": UnitOfElectricPotential.VOLT,
+    "co2": CONCENTRATION_PARTS_PER_MILLION,
     "cpu_temperature": UnitOfTemperature.CELSIUS,
     "current": UnitOfElectricCurrent.AMPERE,
     "current_supply": UnitOfElectricCurrent.AMPERE,
@@ -371,7 +374,7 @@ class XWiFiDoorBattery(XSensor):
         return self.ewelink.cloud.online
 
 
-BUTTON_STATES = ["single", "double", "hold"]
+BUTTON_STATES = ["single", "double", "hold", "triple"]
 
 
 class XEventSesor(XEntity, SensorEntity):
@@ -437,7 +440,9 @@ class XButtonLocalKey(XButtonBase):
             pass
         # local click: {'triggerType': 11, 'localKeyPass': {'outlet': 0, 'key': 0}}
         # local trash: {'triggerType': 0, 'localKeyPass': {'outlet': 0, 'key': 0}}
-        elif params.get("triggerType"):
+        # local trash: {'triggerType': 2, 'localKeyPass': {'outlet': 0, 'key': 0}}
+        # based on https://github.com/AlexxIT/SonoffLAN/issues/1789
+        elif params.get("triggerType") == 11:
             # Fix duplicates from mDNS https://github.com/AlexxIT/SonoffLAN/issues/1769
             if seq == self.last_seq:
                 return
