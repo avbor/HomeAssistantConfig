@@ -157,7 +157,7 @@ domofon_pack:
       triggers:
         - trigger: state
           entity_id:
-            - sensor.kb2003_last_notification
+            - sensor.2602bpc18g_last_notification
             - sensor.2109119dg_last_notification
       condition:
         - or:
