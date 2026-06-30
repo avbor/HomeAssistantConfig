@@ -1,18 +1,13 @@
 """Sensors of the Xiaomi AirFryer component."""
 # pylint: disable=import-error
-import asyncio
 import logging
+from datetime import timedelta
 from enum import Enum
 from typing import Optional
-from datetime import timedelta
 
 from homeassistant.components.sensor import ENTITY_ID_FORMAT, SensorEntity
 from homeassistant.components.sensor.const import SensorDeviceClass
 from homeassistant.config_entries import SOURCE_IMPORT
-from homeassistant.core import callback
-from homeassistant.helpers import device_registry as dr
-from homeassistant.util import slugify
-from homeassistant.exceptions import PlatformNotReady
 from homeassistant.const import (
     CONF_HOST,
     CONF_MAC,
@@ -20,20 +15,23 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
 )
-
+from homeassistant.exceptions import PlatformNotReady
+from homeassistant.helpers import device_registry as dr
+from homeassistant.util import slugify
 from miio import Device, DeviceException
+
 from .const import (
     CONF_MODEL,
     DATA_KEY,
     DATA_STATE,
     DOMAIN,
     MODEL_FRYER_YBAF01,
+    MODEL_FRYER_MAF10A,
     MODELS_CARELI,
     MODELS_MIOT,
     MODELS_SILEN,
     MODELS_VIOMI,
-    MODELS_XIAOMI,
-    MODELS_ALL_DEVICES
+    MODELS_XIAOMI
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -66,7 +64,7 @@ SENSOR_TYPES_SCK = {
     "target_time": ["Target Time", None, "target_time", None, "mdi:menu", None],
     "target_temperature": ["Target Temperature", None, "target_temperature", UnitOfTemperature.CELSIUS, None, SensorDeviceClass.TEMPERATURE],
     "left_time": ["Remaining", None, "left_time", UnitOfTime.MINUTES, "mdi:timer", None],
-    "switch_status": ["Preheat Phase", None, "work_temp", None, "mdi:pot-steam-outline", None],
+    "switch_status": ["Switch Status", None, "switch_status", None, "mdi:pot-steam-outline", None],
     "mode": ["Recipe Id", None, "mode", None, "mdi:stairs", None]
 }
 
@@ -75,9 +73,12 @@ SENSOR_TYPES_MIOT = {
     "target_time": ["Target Time", None, "target_time", None, "mdi:menu", None],
     "target_temperature": ["Target Temperature", None, "target_temperature", UnitOfTemperature.CELSIUS, None, SensorDeviceClass.TEMPERATURE],
     "left_time": ["Remaining", None, "left_time", UnitOfTime.MINUTES, "mdi:timer", None],
-    "recipe_id": ["Recipe Id", None, "recipe_id", None, "mdi:rice", None],
-    "preheat_switch": ["Preheat Phase", None, "preheat_switch", None, "mdi:pot-steam-outline", None],
-    "mode": ["Recipe Id", None, "mode", None, "mdi:stairs", None]
+    "switch_status": ["Switch Status", None, "switch_status", None, "mdi:pot-steam-outline", None],
+    "temperature": ["Temperature", None, "temperature", UnitOfTemperature.CELSIUS, None, SensorDeviceClass.TEMPERATURE],
+    "preheat": ["Preheat Phase", None, "preheat", None, "mdi:pot-steam-outline", None],
+    "recipe_command": ["Recipe Command", None, "recipe_command", None, "mdi:rice", None],
+    "target_cooking_measure": ["Target Cooking Measure", None, "target_cooking_measure", None, "mdi:scale", None],
+    "mode": ["Recipe Id", None, "mode", None, "mdi:stairs", None],
 }
 
 SENSOR_TYPES_VIOMI = {
@@ -97,6 +98,21 @@ SENSOR_TYPES_XIAOMI = {
     "target_temperature": ["Target Temperature", None, "target_temperature", UnitOfTemperature.CELSIUS, None,SensorDeviceClass.TEMPERATURE],
     "recipe_id": ["Recipe Id", None, "recipe_id", None, "mdi:rice", None],
     "turn_pot": ["Turn Pot", None, "turn_pot", None, "mdi:rotate-3d-variant", None],
+}
+
+SENSOR_TYPES_MAF10A = {
+    "status": ["Status", None, "status", None, "mdi:bowl", None],
+    "mode": ["Mode", None, "mode", None, "mdi:stairs", None],
+    "target_time": ["Target Time", None, "target_time", UnitOfTime.MINUTES, "mdi:menu", None],
+    "left_time": ["Remaining", None, "left_time", UnitOfTime.MINUTES, "mdi:timer", None],
+    "target_temperature": ["Target Temperature", None, "target_temperature", UnitOfTemperature.CELSIUS, None, SensorDeviceClass.TEMPERATURE],
+    "recipe_id": ["Recipe Id", None, "recipe_id", None, "mdi:rice", None],
+    "preheat": ["Preheat Phase", None, "preheat", None, "mdi:pot-steam-outline", None],
+    "turn_pot": ["Turn Pot", None, "turn_pot", None, "mdi:rotate-3d-variant", None],
+    "turn_pot_config": ["Turn Pot Config", None, "turn_pot_config", None, "mdi:rotate-3d-variant", None],
+    "texture": ["Texture", None, "texture", None, "mdi:pot-steam", None],
+    "reservation_left_time": ["Reservation Left Time", None, "reservation_left_time", UnitOfTime.MINUTES, "mdi:timer", None],
+    "cooking_weight": ["Cooking Weight", None, "cooking_weight", None, "mdi:scale", None],
 }
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
@@ -149,6 +165,9 @@ async def async_setup_entry(hass, config, async_add_devices, discovery_info=None
     if model == MODEL_FRYER_YBAF01:
         for stype in SENSOR_TYPES_YBAF.values():
             sensors.append(XiaomiAirFryerSensor(fryer, host, stype, config))
+    elif model == MODEL_FRYER_MAF10A:
+        for stype in SENSOR_TYPES_MAF10A.values():
+            sensors.append(XiaomiAirFryerSensor(fryer, host, stype, config))
     elif model in MODELS_CARELI:
         for stype in SENSOR_TYPES_MAF.values():
             sensors.append(XiaomiAirFryerSensor(fryer, host, stype, config))
@@ -163,9 +182,6 @@ async def async_setup_entry(hass, config, async_add_devices, discovery_info=None
             sensors.append(XiaomiAirFryerSensor(fryer, host, stype, config))
     elif model in MODELS_XIAOMI:
         for stype in SENSOR_TYPES_XIAOMI.values():
-            sensors.append(XiaomiAirFryerSensor(fryer, host, stype, config))
-    elif model in MODELS_ALL_DEVICES:
-        for stype in SENSOR_TYPES_YBAF.values():
             sensors.append(XiaomiAirFryerSensor(fryer, host, stype, config))
     else:
         _LOGGER.error(

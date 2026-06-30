@@ -97,7 +97,7 @@ ble_presence_pack:
                     parse_mode: html
                     title: "<b>Внимание!</b>"
                     message: "Возможно, ты забыл ключ от машины!"
-                - action: notify.2602bpc18g
+                - action: notify.mobile_app_2602bpc18g
                   data:
                     title: "Ключ от машины!"
                     message: "Возможно, ты забыл ключ от машины..."
@@ -142,7 +142,7 @@ ble_presence_pack:
                     parse_mode: html
                     title: "<b>Внимание!</b>"
                     message: "Возможно, Егор забыл пропуск в школу..."
-                - action: notify.2602bpc18g
+                - action: notify.mobile_app_2602bpc18g
                   data:
                     title: "Пропуск в школу!"
                     message: "Возможно, Егор забыл пропуск в школу..."
