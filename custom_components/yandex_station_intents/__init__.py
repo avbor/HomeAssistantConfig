@@ -1,4 +1,3 @@
-import asyncio
 from dataclasses import dataclass
 import logging
 import re
@@ -28,12 +27,15 @@ from .const import (
     CONF_MODE,
     CONF_UID,
     DOMAIN,
+    SERVICE_CLEAR_SCENARIOS,
+    SERVICE_SYNC,
+    SYNC_FULL_KEY,
     ConnectionMode,
 )
 from .entry_data import ConfigEntryData
 from .yandex_intent import Intent, IntentManager
 from .yandex_quasar import Device, EventStream, YandexQuasar
-from .yandex_session import AuthException, YandexSession
+from .yandex_session import AuthError, YandexSession
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -76,9 +78,9 @@ def intent_item_validate(intent_item: str | ConfigType | None) -> ConfigType:
 
 
 def intent_name_validate(name: str) -> str:
-    if not re.search(r"^[а-яё0-9 ]+$", name, re.IGNORECASE):
-        _LOGGER.error(f"Недопустимая фраза {name!r}: разрешены только кириллица, цифры и пробелы")
-        raise vol.Invalid("Разрешены только кириллица, цифры и пробелы")
+    if not re.search(r"^[а-яёa-z0-9 ]+$", name, re.IGNORECASE):
+        _LOGGER.error(f"Недопустимая фраза {name!r}: разрешены только кириллица, латиница, цифры и пробелы")
+        raise vol.Invalid("Разрешены только кириллица, латиница, цифры и пробелы")
 
     return name
 
@@ -153,29 +155,51 @@ async def async_setup(hass: HomeAssistant, yaml_config: ConfigType) -> bool:
         for entry in hass.config_entries.async_entries(DOMAIN):
             await hass.config_entries.async_reload(entry.entry_id)
 
-        await asyncio.gather(
-            *(
-                _async_setup_intents(
-                    entry_data.intent_manager.intents,
-                    entry_data.quasar,
-                    entry_data.quasar.get_intent_player_device(entry_data.media_player_entity_id),
+        for entry_data in component.entry_datas.values():
+            if not entry_data.autosync:
+                await entry_data.async_run_or_replace_task(
+                    _async_sync_intents(
+                        entry_data.intent_manager.intents,
+                        entry_data.quasar,
+                        entry_data.quasar.get_intent_player_device(entry_data.media_player_entity_id),
+                    )
                 )
-                for entry_data in component.entry_datas.values()
-                if not entry_data.autosync
-            ),
-            return_exceptions=True,
-        )
 
     async_register_admin_service(hass, DOMAIN, SERVICE_RELOAD, _handle_reload)
 
     async def _clear_scenarios(service: ServiceCall) -> None:
-        if service.data.get(CLEAR_CONFIRM_KEY, "").lower() != CLEAR_CONFIRM_TEXT:
+        if service.data[CLEAR_CONFIRM_KEY].lower() != CLEAR_CONFIRM_TEXT:
             raise HomeAssistantError("Необходимо подтверждение, ознакомьтесь с документацией")
 
         for entry_data in component.entry_datas.values():
-            await entry_data.quasar.clear_scenarios()
+            await entry_data.async_run_or_replace_task(entry_data.quasar.clear_scenarios())
 
-    hass.services.async_register(DOMAIN, "clear_scenarios", _clear_scenarios)
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_CLEAR_SCENARIOS,
+        _clear_scenarios,
+        schema=vol.Schema({vol.Required(CLEAR_CONFIRM_KEY): cv.string}),
+    )
+
+    async def _sync(service: ServiceCall) -> None:
+        full = service.data[SYNC_FULL_KEY]
+
+        for entry_data in component.entry_datas.values():
+            await entry_data.async_run_or_replace_task(
+                _async_sync_intents(
+                    entry_data.intent_manager.intents,
+                    entry_data.quasar,
+                    entry_data.quasar.get_intent_player_device(entry_data.media_player_entity_id),
+                    full=full,
+                )
+            )
+
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_SYNC,
+        _sync,
+        schema=vol.Schema({vol.Optional(SYNC_FULL_KEY, default=False): cv.boolean}),
+    )
 
     return True
 
@@ -184,13 +208,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     component: Component = hass.data[DOMAIN]
     session = YandexSession(hass, entry)
     try:
-        if not await session.async_validate() or CONF_UID not in entry.data:
-            await session.async_refresh()
+        if CONF_UID not in entry.data or not await session.async_verify():
+            await session.async_authenticate()
+            await session.async_save_to_entry()
 
         manager = IntentManager(hass, entry, component.get_intents_config(entry))
         quasar = YandexQuasar(session)
         await quasar.async_init()
     except Exception as e:
+        _LOGGER.exception("Неожиданная ошибка")
         raise ConfigEntryNotReady(e) from e
 
     entry_data = ConfigEntryData(entry, yaml_config=component.yaml_config, quasar=quasar, intent_manager=manager)
@@ -225,7 +251,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         entry.async_on_unload(hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, event_stream.disconnect))
 
     if entry_data.autosync:
-        hass.loop.create_task(_async_setup_intents(manager.intents, quasar, intent_player_device))
+        await entry_data.async_run_or_replace_task(_async_sync_intents(manager.intents, quasar, intent_player_device))
 
     return True
 
@@ -233,7 +259,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     component: Component = hass.data[DOMAIN]
     entry_data = component.entry_datas[entry.entry_id]
-    entry_data.quasar.stop()
+    await entry_data.async_stop_task()
 
     if entry_data.event_stream:
         hass.async_create_task(entry_data.event_stream.disconnect())
@@ -249,27 +275,40 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def _async_setup_intents(
-    intents: list[Intent], quasar: YandexQuasar, intent_player_device: Device | None = None
+async def _async_sync_intents(
+    intents: list[Intent],
+    quasar: YandexQuasar,
+    intent_player_device: Device | None = None,
+    *,
+    full: bool = False,
 ) -> None:
     await quasar.delete_stale_intents(intents)
 
     quasar_intents = await quasar.async_get_intents()
+    consecutive_errors = 0
 
     for item in intents:
-        if not quasar.running:
-            break
-
         try:
             await quasar.async_add_or_update_intent(
                 intent=item,
-                intent_quasar_id=quasar_intents.get(item.name),
                 intent_player_device=intent_player_device,
+                existing_scenario=quasar_intents.get(item.name),
+                force=full,
             )
-        except AuthException:
+            consecutive_errors = 0
+        except AuthError:
             _LOGGER.exception(
                 f"Ошибка создания или обновления сценария {item.scenario_name!r}, синхронизация остановлена"
             )
             break
         except Exception:
             _LOGGER.exception(f"Ошибка создания или обновления сценария {item.scenario_name!r}")
+            consecutive_errors += 1
+
+            if consecutive_errors >= 4:
+                _LOGGER.exception(
+                    "Ошибка создания или обновления нескольких сценариев подряд, синхронизация остановлена"
+                )
+                break
+
+    await quasar.async_save_session()

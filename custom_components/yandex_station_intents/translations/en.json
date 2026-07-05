@@ -1,7 +1,8 @@
 {
   "config": {
     "abort": {
-      "install_yandex_station": "Интеграция [Yandex.Station]({url_yandex_station}) не установлена или не настроена"
+      "install_yandex_station": "Интеграция [Yandex.Station]({url_yandex_station}) не установлена или не настроена",
+      "reauth_successful": "Аутентификация прошла успешно"
     },
     "error": {
       "cookies.invalid_format": "Это не похоже на JSON из расширения Copy Cookies",
@@ -48,6 +49,28 @@
     "missing_intent_player": {
       "title": "Не найден служебный плеер",
       "description": "Служебный плеер `{player_name}` (`{player_entity_id}`) не найден в УДЯ `{entity}`.\n\nУбедитесь, что он разрешён в фильтрах в компоненте Yandex Smart Home, обновите список устройств в УДЯ и перезагрузите интеграцию Yandex Station Intents."
+    }
+  },
+  "services": {
+    "sync": {
+      "name": "Синхронизировать сценарии",
+      "description": "Запускает синхронизацию интентов со сценариями в УДЯ.",
+      "fields": {
+        "full": {
+          "name": "Полная синхронизация",
+          "description": "Принудительно обновить все сценарии, включая неизменённые. По умолчанию обновляются только изменённые сценарии."
+        }
+      }
+    },
+    "clear_scenarios": {
+      "name": "Удалить все сценарии из УДЯ",
+      "description": "Удаляет абсолютно все сценарии из УДЯ.",
+      "fields": {
+        "confirm": {
+          "name": "Подтверждение",
+          "description": "Для удаления всех сценариев из УДЯ необходимо подтверждение, ознакомьтесь с документацией."
+        }
+      }
     }
   }
 }
