@@ -1,5 +1,5 @@
 (function() {
-    const env = {"DEBUG":true,"BUILD_TIME":"2026-07-08, 01:14 a.m."};
+    const env = {"DEBUG":true,"BUILD_TIME":"2026-07-08, 11:38 a.m."};
     try {
         if (process) {
             process.env = Object.assign({}, process.env);
@@ -11,7 +11,7 @@
 })();
 
 var name = "simple-thermostat";
-var version = "4.0.18";
+var version = "4.0.21";
 
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -389,6 +389,8 @@ ha-card.loading {
 .entities.as-list {
   grid-auto-flow: column;
   grid-template-columns: min-content;
+  -moz-column-gap: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
+       column-gap: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
 }
 
 .entities.as-table.without-labels {
@@ -2075,6 +2077,7 @@ const LABELS = {
     'label.setpoint': 'Target label',
     'layout.entities.type': 'Entity row layout',
     'layout.entities.labels': 'Show entity row labels',
+    'layout.entities.separator': 'Show entity label separator',
     enhanced_visuals: 'Enhanced visuals',
     'tap_action.action': 'Tap action',
     'hold_action.action': 'Hold action',
@@ -2118,6 +2121,7 @@ const DIRECT_FORM_PATHS = [
     'layout.mode.headings',
     'layout.entities.type',
     'layout.entities.labels',
+    'layout.entities.separator',
     'hide.temperature',
     'hide.state',
     'hide.setpoint_label',
@@ -2373,6 +2377,7 @@ function buildSchema(config, hass) {
                             },
                         },
                         { name: 'layout.entities.labels', selector: { boolean: {} } },
+                        { name: 'layout.entities.separator', selector: { boolean: {} } },
                     ],
                 },
             ],
@@ -2513,6 +2518,7 @@ class SimpleThermostatEditor extends i$1 {
             'label.setpoint': this.config.label?.setpoint ?? '',
             'layout.entities.type': this.config.layout?.entities?.type ?? 'table',
             'layout.entities.labels': this.config.layout?.entities?.labels !== false,
+            'layout.entities.separator': this.config.layout?.entities?.separator !== false,
             enhanced_visuals: this.config.enhanced_visuals !== false,
             name: header.name ?? '',
             icon: typeof header.icon === 'string' ? header.icon : '',
@@ -5372,7 +5378,7 @@ function safeClass(value) {
 function renderInfoItem({ hide = false, hass, state, details, localize, openEntityPopover, }) {
     if (hide || typeof state === 'undefined')
         return;
-    const { type, heading, icon, unit, decimals, tooltip: configuredTooltip, entity, template, attribute, variables, config, } = details;
+    const { type, heading, icon, unit, decimals, tooltip: configuredTooltip, entity, template, attribute, variables, config, separator = true, } = details;
     const hasConfiguredUnit = typeof unit === 'string' && unit.length > 0;
     const entityId = typeof state === 'object' ? state.entity_id : entity;
     const canOpenEntity = entityId && typeof openEntityPopover === 'function';
@@ -5540,7 +5546,7 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
           @click=${canOpenEntity ? () => openEntityPopover(entityId) : null}
         ></ha-icon>
       `
-        : ` ${heading}: `;
+        : ` ${heading}${separator === false ? '' : ':'} `;
     return b `<div
       class=${headingClasses}
       title=${icon ? tooltip : A}
@@ -5577,6 +5583,7 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
         ? (currentValueEntity?.attributes?.unit_of_measurement ?? unit)
         : (adapter.getCurrentValueUnit?.(entity.attributes, hass.config) ?? unit);
     const showLabels = config?.layout?.entities?.labels ?? true;
+    const showSeparator = config?.layout?.entities?.separator !== false;
     const stateString = getEntityStateText(entity, hass, localize);
     const entityHtml = [
         renderInfoItem({
@@ -5594,6 +5601,7 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
                     : false,
                 tooltip: currentValueEntity?.attributes?.friendly_name ?? currentValueEntityId,
                 entity: currentValueEntityId ?? config.entity,
+                separator: showSeparator,
             },
         }),
         renderInfoItem({
@@ -5607,6 +5615,7 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
                         localize('ui.panel.lovelace.editor.card.generic.state'))
                     : false,
                 entity: config.entity,
+                separator: showSeparator,
             },
         }),
         ...(entities.map(({ name, state, show, ...rest }) => {
@@ -5622,6 +5631,7 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
                     tooltip: name,
                     config,
                     variables: config.variables,
+                    separator: showSeparator,
                 },
             });
         }) || null),
@@ -5700,7 +5710,7 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
         }
         return localizePrefix ? localize(name, localizePrefix) : name;
     };
-    const maybeRenderIcon = (icon) => {
+    const maybeRenderIcon = (icon, iconConfigured = false) => {
         if (!icon)
             return null;
         if (modeOptions?.icons === false || icons === false)
@@ -5712,7 +5722,8 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
             'vane_horizontal',
             'vane_vertical',
         ].includes(type) &&
-            icons !== true) {
+            icons !== true &&
+            !iconConfigured) {
             return null;
         }
         return renderModeIcon(icon);
@@ -5804,7 +5815,7 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
       aria-label=${title || type}
     >
       ${showHeading ? b ` <div class="mode-title">${title}</div> ` : ''}
-      ${list.map(({ value, icon, name }) => {
+      ${list.map(({ value, icon, iconConfigured, name }) => {
         const modeClass = safeClass(value);
         const displayName = maybeRenderName(name, value);
         const tooltip = displayName ? A : controlTooltip || A;
@@ -5824,7 +5835,7 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
             }
         }}
           >
-            ${maybeRenderIcon(icon)}
+            ${maybeRenderIcon(icon, iconConfigured)}
             ${displayName
             ? b `<span class="mode-label">${displayName}</span>`
             : null}
@@ -5897,13 +5908,54 @@ function getConfiguredEntities(config) {
 }
 function shouldShowModeControl(type, modeOption, config) {
     const modeKey = String(modeOption);
-    if (typeof config[modeKey] === 'object') {
-        const obj = config[modeKey];
+    const configuredMode = getConfiguredModeValue(modeKey, config);
+    if (typeof configuredMode === 'object') {
+        const obj = configuredMode;
         return obj.include !== false;
     }
     const hasExplicitConfig = Object.keys(config).some((key) => !key.startsWith('_'));
     const hideUnlistedModes = type === MODES.PRESET;
-    return config?.[modeKey] ?? !(hideUnlistedModes && hasExplicitConfig);
+    return configuredMode ?? !(hideUnlistedModes && hasExplicitConfig);
+}
+function normalizeModeConfigKey(value) {
+    return value.toLowerCase().replace(/\s+/g, '_');
+}
+function getConfiguredModeValue(modeKey, specification) {
+    const normalizedModeKey = normalizeModeConfigKey(modeKey);
+    const exactValue = specification[modeKey];
+    if (typeof exactValue !== 'undefined')
+        return exactValue;
+    if (typeof specification[normalizedModeKey] !== 'undefined') {
+        return specification[normalizedModeKey];
+    }
+    const matchingEntry = Object.entries(specification).find(([key]) => !key.startsWith('_') && normalizeModeConfigKey(key) === normalizedModeKey);
+    return matchingEntry?.[1];
+}
+function getOrderedModeOptions(modeOptions, specification) {
+    const configuredKeys = Object.keys(specification).filter((key) => !key.startsWith('_'));
+    if (configuredKeys.length === 0)
+        return modeOptions;
+    const optionsByKey = new Map();
+    modeOptions.forEach((modeOption) => {
+        optionsByKey.set(normalizeModeConfigKey(String(modeOption)), modeOption);
+    });
+    const usedKeys = new Set();
+    const orderedOptions = [];
+    configuredKeys.forEach((key) => {
+        const normalizedKey = normalizeModeConfigKey(key);
+        if (!optionsByKey.has(normalizedKey) || usedKeys.has(normalizedKey))
+            return;
+        orderedOptions.push(optionsByKey.get(normalizedKey));
+        usedKeys.add(normalizedKey);
+    });
+    modeOptions.forEach((modeOption) => {
+        const normalizedKey = normalizeModeConfigKey(String(modeOption));
+        if (usedKeys.has(normalizedKey))
+            return;
+        orderedOptions.push(modeOption);
+        usedKeys.add(normalizedKey);
+    });
+    return orderedOptions;
 }
 function getModeList(type, attributes, adapter, specification = {}) {
     let modeOptions = attributes[adapter.getModeAttribute(type)];
@@ -5920,16 +5972,12 @@ function getModeList(type, attributes, adapter, specification = {}) {
     if (!Array.isArray(modeOptions)) {
         return [];
     }
-    return modeOptions
+    return getOrderedModeOptions(modeOptions, specification)
         .filter((modeOption) => shouldShowModeControl(type, modeOption, specification))
         .map((modeOption) => {
         const modeKey = String(modeOption);
-        const normalizedModeKey = modeKey.toLowerCase().replace(/\s+/g, '_');
-        const values = typeof specification[modeKey] === 'object'
-            ? specification[modeKey]
-            : typeof specification[normalizedModeKey] === 'object'
-                ? specification[normalizedModeKey]
-                : {};
+        const configuredMode = getConfiguredModeValue(modeKey, specification);
+        const values = typeof configuredMode === 'object' ? configuredMode : {};
         const { name: configuredName, ...modeValues } = values;
         const name = configuredName === false
             ? false
@@ -5943,6 +5991,7 @@ function getModeList(type, attributes, adapter, specification = {}) {
                     ? getFanModeIcon(modeKey, modeOptions)
                     : undefined) ??
                 getModeIcon(modeKey),
+            iconConfigured: typeof values.icon !== 'undefined',
             value: modeKey,
             name,
         };
@@ -5993,6 +6042,7 @@ function buildConfiguredControlModes(config, entityDomain, attributes, adapter) 
                     icons: _icons,
                     heading: _heading,
                     name: _name,
+                    preserve_option_order: Object.keys(controlField).length > 0,
                     list: getModeList(type, attributes, adapter, controlField),
                 };
             });
@@ -6019,6 +6069,13 @@ function sortControlModes(controlModes, entityDomain) {
         return index === -1 ? CONTROL_ORDER.length : index;
     };
     return [...controlModes].sort((a, b) => getControlOrder(a.type) - getControlOrder(b.type));
+}
+function shouldPreserveConfiguredControlOrder(control) {
+    if (Array.isArray(control))
+        return true;
+    if (!control || typeof control !== 'object')
+        return false;
+    return Object.keys(control).length > 0;
 }
 class SimpleThermostat extends i$1 {
     constructor() {
@@ -6201,13 +6258,18 @@ class SimpleThermostat extends i$1 {
             this._values = values;
         }
         const entityDomain = this.config.entity.split('.')[0];
-        const controlModes = sortControlModes(removeOffFromSecondaryModes(buildConfiguredControlModes(this.config, entityDomain, attributes, adapter)), entityDomain);
+        const configuredControlModes = removeOffFromSecondaryModes(buildConfiguredControlModes(this.config, entityDomain, attributes, adapter));
+        const controlModes = shouldPreserveConfiguredControlOrder(this.config.control)
+            ? configuredControlModes
+            : sortControlModes(configuredControlModes, entityDomain);
         this.modes = controlModes.map((values) => {
-            const list = values.type === MODES.HVAC
-                ? sortHvacModes(values.list)
-                : values.type === MODES.FAN
-                    ? sortFanModes(values.list)
-                    : values.list;
+            const list = values.preserve_option_order
+                ? values.list
+                : values.type === MODES.HVAC
+                    ? sortHvacModes(values.list)
+                    : values.type === MODES.FAN
+                        ? sortFanModes(values.list)
+                        : values.list;
             const mode = values.type === MODES.HVAC || values.type === MODES.STATE
                 ? entity.state
                 : attributes[adapter.getModePayloadKey(values.type)];
