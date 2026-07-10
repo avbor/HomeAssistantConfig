@@ -1,5 +1,5 @@
 (function() {
-    const env = {"DEBUG":true,"BUILD_TIME":"2026-07-08, 11:38 a.m."};
+    const env = {"DEBUG":true,"BUILD_TIME":"2026-07-08, 08:18 p.m."};
     try {
         if (process) {
             process.env = Object.assign({}, process.env);
@@ -11,7 +11,7 @@
 })();
 
 var name = "simple-thermostat";
-var version = "4.0.21";
+var version = "4.0.27";
 
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -401,7 +401,15 @@ ha-card.loading {
   }
 
 .entities.as-table.with-labels {
-    grid: auto-flow / auto auto;
+    grid-template-columns:
+      fit-content(18ch)
+      max-content;
+    grid-template-columns:
+      fit-content(var(--st-entity-label-max-width, 18ch))
+      max-content;
+    grid-auto-flow: row;
+    -moz-column-gap: 8px;
+         column-gap: 8px;
     align-items: start;
     justify-items: start;
     place-items: start;
@@ -430,6 +438,20 @@ ha-card.loading {
   text-align: right;
   transition:
     color 180ms var(--st-motion-ease), filter 180ms var(--st-motion-ease);
+}
+.entities.align-left .entity-heading {
+  justify-content: flex-start;
+  justify-self: start;
+  text-align: left;
+}
+
+.entities.as-table.with-labels.align-left {
+  grid-template-columns:
+    fit-content(18ch)
+    max-content;
+  grid-template-columns:
+    fit-content(var(--st-entity-label-max-width, 18ch))
+    max-content;
 }
 
 .entities:empty {
@@ -475,8 +497,12 @@ header {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: calc(var(--st-header-icon-size) + (var(--st-active-icon-glow-max-size) * 2));
-  height: calc(var(--st-header-icon-size) + (var(--st-active-icon-glow-max-size) * 2));
+  width: calc(
+    var(--st-header-icon-size) + (var(--st-active-icon-glow-max-size) * 2)
+  );
+  height: calc(
+    var(--st-header-icon-size) + (var(--st-active-icon-glow-max-size) * 2)
+  );
   z-index: 0;
   border-radius: 999px;
   pointer-events: none;
@@ -991,6 +1017,7 @@ ha-card.cooling .header__icon-wrap::before {
 .mode-item.active::after {
   background: var(--st-mode-active-accent-color);
   opacity: 0.64;
+  opacity: var(--st-mode-active-accent-opacity, 0.64);
   transform: scaleX(1);
   transition: none;
 }
@@ -1222,6 +1249,11 @@ ha-card.drying {
   padding-bottom: var(--st-spacing, var(--st-default-spacing));
 }
 
+.controls:has(.modes.hvac.sparse),
+.controls:has(.modes.state.sparse) {
+  margin-top: var(--st-spacing, var(--st-default-spacing));
+}
+
 @media (max-width: 560px) {
   .modes.hvac .mode-item,
   .modes.state .mode-item {
@@ -1235,8 +1267,8 @@ ha-card.drying {
   ha-card:not(.standard-visuals) .modes.state.sparse .mode-item {
     flex-direction: row;
     gap: 6px;
-    min-width: min(100%, 120px);
-    min-width: min(100%, var(--st-hvac-mode-min-width, 120px));
+    min-width: min(100%, 72px);
+    min-width: min(100%, var(--st-mode-min-width, 72px));
   }
 }
 .modes.dense {
@@ -2078,6 +2110,7 @@ const LABELS = {
     'layout.entities.type': 'Entity row layout',
     'layout.entities.labels': 'Show entity row labels',
     'layout.entities.separator': 'Show entity label separator',
+    'layout.entities.alignment': 'Entity label alignment',
     enhanced_visuals: 'Enhanced visuals',
     'tap_action.action': 'Tap action',
     'hold_action.action': 'Hold action',
@@ -2109,6 +2142,10 @@ const ENTITY_LAYOUT_OPTIONS = [
     { value: 'table', label: 'Table' },
     { value: 'list', label: 'List' },
 ];
+const ENTITY_ALIGNMENT_OPTIONS = [
+    { value: 'right', label: 'Right' },
+    { value: 'left', label: 'Left' },
+];
 const DIRECT_FORM_PATHS = [
     'entity',
     'current_value_entity',
@@ -2122,6 +2159,7 @@ const DIRECT_FORM_PATHS = [
     'layout.entities.type',
     'layout.entities.labels',
     'layout.entities.separator',
+    'layout.entities.alignment',
     'hide.temperature',
     'hide.state',
     'hide.setpoint_label',
@@ -2220,16 +2258,92 @@ function getControlFromForm(updated, config, hass) {
     if (config.control &&
         !Array.isArray(config.control) &&
         typeof config.control === 'object') {
-        return desired.reduce((result, type) => {
-            result[type] = config.control[type] || {};
+        const desiredSet = new Set(desired.map(String));
+        const configuredOrder = getConfiguredControlOrder(config.control).filter((type) => desiredSet.has(type));
+        const appendedOrder = desired.filter((type) => !configuredOrder.includes(type));
+        const orderedTypes = [...configuredOrder, ...appendedOrder];
+        return orderedTypes.reduce((result, type) => {
+            result[type] = materializeModeOptionOrder(config.control[type] || {}).value;
             return result;
-        }, {});
+        }, { _order: orderedTypes });
     }
     if (desired.length === defaultControl.length &&
         desired.every((type, index) => type === defaultControl[index])) {
         return undefined;
     }
     return desired;
+}
+function isControlObject(control) {
+    return !!control && typeof control === 'object' && !Array.isArray(control);
+}
+function isModeControlObject(value) {
+    return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+function getConfiguredControlOrder(control) {
+    const explicitOrder = control._order;
+    const configuredTypes = Object.keys(control).filter((key) => !key.startsWith('_'));
+    if (!Array.isArray(explicitOrder))
+        return configuredTypes;
+    const used = new Set();
+    const ordered = explicitOrder
+        .map(String)
+        .filter((type) => configuredTypes.includes(type))
+        .filter((type) => {
+        if (used.has(type))
+            return false;
+        used.add(type);
+        return true;
+    });
+    configuredTypes.forEach((type) => {
+        if (!used.has(type))
+            ordered.push(type);
+    });
+    return ordered;
+}
+function areStringArraysEqual(a, b) {
+    return (a.length === b.length &&
+        a.every((value, index) => String(value) === b[index]));
+}
+function materializeModeOptionOrder(value) {
+    if (!isModeControlObject(value))
+        return { value, changed: false };
+    const optionKeys = Object.keys(value).filter((key) => !key.startsWith('_'));
+    if (optionKeys.length === 0 && !Array.isArray(value._order)) {
+        return { value, changed: false };
+    }
+    const nextOrder = Array.isArray(value._order)
+        ? value._order.map(String)
+        : optionKeys;
+    const changed = !Array.isArray(value._order) ||
+        !areStringArraysEqual(value._order, nextOrder);
+    return {
+        value: {
+            ...value,
+            _order: nextOrder,
+        },
+        changed,
+    };
+}
+function materializeControlOrder(config) {
+    if (!isControlObject(config.control))
+        return { config, changed: false };
+    const control = config.control;
+    const orderedTypes = getConfiguredControlOrder(control);
+    if (orderedTypes.length === 0 && !Array.isArray(control._order)) {
+        return { config, changed: false };
+    }
+    let changed = !Array.isArray(control._order) ||
+        !areStringArraysEqual(control._order, orderedTypes);
+    const nextConfig = {
+        ...config,
+        control: orderedTypes.reduce((result, type) => {
+            const materialized = materializeModeOptionOrder(control[type]);
+            result[type] = materialized.value;
+            changed = changed || materialized.changed;
+            return result;
+        }, { _order: orderedTypes }),
+    };
+    return { config: nextConfig, changed };
 }
 function buildSchema(config, hass) {
     const supportedControlTypes = getSupportedControlTypes(config, hass);
@@ -2378,6 +2492,15 @@ function buildSchema(config, hass) {
                         },
                         { name: 'layout.entities.labels', selector: { boolean: {} } },
                         { name: 'layout.entities.separator', selector: { boolean: {} } },
+                        {
+                            name: 'layout.entities.alignment',
+                            selector: {
+                                select: {
+                                    mode: 'dropdown',
+                                    options: ENTITY_ALIGNMENT_OPTIONS,
+                                },
+                            },
+                        },
                     ],
                 },
             ],
@@ -2485,7 +2608,15 @@ class SimpleThermostatEditor extends i$1 {
         return { ...stub };
     }
     setConfig(config) {
-        this.config = normalizeConfig(config || { ...stub });
+        const materialized = materializeControlOrder(normalizeConfig(config || { ...stub }));
+        this.config = materialized.config;
+        if (materialized.changed) {
+            queueMicrotask(() => {
+                if (this.config === materialized.config) {
+                    fireEvent(this, 'config-changed', { config: materialized.config });
+                }
+            });
+        }
     }
     _openLink() {
         window.open(GithubReadMe, '_blank', 'noopener');
@@ -2519,6 +2650,7 @@ class SimpleThermostatEditor extends i$1 {
             'layout.entities.type': this.config.layout?.entities?.type ?? 'table',
             'layout.entities.labels': this.config.layout?.entities?.labels !== false,
             'layout.entities.separator': this.config.layout?.entities?.separator !== false,
+            'layout.entities.alignment': this.config.layout?.entities?.alignment ?? 'right',
             enhanced_visuals: this.config.enhanced_visuals !== false,
             name: header.name ?? '',
             icon: typeof header.icon === 'string' ? header.icon : '',
@@ -3506,9 +3638,10 @@ class SimpleThermostatGroup extends i$1 {
 
       .group-selector {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 78px;
+        grid-template-columns: minmax(0, 1fr) 96px;
+        grid-template-rows: var(--st-group-header-control-height, 34px);
         grid-template-areas: 'content nav';
-        align-items: center;
+        align-items: start;
         gap: 4px;
         padding: calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 4)
           calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 2) 0
@@ -3517,6 +3650,10 @@ class SimpleThermostatGroup extends i$1 {
         position: absolute;
         z-index: 2;
         inset: 0 0 auto 0;
+        height: calc(
+          var(--st-group-header-control-height, 34px) +
+            calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 4)
+        );
         min-width: 0;
         box-sizing: border-box;
         transform: translateY(var(--st-group-header-top-buffer, 6px));
@@ -3555,22 +3692,22 @@ class SimpleThermostatGroup extends i$1 {
         grid-area: content;
         display: flex;
         align-items: center;
+        align-self: start;
+        height: var(--st-group-header-control-height, 34px);
         min-width: 0;
       }
 
       .group-nav-cluster {
         grid-area: nav;
         justify-self: end;
-        width: 78px;
+        align-self: start;
+        width: 96px;
         display: grid;
         grid-template-columns: auto auto auto;
-        grid-template-areas:
-          'prev next menu'
-          'count count menu';
+        grid-template-areas: 'prev next menu';
         align-items: center;
         justify-items: center;
-        column-gap: 2px;
-        row-gap: 0;
+        column-gap: 4px;
         margin-left: 4px;
       }
 
@@ -3585,17 +3722,17 @@ class SimpleThermostatGroup extends i$1 {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
+        width: 34px;
+        height: 34px;
         padding: 0;
         cursor: pointer;
       }
 
       .group-nav ha-icon,
       .group-menu ha-icon {
-        --mdc-icon-size: 19px;
-        --iron-icon-width: 19px;
-        --iron-icon-height: 19px;
+        --mdc-icon-size: 24px;
+        --iron-icon-width: 24px;
+        --iron-icon-height: 24px;
       }
 
       .group-nav:disabled {
@@ -3603,25 +3740,18 @@ class SimpleThermostatGroup extends i$1 {
         cursor: default;
       }
 
-      .group-count {
-        grid-area: count;
-        min-width: 0;
-        margin-top: 2px;
-        text-align: center;
-        font-size: var(--ha-font-size-2xs, 10px);
-        line-height: 1;
-        color: var(--secondary-text-color);
-        white-space: nowrap;
-      }
-
       .group-menu {
         grid-area: menu;
         width: 20px;
+        height: 34px;
         background: transparent;
         color: var(--secondary-text-color);
       }
 
       .group-menu ha-icon {
+        --mdc-icon-size: 22px;
+        --iron-icon-width: 22px;
+        --iron-icon-height: 22px;
         transform: translateY(-1px);
       }
 
@@ -3704,7 +3834,7 @@ class SimpleThermostatGroup extends i$1 {
         background: transparent;
         color: var(--primary-text-color);
         display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-columns: auto minmax(0, 1fr) auto;
         gap: 10px;
         align-items: center;
         width: 100%;
@@ -3720,11 +3850,20 @@ class SimpleThermostatGroup extends i$1 {
         background: var(--secondary-background-color);
       }
 
+      .group-picker button.selected {
+        color: var(--primary-color);
+      }
+
       .group-picker ha-icon {
         --mdc-icon-size: 22px;
         --iron-icon-width: 22px;
         --iron-icon-height: 22px;
         color: var(--primary-color);
+      }
+
+      .group-picker .icon-placeholder {
+        width: 22px;
+        height: 22px;
       }
 
       .group-picker span {
@@ -4405,9 +4544,9 @@ class SimpleThermostatGroup extends i$1 {
         }
     }
     selectEntity(entity, manual = true) {
+        this.menuOpen = false;
         if (entity === this.selectedEntity)
             return;
-        this.menuOpen = false;
         if (manual)
             this.pauseAutoSelectAfterManualSelection();
         const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -4542,7 +4681,9 @@ class SimpleThermostatGroup extends i$1 {
               class=${selected ? 'selected' : ''}
               @click=${() => this.selectEntity(target.entity)}
             >
-              ${icon ? b `<ha-icon icon=${icon}></ha-icon>` : A}
+              ${icon
+                ? b `<ha-icon icon=${icon}></ha-icon>`
+                : b `<span class="icon-placeholder"></span>`}
               <span>${label}</span>
             </button>
           `;
@@ -4578,7 +4719,6 @@ class SimpleThermostatGroup extends i$1 {
     }
     renderSelector() {
         const target = this.getSelectedTarget();
-        const index = this.getSelectedIndex();
         const label = this.getTargetLabel(target);
         return b `
       <div class="group-selector">
@@ -4608,7 +4748,6 @@ class SimpleThermostatGroup extends i$1 {
           >
             <ha-icon icon="mdi:chevron-right"></ha-icon>
           </button>
-          <span class="group-count">${index + 1} / ${this.targets.length}</span>
           <button
             class="group-menu"
             type="button"
@@ -4877,13 +5016,6 @@ function sortFanModes(list) {
     return [...known.filter(Boolean), ...unknown];
 }
 
-const FAN_SPEED_LEVELS = [
-    ['silent', 'quiet'],
-    ['low'],
-    ['mid', 'medium'],
-    ['high'],
-    ['max', 'turbo', 'full'],
-];
 const FAN_SPEED_ICONS = [
     'mdi:fan-speed-1',
     'mdi:fan-speed-2',
@@ -4892,12 +5024,44 @@ const FAN_SPEED_ICONS = [
     'st:fan-speed-5',
 ];
 const normalizeMode = (mode) => String(mode).toLowerCase().replace(/\s+/g, '_');
+const FAN_SPEED_LEVELS = {
+    low: 1,
+    medlow: 2,
+    medium_low: 2,
+    mid: 2,
+    medium: 2,
+    medium_high: 3,
+    medhigh: 3,
+    max: 5,
+    turbo: 5,
+    full: 5,
+};
+function getNumericSpeedLevel(mode) {
+    if (!/^\d+$/.test(mode))
+        return undefined;
+    const level = Number(mode);
+    return level >= 1 && level <= FAN_SPEED_ICONS.length ? level : undefined;
+}
+function getNamedSpeedLevel(mode, modeOptions) {
+    if (mode === 'high') {
+        const modes = new Set(modeOptions.map(normalizeMode));
+        return modes.has('medium_high') ||
+            modes.has('medhigh') ||
+            modes.has('max') ||
+            modes.has('turbo') ||
+            modes.has('full')
+            ? 4
+            : 3;
+    }
+    return FAN_SPEED_LEVELS[mode];
+}
 function getFanModeIcon(mode, modeOptions) {
     const normalizedMode = normalizeMode(mode);
-    const normalizedOptions = new Set(modeOptions.map(normalizeMode));
-    const presentLevels = FAN_SPEED_LEVELS.filter((level) => level.some((value) => normalizedOptions.has(value)));
-    const levelIndex = presentLevels.findIndex((level) => level.includes(normalizedMode));
-    return levelIndex >= 0 ? FAN_SPEED_ICONS[levelIndex] : undefined;
+    const numericLevel = getNumericSpeedLevel(normalizedMode);
+    if (numericLevel)
+        return FAN_SPEED_ICONS[numericLevel - 1];
+    const namedLevel = getNamedSpeedLevel(normalizedMode, modeOptions);
+    return namedLevel ? FAN_SPEED_ICONS[namedLevel - 1] : undefined;
 }
 
 function formatNumber(number, { decimals = 1, fallback = 'N/A', locale } = {}) {
@@ -5262,6 +5426,7 @@ function renderTemplate({ template, stateObj, attribute, hass, config = {}, vari
             raw: rawState,
             text: textState,
         },
+        state_attr: (entityId, attr) => hass.states?.[entityId]?.attributes?.[attr],
         ui: translations,
         v: variables,
     }, { useWith: true });
@@ -5375,10 +5540,62 @@ function toggleEntity(hass, entityId, checked) {
 function safeClass(value) {
     return String(value ?? '').replace(/[^a-z0-9_-]/gi, '');
 }
+function renderIconTemplate({ icon, state, attribute, hass, config, variables, localize, }) {
+    if (typeof icon !== 'string' ||
+        !icon.includes('{{') ||
+        typeof state !== 'object' ||
+        state === null) {
+        return icon;
+    }
+    return renderTemplate({
+        template: icon,
+        stateObj: state,
+        attribute,
+        hass,
+        config,
+        variables,
+        localize,
+    }).trim();
+}
+function renderHeadingTemplate({ heading, state, attribute, hass, config, variables, localize, }) {
+    if (typeof heading !== 'string' ||
+        !heading.includes('{{') ||
+        typeof state !== 'object' ||
+        state === null) {
+        return undefined;
+    }
+    return renderTemplate({
+        template: heading,
+        stateObj: state,
+        attribute,
+        hass,
+        config,
+        variables,
+        localize,
+    }).trim();
+}
 function renderInfoItem({ hide = false, hass, state, details, localize, openEntityPopover, }) {
     if (hide || typeof state === 'undefined')
         return;
     const { type, heading, icon, unit, decimals, tooltip: configuredTooltip, entity, template, attribute, variables, config, separator = true, } = details;
+    const renderedIcon = renderIconTemplate({
+        icon,
+        state,
+        attribute,
+        hass,
+        config,
+        variables,
+        localize,
+    });
+    const renderedHeading = renderHeadingTemplate({
+        heading,
+        state,
+        attribute,
+        hass,
+        config,
+        variables,
+        localize,
+    });
     const hasConfiguredUnit = typeof unit === 'string' && unit.length > 0;
     const entityId = typeof state === 'object' ? state.entity_id : entity;
     const canOpenEntity = entityId && typeof openEntityPopover === 'function';
@@ -5428,7 +5645,7 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
             entityState && `state-${safeClass(entityState)}`,
             isToggleEntity &&
                 getToggleKindClass(getToggleKind({
-                    icon: icon || state.attributes?.icon,
+                    icon: renderedIcon || state.attributes?.icon,
                     label: heading || state.attributes?.friendly_name,
                     entity: state,
                     hass,
@@ -5528,7 +5745,7 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         entityState && `state-${safeClass(entityState)}`,
         isToggleEntity &&
             getToggleKindClass(getToggleKind({
-                icon: icon || state?.attributes?.icon,
+                icon: renderedIcon || state?.attributes?.icon,
                 label: typeof heading === 'string'
                     ? heading
                     : state?.attributes?.friendly_name,
@@ -5538,27 +5755,29 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
     ]
         .filter(Boolean)
         .join(' ');
-    const headingResult = icon
+    const headingResult = renderedIcon
         ? b `
         <ha-icon
-          icon="${icon}"
+          icon="${renderedIcon}"
           title=${tooltip}
           @click=${canOpenEntity ? () => openEntityPopover(entityId) : null}
         ></ha-icon>
       `
-        : ` ${heading}${separator === false ? '' : ':'} `;
-    return b `<div
+        : typeof renderedHeading === 'string'
+            ? b `${o(renderedHeading)}`
+            : ` ${heading}${separator === false ? '' : ':'} `;
+    const headingCell = b `<div
       class=${headingClasses}
-      title=${icon ? tooltip : A}
+      title=${renderedIcon ? tooltip : A}
       @click=${canOpenEntity ? () => openEntityPopover(entityId) : null}
     >
       ${headingResult}
-    </div>
-    ${valueCell} `;
+    </div>`;
+    return [headingCell, valueCell];
 }
 
 function wrapEntities(config, content) {
-    const { type, labels: showLabels } = config?.layout?.entities ?? {
+    const { type, labels: showLabels, alignment } = config?.layout?.entities ?? {
         type: 'table',
         labels: true,
     };
@@ -5566,6 +5785,7 @@ function wrapEntities(config, content) {
     const classes = [
         showLabels ? 'with-labels' : 'without-labels',
         type === 'list' ? 'as-list' : 'as-table',
+        alignment === 'left' ? 'align-left' : '',
         visibleRows.length === 1 ? 'single-row' : '',
     ];
     return b ` <div class="entities ${classes.join(' ')}">${content}</div> `;
@@ -5909,9 +6129,8 @@ function getConfiguredEntities(config) {
 function shouldShowModeControl(type, modeOption, config) {
     const modeKey = String(modeOption);
     const configuredMode = getConfiguredModeValue(modeKey, config);
-    if (typeof configuredMode === 'object') {
-        const obj = configuredMode;
-        return obj.include !== false;
+    if (isModeValue(configuredMode)) {
+        return configuredMode.include !== false;
     }
     const hasExplicitConfig = Object.keys(config).some((key) => !key.startsWith('_'));
     const hideUnlistedModes = type === MODES.PRESET;
@@ -5931,8 +6150,13 @@ function getConfiguredModeValue(modeKey, specification) {
     const matchingEntry = Object.entries(specification).find(([key]) => !key.startsWith('_') && normalizeModeConfigKey(key) === normalizedModeKey);
     return matchingEntry?.[1];
 }
+function isModeValue(value) {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
 function getOrderedModeOptions(modeOptions, specification) {
-    const configuredKeys = Object.keys(specification).filter((key) => !key.startsWith('_'));
+    const configuredKeys = Array.isArray(specification._order)
+        ? specification._order.map(String)
+        : Object.keys(specification).filter((key) => !key.startsWith('_'));
     if (configuredKeys.length === 0)
         return modeOptions;
     const optionsByKey = new Map();
@@ -5977,7 +6201,9 @@ function getModeList(type, attributes, adapter, specification = {}) {
         .map((modeOption) => {
         const modeKey = String(modeOption);
         const configuredMode = getConfiguredModeValue(modeKey, specification);
-        const values = typeof configuredMode === 'object' ? configuredMode : {};
+        const values = isModeValue(configuredMode)
+            ? configuredMode
+            : {};
         const { name: configuredName, ...modeValues } = values;
         const name = configuredName === false
             ? false
@@ -6029,7 +6255,20 @@ function buildConfiguredControlModes(config, entityDomain, attributes, adapter) 
         return buildBasicControlModes(config.control, entityDomain, attributes, adapter);
     }
     if (config.control && typeof config.control === 'object') {
-        const entries = Object.entries(config.control);
+        const controlConfig = config.control;
+        const configuredEntries = Object.entries(config.control).filter(([type]) => !type.startsWith('_'));
+        const configuredOrder = Array.isArray(controlConfig._order)
+            ? controlConfig._order.map(String)
+            : undefined;
+        const orderedTypes = configuredOrder
+            ? [
+                ...configuredOrder.filter((type) => configuredEntries.some(([entryType]) => entryType === type)),
+                ...configuredEntries
+                    .map(([type]) => type)
+                    .filter((type) => !configuredOrder.includes(type)),
+            ]
+            : configuredEntries.map(([type]) => type);
+        const entries = orderedTypes.map((type) => [type, controlConfig[type]]);
         if (entries.length > 0) {
             return entries
                 .filter(([, definition]) => definition !== false)
