@@ -1,5 +1,5 @@
 (function() {
-    const env = {"DEBUG":true,"BUILD_TIME":"2026-07-08, 08:18 p.m."};
+    const env = {"DEBUG":true,"BUILD_TIME":"2026-07-17, 12:54 p.m."};
     try {
         if (process) {
             process.env = Object.assign({}, process.env);
@@ -11,7 +11,7 @@
 })();
 
 var name = "simple-thermostat";
-var version = "4.0.27";
+var version = "4.1.0";
 
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -266,7 +266,6 @@ ha-card.loading {
 .body > * {
   min-width: 0;
 }
-
 .body.has-entities.setpoint-count-2 {
   grid-template-columns:
     minmax(min-content, max-content) minmax(max-content, 1fr)
@@ -401,12 +400,7 @@ ha-card.loading {
   }
 
 .entities.as-table.with-labels {
-    grid-template-columns:
-      fit-content(18ch)
-      max-content;
-    grid-template-columns:
-      fit-content(var(--st-entity-label-max-width, 18ch))
-      max-content;
+    grid-template-columns: auto auto;
     grid-auto-flow: row;
     -moz-column-gap: 8px;
          column-gap: 8px;
@@ -445,15 +439,6 @@ ha-card.loading {
   text-align: left;
 }
 
-.entities.as-table.with-labels.align-left {
-  grid-template-columns:
-    fit-content(18ch)
-    max-content;
-  grid-template-columns:
-    fit-content(var(--st-entity-label-max-width, 18ch))
-    max-content;
-}
-
 .entities:empty {
   display: none;
 }
@@ -466,6 +451,53 @@ header {
     calc(var(--st-spacing, var(--st-default-spacing)) * 2) 0
     calc(var(--st-spacing, var(--st-default-spacing)) * 4);
 }
+
+.embedded-header-reserve {
+  position: absolute;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: 0;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+ha-card.embedded {
+  position: relative;
+}
+
+ha-card.embedded .body {
+  padding-top: calc(
+      34px +
+        6px +
+        (4px * 6)
+    );
+  padding-top: var(
+    --st-group-embedded-header-min-height,
+    calc(
+      var(--st-group-header-control-height, 34px) +
+        var(--st-group-header-top-buffer, 6px) +
+        (var(--st-spacing, var(--st-default-spacing, 4px)) * 6)
+    )
+  );
+  padding-top: calc(
+      34px +
+        6px +
+        calc(4px * 6)
+    );
+  padding-top: var(
+    --st-group-embedded-header-min-height,
+    calc(
+      var(--st-group-header-control-height, 34px) +
+        var(--st-group-header-top-buffer, 6px) +
+        calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 6)
+    )
+  );
+}
+
 .header__main {
   display: flex;
   align-items: center;
@@ -929,7 +961,7 @@ ha-card.cooling .header__icon-wrap::before {
     currentColor 50%,
     var(--st-mode-color, var(--primary-color)) 50%
   );
-  --st-mode-active-accent-color: var(--st-mode-accent-color);
+  --st-mode-default-active-accent-color: var(--st-mode-accent-color);
   --st-mode-neutral-hover-background: color-mix(
     in srgb,
     var(--st-mode-background, var(--secondary-background-color)) 88%,
@@ -993,7 +1025,10 @@ ha-card.cooling .header__icon-wrap::before {
     box-shadow: inset 0 -2px 0
       var(
         --st-mode-active-accent-color,
-        color-mix(in srgb, var(--text-primary-color) 72%, transparent)
+        var(
+          --st-mode-default-active-accent-color,
+          color-mix(in srgb, var(--text-primary-color) 72%, transparent)
+        )
       );
     filter: none;
     transform: none;
@@ -1015,9 +1050,11 @@ ha-card.cooling .header__icon-wrap::before {
     opacity 180ms var(--st-motion-ease), transform 180ms var(--st-motion-ease);
 }
 .mode-item.active::after {
-  background: var(--st-mode-active-accent-color);
+  background: var(
+    --st-mode-active-accent-color,
+    var(--st-mode-default-active-accent-color)
+  );
   opacity: 0.64;
-  opacity: var(--st-mode-active-accent-opacity, 0.64);
   transform: scaleX(1);
   transition: none;
 }
@@ -1249,11 +1286,6 @@ ha-card.drying {
   padding-bottom: var(--st-spacing, var(--st-default-spacing));
 }
 
-.controls:has(.modes.hvac.sparse),
-.controls:has(.modes.state.sparse) {
-  margin-top: var(--st-spacing, var(--st-default-spacing));
-}
-
 @media (max-width: 560px) {
   .modes.hvac .mode-item,
   .modes.state .mode-item {
@@ -1267,8 +1299,8 @@ ha-card.drying {
   ha-card:not(.standard-visuals) .modes.state.sparse .mode-item {
     flex-direction: row;
     gap: 6px;
-    min-width: min(100%, 72px);
-    min-width: min(100%, var(--st-mode-min-width, 72px));
+    min-width: min(100%, 120px);
+    min-width: min(100%, var(--st-hvac-mode-min-width, 120px));
   }
 }
 .modes.dense {
@@ -1548,7 +1580,8 @@ ha-card.standard-visuals .modes.swing_vertical,
 ha-card.standard-visuals .modes.vane_horizontal,
 ha-card.standard-visuals .modes.vane_vertical {
   display: grid;
-  grid-template-columns: auto;
+  grid-template-columns: none;
+  grid-auto-columns: minmax(0, 1fr);
   grid-auto-flow: column;
   grid-gap: 2px;
   margin-top: 0;
@@ -2100,8 +2133,10 @@ const LABELS = {
     step_size: 'Step size',
     fallback: 'Fallback text',
     'hide.temperature': 'Hide current value',
+    hide_current_value_when_off: 'Hide current value while off',
     'hide.state': 'Hide state',
     'hide.setpoint_label': 'Hide target label',
+    hide_setpoint_when_off: 'Hide target controls while off',
     hide_setpoint: 'Hide target controls',
     disable_setpoint_change_when_off: 'Disable target changes while off',
     'label.temperature': 'Current value label',
@@ -2161,8 +2196,10 @@ const DIRECT_FORM_PATHS = [
     'layout.entities.separator',
     'layout.entities.alignment',
     'hide.temperature',
+    'hide_current_value_when_off',
     'hide.state',
     'hide.setpoint_label',
+    'hide_setpoint_when_off',
     'hide_setpoint',
     'disable_setpoint_change_when_off',
     'label.temperature',
@@ -2365,7 +2402,10 @@ function buildSchema(config, hass) {
         ];
     const visibilitySchema = [
         ...(hasCurrentValue
-            ? [{ name: 'hide.temperature', selector: { boolean: {} } }]
+            ? [
+                { name: 'hide.temperature', selector: { boolean: {} } },
+                { name: 'hide_current_value_when_off', selector: { boolean: {} } },
+            ]
             : []),
         { name: 'hide.state', selector: { boolean: {} } },
     ];
@@ -2462,6 +2502,10 @@ function buildSchema(config, hass) {
                             column_min_width: '160px',
                             schema: [
                                 { name: 'hide_setpoint', selector: { boolean: {} } },
+                                {
+                                    name: 'hide_setpoint_when_off',
+                                    selector: { boolean: {} },
+                                },
                                 { name: 'hide.setpoint_label', selector: { boolean: {} } },
                                 {
                                     name: 'disable_setpoint_change_when_off',
@@ -2634,16 +2678,19 @@ class SimpleThermostatEditor extends i$1 {
             'layout.mode.headings': this.config.layout?.mode?.headings === true,
             decimals: this.config.decimals ?? '',
             unit: typeof this.config.unit === 'string' ? this.config.unit : '',
-            'layout.step': this.config.enhanced_visuals === false
-                ? (this.config.layout?.step ?? 'column')
-                : (this.config.layout?.step ?? 'row'),
+            'layout.step': this.config.layout?.step ?? 'column',
             step_size: this.config.step_size != null ? String(this.config.step_size) : 'auto',
             fallback: this.config.fallback ?? '',
             'hide.temperature': this.config.hide?.temperature === true,
+            hide_current_value_when_off: this.config.hide_current_value_when_off === true ||
+                this.config.hide?.current_value_when_off === true ||
+                this.config.hide?.temperature_when_off === true,
             'hide.state': this.config.hide?.state === true,
             hide_setpoint: this.config.hide_setpoint === true,
             disable_setpoint_change_when_off: this.config.disable_setpoint_change_when_off === true,
             'hide.setpoint_label': this.config.hide?.setpoint_label === true,
+            hide_setpoint_when_off: this.config.hide_setpoint_when_off === true ||
+                this.config.hide?.setpoint_when_off === true,
             'label.temperature': this.config.label?.temperature ?? '',
             'label.state': this.config.label?.state ?? '',
             'label.setpoint': this.config.label?.setpoint ?? '',
@@ -3487,7 +3534,12 @@ function parseToggle(config, hass) {
     else {
         label = config?.name ?? '';
     }
-    return { entity, label, icon: config?.icon ?? false };
+    return {
+        entity,
+        label,
+        icon: config?.icon ?? false,
+        hide_when_off: config?.hide_when_off,
+    };
 }
 function parseToggles(config, hass) {
     const toggleConfigs = [
@@ -3614,6 +3666,9 @@ class SimpleThermostatGroup extends i$1 {
         this.selectedEntity = '';
         this.menuOpen = false;
         this.cardFading = false;
+        this.embeddedCardEntity = '';
+        this.embeddedCardConfigSignature = '';
+        this.embeddedCardPendingSignature = '';
         this.fadeInAfterSync = false;
         this.activitySignatures = new Map();
         this.activitySignaturesInitialized = false;
@@ -3877,7 +3932,6 @@ class SimpleThermostatGroup extends i$1 {
         display: block;
         overflow: hidden;
         opacity: 1;
-        padding-top: var(--st-group-body-top-buffer, 14px);
         transition: opacity 120ms ease;
         will-change: opacity;
       }
@@ -4122,18 +4176,42 @@ class SimpleThermostatGroup extends i$1 {
         return targets[0].entity;
     }
     readStoredSelection(config) {
+        return this.readStoredSelectionRecord(config)?.entity ?? '';
+    }
+    readStoredSelectionRecord(config) {
         try {
-            return window.localStorage?.getItem(this.getStorageKey(config)) ?? '';
+            const value = window.localStorage?.getItem(this.getStorageKey(config));
+            if (!value)
+                return undefined;
+            if (!value.trim().startsWith('{')) {
+                return {
+                    entity: value,
+                    timestamp: 0,
+                };
+            }
+            const parsed = JSON.parse(value);
+            if (typeof parsed.entity === 'string') {
+                return {
+                    entity: parsed.entity,
+                    timestamp: Number.isFinite(parsed.timestamp)
+                        ? Number(parsed.timestamp)
+                        : 0,
+                };
+            }
         }
         catch (_err) {
-            return '';
+            return undefined;
         }
+        return undefined;
     }
     writeStoredSelection(entity) {
         if (!this.config || this.config.remember_selection === false)
             return;
         try {
-            window.localStorage?.setItem(this.getStorageKey(this.config), entity);
+            window.localStorage?.setItem(this.getStorageKey(this.config), JSON.stringify({
+                entity,
+                timestamp: Date.now(),
+            }));
         }
         catch (_err) {
             // Browsers can block localStorage in private contexts; selection still works.
@@ -4324,6 +4402,15 @@ class SimpleThermostatGroup extends i$1 {
             return;
         }
         this.persistedActivityApplied = true;
+        const storedSelection = this.readStoredSelectionRecord(this.config);
+        const validStoredSelection = storedSelection &&
+            this.targets.some((target) => target.entity === storedSelection.entity);
+        const latest = this.getMostRecentStateActivityCandidate();
+        if (validStoredSelection &&
+            (!latest || latest.timestamp <= storedSelection.timestamp)) {
+            this.selectEntity(storedSelection.entity, false);
+            return;
+        }
         const stored = this.readStoredActivity(this.config);
         if (!stored) {
             this.selectMostRecentStateActivity(nextSignatures);
@@ -4338,7 +4425,6 @@ class SimpleThermostatGroup extends i$1 {
         const currentSignature = nextSignatures.get(stored.entity);
         if (storedTarget && currentSignature && currentSignature === stored.signature) {
             const storedCandidate = this.getActivityCandidate(storedTarget, stored.timestamp);
-            const latest = this.getMostRecentStateActivityCandidate();
             if (latest && this.isBetterActivityCandidate(latest, storedCandidate)) {
                 this.selectMostRecentStateActivity(nextSignatures);
                 return;
@@ -4492,13 +4578,92 @@ class SimpleThermostatGroup extends i$1 {
         const target = this.getSelectedTarget();
         return this.getTargetCardConfig(target);
     }
+    getEmbeddedConfigSignature(config) {
+        return JSON.stringify(config, (_key, value) => {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) {
+                return value;
+            }
+            return Object.keys(value)
+                .sort()
+                .reduce((result, key) => {
+                result[key] = value[key];
+                return result;
+            }, {});
+        });
+    }
     getTargetCardConfig(target) {
+        const commonConfig = (this.config?.card ?? {});
+        const sourceConfig = this.getSourceTargetConfig(target);
+        const targetConfig = target.config;
+        const mergedConfig = {
+            ...commonConfig,
+            ...sourceConfig,
+            ...targetConfig,
+        };
+        if (!mergedConfig.card_mod) {
+            const fallbackCardMod = this.getFallbackCardMod();
+            if (fallbackCardMod)
+                mergedConfig.card_mod = fallbackCardMod;
+        }
         return {
-            ...(this.config?.card ?? {}),
-            ...target.config,
+            ...mergedConfig,
+            embedded: true,
             entity: target.entity,
             type: target.config.type ?? `custom:${name}`,
         };
+    }
+    getSourceTargetConfig(target) {
+        const sourceTargets = this.config?.cards ?? this.config?.entities ?? [];
+        const source = sourceTargets.find((item) => !!item &&
+            typeof item === 'object' &&
+            item.entity === target.entity);
+        return source && typeof source === 'object' ? source : {};
+    }
+    getFallbackCardMod() {
+        const commonCardMod = (this.config?.card ?? {}).card_mod;
+        if (commonCardMod)
+            return commonCardMod;
+        const sourceTargets = this.config?.cards ?? this.config?.entities ?? [];
+        const styledTarget = sourceTargets.find((item) => !!item && typeof item === 'object' && !!item.card_mod);
+        return styledTarget?.card_mod;
+    }
+    getCardHelpers() {
+        if (!this.cardHelpersPromise) {
+            this.cardHelpersPromise =
+                typeof window.loadCardHelpers === 'function'
+                    ? window.loadCardHelpers()
+                    : Promise.reject(new Error('Home Assistant card helpers unavailable'));
+        }
+        return this.cardHelpersPromise;
+    }
+    createFallbackEmbeddedCardElement(config) {
+        const element = window.document.createElement(name);
+        if (typeof element.setConfig === 'function') {
+            element.setConfig(config);
+            return element;
+        }
+        return undefined;
+    }
+    installEmbeddedCard(host, embedded, embeddedConfig, configSignature) {
+        if (!this.config || !this.hass)
+            return;
+        if (!embedded || typeof embedded.setConfig !== 'function') {
+            this.embeddedCardPendingSignature = '';
+            return;
+        }
+        if (this.getEmbeddedConfigSignature(this.getEmbeddedConfig()) !== configSignature) {
+            return;
+        }
+        this.embeddedCard = embedded;
+        this.embeddedCardEntity = String(embeddedConfig.entity ?? '');
+        this.embeddedCardConfigSignature = configSignature;
+        this.embeddedCardPendingSignature = '';
+        host.replaceChildren(embedded);
+        if (typeof embedded.setConfig === 'function') {
+            embedded.setConfig(embeddedConfig);
+        }
+        embedded.hass = this.hass;
+        this.syncEmbeddedPresentation();
     }
     syncEmbeddedCard() {
         if (!this.config || !this.hass)
@@ -4507,12 +4672,34 @@ class SimpleThermostatGroup extends i$1 {
         if (!host)
             return;
         const embeddedConfig = this.getEmbeddedConfig();
-        if (!this.embeddedCard) {
-            this.embeddedCard = window.document.createElement(name);
-            host.replaceChildren(this.embeddedCard);
-        }
-        if (typeof this.embeddedCard.setConfig === 'function') {
-            this.embeddedCard.setConfig(embeddedConfig);
+        const configSignature = this.getEmbeddedConfigSignature(embeddedConfig);
+        if (!this.embeddedCard ||
+            this.embeddedCardEntity !== embeddedConfig.entity ||
+            this.embeddedCardConfigSignature !== configSignature) {
+            if (typeof window.loadCardHelpers !== 'function') {
+                const fallback = window.customElements.get(name)
+                    ? this.createFallbackEmbeddedCardElement(embeddedConfig)
+                    : undefined;
+                if (!fallback) {
+                    this.embeddedCardPendingSignature = '';
+                    return;
+                }
+                this.installEmbeddedCard(host, fallback, embeddedConfig, configSignature);
+                return;
+            }
+            if (this.embeddedCardPendingSignature === configSignature)
+                return;
+            this.embeddedCardPendingSignature = configSignature;
+            this.getCardHelpers()
+                .then((helpers) => helpers.createCardElement(embeddedConfig))
+                .catch(() => {
+                const fallback = window.customElements.get(name)
+                    ? this.createFallbackEmbeddedCardElement(embeddedConfig)
+                    : undefined;
+                return fallback;
+            })
+                .then((embedded) => this.installEmbeddedCard(host, embedded, embeddedConfig, configSignature));
+            return;
         }
         this.embeddedCard.hass = this.hass;
         this.syncEmbeddedPresentation();
@@ -4526,22 +4713,39 @@ class SimpleThermostatGroup extends i$1 {
     }
     applyEmbeddedPresentation() {
         const host = this.renderRoot.querySelector('.embedded-card-host');
-        const root = this.embeddedCard?.shadowRoot;
-        const card = root?.querySelector('ha-card');
-        const header = root?.querySelector('header');
-        if (!host || !card)
+        const selector = this.renderRoot.querySelector('.group-selector');
+        const embedded = this.embeddedCard;
+        if (!host || !embedded)
             return;
         host.style.removeProperty('--st-group-cropped-header-height');
-        if (header) {
-            header.style.visibility = 'hidden';
-            header.style.pointerEvents = 'none';
-        }
+        embedded.style.setProperty('--st-group-embedded-header-min-height', this.getEmbeddedHeaderReserve(embedded, selector));
         if (this.fadeInAfterSync) {
             this.fadeInAfterSync = false;
             window.requestAnimationFrame(() => {
                 this.cardFading = false;
             });
         }
+    }
+    getEmbeddedHeaderReserve(embedded, selector) {
+        const fallback = 'calc(var(--st-group-header-control-height, 34px) + var(--st-group-header-top-buffer, 6px) + calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 6))';
+        const minimum = this.getEmbeddedHeaderReserveMinimum();
+        if (!selector)
+            return fallback;
+        const embeddedRect = embedded.getBoundingClientRect();
+        const selectorRect = selector.getBoundingClientRect();
+        const measured = Math.ceil(selectorRect.bottom - embeddedRect.top + 8);
+        const reserve = Math.max(measured, minimum);
+        return Number.isFinite(reserve) && reserve > 24 ? `${reserve}px` : fallback;
+    }
+    getEmbeddedHeaderReserveMinimum() {
+        const styles = getComputedStyle(this);
+        const controlHeight = parseFloat(styles.getPropertyValue('--st-group-header-control-height')) ||
+            34;
+        const topBuffer = parseFloat(styles.getPropertyValue('--st-group-header-top-buffer')) || 6;
+        const spacing = parseFloat(styles.getPropertyValue('--st-spacing')) ||
+            parseFloat(styles.getPropertyValue('--st-default-spacing')) ||
+            4;
+        return Math.ceil(controlHeight + topBuffer + spacing * 4);
     }
     selectEntity(entity, manual = true) {
         this.menuOpen = false;
@@ -4768,7 +4972,10 @@ class SimpleThermostatGroup extends i$1 {
         if (!this.config)
             return b `<ha-card></ha-card>`;
         return b `
-      <div class=${this.getGroupCardClasses()} style=${this.getGroupCardStyle()}>
+      <div
+        class=${this.getGroupCardClasses()}
+        style=${this.getGroupCardStyle()}
+      >
         ${this.renderSelector()}
         <div
           class=${`embedded-card-host${this.cardFading ? ' fading' : ''}`}
@@ -4795,164 +5002,6 @@ __decorate([
 __decorate([
     r$2()
 ], SimpleThermostatGroup.prototype, "cardFading", void 0);
-
-const copyProperty = (to, from, property, ignoreNonConfigurable) => {
-	// `Function#length` should reflect the parameters of `to` not `from` since we keep its body.
-	// `Function#prototype` is non-writable and non-configurable so can never be modified.
-	if (property === 'length' || property === 'prototype') {
-		return;
-	}
-
-	// `Function#arguments` and `Function#caller` should not be copied. They were reported to be present in `Reflect.ownKeys` for some devices in React Native (#41), so we explicitly ignore them here.
-	if (property === 'arguments' || property === 'caller') {
-		return;
-	}
-
-	const toDescriptor = Object.getOwnPropertyDescriptor(to, property);
-	const fromDescriptor = Object.getOwnPropertyDescriptor(from, property);
-
-	if (!canCopyProperty(toDescriptor, fromDescriptor) && ignoreNonConfigurable) {
-		return;
-	}
-
-	Object.defineProperty(to, property, fromDescriptor);
-};
-
-// `Object.defineProperty()` throws if the property exists, is not configurable and either:
-// - one its descriptors is changed
-// - it is non-writable and its value is changed
-const canCopyProperty = function (toDescriptor, fromDescriptor) {
-	return toDescriptor === undefined || toDescriptor.configurable || (
-		toDescriptor.writable === fromDescriptor.writable
-		&& toDescriptor.enumerable === fromDescriptor.enumerable
-		&& toDescriptor.configurable === fromDescriptor.configurable
-		&& (toDescriptor.writable || toDescriptor.value === fromDescriptor.value)
-	);
-};
-
-const changePrototype = (to, from) => {
-	const fromPrototype = Object.getPrototypeOf(from);
-	if (fromPrototype === Object.getPrototypeOf(to)) {
-		return;
-	}
-
-	Object.setPrototypeOf(to, fromPrototype);
-};
-
-const wrappedToString = (withName, fromBody) => `/* Wrapped ${withName}*/\n${fromBody}`;
-
-const toStringDescriptor = Object.getOwnPropertyDescriptor(Function.prototype, 'toString');
-const toStringName = Object.getOwnPropertyDescriptor(Function.prototype.toString, 'name');
-
-// We call `from.toString()` early (not lazily) to ensure `from` can be garbage collected.
-// We use `bind()` instead of a closure for the same reason.
-// Calling `from.toString()` early also allows caching it in case `to.toString()` is called several times.
-const changeToString = (to, from, name) => {
-	const withName = name === '' ? '' : `with ${name.trim()}() `;
-	const newToString = wrappedToString.bind(null, withName, from.toString());
-	// Ensure `to.toString.toString` is non-enumerable and has the same `same`
-	Object.defineProperty(newToString, 'name', toStringName);
-	const {writable, enumerable, configurable} = toStringDescriptor; // We destructue to avoid a potential `get` descriptor.
-	Object.defineProperty(to, 'toString', {value: newToString, writable, enumerable, configurable});
-};
-
-function mimicFunction(to, from, {ignoreNonConfigurable = false} = {}) {
-	const {name} = to;
-
-	for (const property of Reflect.ownKeys(from)) {
-		copyProperty(to, from, property, ignoreNonConfigurable);
-	}
-
-	changePrototype(to, from);
-	changeToString(to, from, name);
-
-	return to;
-}
-
-const debounceFunction = (inputFunction, options = {}) => {
-	if (typeof inputFunction !== 'function') {
-		throw new TypeError(`Expected the first argument to be a function, got \`${typeof inputFunction}\``);
-	}
-
-	const {
-		wait = 0,
-		maxWait = Number.POSITIVE_INFINITY,
-		before = false,
-		after = true,
-	} = options;
-
-	if (wait < 0 || maxWait < 0) {
-		throw new RangeError('`wait` and `maxWait` must not be negative.');
-	}
-
-	if (!before && !after) {
-		throw new Error('Both `before` and `after` are false, function wouldn\'t be called.');
-	}
-
-	let timeout;
-	let maxTimeout;
-	let result;
-
-	const debouncedFunction = function (...arguments_) {
-		const context = this; // eslint-disable-line unicorn/no-this-assignment
-
-		const later = () => {
-			timeout = undefined;
-
-			if (maxTimeout) {
-				clearTimeout(maxTimeout);
-				maxTimeout = undefined;
-			}
-
-			if (after) {
-				result = inputFunction.apply(context, arguments_);
-			}
-		};
-
-		const maxLater = () => {
-			maxTimeout = undefined;
-
-			if (timeout) {
-				clearTimeout(timeout);
-				timeout = undefined;
-			}
-
-			if (after) {
-				result = inputFunction.apply(context, arguments_);
-			}
-		};
-
-		const shouldCallNow = before && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-
-		if (maxWait > 0 && maxWait !== Number.POSITIVE_INFINITY && !maxTimeout) {
-			maxTimeout = setTimeout(maxLater, maxWait);
-		}
-
-		if (shouldCallNow) {
-			result = inputFunction.apply(context, arguments_);
-		}
-
-		return result;
-	};
-
-	mimicFunction(debouncedFunction, inputFunction);
-
-	debouncedFunction.cancel = () => {
-		if (timeout) {
-			clearTimeout(timeout);
-			timeout = undefined;
-		}
-
-		if (maxTimeout) {
-			clearTimeout(maxTimeout);
-			maxTimeout = undefined;
-		}
-	};
-
-	return debouncedFunction;
-};
 
 function isEqual(a, b) {
     const keys = Object.keys(a);
@@ -5230,7 +5279,7 @@ function renderHeader({ header, toggleEntityChanged, entity, hass, openEntityPop
         ${renderName(name)}
       </div>
       ${renderFaults(header.faults, openEntityPopover)}
-      ${renderToggles(header.toggles, openEntityPopover, toggleEntityChanged, hass)}
+      ${renderToggles(header.toggles, openEntityPopover, toggleEntityChanged, hass, entity)}
     </header>
   `;
 }
@@ -5273,12 +5322,15 @@ function renderFaults(faults, openEntityPopover) {
     });
     return b ` <div class="faults">${faultHtml}</div>`;
 }
-function renderToggles(toggles, openEntityPopover, toggleEntityChanged, hass) {
+function renderToggles(toggles, openEntityPopover, toggleEntityChanged, hass, mainEntity) {
     if (!toggles?.length)
         return A;
     return b `
     <div class="header__toggles">
       ${toggles.map((toggle) => {
+        if (toggle.hide_when_off === true && mainEntity?.state === 'off') {
+            return A;
+        }
         const entityId = toggle.entity?.entity_id;
         const toggleState = toggle.entity?.state;
         const toggleDomain = typeof entityId === 'string' ? entityId.split('.')[0] : '';
@@ -5364,13 +5416,37 @@ function requireSquirrelly_min () {
 var squirrelly_minExports = /*@__PURE__*/ requireSquirrelly_min();
 
 squirrelly_minExports.defaultConfig.autoEscape = false;
-squirrelly_minExports.filters.define('icon', (icon) => `<ha-icon icon="${icon}"></ha-icon>`);
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+function escapeAttribute(value) {
+    return escapeHtml(value);
+}
+function safeCssName(value) {
+    return String(value ?? '').replace(/[^-a-zA-Z0-9_]/g, '');
+}
+function safeCssValue(value) {
+    return String(value ?? '')
+        .replace(/url\s*\([^)]*\)/gi, '')
+        .replace(/expression\s*\([^)]*\)/gi, '')
+        .replace(/javascript:/gi, '')
+        .replace(/[<>"'`;{}]/g, '');
+}
+squirrelly_minExports.filters.define('icon', (icon) => `<ha-icon icon="${escapeAttribute(icon)}"></ha-icon>`);
 squirrelly_minExports.filters.define('join', (arr, delimiter = ', ') => arr.join(delimiter));
 squirrelly_minExports.filters.define('css', (str, css) => {
     const styles = Object.entries(css).reduce((memo, [key, val]) => {
-        return `${memo}${key}:${val};`;
+        const property = safeCssName(key);
+        if (!property)
+            return memo;
+        return `${memo}${property}:${safeCssValue(val)};`;
     }, '');
-    return `<span style="${styles}">${str}</span>`;
+    return `<span style="${escapeAttribute(styles)}">${escapeHtml(str)}</span>`;
 });
 squirrelly_minExports.filters.define('debug', (data) => {
     try {
@@ -5380,6 +5456,26 @@ squirrelly_minExports.filters.define('debug', (data) => {
         return `Not able to read valid JSON object from: ${data}`;
     }
 });
+function escapeHtmlValue(value) {
+    if (typeof value === 'string') {
+        return value
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    if (Array.isArray(value)) {
+        return value.map(escapeHtmlValue);
+    }
+    if (value && typeof value === 'object') {
+        return Object.fromEntries(Object.entries(value).map(([key, nestedValue]) => [
+            key,
+            escapeHtmlValue(nestedValue),
+        ]));
+    }
+    return value;
+}
 function renderTemplate({ template, stateObj, attribute, hass, config = {}, variables = {}, localize = (label) => label, }) {
     const [domain] = String(stateObj?.entity_id ?? '').split('.');
     const attributes = stateObj?.attributes ?? {};
@@ -5421,12 +5517,12 @@ function renderTemplate({ template, stateObj, attribute, hass, config = {}, vari
         return localize(str, prefix);
     });
     return squirrelly_minExports.render(template, {
-        ...attributes,
+        ...escapeHtmlValue(attributes),
         state: {
-            raw: rawState,
-            text: textState,
+            raw: escapeHtmlValue(rawState),
+            text: escapeHtmlValue(textState),
         },
-        state_attr: (entityId, attr) => hass.states?.[entityId]?.attributes?.[attr],
+        state_attr: (entityId, attr) => escapeHtmlValue(hass.states?.[entityId]?.attributes?.[attr]),
         ui: translations,
         v: variables,
     }, { useWith: true });
@@ -5777,10 +5873,7 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
 }
 
 function wrapEntities(config, content) {
-    const { type, labels: showLabels, alignment } = config?.layout?.entities ?? {
-        type: 'table',
-        labels: true,
-    };
+    const { type = 'table', labels: showLabels = true, alignment, } = config?.layout?.entities ?? {};
     const visibleRows = content.filter((it) => it !== null && typeof it !== 'undefined');
     const classes = [
         showLabels ? 'with-labels' : 'without-labels',
@@ -5805,9 +5898,16 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
     const showLabels = config?.layout?.entities?.labels ?? true;
     const showSeparator = config?.layout?.entities?.separator !== false;
     const stateString = getEntityStateText(entity, hass, localize);
+    const hideTemperatureWhenOff = (config?.hide_current_value_when_off === true ||
+        config?.hide?.current_value_when_off === true ||
+        config?.hide?.temperature_when_off === true) &&
+        entity.state === HVAC_MODES.OFF;
     const entityHtml = [
         renderInfoItem({
-            hide: _hide.temperature || current === null || typeof current === 'undefined',
+            hide: _hide.temperature ||
+                hideTemperatureWhenOff ||
+                current === null ||
+                typeof current === 'undefined',
             state: appendUnit(formatNumber(current, {
                 ...config,
                 locale: hass.locale,
@@ -5838,9 +5938,10 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
                 separator: showSeparator,
             },
         }),
-        ...(entities.map(({ name, state, show, ...rest }) => {
+        ...((entities ?? []).map(({ name, state, show, _hide_when_off, hide_when_off, ...rest }) => {
+            const hideWhenOff = _hide_when_off === true || hide_when_off === true;
             return renderInfoItem({
-                hide: show === false,
+                hide: show === false || (hideWhenOff && entity.state === HVAC_MODES.OFF),
                 state,
                 hass,
                 localize,
@@ -6035,7 +6136,9 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
       aria-label=${title || type}
     >
       ${showHeading ? b ` <div class="mode-title">${title}</div> ` : ''}
-      ${list.map(({ value, icon, iconConfigured, name }) => {
+      ${list.map(({ value, icon, iconConfigured, name, hide_when_off }) => {
+        if (hide_when_off === true && state === HVAC_MODES.OFF)
+            return A;
         const modeClass = safeClass(value);
         const displayName = maybeRenderName(name, value);
         const tooltip = displayName ? A : controlTooltip || A;
@@ -6095,7 +6198,7 @@ function parseService(config, adapter = climateAdapter) {
     return config;
 }
 
-const DEBOUNCE_TIMEOUT = 500;
+const SETPOINT_DEBOUNCE_TIMEOUT = 500;
 const STEP_SIZE = 0.5;
 const DECIMALS = 1;
 const UPDATING_TIMEOUT = 10000;
@@ -6123,6 +6226,7 @@ const CONTROL_ORDER = [
     MODES.OSCILLATING,
     MODES.STATE,
 ];
+const CONTROL_METADATA_KEYS = ['entity', 'hide_when_off', 'hide_off_when_off'];
 function getConfiguredEntities(config) {
     return config.entities ?? [];
 }
@@ -6147,7 +6251,9 @@ function getConfiguredModeValue(modeKey, specification) {
     if (typeof specification[normalizedModeKey] !== 'undefined') {
         return specification[normalizedModeKey];
     }
-    const matchingEntry = Object.entries(specification).find(([key]) => !key.startsWith('_') && normalizeModeConfigKey(key) === normalizedModeKey);
+    const matchingEntry = Object.entries(specification).find(([key]) => !key.startsWith('_') &&
+        !CONTROL_METADATA_KEYS.includes(key) &&
+        normalizeModeConfigKey(key) === normalizedModeKey);
     return matchingEntry?.[1];
 }
 function isModeValue(value) {
@@ -6156,7 +6262,7 @@ function isModeValue(value) {
 function getOrderedModeOptions(modeOptions, specification) {
     const configuredKeys = Array.isArray(specification._order)
         ? specification._order.map(String)
-        : Object.keys(specification).filter((key) => !key.startsWith('_'));
+        : Object.keys(specification).filter((key) => !key.startsWith('_') && !CONTROL_METADATA_KEYS.includes(key));
     if (configuredKeys.length === 0)
         return modeOptions;
     const optionsByKey = new Map();
@@ -6205,6 +6311,9 @@ function getModeList(type, attributes, adapter, specification = {}) {
             ? configuredMode
             : {};
         const { name: configuredName, ...modeValues } = values;
+        const hideWhenOff = values.hide_when_off === true ||
+            (specification.hide_off_when_off === true &&
+                normalizeModeConfigKey(modeKey) === 'off');
         const name = configuredName === false
             ? false
             : typeof configuredName === 'string'
@@ -6212,11 +6321,46 @@ function getModeList(type, attributes, adapter, specification = {}) {
                 : getModeName(modeKey);
         return {
             ...modeValues,
+            hide_when_off: hideWhenOff || undefined,
             icon: values.icon ??
                 (type === MODES.FAN
                     ? getFanModeIcon(modeKey, modeOptions)
                     : undefined) ??
                 getModeIcon(modeKey),
+            iconConfigured: typeof values.icon !== 'undefined',
+            value: modeKey,
+            name,
+        };
+    });
+}
+function isSelectModeEntity(stateObj) {
+    return (typeof stateObj?.entity_id === 'string' &&
+        stateObj.entity_id.startsWith('select.') &&
+        Array.isArray(stateObj.attributes?.options));
+}
+function getModeListFromSelect(stateObj, specification = {}) {
+    const modeOptions = stateObj.attributes.options;
+    return getOrderedModeOptions(modeOptions, specification)
+        .filter((modeOption) => shouldShowModeControl('select', modeOption, specification))
+        .map((modeOption) => {
+        const modeKey = String(modeOption);
+        const configuredMode = getConfiguredModeValue(modeKey, specification);
+        const values = isModeValue(configuredMode)
+            ? configuredMode
+            : {};
+        const { name: configuredName, ...modeValues } = values;
+        const hideWhenOff = values.hide_when_off === true ||
+            (specification.hide_off_when_off === true &&
+                normalizeModeConfigKey(modeKey) === 'off');
+        const name = configuredName === false
+            ? false
+            : typeof configuredName === 'string'
+                ? configuredName
+                : getModeName(modeKey);
+        return {
+            ...modeValues,
+            hide_when_off: hideWhenOff || undefined,
+            icon: values.icon ?? getModeIcon(modeKey),
             iconConfigured: typeof values.icon !== 'undefined',
             value: modeKey,
             name,
@@ -6233,6 +6377,31 @@ function getCardStyle(entityDomain, attributes) {
     const fanSpinDuration = Math.max(0.9, 3.2 - (normalizedPercentage / 100) * 2.1);
     return `--st-fan-spin-duration: ${fanSpinDuration.toFixed(2)}s;`;
 }
+function getCardModSurfaceDeclarations(cardMod) {
+    const style = cardMod?.style;
+    if (typeof style === 'object' && style) {
+        const cardStyle = style['ha-card'];
+        if (typeof cardStyle === 'string')
+            return cardStyle.trim();
+        const rootStyle = style['.'];
+        if (typeof rootStyle === 'string') {
+            const rootMatch = rootStyle.match(/ha-card\s*\{([\s\S]*?)\}/);
+            return (rootMatch?.[1] ?? '').trim();
+        }
+    }
+    if (typeof style !== 'string')
+        return '';
+    const match = style.match(/ha-card\s*\{([\s\S]*?)\}/);
+    return (match?.[1] ?? '').trim();
+}
+function getInlineCardStyle(config, entityDomain, attributes) {
+    return [
+        getCardModSurfaceDeclarations(config.card_mod),
+        getCardStyle(entityDomain, attributes),
+    ]
+        .filter((style) => !!style)
+        .join('; ');
+}
 function supportsModeType(type, entityDomain, attributes, adapter) {
     return (MODE_TYPES.includes(type) &&
         (type === MODES.STATE
@@ -6248,7 +6417,7 @@ function buildBasicControlModes(items, entityDomain, attributes, adapter) {
         list: getModeList(type, attributes, adapter),
     }));
 }
-function buildConfiguredControlModes(config, entityDomain, attributes, adapter) {
+function buildConfiguredControlModes(config, entityDomain, attributes, adapter, hass) {
     if (config.control === false)
         return [];
     if (Array.isArray(config.control)) {
@@ -6272,17 +6441,37 @@ function buildConfiguredControlModes(config, entityDomain, attributes, adapter) 
         if (entries.length > 0) {
             return entries
                 .filter(([, definition]) => definition !== false)
-                .filter(([type]) => supportsModeType(type, entityDomain, attributes, adapter))
+                .filter(([type, definition]) => {
+                const controlEntity = definition === true || definition === false
+                    ? undefined
+                    : definition.entity;
+                const selectState = controlEntity
+                    ? hass?.states?.[controlEntity]
+                    : undefined;
+                return (isSelectModeEntity(selectState) ||
+                    supportsModeType(type, entityDomain, attributes, adapter));
+            })
                 .map(([type, definition]) => {
-                const { _name, _hide_when_off, _icons, _heading, ...controlField } = definition === true ? {} : definition;
+                const { _name, _hide_when_off, hide_when_off, hide_off_when_off, _icons, _heading, entity: controlEntity, ...controlField } = definition === true ? {} : definition;
+                const selectState = controlEntity
+                    ? hass?.states?.[controlEntity]
+                    : undefined;
+                const useSelectEntity = isSelectModeEntity(selectState);
+                const modeSpecification = {
+                    ...controlField,
+                    ...(hide_off_when_off === true ? { hide_off_when_off } : {}),
+                };
                 return {
                     type,
-                    hide_when_off: _hide_when_off,
+                    entity: useSelectEntity ? controlEntity : undefined,
+                    hide_when_off: hide_when_off ?? _hide_when_off,
                     icons: _icons,
                     heading: _heading,
                     name: _name,
                     preserve_option_order: Object.keys(controlField).length > 0,
-                    list: getModeList(type, attributes, adapter, controlField),
+                    list: useSelectEntity
+                        ? getModeListFromSelect(selectState, modeSpecification)
+                        : getModeList(type, attributes, adapter, modeSpecification),
                 };
             });
         }
@@ -6333,16 +6522,9 @@ class SimpleThermostat extends i$1 {
         this._holdFired = false;
         this._clickCount = 0;
         this._clickTimer = null;
-        this._debouncedSetTemperature = debounceFunction((values) => {
-            const { domain, service, data = {} } = this.service;
-            this._callAction(`${domain}.${service}`, {
-                entity_id: this.config.entity,
-                ...data,
-                ...values,
-            });
-        }, {
-            wait: DEBOUNCE_TIMEOUT,
-        });
+        this._setpointUpdateTimer = null;
+        this._pendingSetpointValues = null;
+        this._setpointDebounce = SETPOINT_DEBOUNCE_TIMEOUT;
         this.localize = (label, prefix = '') => {
             const key = `${prefix}${label}`;
             return this._hass.localize?.(key) || label;
@@ -6361,6 +6543,15 @@ class SimpleThermostat extends i$1 {
                 if (type === MODES.STATE) {
                     this._callAction(`${adapter.getLocalizationDomain()}.turn_${mode}`, {
                         entity_id: this.config.entity,
+                    });
+                    fireEvent(this, 'haptic', 'light');
+                    return;
+                }
+                const configuredMode = this.modes.find((mode) => mode.type === type);
+                if (configuredMode?.entity) {
+                    this._callAction('select.select_option', {
+                        entity_id: configuredMode.entity,
+                        option: mode,
                     });
                     fireEvent(this, 'haptic', 'light');
                     return;
@@ -6433,6 +6624,39 @@ class SimpleThermostat extends i$1 {
     static get styles() {
         return css_248z;
     }
+    _sendSetpointValues(values) {
+        const { domain, service, data = {} } = this.service;
+        this._callAction(`${domain}.${service}`, {
+            entity_id: this.config.entity,
+            ...data,
+            ...values,
+        });
+    }
+    _scheduleSetpointValues(values) {
+        const wait = this._setpointDebounce;
+        if (wait <= 0) {
+            this._sendSetpointValues(values);
+            return;
+        }
+        this._pendingSetpointValues = { ...values };
+        if (this._setpointUpdateTimer) {
+            clearTimeout(this._setpointUpdateTimer);
+        }
+        this._setpointUpdateTimer = setTimeout(() => {
+            const pendingValues = this._pendingSetpointValues;
+            this._setpointUpdateTimer = null;
+            this._pendingSetpointValues = null;
+            if (pendingValues) {
+                this._sendSetpointValues(pendingValues);
+            }
+        }, wait);
+    }
+    _getSetpointDebounce(config) {
+        const value = Number(config?.setpoint_debounce_ms ?? SETPOINT_DEBOUNCE_TIMEOUT);
+        return Number.isFinite(value) && value >= 0
+            ? value
+            : SETPOINT_DEBOUNCE_TIMEOUT;
+    }
     _callAction(action, data) {
         if (typeof this._hass.callService === 'function') {
             const [domain, service] = action.split('.');
@@ -6456,6 +6680,13 @@ class SimpleThermostat extends i$1 {
             decimals: DECIMALS,
             ...config,
         });
+        const setpointDebounce = this._getSetpointDebounce(this.config);
+        if (setpointDebounce !== this._setpointDebounce) {
+            this._setpointDebounce = setpointDebounce;
+        }
+        this.entities = [];
+        this.showEntities = true;
+        this.toggleAttribute('embedded', this.config.embedded === true);
         if (this._hass?.states) {
             this.updateFromHass(this._hass);
         }
@@ -6475,6 +6706,26 @@ class SimpleThermostat extends i$1 {
             return;
         }
         this.updateFromHass(hass);
+    }
+    disconnectedCallback() {
+        if (this._updatingValuesTimeout) {
+            clearTimeout(this._updatingValuesTimeout);
+            this._updatingValuesTimeout = null;
+        }
+        if (this._holdTimer) {
+            clearTimeout(this._holdTimer);
+            this._holdTimer = null;
+        }
+        if (this._clickTimer) {
+            clearTimeout(this._clickTimer);
+            this._clickTimer = null;
+        }
+        if (this._setpointUpdateTimer) {
+            clearTimeout(this._setpointUpdateTimer);
+            this._setpointUpdateTimer = null;
+        }
+        this._pendingSetpointValues = null;
+        super.disconnectedCallback();
     }
     updateFromHass(hass) {
         const entity = hass.states[this.config.entity];
@@ -6497,7 +6748,7 @@ class SimpleThermostat extends i$1 {
             this._values = values;
         }
         const entityDomain = this.config.entity.split('.')[0];
-        const configuredControlModes = removeOffFromSecondaryModes(buildConfiguredControlModes(this.config, entityDomain, attributes, adapter));
+        const configuredControlModes = removeOffFromSecondaryModes(buildConfiguredControlModes(this.config, entityDomain, attributes, adapter, hass));
         const controlModes = shouldPreserveConfiguredControlOrder(this.config.control)
             ? configuredControlModes
             : sortControlModes(configuredControlModes, entityDomain);
@@ -6509,9 +6760,11 @@ class SimpleThermostat extends i$1 {
                     : values.type === MODES.FAN
                         ? sortFanModes(values.list)
                         : values.list;
-            const mode = values.type === MODES.HVAC || values.type === MODES.STATE
-                ? entity.state
-                : attributes[adapter.getModePayloadKey(values.type)];
+            const mode = values.entity && hass.states?.[values.entity]
+                ? hass.states[values.entity].state
+                : values.type === MODES.HVAC || values.type === MODES.STATE
+                    ? entity.state
+                    : attributes[adapter.getModePayloadKey(values.type)];
             return { ...values, list, mode };
         });
         const { step: rangeStep } = adapter.getRange(attributes);
@@ -6520,8 +6773,10 @@ class SimpleThermostat extends i$1 {
         const configuredEntities = getConfiguredEntities(this.config);
         if (configuredEntities === false) {
             this.showEntities = false;
+            this.entities = [];
         }
         else if (configuredEntities) {
+            this.showEntities = true;
             this.entities = configuredEntities.map(({ name, entity, attribute, template, unit = '', ...rest }) => {
                 let state;
                 const names = [name];
@@ -6547,6 +6802,10 @@ class SimpleThermostat extends i$1 {
                     unit,
                 };
             });
+        }
+        else {
+            this.showEntities = true;
+            this.entities = [];
         }
     }
     render({ _hide, _values, _updatingValues, config, entity } = this) {
@@ -6587,12 +6846,11 @@ class SimpleThermostat extends i$1 {
         const action = getEntityAction(entity);
         const { min: minValue, max: maxValue } = adapter.getRange(entity.attributes);
         const unit = this.getUnit();
-        const stepLayout = this.config.enhanced_visuals === false
-            ? (this.config?.layout?.step ?? 'column')
-            : (this.config?.layout?.step ?? 'row');
-        const row = stepLayout === 'row';
         const entityDomain = config.entity.split('.')[0];
         const setpointCount = Object.keys(_values).length;
+        const configuredStepLayout = this.config?.layout?.step;
+        const stepLayout = configuredStepLayout ?? 'column';
+        const row = stepLayout === 'row';
         const isUnavailable = ['unavailable', 'unknown'].includes(entity.state);
         const safeClass = (value) => typeof value === 'string' ? value.replace(/[^a-z0-9_-]/gi, '') : '';
         const classes = [
@@ -6600,6 +6858,7 @@ class SimpleThermostat extends i$1 {
             `domain-${safeClass(entityDomain)}`,
             `state-${safeClass(entity.state)}`,
             this.config.enhanced_visuals === false && 'standard-visuals',
+            this.config.embedded === true && 'embedded',
             safeClass(action),
             isUnavailable && safeClass(entity.state),
         ].filter((cx) => !!cx);
@@ -6609,7 +6868,10 @@ class SimpleThermostat extends i$1 {
             `step-${stepLayout}`,
             `setpoint-count-${setpointCount}`,
         ].filter((cx) => !!cx);
-        const cardStyle = getCardStyle(entityDomain, entity.attributes);
+        const embedded = config.embedded === true;
+        const cardStyle = embedded
+            ? getInlineCardStyle(config, entityDomain, entity.attributes)
+            : getCardStyle(entityDomain, entity.attributes);
         const entitiesHtml = this.showEntities
             ? renderEntities({
                 _hide,
@@ -6623,6 +6885,15 @@ class SimpleThermostat extends i$1 {
                 openEntityPopover: this.openEntityPopover,
             })
             : '';
+        const headerHtml = embedded
+            ? b `<div class="embedded-header-reserve" aria-hidden="true"></div>`
+            : renderHeader({
+                header: this.header,
+                hass: this._hass,
+                toggleEntityChanged: this.toggleEntityChanged,
+                entity: this.entity,
+                openEntityPopover: this.openEntityPopover,
+            });
         return b `
       <ha-card class="${classes.join(' ')}" style=${cardStyle}>
         ${config.styles
@@ -6631,13 +6902,7 @@ class SimpleThermostat extends i$1 {
             </style>`
             : A}
         ${warnings}
-        ${renderHeader({
-            header: this.header,
-            hass: this._hass,
-            toggleEntityChanged: this.toggleEntityChanged,
-            entity: this.entity,
-            openEntityPopover: this.openEntityPopover,
-        })}
+        ${headerHtml}
         <section class="${bodyClasses.join(' ')}">
           ${entitiesHtml}
           ${this.renderSetpoints({
@@ -6674,8 +6939,11 @@ class SimpleThermostat extends i$1 {
     `;
     }
     renderSetpoints({ values, minValue, maxValue, unit, row, stepLayout, isOff, disableSteppers, }) {
-        if (this.config.hide_setpoint === true)
+        if (this.config.hide_setpoint === true ||
+            (this.config.hide_setpoint_when_off === true && isOff) ||
+            (this.config.hide?.setpoint_when_off === true && isOff)) {
             return A;
+        }
         return Object.entries(values).map(([field, value]) => this.renderSetpointControl({
             field,
             value,
@@ -6799,7 +7067,7 @@ class SimpleThermostat extends i$1 {
             ...this._values,
             [field]: +formatNumber(newValue, { decimals }),
         };
-        this._debouncedSetTemperature(this._values);
+        this._scheduleSetpointValues(this._values);
     }
     _dispatchSetpointTap() {
         if (this.config?.tap_action) {
@@ -6822,7 +7090,22 @@ class SimpleThermostat extends i$1 {
         });
     }
     getCardSize() {
-        return 3;
+        if (!this.config)
+            return 1;
+        const headerRows = this.config.embedded === true || this.header ? 1 : 0;
+        const entityRows = this.showEntities && this.entities?.length
+            ? Math.max(1, Math.ceil(this.entities.length / 2))
+            : 0;
+        const setpointRows = this.config.hide_setpoint === true ||
+            (this.config.hide_setpoint_when_off === true &&
+                this.entity?.state === HVAC_MODES.OFF) ||
+            (this.config.hide?.setpoint_when_off === true &&
+                this.entity?.state === HVAC_MODES.OFF)
+            ? 0
+            : 1;
+        const modeRows = this.modes?.length ?? 0;
+        const warningRows = this.stepSize < 1 && this.config.decimals === 0 ? 1 : 0;
+        return Math.max(1, headerRows + entityRows + setpointRows + modeRows + warningRows);
     }
     getUnit() {
         if (['boolean', 'string'].includes(typeof this.config.unit)) {
