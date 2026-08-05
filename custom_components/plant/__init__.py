@@ -39,7 +39,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util import dt as dt_util
 
-from . import group as group  # noqa: F401 - needed for HA group discovery
+from . import group as group
 from .config_flow import update_plant_options
 from .const import (
     ATTR_BRIGHTNESS,
@@ -101,6 +101,11 @@ from .plant_helpers import PlantHelper
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = [Platform.NUMBER, Platform.SENSOR]
 
+# Key under hass.data[DOMAIN] holding the single shared EntityComponent that
+# owns the plant.<name> entities. The leading underscore keeps it out of the
+# per-entry bookkeeping in async_unload_entry (which skips "_"-prefixed keys).
+DATA_COMPONENT = "_component"
+
 # Schema for native HA plant YAML configuration import
 # Matches format from https://www.home-assistant.io/integrations/plant/
 PLANT_SENSOR_SCHEMA = vol.Schema(
@@ -158,6 +163,7 @@ def _async_find_matching_config_entry(hass: HomeAssistant) -> ConfigEntry | None
     for entry in hass.config_entries.async_entries(DOMAIN):
         if entry.source == SOURCE_IMPORT:
             return entry
+    return None
 
 
 async def async_migrate_plant(hass: HomeAssistant, plant_id: str, config: dict) -> None:
@@ -174,12 +180,39 @@ async def async_migrate_plant(hass: HomeAssistant, plant_id: str, config: dict) 
     )
 
 
+def _get_plant_component(hass: HomeAssistant) -> EntityComponent:
+    """Return the single shared EntityComponent for the plant domain.
+
+    The plant.<name> entities live on the ``plant`` domain, which this
+    integration owns because it shadows Home Assistant's built-in plant
+    component. Those entities must be added through one domain-level
+    EntityComponent so each gets a valid ``platform`` reference: HA Core
+    2026.7 warns for platform-less entities and removes the compatibility
+    guard in 2026.8. Previously a throwaway EntityComponent was created per
+    config entry, which left the entity without a stable platform on the
+    reload/teardown paths.
+
+    Created once and reused across all config entries. Recreated lazily if
+    the domain data was torn down after the last plant was removed.
+    """
+    domain_data = hass.data.setdefault(DOMAIN, {})
+    component = domain_data.get(DATA_COMPONENT)
+    if component is None:
+        component = EntityComponent(_LOGGER, DOMAIN, hass)
+        domain_data[DATA_COMPONENT] = component
+    return component
+
+
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Set up the plant integration from YAML configuration.
 
     This function handles importing plants from the native Home Assistant
     plant integration's YAML configuration format.
     """
+    # Create the shared domain-level EntityComponent up front, mirroring how
+    # HA's built-in plant component registers its domain in async_setup.
+    _get_plant_component(hass)
+
     if config.get(DOMAIN):
         # Only import if we haven't already imported
         config_entry = _async_find_matching_config_entry(hass)
@@ -219,10 +252,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         plant,
     ]
 
-    # Add all the entities to Hass
-    component = EntityComponent(_LOGGER, DOMAIN, hass)
+    # Add the entities to Hass via the single shared domain-level component
+    # (see _get_plant_component), so each entity has a valid platform.
+    component = _get_plant_component(hass)
+    # On a reload the previous plant.<name> entity leaves a stale, non-restored
+    # state behind that keeps the entity_id "in use"; core would then abort the
+    # re-add with a duplicate unique_id. Clear any such orphan (no live entity
+    # backing it) right before adding so the id can be reclaimed.
+    erreg = er.async_get(hass)
+    existing_entity_id = erreg.async_get_entity_id(DOMAIN, DOMAIN, entry.entry_id)
+    if existing_entity_id and not hass.states.async_available(existing_entity_id):
+        existing_state = hass.states.get(existing_entity_id)
+        if existing_state is not None and not existing_state.attributes.get("restored"):
+            hass.states.async_remove(existing_entity_id)
     await component.async_add_entities(plant_entities)
-    hass.data[DOMAIN][entry.entry_id]["component"] = component
 
     # Add the entities to device registry and tie to config entry
     device_id = plant.device_id
@@ -258,24 +301,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             _LOGGER.warning(
                 "Refuse to update non-%s entities: %s", DOMAIN, meter_entity
             )
-            return False
+            return
         if (
             new_sensor
             and new_sensor != ""
             and not new_sensor.startswith(f"{SENSOR_DOMAIN}.")
         ):
             _LOGGER.warning("%s is not a sensor", new_sensor)
-            return False
+            return
 
         if new_sensor and new_sensor != "":
             try:
                 test = hass.states.get(new_sensor)
             except AttributeError:
-                _LOGGER.error("New sensor entity %s not found", new_sensor)
-                return False
+                _LOGGER.exception("New sensor entity %s not found", new_sensor)
+                return
             if test is None:
                 _LOGGER.error("New sensor entity %s not found", new_sensor)
-                return False
+                return
         else:
             new_sensor = None
 
@@ -378,10 +421,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if ATTR_PLANT in plant_data:
         plant_data[ATTR_PLANT].plant_complete = False
 
-    # Remove the plant entity from the EntityComponent so reloads don't
+    # Remove the plant entity from the shared EntityComponent so reloads don't
     # hit a duplicate unique_id error
     plant = plant_data.get(ATTR_PLANT)
-    component = plant_data.get("component")
+    component = hass.data.get(DOMAIN, {}).get(DATA_COMPONENT)
     if component and plant and plant.entity_id:
         await component.async_remove_entity(plant.entity_id)
 
@@ -397,21 +440,31 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             # Skip internal settings keys
             if entry_id.startswith("_") or entry_id.endswith("_store"):
                 continue
-            if isinstance(hass.data[DOMAIN][entry_id], dict):
-                if len(hass.data[DOMAIN][entry_id]) == 0:
-                    _LOGGER.debug("Removing empty entry %s", entry_id)
-                    del hass.data[DOMAIN][entry_id]
+            if (
+                isinstance(hass.data[DOMAIN][entry_id], dict)
+                and len(hass.data[DOMAIN][entry_id]) == 0
+            ):
+                _LOGGER.debug("Removing empty entry %s", entry_id)
+                del hass.data[DOMAIN][entry_id]
 
         # Check if only settings keys remain (no actual plant entries)
         remaining_plant_entries = [
             k
-            for k in hass.data[DOMAIN].keys()
+            for k in hass.data[DOMAIN]
             if not k.startswith("_") and not k.endswith("_store")
         ]
         if len(remaining_plant_entries) == 0:
             _LOGGER.debug("Removing domain %s (no more plants)", DOMAIN)
             hass.services.async_remove(DOMAIN, SERVICE_REPLACE_SENSOR)
-            del hass.data[DOMAIN]
+            # Preserve the shared EntityComponent: it is domain-level
+            # infrastructure created in async_setup (which does not re-run on a
+            # reload or a later re-add). Tearing it down here would orphan its
+            # EntityPlatform and make the next add hit a duplicate unique_id.
+            component = hass.data[DOMAIN].get(DATA_COMPONENT)
+            if component is not None:
+                hass.data[DOMAIN] = {DATA_COMPONENT: component}
+            else:
+                del hass.data[DOMAIN]
     return unload_ok
 
 
@@ -720,15 +773,16 @@ class PlantDevice(RestoreEntity):
             return False
         try:
             has_state = self.hass.states.get(sensor.entity_id) is not None
+        except (AttributeError, TypeError) as e:
+            _LOGGER.debug("Error checking sensor availability for %s: %s", sensor, e)
+            return False
+        else:
             if not has_state:
                 _LOGGER.debug(
                     "Sensor %s has no hass state (disabled or not loaded), skipping",
                     sensor.entity_id,
                 )
             return has_state
-        except (AttributeError, TypeError) as e:
-            _LOGGER.debug("Error checking sensor availability for %s: %s", sensor, e)
-            return False
 
     def _sensor_info(self, attr_name, sensor, max_entity, min_entity) -> dict | None:
         """Build websocket info dict for a single sensor, or None if unavailable."""
@@ -736,8 +790,12 @@ class PlantDevice(RestoreEntity):
             _LOGGER.debug("Skipping %s: sensor %s not available", attr_name, sensor)
             return None
         try:
-            max_val = self._safe_float(max_entity.state, max_entity.entity_id)
-            min_val = self._safe_float(min_entity.state, min_entity.entity_id)
+            max_val = self._safe_float(
+                self._entity_state(max_entity), max_entity.entity_id
+            )
+            min_val = self._safe_float(
+                self._entity_state(min_entity), min_entity.entity_id
+            )
             return {
                 ATTR_MAX: max_val if max_val is not None else max_entity._default_value,
                 ATTR_MIN: min_val if min_val is not None else min_entity._default_value,
@@ -805,8 +863,8 @@ class PlantDevice(RestoreEntity):
         # DLI uses its own entity (not a meter sensor)
         if self._sensor_available(self.dli):
             response[ATTR_DLI] = {
-                ATTR_MAX: self.max_dli.state,
-                ATTR_MIN: self.min_dli.state,
+                ATTR_MAX: self._entity_state(self.max_dli),
+                ATTR_MIN: self._entity_state(self.min_dli),
                 ATTR_CURRENT: STATE_UNAVAILABLE,
                 ATTR_ICON: self._get_entity_icon(self.dli),
                 ATTR_UNIT_OF_MEASUREMENT: self.dli.unit_of_measurement,
@@ -818,9 +876,10 @@ class PlantDevice(RestoreEntity):
 
         # Add rolling 24h DLI if available
         if self.dli_24h is not None and self._sensor_available(self.dli_24h):
+            # Same thresholds as regular DLI
             response[ATTR_DLI_24H] = {
-                ATTR_MAX: self.max_dli.state,  # Same thresholds as regular DLI
-                ATTR_MIN: self.min_dli.state,
+                ATTR_MAX: self._entity_state(self.max_dli),
+                ATTR_MIN: self._entity_state(self.min_dli),
                 ATTR_CURRENT: STATE_UNAVAILABLE,
                 ATTR_ICON: self._get_entity_icon(self.dli_24h),
                 ATTR_UNIT_OF_MEASUREMENT: self.dli_24h.unit_of_measurement,
@@ -1067,6 +1126,27 @@ class PlantDevice(RestoreEntity):
             _LOGGER.debug("Sensor %s has non-numeric value: %s", entity_id, value)
             return None
 
+    def _entity_state(self, entity) -> str | None:
+        """Safely read an entity's current state string.
+
+        Prefers the state machine (hass.states) over the entity's own
+        `.state` property: that property requires the entity to be fully
+        added to hass (self.hass set, entity_id assigned) and can raise
+        AttributeError while the entity is still being set up or is being
+        torn down (see issue #485). Falls back to the property directly,
+        guarded against that AttributeError, for entities not (yet) tracked
+        by the state machine.
+        """
+        entity_id = getattr(entity, "entity_id", None)
+        if entity_id is not None:
+            state = self.hass.states.get(entity_id)
+            if state is not None:
+                return state.state
+        try:
+            return entity.state
+        except AttributeError:
+            return None
+
     def _check_threshold(self, value, min_entity, max_entity, current_status):
         """Check a value against min/max thresholds with hysteresis.
 
@@ -1074,28 +1154,46 @@ class PlantDevice(RestoreEntity):
         When already in a problem state, require the value to cross back
         by a margin (hysteresis band) before clearing.
         """
+        min_state = self._entity_state(min_entity)
+        max_state = self._entity_state(max_entity)
         try:
-            min_val = float(min_entity.state)
-            max_val = float(max_entity.state)
+            min_val = float(min_state)
+            max_val = float(max_state)
         except (ValueError, TypeError):
             _LOGGER.warning(
                 "Threshold entity has non-numeric state "
                 "(min=%s [%s], max=%s [%s]) — skipping check",
-                min_entity.entity_id,
-                min_entity.state,
-                max_entity.entity_id,
-                max_entity.state,
+                getattr(min_entity, "entity_id", None),
+                min_state,
+                getattr(max_entity, "entity_id", None),
+                max_state,
             )
             return current_status
-        band = (max_val - min_val) * HYSTERESIS_FRACTION
+        # Band is relative to the threshold being crossed, not the full
+        # (max - min) span. A span-based band over-inflates the LOW margin for
+        # wide-range sensors with a small minimum (e.g. conductivity 500-3000:
+        # span band = 125, so a LOW would only clear above 625 -- far above the
+        # 500 minimum, trapping clearly-recovered readings as a problem; see
+        # issue #465). A threshold-relative band keeps a consistent ~5% margin
+        # around each edge regardless of where the other bound sits.
+        # Use the magnitude of the threshold so a negative threshold (e.g. a
+        # sub-zero temperature minimum) still yields a positive band rather than
+        # removing/reversing the hysteresis.
+        # Cap each band at a span-based value so a wide threshold-relative band
+        # can't exceed a narrow OK range (e.g. min=98, max=100): otherwise a
+        # clear point would fall outside [min, max] and the state could never
+        # return to OK (it would stick or flip straight to the opposite state).
+        span_band = (max_val - min_val) * HYSTERESIS_FRACTION
+        band_low = min(abs(min_val) * HYSTERESIS_FRACTION, span_band)
+        band_high = min(abs(max_val) * HYSTERESIS_FRACTION, span_band)
 
         if value < min_val:
             new_status = STATE_LOW
         elif value > max_val:
             new_status = STATE_HIGH
-        elif current_status == STATE_LOW and value <= min_val + band:
+        elif current_status == STATE_LOW and value <= min_val + band_low:
             new_status = STATE_LOW
-        elif current_status == STATE_HIGH and value >= max_val - band:
+        elif current_status == STATE_HIGH and value >= max_val - band_high:
             new_status = STATE_HIGH
         else:
             new_status = STATE_OK
@@ -1127,7 +1225,7 @@ class PlantDevice(RestoreEntity):
             A threshold entity can momentarily be unavailable/unknown; avoid
             writing a raw 'unavailable' into the problem entry or logbook.
             """
-            raw = threshold_entity.state
+            raw = self._entity_state(threshold_entity)
             try:
                 float(raw)
             except (ValueError, TypeError):

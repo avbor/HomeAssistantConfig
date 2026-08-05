@@ -141,6 +141,11 @@ DEFAULT_MIN_MOL = 2
 DEFAULT_MAX_MOL = 30
 DEFAULT_MIN_DLI = 2
 DEFAULT_MAX_DLI = 30
+# Physical ceiling for DLI (mol/d⋅m²): ~65 is the maximum daily light integral
+# attainable at Earth's surface. A converted OpenPlantbook value above this is
+# biologically impossible and signals suspect source data, so it is clamped.
+# No lower guard: legitimate deep-shade minimums round toward 0.
+DLI_SANITY_MAX = 65.0
 DEFAULT_MIN_VPD = 0.4
 DEFAULT_MAX_VPD = 1.6
 
@@ -162,7 +167,7 @@ UNIT_DLI = "mol/d⋅m²"
 UNIT_VPD = "kPa"
 UNIT_MICRO_DLI = "µmol/d⋅m²"
 # Note: For conductivity, use UnitOfConductivity.MICROSIEMENS_PER_CM from homeassistant.const
-# Note: For CO2, use CONCENTRATION_PARTS_PER_MILLION from homeassistant.const
+# Note: For CO2, use UnitOfRatio.PARTS_PER_MILLION from homeassistant.const
 
 FLOW_WRONG_PLANT = "wrong_plant"
 FLOW_RIGHT_PLANT = "right_plant"
@@ -174,6 +179,7 @@ FLOW_PLANT_SPECIES = "plant_species"
 FLOW_PLANT_NAME = "plant_name"
 FLOW_PLANT_IMAGE = "image_url"
 FLOW_PLANT_LIMITS = "limits"
+FLOW_LIMITS_TEMPERATURE_UNIT = "limits_temperature_unit"
 
 FLOW_SENSOR_TEMPERATURE = "temperature_sensor"
 FLOW_SENSOR_MOISTURE = "moisture_sensor"
@@ -215,9 +221,11 @@ OPB_DISPLAY_PID = "display_pid"
 OPB_ATTR_INCLUDE = "include"
 OPB_INCLUDE_CARE = "care"
 
-# Hysteresis: fraction of (max - min) range that the value must clear
-# before a problem state is removed. Prevents flapping when a sensor
-# value oscillates near a threshold.
+# Hysteresis: fraction of the crossed threshold (min or max) that the value
+# must clear by before a problem state is removed. Prevents flapping when a
+# sensor value oscillates near a threshold. Relative to the threshold itself
+# (not the max-min span) so wide-range sensors with a small minimum don't get
+# an over-inflated low-side margin (see issue #465).
 HYSTERESIS_FRACTION = 0.05
 
 # Grace period after watering: delay before reporting moisture "high" problem

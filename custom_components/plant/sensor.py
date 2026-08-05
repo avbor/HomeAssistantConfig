@@ -24,7 +24,6 @@ from homeassistant.const import (
     ATTR_ICON,
     ATTR_NAME,
     ATTR_UNIT_OF_MEASUREMENT,
-    CONCENTRATION_PARTS_PER_MILLION,
     LIGHT_LUX,
     PERCENTAGE,
     STATE_UNAVAILABLE,
@@ -33,6 +32,17 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
 )
+
+try:
+    # HA 2026.7+ deprecated CONCENTRATION_PARTS_PER_MILLION in favour of the
+    # UnitOfRatio enumerator (removed in HA Core 2027.8). Fall back to the old
+    # constant on HA < 2026.7, where UnitOfRatio does not exist yet.
+    from homeassistant.const import UnitOfRatio
+
+    _UNIT_PPM: str = UnitOfRatio.PARTS_PER_MILLION
+except ImportError:  # HA < 2026.7
+    from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION as _UNIT_PPM
+
 from homeassistant.core import Event, HomeAssistant, State, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -263,12 +273,10 @@ class PlantCurrentStatus(RestoreSensor):
     @property
     def extra_state_attributes(self) -> dict:
         if self._external_sensor:
-            attributes = {
+            return {
                 "external_sensor": self.external_sensor,
-                # "history_max": self._history.max,
-                # "history_min": self._history.min,
             }
-            return attributes
+        return {}
 
     @property
     def external_sensor(self) -> str:
@@ -723,7 +731,7 @@ class PlantCurrentCo2(PlantCurrentStatus):
 
     _attr_device_class = SensorDeviceClass.CO2
     _attr_icon = ICON_CO2
-    _attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
+    _attr_native_unit_of_measurement = _UNIT_PPM
     _attr_suggested_display_precision = 0
     _attr_translation_key = TRANSLATION_KEY_CO2
     _config_key = FLOW_SENSOR_CO2
@@ -881,18 +889,20 @@ class PlantCurrentVpd(RestoreSensor):
         """Restore state and subscribe to temperature and humidity changes."""
         await super().async_added_to_hass()
 
-        if state := await self.async_get_last_state():
-            if state.state not in (STATE_UNKNOWN, STATE_UNAVAILABLE):
-                try:
-                    self._attr_native_value = float(state.state)
-                except (ValueError, TypeError):
-                    _LOGGER.debug(
-                        "Ignoring non-numeric restored value for %s: %s",
-                        self.entity_id,
-                        state.state,
-                    )
-                else:
-                    self._restored_value_active = True
+        if (state := await self.async_get_last_state()) and state.state not in (
+            STATE_UNKNOWN,
+            STATE_UNAVAILABLE,
+        ):
+            try:
+                self._attr_native_value = float(state.state)
+            except (ValueError, TypeError):
+                _LOGGER.debug(
+                    "Ignoring non-numeric restored value for %s: %s",
+                    self.entity_id,
+                    state.state,
+                )
+            else:
+                self._restored_value_active = True
 
         # Track temperature sensor state changes
         if self._plant.sensor_temperature is not None:
@@ -997,7 +1007,7 @@ class PlantCurrentPpfd(PlantCurrentStatus):
         # Check if unit contains 'mol' (covers µmol/s⋅m², mol/s⋅m², etc.)
         return "mol" in unit.lower()
 
-    def ppfd(self, value: float | int | str) -> float | str:
+    def ppfd(self, value: float | int | str | None) -> float | None:
         """
         Returns PPFD value - either passed through or converted from lux.
 
@@ -1008,7 +1018,7 @@ class PlantCurrentPpfd(PlantCurrentStatus):
         The conversion factor is configurable per plant to account for different
         light sources (sunlight ~0.0185, LED grow lights ~0.014-0.020, HPS ~0.013).
         """
-        if value is None or value == STATE_UNAVAILABLE or value == STATE_UNKNOWN:
+        if value is None or value in (STATE_UNAVAILABLE, STATE_UNKNOWN):
             return None
 
         try:
