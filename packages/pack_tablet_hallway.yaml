@@ -50,7 +50,7 @@ tablet_hallway_pack:
                   volume_level: 0
               - action: fully_kiosk.load_url
                 target:
-                  device_id: 41638a8b36f2ac6228aed99d142fd286
+                  device_id: 4d9a688b96bdd10b5e9537deb78d4bd1
                 data:
                   url: about:blank
 
