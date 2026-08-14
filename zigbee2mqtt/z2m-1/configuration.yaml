@@ -44,6 +44,8 @@ availability:
 devices:
   '0x00158d000413b210':
     friendly_name: Датчик газа на Кухне
+    off_delay: 30
+    optimistic: false
   '0x00158d00054eacc7':
     friendly_name: Реле Aqara Водопроводные краны
   '0xa4c138792ba1d268':
