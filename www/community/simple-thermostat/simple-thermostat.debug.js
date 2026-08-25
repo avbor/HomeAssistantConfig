@@ -1,5 +1,5 @@
 (function() {
-    const env = {"DEBUG":true,"BUILD_TIME":"2026-08-05, 05:24 p.m."};
+    const env = {"DEBUG":true,"BUILD_TIME":"2026-08-23, 12:22 p.m."};
     try {
         if (process) {
             process.env = Object.assign({}, process.env);
@@ -11,7 +11,7 @@
 })();
 
 var name = "simple-thermostat";
-var version = "4.2.0";
+var version = "4.3.0";
 
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -138,14 +138,14 @@ ha-card {
 
   padding-bottom: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
 
-  --auto-color: green;
-  --heat_cool-color: springgreen;
-  --cool-color: #2b9af9;
-  --heat-color: #ff8100;
+  --auto-color: var(--state-climate-auto-color, green);
+  --heat_cool-color: var(--state-climate-heat-cool-color, #efbd07);
+  --cool-color: var(--state-climate-cool-color, #2b9af9);
+  --heat-color: var(--state-climate-heat-color, #ff8100);
   --manual-color: #44739e;
   --on-color: var(--primary-color);
-  --off-color: #8a8a8a;
-  --dry-color: #efbd07;
+  --off-color: var(--state-inactive-color, #8a8a8a);
+  --dry-color: var(--state-climate-dry-color, #efbd07);
   --st-mode-surface-background: color-mix(
     in srgb,
     var(--primary-text-color) 14%,
@@ -434,6 +434,66 @@ ha-card.loading {
   justify-self: start;
   text-align: left;
 }
+.entity-action {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  min-height: 28px;
+  border: 0;
+  border-radius: var(--st-mode-border-radius, var(--st-default-mode-radius));
+  padding: var(--st-spacing, var(--st-default-spacing))
+    calc(var(--st-spacing, var(--st-default-spacing)) * 2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--st-spacing, var(--st-default-spacing)) * 1.5);
+  color: var(--secondary-text-color);
+  background: var(--st-mode-background, var(--st-mode-surface-background));
+  font: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  transition:
+    background-color
+      var(--st-mode-transition, var(--st-default-mode-transition)), color var(--st-mode-transition, var(--st-default-mode-transition)), box-shadow var(--st-mode-transition, var(--st-default-mode-transition)), filter var(--st-mode-transition, var(--st-default-mode-transition));
+}
+.entity-action ha-icon {
+  --mdc-icon-size: var(--st-entity-action-icon-size, 20px);
+  width: 20px;
+  width: var(--st-entity-action-icon-size, 20px);
+  height: 20px;
+  height: var(--st-entity-action-icon-size, 20px);
+  flex: 0 0 auto;
+}
+.entity-action__label,
+.entity-action__state {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.entity-action__state {
+  color: var(--secondary-text-color);
+  font-size: 0.9em;
+}
+.entity-action.display-chip {
+  width: auto;
+  justify-self: start;
+  border-radius: 999px;
+  padding-left: calc(var(--st-spacing, var(--st-default-spacing)) * 2.5);
+  padding-right: calc(var(--st-spacing, var(--st-default-spacing)) * 2.5);
+}
+.entity-action.active,
+.entity-action.state-on {
+  color: var(--st-mode-active-color, var(--text-primary-color));
+  background: var(
+    --st-mode-active-background,
+    var(--st-toggle-color, var(--primary-color))
+  );
+}
+.entity-action:hover {
+  filter: brightness(1.08);
+}
 
 .entities:empty {
   display: none;
@@ -557,6 +617,7 @@ ha-card.embedded .body {
   );
   will-change: opacity, transform;
 }
+
 @supports (color: color-mix(in lch, red, blue)) {
 .header__icon-wrap::before {
   background: radial-gradient(
@@ -903,6 +964,9 @@ ha-card.cooling .header__icon-wrap::before {
 .modes.preset {
   flex-wrap: nowrap;
 }
+.modes.footer {
+  flex-wrap: nowrap;
+}
 .mode-title {
   padding: 0 16px;
   align-self: center;
@@ -947,6 +1011,11 @@ ha-card.cooling .header__icon-wrap::before {
     var(--st-mode-color, var(--primary-color)) 68%,
     var(--primary-text-color) 32%
   );
+  --st-mode-computed-active-background: var(
+    --st-mode-color,
+    var(--primary-color)
+  );
+  --st-mode-computed-active-accent-color: var(--st-mode-accent-color);
   --st-mode-active-icon-color: color-mix(
     in srgb,
     var(--st-mode-color, var(--primary-color)) 42%,
@@ -957,7 +1026,6 @@ ha-card.cooling .header__icon-wrap::before {
     currentColor 50%,
     var(--st-mode-color, var(--primary-color)) 50%
   );
-  --st-mode-active-accent-color: var(--st-mode-accent-color);
   --st-mode-neutral-hover-background: color-mix(
     in srgb,
     var(--st-mode-background, var(--secondary-background-color)) 88%,
@@ -1015,13 +1083,16 @@ ha-card.cooling .header__icon-wrap::before {
 .mode-item.active,.mode-item.active:hover {
     background: var(
       --st-mode-active-background,
-      var(--st-mode-color, var(--primary-color))
+      var(--st-mode-computed-active-background)
     );
     color: var(--st-mode-active-color, var(--text-primary-color));
     box-shadow: inset 0 -2px 0
       var(
         --st-mode-active-accent-color,
-        color-mix(in srgb, var(--text-primary-color) 72%, transparent)
+        var(
+          --st-mode-computed-active-accent-color,
+          color-mix(in srgb, var(--text-primary-color) 72%, transparent)
+        )
       );
     filter: none;
     transform: none;
@@ -1045,7 +1116,10 @@ ha-card.cooling .header__icon-wrap::before {
 .mode-item.active::after {
   background: var(
     --st-mode-active-accent-color,
-    color-mix(in srgb, var(--text-primary-color) 72%, transparent)
+    var(
+      --st-mode-computed-active-accent-color,
+      color-mix(in srgb, var(--text-primary-color) 72%, transparent)
+    )
   );
   opacity: 0.64;
   opacity: var(--st-mode-active-accent-opacity, 0.64);
@@ -1062,6 +1136,10 @@ ha-card:not(.standard-visuals) .mode-item.active .mode-icon {
 .mode-label {
   display: block;
   line-height: 1;
+}
+
+.mode-label-line {
+  display: block;
 }
 
 ha-card:not(.standard-visuals) .header__toggle.on .toggle-label.clickable,
@@ -1212,7 +1290,7 @@ ha-card:not(.standard-visuals)
   ha-card.standard-visuals .mode-item.active:hover {
     background: var(
       --st-mode-active-background,
-      var(--st-mode-color, var(--primary-color))
+      var(--st-mode-computed-active-background)
     );
     color: var(--st-mode-active-color, var(--text-primary-color));
   }
@@ -1283,9 +1361,40 @@ ha-card.drying {
   padding-bottom: var(--st-spacing, var(--st-default-spacing));
 }
 
-.modes.hvac.sparse .mode-label,
-.modes.state.sparse .mode-label {
+.modes.hvac.sparse .mode-item:not(.label-stacked):not(.label-column) .mode-label,
+.modes.state.sparse .mode-item:not(.label-stacked):not(.label-column) .mode-label {
   white-space: nowrap;
+}
+
+.modes.hvac.sparse .mode-item.label-stacked,
+.modes.state.sparse .mode-item.label-stacked {
+  align-items: center;
+}
+
+.modes.hvac.sparse .mode-item.label-stacked .mode-label,
+.modes.state.sparse .mode-item.label-stacked .mode-label {
+  white-space: normal;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.modes.hvac.sparse .mode-item.label-stacked .mode-label-line + .mode-label-line,
+.modes.state.sparse .mode-item.label-stacked .mode-label-line + .mode-label-line {
+  margin-top: 1px;
+}
+
+.modes.hvac.sparse .mode-item.label-column,
+.modes.state.sparse .mode-item.label-column {
+  flex-direction: column;
+  gap: 4px;
+  min-height: calc(var(--st-control-icon-size) + 24px);
+}
+
+.modes.hvac.sparse .mode-item.label-column .mode-label,
+.modes.state.sparse .mode-item.label-column .mode-label {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.1;
 }
 
 @media (max-width: 560px) {
@@ -1303,6 +1412,12 @@ ha-card.drying {
     gap: 2px;
     gap: var(--st-sparse-control-gap, 2px);
     min-width: 0;
+  }
+
+  ha-card:not(.standard-visuals) .modes.hvac.sparse .mode-item.label-column,
+  ha-card:not(.standard-visuals) .modes.state.sparse .mode-item.label-column {
+    flex-direction: column;
+    gap: 4px;
   }
 }
 .modes.dense {
@@ -1406,7 +1521,8 @@ ha-card.drying {
 .modes.swing_horizontal .mode-item,
 .modes.swing_vertical .mode-item,
 .modes.vane_horizontal .mode-item,
-.modes.vane_vertical .mode-item {
+.modes.vane_vertical .mode-item,
+.modes.footer .mode-item {
   --st-mode-min-width: 58px;
   flex-direction: row;
   align-items: center;
@@ -1590,7 +1706,8 @@ ha-card.standard-visuals .modes.swing,
 ha-card.standard-visuals .modes.swing_horizontal,
 ha-card.standard-visuals .modes.swing_vertical,
 ha-card.standard-visuals .modes.vane_horizontal,
-ha-card.standard-visuals .modes.vane_vertical {
+ha-card.standard-visuals .modes.vane_vertical,
+ha-card.standard-visuals .modes.footer {
   display: grid;
   grid-template-columns: none;
   grid-auto-columns: minmax(0, 1fr);
@@ -1611,7 +1728,8 @@ ha-card.standard-visuals .modes.swing .mode-item,
 ha-card.standard-visuals .modes.swing_horizontal .mode-item,
 ha-card.standard-visuals .modes.swing_vertical .mode-item,
 ha-card.standard-visuals .modes.vane_horizontal .mode-item,
-ha-card.standard-visuals .modes.vane_vertical .mode-item {
+ha-card.standard-visuals .modes.vane_vertical .mode-item,
+ha-card.standard-visuals .modes.footer .mode-item {
   display: flex;
   flex: initial;
   flex-direction: column;
@@ -1667,72 +1785,65 @@ ha-card.standard-visuals .mode-item.active {
 
 ha-card .mode-item.active.off,
 ha-card .mode-item.active.off:hover {
-  background: var(--off-color);
-  --st-mode-active-background: var(--off-color);
+  --st-mode-computed-active-background: var(--off-color);
 }
 
 ha-card .mode-item.active.heat,
 ha-card .mode-item.active.heat:hover {
-  background: var(--heat-color);
-  --st-mode-active-background: var(--heat-color);
+  --st-mode-computed-active-background: var(--heat-color);
 }
 
 ha-card .mode-item.active.cool,
 ha-card .mode-item.active.cool:hover {
-  background: var(--cool-color);
-  --st-mode-active-background: var(--cool-color);
+  --st-mode-computed-active-background: var(--cool-color);
 }
 
 ha-card .mode-item.active.heat_cool,
 ha-card .mode-item.active.heat_cool:hover {
-  background: var(--heat_cool-color);
-  --st-mode-active-background: var(--heat_cool-color);
+  --st-mode-computed-active-background: var(--heat_cool-color);
 }
 
 ha-card .mode-item.active.auto,
 ha-card .mode-item.active.auto:hover {
-  background: var(--auto-color);
-  --st-mode-active-background: var(--auto-color);
+  --st-mode-computed-active-background: var(--auto-color);
 }
 
 ha-card .mode-item.active.dry,
 ha-card .mode-item.active.dry:hover {
-  background: var(--dry-color);
-  --st-mode-active-background: var(--dry-color);
+  --st-mode-computed-active-background: var(--dry-color);
 }
 
 ha-card .mode-item.active.fan_only,
 ha-card .mode-item.active.fan_only:hover {
-  background: var(--fan_only-color);
-  --st-mode-active-background: var(--fan_only-color);
+  --st-mode-computed-active-background: var(--fan_only-color);
 }
 
 ha-card.standard-visuals .mode-item.active.off {
-  background: var(--off-color);
+  --st-mode-computed-active-background: var(--off-color);
 }
 
 ha-card.standard-visuals .mode-item.active.heat {
-  background: var(--heat-color);
+  --st-mode-computed-active-background: var(--heat-color);
 }
 
 ha-card.standard-visuals .mode-item.active.cool {
-  background: var(--cool-color);
+  --st-mode-computed-active-background: var(--cool-color);
 }
 
 ha-card.standard-visuals .mode-item.active.heat_cool {
-  background: var(--heat_cool-color);
+  --st-mode-computed-active-background: var(--heat_cool-color);
 }
 
 ha-card.standard-visuals .mode-item.active.auto {
-  background: var(--auto-color);
+  --st-mode-computed-active-background: var(--auto-color);
 }
 
 ha-card.standard-visuals .mode-item.active.dry {
-  background: var(--dry-color);
+  --st-mode-computed-active-background: var(--dry-color);
 }
 
 ha-card.standard-visuals .mode-item.active.fan_only {
-  background: var(--fan_only-color);
+  --st-mode-computed-active-background: var(--fan_only-color);
 }
 
 ha-card.standard-visuals .mode-item:active,
@@ -1904,6 +2015,10 @@ function normalizeConfig(config) {
         layout: config.layout ? { ...config.layout } : undefined,
     };
     const legacyVersion = normalized.version === 3;
+    if (legacyVersion &&
+        typeof normalized.enhanced_visuals === 'undefined') {
+        normalized.enhanced_visuals = false;
+    }
     if (legacyVersion && !normalized.layout?.step) {
         normalized.layout = {
             ...(normalized.layout ?? {}),
@@ -2202,9 +2317,13 @@ const LABELS = {
     'label.state': 'State label',
     'label.setpoint': 'Target label',
     'layout.entities.type': 'Entity row layout',
+    'layout.entities.display': 'Entity display',
     'layout.entities.labels': 'Show entity row labels',
     'layout.entities.separator': 'Show entity label separator',
     'layout.entities.alignment': 'Entity label alignment',
+    'footer.entity': 'Footer toggle entity',
+    'footer.name': 'Footer toggle label',
+    'footer.icon': 'Footer toggle icon',
     enhanced_visuals: 'Enhanced visuals',
     'tap_action.action': 'Tap action',
     'hold_action.action': 'Hold action',
@@ -2236,6 +2355,18 @@ const ENTITY_LAYOUT_OPTIONS = [
     { value: 'table', label: 'Table' },
     { value: 'list', label: 'List' },
 ];
+const ENTITY_DISPLAY_OPTIONS = [
+    { value: 'row', label: 'Rows' },
+    { value: 'auto', label: 'Auto' },
+    { value: 'button', label: 'Buttons' },
+    { value: 'toggle', label: 'Toggles' },
+    { value: 'chip', label: 'Chips' },
+];
+const ENTITY_DISPLAY_SELECT_OPTIONS = [
+    { value: '', label: 'Default' },
+    ...ENTITY_DISPLAY_OPTIONS,
+];
+const ENTITY_DISPLAY_VALUES = ENTITY_DISPLAY_OPTIONS.map((option) => option.value);
 const ENTITY_ALIGNMENT_OPTIONS = [
     { value: 'right', label: 'Right' },
     { value: 'left', label: 'Left' },
@@ -2251,6 +2382,7 @@ const DIRECT_FORM_PATHS = [
     'layout.mode.icons',
     'layout.mode.headings',
     'layout.entities.type',
+    'layout.entities.display',
     'layout.entities.labels',
     'layout.entities.separator',
     'layout.entities.alignment',
@@ -2309,6 +2441,16 @@ function deleteNested(obj, path) {
         target = target[part];
     }
     delete target[parts[0]];
+}
+function getSelectValue(ev) {
+    const target = ev.target;
+    const detail = ev.detail;
+    return (detail?.value ??
+        detail?.item?.value ??
+        target.selected?.value ??
+        target.selected?.getAttribute?.('value') ??
+        target.value ??
+        '');
 }
 function isModeEnabled(config, type, adapter) {
     const control = config.control;
@@ -2596,6 +2738,15 @@ function buildSchema(config, hass) {
                                 },
                             },
                         },
+                        {
+                            name: 'layout.entities.display',
+                            selector: {
+                                select: {
+                                    mode: 'dropdown',
+                                    options: ENTITY_DISPLAY_SELECT_OPTIONS,
+                                },
+                            },
+                        },
                         { name: 'layout.entities.labels', selector: { boolean: {} } },
                         { name: 'layout.entities.separator', selector: { boolean: {} } },
                         {
@@ -2764,6 +2915,7 @@ class SimpleThermostatEditor extends i$1 {
             'label.state': this.config.label?.state ?? '',
             'label.setpoint': this.config.label?.setpoint ?? '',
             'layout.entities.type': this.config.layout?.entities?.type ?? 'table',
+            'layout.entities.display': this.config.layout?.entities?.display ?? '',
             'layout.entities.labels': this.config.layout?.entities?.labels !== false,
             'layout.entities.separator': this.config.layout?.entities?.separator !== false,
             'layout.entities.alignment': this.config.layout?.entities?.alignment ?? 'right',
@@ -2874,6 +3026,9 @@ class SimpleThermostatEditor extends i$1 {
     _getExtraEntities() {
         return Array.isArray(this.config.entities) ? this.config.entities : [];
     }
+    _getFooterRows() {
+        return Array.isArray(this.config.footer) ? this.config.footer : [];
+    }
     _commitEntityRows(entities) {
         const copy = cloneDeep(this.config);
         if (entities.length > 0)
@@ -2894,6 +3049,16 @@ class SimpleThermostatEditor extends i$1 {
             if (entityIndex !== index)
                 return entity;
             const next = { ...entity };
+            if (field === 'display') {
+                if (typeof value === 'string' &&
+                    ENTITY_DISPLAY_VALUES.includes(value)) {
+                    next.display = value;
+                }
+                else {
+                    delete next.display;
+                }
+                return next;
+            }
             if (typeof value === 'string' && value)
                 next[field] = value;
             else
@@ -2901,6 +3066,34 @@ class SimpleThermostatEditor extends i$1 {
             return next;
         });
         this._commitEntityRows(entities);
+    }
+    _commitFooterRows(footer) {
+        const copy = cloneDeep(this.config);
+        if (footer.length > 0)
+            copy.footer = footer;
+        else
+            delete copy.footer;
+        this.config = copy;
+        fireEvent(this, 'config-changed', { config: copy });
+    }
+    _addFooterRow() {
+        this._commitFooterRows([...this._getFooterRows(), { entity: '' }]);
+    }
+    _removeFooterRow(index) {
+        this._commitFooterRows(this._getFooterRows().filter((_, footerIndex) => footerIndex !== index));
+    }
+    _updateFooterRow(index, field, value) {
+        const footer = this._getFooterRows().map((row, footerIndex) => {
+            if (footerIndex !== index)
+                return row;
+            const next = { ...row };
+            if (typeof value === 'string' && value)
+                next[field] = value;
+            else
+                delete next[field];
+            return next;
+        });
+        this._commitFooterRows(footer);
     }
     _renderExtraEntityRows() {
         const entities = this._getExtraEntities();
@@ -2936,7 +3129,64 @@ class SimpleThermostatEditor extends i$1 {
                     .value=${entity.icon ?? ''}
                     @value-changed=${(ev) => this._updateEntityRow(index, 'icon', ev.detail.value)}
                   ></ha-icon-picker>
+                  <ha-select
+                    label="Display"
+                    clearable
+                    .value=${entity.display ?? ''}
+                    @value-changed=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
+                    @selected=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
+                    @change=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
+                  >
+                    <mwc-list-item value="">Default</mwc-list-item>
+                    ${ENTITY_DISPLAY_OPTIONS.map((option) => b `
+                        <mwc-list-item value=${option.value}>
+                          ${option.label}
+                        </mwc-list-item>
+                      `)}
+                  </ha-select>
                   <ha-button @click=${() => this._removeEntityRow(index)}>
+                    Remove
+                  </ha-button>
+                </div>
+              `)}
+      </section>
+    `;
+    }
+    _renderFooterRows() {
+        const footer = this._getFooterRows();
+        return b `
+      <section class="editor-extra-entities">
+        <div class="editor-extra-entities__header">
+          <div>
+            <h3>Footer controls</h3>
+            <p>Add switch-style controls shown below the mode rows.</p>
+          </div>
+          <ha-button @click=${this._addFooterRow}>Add control</ha-button>
+        </div>
+
+        ${footer.length === 0
+            ? b `<p class="editor-extra-entities__empty">
+              No footer controls configured.
+            </p>`
+            : footer.map((row, index) => b `
+                <div class="editor-entity-row">
+                  <ha-entity-picker
+                    .hass=${this.hass}
+                    .value=${row.entity ?? ''}
+                    allow-custom-entity
+                    @value-changed=${(ev) => this._updateFooterRow(index, 'entity', ev.detail.value)}
+                  ></ha-entity-picker>
+                  <ha-textfield
+                    label="Name override"
+                    .value=${row.name ?? ''}
+                    @input=${(ev) => this._updateFooterRow(index, 'name', ev.target.value)}
+                  ></ha-textfield>
+                  <ha-icon-picker
+                    .hass=${this.hass}
+                    .value=${row.icon ?? ''}
+                    @value-changed=${(ev) => this._updateFooterRow(index, 'icon', ev.detail.value)}
+                  ></ha-icon-picker>
+                  <ha-button @click=${() => this._removeFooterRow(index)}>
                     Remove
                   </ha-button>
                 </div>
@@ -2958,6 +3208,7 @@ class SimpleThermostatEditor extends i$1 {
         ></ha-form>
 
         ${this._renderExtraEntityRows()}
+        ${this._renderFooterRows()}
 
         <div class="editor-footer">
           <ha-button @click=${this._openLink}>
@@ -3005,6 +3256,7 @@ const o$1=new WeakMap,n=e$1(class extends f{render(i){return A}update(i,[s]){con
 
 const SUPPORTED_DOMAINS$1 = ['climate', 'fan', 'humidifier'];
 const DEFAULT_SELECTOR$1 = {
+    style: 'header',
     icons: true,
     names: true,
     states: false,
@@ -3110,6 +3362,25 @@ class SimpleThermostatGroupEditor extends i$1 {
       .selector-options {
         display: grid;
         gap: 8px;
+      }
+
+      .selector-style-row {
+        display: grid;
+        gap: 6px;
+      }
+
+      .selector-style-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .selector-style-actions ha-button {
+        width: 100%;
+      }
+
+      .selector-style-actions ha-button.selected {
+        --mdc-theme-primary: var(--primary-color);
       }
 
       .option-row {
@@ -3223,6 +3494,28 @@ class SimpleThermostatGroupEditor extends i$1 {
             selector[path] = boolValue;
         }
         this.commit({ ...this.config, selector });
+    }
+    updateSelectorStyle(value) {
+        const selector = { ...(this.config.selector ?? {}) };
+        const style = value === 'tabs' ? 'tabs' : 'header';
+        if (style === DEFAULT_SELECTOR$1.style) {
+            delete selector.style;
+        }
+        else {
+            selector.style = style;
+        }
+        this.commit({ ...this.config, selector });
+    }
+    renderSelectorStyleOption(label, value, selected) {
+        return b `
+      <ha-button
+        class=${selected ? 'selected' : ''}
+        appearance=${selected ? 'filled' : 'outlined'}
+        @click=${() => this.updateSelectorStyle(value)}
+      >
+        ${label}
+      </ha-button>
+    `;
     }
     isAutoSelectEnabled() {
         const autoSelect = this.config.auto_select;
@@ -3375,6 +3668,19 @@ class SimpleThermostatGroupEditor extends i$1 {
           <p>Control how the group chooses and labels the active card.</p>
         </div>
         <div class="selector-options">
+          <div class="selector-style-row">
+            <div class="option-text">
+              <span class="option-title">Selector style</span>
+              <span class="option-description"
+                >Choose the normal arrow/menu header or visible tab
+                buttons.</span
+              >
+            </div>
+            <div class="selector-style-actions">
+              ${this.renderSelectorStyleOption('Header navigation', 'header', (selector.style ?? DEFAULT_SELECTOR$1.style) === 'header')}
+              ${this.renderSelectorStyleOption('Tabbed buttons', 'tabs', selector.style === 'tabs')}
+            </div>
+          </div>
           ${this.renderOption('Follow active device', 'Switch to a card when its mode or on/off activity changes.', this.isAutoSelectEnabled(), (checked) => this.updateAutoSelect(checked))}
           ${this.renderOption('Remember selection', 'Keep the last selected card after the dashboard reloads.', this.config.remember_selection !== false, (checked) => this.updateRememberSelection(checked))}
           ${this.renderOption('Show icons', 'Show each card icon in the selector and menu.', selector.icons !== false, (checked) => this.updateSelector('icons', checked))}
@@ -3698,6 +4004,7 @@ function parseFaults(config, hass) {
 }
 
 const DEFAULT_SELECTOR = {
+    style: 'header',
     icons: true,
     names: true,
     states: false,
@@ -3707,7 +4014,7 @@ const DEFAULT_AUTO_SELECT_MANUAL_PAUSE_MS = 30000;
 function getDomain(entityId) {
     return entityId.split('.')[0];
 }
-function safeClass$2(value) {
+function safeClass$3(value) {
     return typeof value === 'string' ? value.replace(/[^a-z0-9_-]/gi, '') : '';
 }
 function getCardStyle$1(entityDomain, attributes = {}) {
@@ -3805,6 +4112,171 @@ class SimpleThermostatGroup extends i$1 {
         min-width: 0;
         box-sizing: border-box;
         transform: translateY(var(--st-group-header-top-buffer, 2px));
+      }
+
+      .group-selector.tabs {
+        display: block;
+        padding: calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 3)
+          calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 3) 0;
+        height: auto;
+        transform: translateY(var(--st-group-header-top-buffer, 2px));
+      }
+
+      .group-tabs {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(var(--st-group-tab-min-width, 120px), 1fr)
+        );
+        gap: calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 2);
+        min-width: 0;
+      }
+
+      .group-tab {
+        appearance: none;
+        border: 0;
+        border-radius: var(--st-group-tab-radius, 10px);
+        min-width: 0;
+        min-height: var(--st-group-tab-height, 46px);
+        padding: 7px 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: var(--st-group-tab-color, var(--primary-text-color));
+        background: var(
+          --st-group-tab-background,
+          color-mix(in srgb, var(--primary-text-color) 12%, transparent)
+        );
+        font: inherit;
+        font-weight: 600;
+        line-height: 1.15;
+        cursor: pointer;
+        transition:
+          background 160ms var(--st-motion-ease, ease),
+          color 160ms var(--st-motion-ease, ease),
+          opacity 160ms var(--st-motion-ease, ease);
+      }
+
+      .group-tab:hover,
+      .group-tab:focus-visible {
+        background: var(
+          --st-group-tab-hover-background,
+          color-mix(in srgb, currentColor 22%, transparent)
+        );
+      }
+
+      .group-tab:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+
+      .group-tab.selected {
+        color: var(--st-group-tab-selected-color, #fff);
+        background: var(
+          --st-group-tab-selected-background,
+          var(--primary-color)
+        );
+      }
+
+      .group-tab ha-icon {
+        --mdc-icon-size: 21px;
+        --iron-icon-width: 21px;
+        --iron-icon-height: 21px;
+        flex: 0 0 auto;
+      }
+
+      .group-tab-labels {
+        display: grid;
+        min-width: 0;
+        gap: 1px;
+        text-align: center;
+      }
+
+      .group-tab-name,
+      .group-tab-state {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .group-tab-state {
+        color: currentColor;
+        opacity: 0.78;
+        font-size: var(--ha-font-size-xs, 11px);
+        font-weight: 500;
+      }
+
+      .group-tab.state-off {
+        --st-group-tab-background: color-mix(
+          in srgb,
+          var(--state-icon-color, var(--secondary-text-color)) 20%,
+          transparent
+        );
+        --st-group-tab-color: var(--secondary-text-color);
+      }
+
+      .group-tab.cooling,
+      .group-tab.state-cool {
+        --st-group-tab-background: color-mix(
+          in srgb,
+          var(--state-climate-cool-color, var(--cool-color, #2b9af9)) 22%,
+          transparent
+        );
+        --st-group-tab-color: var(
+          --state-climate-cool-color,
+          var(--cool-color, #2b9af9)
+        );
+        --st-group-tab-selected-background: var(
+          --state-climate-cool-color,
+          var(--cool-color, #2b9af9)
+        );
+      }
+
+      .group-tab.heating,
+      .group-tab.state-heat {
+        --st-group-tab-background: color-mix(
+          in srgb,
+          var(--state-climate-heat-color, var(--heat-color, #ff8100)) 22%,
+          transparent
+        );
+        --st-group-tab-color: var(
+          --state-climate-heat-color,
+          var(--heat-color, #ff8100)
+        );
+        --st-group-tab-selected-background: var(
+          --state-climate-heat-color,
+          var(--heat-color, #ff8100)
+        );
+      }
+
+      .group-tab.drying,
+      .group-tab.state-dry {
+        --st-group-tab-background: color-mix(
+          in srgb,
+          var(--state-climate-dry-color, var(--dry-color, #efbd07)) 24%,
+          transparent
+        );
+        --st-group-tab-color: var(
+          --state-climate-dry-color,
+          var(--dry-color, #efbd07)
+        );
+        --st-group-tab-selected-background: var(
+          --state-climate-dry-color,
+          var(--dry-color, #efbd07)
+        );
+      }
+
+      .group-tab.domain-fan:not(.state-off),
+      .group-tab.humidifying {
+        --st-group-tab-background: color-mix(
+          in srgb,
+          var(--primary-color) 22%,
+          transparent
+        );
+        --st-group-tab-color: var(--primary-color);
+        --st-group-tab-selected-background: var(--primary-color);
       }
 
       .group-title {
@@ -4444,12 +4916,26 @@ class SimpleThermostatGroup extends i$1 {
         const classes = [
             'group-card',
             'group-shell',
-            `domain-${safeClass$2(domain)}`,
-            `state-${safeClass$2(state.state)}`,
-            safeClass$2(action),
-            unavailable && safeClass$2(state.state),
+            `domain-${safeClass$3(domain)}`,
+            `state-${safeClass$3(state.state)}`,
+            safeClass$3(action),
+            unavailable && safeClass$3(state.state),
         ].filter(Boolean);
         return classes.join(' ');
+    }
+    getTargetClasses(target) {
+        const state = this.hass?.states?.[target.entity];
+        if (!state)
+            return '';
+        const domain = getDomain(state.entity_id);
+        const action = getEntityAction(state);
+        return [
+            `domain-${safeClass$3(domain)}`,
+            `state-${safeClass$3(state.state)}`,
+            safeClass$3(action),
+        ]
+            .filter(Boolean)
+            .join(' ');
     }
     getGroupCardStyle() {
         const state = this.getSelectedState();
@@ -5069,8 +5555,8 @@ class SimpleThermostatGroup extends i$1 {
             : header.icon;
         if (!icon)
             return A;
-        const actionClass = action && action !== state.state ? ` ${safeClass$2(action)}` : '';
-        const stateClass = safeClass$2(state.state);
+        const actionClass = action && action !== state.state ? ` ${safeClass$3(action)}` : '';
+        const stateClass = safeClass$3(state.state);
         return b `
       <span
         class="header__icon-wrap ${stateClass}${actionClass} ${header.slashOffIcon
@@ -5084,7 +5570,66 @@ class SimpleThermostatGroup extends i$1 {
       </span>
     `;
     }
+    getTargetStateLabel(target) {
+        const state = this.hass?.states?.[target.entity];
+        if (!state)
+            return '';
+        if (typeof this.hass?.formatEntityState === 'function') {
+            return this.hass.formatEntityState(state);
+        }
+        return String(state.state);
+    }
+    renderTabSelector() {
+        const selector = this.config?.selector ?? DEFAULT_SELECTOR;
+        return b `
+      <div class="group-selector tabs">
+        <div class="group-tabs" role="tablist">
+          ${this.targets.map((target) => {
+            const label = this.getTargetLabel(target);
+            const icon = this.getTargetIcon(target);
+            const selected = target.entity === this.selectedEntity;
+            const stateLabel = selector.states
+                ? this.getTargetStateLabel(target)
+                : '';
+            return b `
+              <button
+                class=${[
+                'group-tab',
+                this.getTargetClasses(target),
+                selected && 'selected',
+            ]
+                .filter(Boolean)
+                .join(' ')}
+                type="button"
+                role="tab"
+                aria-selected=${selected ? 'true' : 'false'}
+                title=${label}
+                @click=${() => this.selectEntity(target.entity)}
+              >
+                ${icon ? b `<ha-icon icon=${icon}></ha-icon>` : A}
+                ${selector.names !== false
+                ? b `
+                      <span class="group-tab-labels">
+                        <span class="group-tab-name">${label}</span>
+                        ${stateLabel
+                    ? b `<span class="group-tab-state"
+                              >${stateLabel}</span
+                            >`
+                    : A}
+                      </span>
+                    `
+                : A}
+              </button>
+            `;
+        })}
+        </div>
+      </div>
+    `;
+    }
     renderSelector() {
+        if (this.config?.selector?.style === 'tabs') {
+            return this.renderTabSelector();
+        }
         const target = this.getSelectedTarget();
         const label = this.getTargetLabel(target);
         return b `
@@ -5309,7 +5854,7 @@ function formatNumber(number, { decimals = 1, fallback = 'N/A', locale } = {}) {
     }).format(value);
 }
 
-function safeClass$1(value) {
+function safeClass$2(value) {
     return String(value ?? '').replace(/[^a-z0-9_-]/gi, '');
 }
 const SEMANTIC_KIND_PATTERNS = [
@@ -5366,7 +5911,7 @@ function getKindFromText(text, hass) {
 function getKindFromIcon(icon) {
     if (typeof icon !== 'string' || !icon)
         return '';
-    const kind = safeClass$1(icon.replace(/^[a-z]+:/, ''));
+    const kind = safeClass$2(icon.replace(/^[a-z]+:/, ''));
     const semanticKind = getKindFromText(kind.replace(/-/g, ' '));
     if (semanticKind)
         return semanticKind;
@@ -5603,7 +6148,7 @@ function safeCssValue(value) {
     return String(value ?? '')
         .replace(/url\s*\([^)]*\)/gi, '')
         .replace(/expression\s*\([^)]*\)/gi, '')
-        .replace(/javascript:/gi, '')
+        .replace(/(?:javascript|data|vbscript)\s*:/gi, '')
         .replace(/[<>"'`;{}]/g, '');
 }
 squirrelly_minExports.filters.define('icon', (icon) => `<ha-icon icon="${escapeAttribute(icon)}"></ha-icon>`);
@@ -5790,6 +6335,8 @@ const TOGGLE_DOMAINS = [
     'light',
     'switch',
 ];
+const BUTTON_DOMAINS = ['button', 'input_button', 'script', 'scene'];
+const DISPLAY_VALUES = ['row', 'auto', 'button', 'toggle', 'chip'];
 function toggleEntity(hass, entityId, checked) {
     const service = `turn_${checked ? 'on' : 'off'}`;
     if (typeof hass.performAction === 'function') {
@@ -5802,8 +6349,27 @@ function toggleEntity(hass, entityId, checked) {
         hass.callService('homeassistant', service, { entity_id: entityId });
     }
 }
-function safeClass(value) {
+function safeClass$1(value) {
     return String(value ?? '').replace(/[^a-z0-9_-]/gi, '');
+}
+function callEntityAction(hass, entityId, domain) {
+    if (TOGGLE_DOMAINS.includes(domain)) {
+        const checked = hass.states?.[entityId]?.state !== 'on';
+        toggleEntity(hass, entityId, checked);
+        return;
+    }
+    const service = domain === 'button' || domain === 'input_button'
+        ? 'press'
+        : 'turn_on';
+    if (typeof hass.performAction === 'function') {
+        hass.performAction({
+            action: `${domain}.${service}`,
+            data: { entity_id: entityId },
+        });
+    }
+    else {
+        hass.callService(domain, service, { entity_id: entityId });
+    }
 }
 function renderIconTemplate({ icon, state, attribute, hass, config, variables, localize, }) {
     if (typeof icon !== 'string' ||
@@ -5839,10 +6405,36 @@ function renderHeadingTemplate({ heading, state, attribute, hass, config, variab
         localize,
     }).trim();
 }
+function resolveDisplay(display, domain) {
+    if (typeof display !== 'string' || !DISPLAY_VALUES.includes(display)) {
+        return 'row';
+    }
+    if (display !== 'auto')
+        return display;
+    if (TOGGLE_DOMAINS.includes(domain))
+        return 'toggle';
+    if (BUTTON_DOMAINS.includes(domain))
+        return 'button';
+    return 'chip';
+}
+function getEntityDisplayValue({ state, domain, hass, localize, }) {
+    if (domain === 'timer') {
+        return b `<simple-thermostat-timer-remaining
+      .stateObj=${state}
+      .hass=${hass}
+    ></simple-thermostat-timer-remaining>`;
+    }
+    if (typeof hass.formatEntityState === 'function') {
+        return hass.formatEntityState(state);
+    }
+    return localize
+        ? localize(state.state, `component.${domain}.state._.`)
+        : String(state.state);
+}
 function renderInfoItem({ hide = false, hass, state, details, localize, openEntityPopover, }) {
     if (hide || typeof state === 'undefined')
         return;
-    const { type, heading, icon, unit, decimals, tooltip: configuredTooltip, entity, template, attribute, variables, config, separator = true, } = details;
+    const { type, heading, icon, unit, decimals, tooltip: configuredTooltip, entity, template, attribute, variables, config, separator = true, display, } = details;
     const renderedIcon = renderIconTemplate({
         icon,
         state,
@@ -5873,6 +6465,7 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
     let entityDomain = '';
     let entityState = '';
     let isToggleEntity = false;
+    let usesCompactEntityDisplay = false;
     let valueCell;
     if (template && typeof state === 'object') {
         const value = renderTemplate({
@@ -5904,10 +6497,12 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         entityDomain = domain;
         entityState = state.state;
         isToggleEntity = TOGGLE_DOMAINS.includes(domain);
+        const displayMode = resolveDisplay(display, domain);
         const entityClasses = [
             isToggleEntity && 'toggle-entity',
-            entityDomain && `domain-${safeClass(entityDomain)}`,
-            entityState && `state-${safeClass(entityState)}`,
+            entityDomain && `domain-${safeClass$1(entityDomain)}`,
+            entityState && `state-${safeClass$1(entityState)}`,
+            displayMode !== 'row' && `display-${displayMode}`,
             isToggleEntity &&
                 getToggleKindClass(getToggleKind({
                     icon: renderedIcon || state.attributes?.icon,
@@ -5918,7 +6513,45 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         ]
             .filter(Boolean)
             .join(' ');
-        if (domain === 'timer') {
+        if (displayMode !== 'row') {
+            usesCompactEntityDisplay = true;
+            const supportsAction = isToggleEntity || BUTTON_DOMAINS.includes(domain);
+            const active = state.state === 'on';
+            const actionLabel = typeof heading === 'string'
+                ? heading
+                : state.attributes?.friendly_name || state.entity_id;
+            const fallbackIcon = renderedIcon || state.attributes?.icon || (isToggleEntity
+                ? 'mdi:toggle-switch'
+                : BUTTON_DOMAINS.includes(domain)
+                    ? 'mdi:gesture-tap-button'
+                    : undefined);
+            const displayValue = getEntityDisplayValue({
+                state,
+                domain,
+                hass,
+                localize,
+            });
+            valueCell = b `
+        <button
+          class="entity-action ${entityClasses} ${active ? 'active' : ''}"
+          type="button"
+          title=${entityTooltip}
+          aria-pressed=${isToggleEntity ? String(active) : A}
+          @click=${() => supportsAction
+                ? callEntityAction(hass, state.entity_id, domain)
+                : canOpenEntity
+                    ? openEntityPopover(state.entity_id)
+                    : undefined}
+        >
+          ${fallbackIcon ? b `<ha-icon .icon=${fallbackIcon}></ha-icon>` : ''}
+          <span class="entity-action__label">${actionLabel}</span>
+          ${displayMode === 'chip' || displayMode === 'toggle'
+                ? b `<span class="entity-action__state">${displayValue}</span>`
+                : ''}
+        </button>
+      `;
+        }
+        else if (domain === 'timer') {
             valueCell = b `
         <div
           class="entity-value ${canOpenEntity ? 'clickable' : ''}"
@@ -5998,6 +6631,9 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
       ${appendUnit(value, hasConfiguredUnit ? unit : false)}
     </div>`;
     }
+    if (usesCompactEntityDisplay) {
+        return valueCell;
+    }
     if (heading === false) {
         return valueCell;
     }
@@ -6006,8 +6642,8 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         'entity-heading',
         canOpenEntity && 'clickable',
         isToggleEntity && 'toggle-entity',
-        entityDomain && `domain-${safeClass(entityDomain)}`,
-        entityState && `state-${safeClass(entityState)}`,
+        entityDomain && `domain-${safeClass$1(entityDomain)}`,
+        entityState && `state-${safeClass$1(entityState)}`,
         isToggleEntity &&
             getToggleKindClass(getToggleKind({
                 icon: renderedIcon || state?.attributes?.icon,
@@ -6108,7 +6744,7 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
                 separator: showSeparator,
             },
         }),
-        ...((entities ?? []).map(({ name, state, show, _hide_when_off, hide_when_off, ...rest }) => {
+        ...((entities ?? []).map(({ name, state, show, display, _hide_when_off, hide_when_off, ...rest }) => {
             const hideWhenOff = _hide_when_off === true || hide_when_off === true;
             return renderInfoItem({
                 hide: show === false || (hideWhenOff && entity.state === HVAC_MODES.OFF),
@@ -6123,11 +6759,41 @@ function renderEntities({ _hide, entity, unit, hass, entities, config, localize,
                     config,
                     variables: config.variables,
                     separator: showSeparator,
+                    display: display ?? config?.layout?.entities?.display,
                 },
             });
         }) || null),
     ].filter((it) => it !== null);
     return wrapEntities(config, entityHtml);
+}
+
+const STACKABLE_MODES = new Set(['heat_cool', 'fan_only']);
+function getModeLabelPresentation(modeValue, label, sparse) {
+    if (!label || !sparse) {
+        return { layout: 'inline', lines: label ? [label] : [] };
+    }
+    const trimmed = label.trim();
+    if (!trimmed) {
+        return { layout: 'inline', lines: [] };
+    }
+    if (modeValue === 'heat_cool') {
+        const slashParts = trimmed.split(/\s*\/\s*/).filter(Boolean);
+        if (slashParts.length === 2 &&
+            slashParts.every((part) => part.length > 0 && part.length <= 12)) {
+            return { layout: 'stacked', lines: slashParts };
+        }
+    }
+    if (modeValue === 'fan_only') {
+        const wordParts = trimmed.split(/\s+/).filter(Boolean);
+        if (wordParts.length === 2 &&
+            wordParts.every((part) => part.length > 0 && part.length <= 10)) {
+            return { layout: 'stacked', lines: wordParts };
+        }
+    }
+    if (STACKABLE_MODES.has(modeValue) && trimmed.length > 10) {
+        return { layout: 'column', lines: [trimmed] };
+    }
+    return { layout: 'inline', lines: [trimmed] };
 }
 
 const CUSTOM_FAN_ICON_PATH = 'M13 19C13 17.59 13.5 16.3 14.3 15.28C14.17 14.97 14.03 14.65 13.86 14.34C14.26 14 14.57 13.59 14.77 13.11C15.26 13.21 15.78 13.39 16.25 13.67C17.07 13.25 18 13 19 13C20.05 13 21.03 13.27 21.89 13.74C21.95 13.37 22 12.96 22 12.5C22 8.92 18.03 8.13 14.33 10.13C14 9.73 13.59 9.42 13.11 9.22C13.3 8.29 13.74 7.24 14.73 6.75C17.09 5.57 17 2 12.5 2C8.93 2 8.14 5.96 10.13 9.65C9.72 9.97 9.4 10.39 9.21 10.87C8.28 10.68 7.23 10.25 6.73 9.26C5.56 6.89 2 7 2 11.5C2 15.07 5.95 15.85 9.64 13.87C9.96 14.27 10.39 14.59 10.88 14.79C10.68 15.71 10.24 16.75 9.26 17.24C6.9 18.42 7 22 11.5 22C12.31 22 13 21.78 13.5 21.41C13.19 20.67 13 19.86 13 19M12 13C11.43 13 11 12.55 11 12S11.43 11 12 11C12.54 11 13 11.45 13 12S12.54 13 12 13';
@@ -6296,6 +6962,17 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
         (type === 'hvac' && list.length > 4) ||
         (type === 'fan' && list.length > 4);
     const safeClass = (value) => String(value).replace(/[^a-z0-9_-]/gi, '');
+    const renderModeLabel = (modeValue, label) => {
+        if (!label)
+            return null;
+        const presentation = getModeLabelPresentation(modeValue, label, sparseMainControls);
+        if (presentation.layout === 'stacked') {
+            return b `<span class="mode-label">
+        ${presentation.lines.map((line) => b `<span class="mode-label-line">${line}</span>`)}
+      </span>`;
+        }
+        return b `<span class="mode-label">${presentation.lines[0] ?? label}</span>`;
+    };
     return b `
     <div
       class="modes ${type} ${isFanPreset ? 'fan-preset' : ''} ${showHeading
@@ -6312,10 +6989,16 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
             return A;
         const modeClass = safeClass(value);
         const displayName = maybeRenderName(name, value);
+        const labelPresentation = getModeLabelPresentation(String(value), displayName, sparseMainControls);
+        const labelLayoutClass = labelPresentation.layout === 'stacked'
+            ? 'label-stacked'
+            : labelPresentation.layout === 'column'
+                ? 'label-column'
+                : '';
         const tooltip = displayName ? A : controlTooltip || A;
         return b `
           <div
-            class="mode-item ${modeClass} ${value === mode ? 'active' : ''}"
+            class="mode-item ${modeClass} ${labelLayoutClass} ${value === mode ? 'active' : ''}"
             role="button"
             tabindex="0"
             aria-pressed=${value === mode ? 'true' : 'false'}
@@ -6330,13 +7013,64 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
         }}
           >
             ${maybeRenderIcon(icon, iconConfigured)}
-            ${displayName
-            ? b `<span class="mode-label">${displayName}</span>`
-            : null}
+            ${renderModeLabel(String(value), displayName)}
           </div>
         `;
     })}
     </div>
+  `;
+}
+
+const safeClass = (value) => String(value).replace(/[^a-z0-9_-]/gi, '');
+function renderFooter({ toggles, mainState, toggleFooterEntity, openEntityPopover, }) {
+    const visibleToggles = toggles.filter((toggle) => !(toggle.hide_when_off === true && mainState === HVAC_MODES.OFF));
+    if (!visibleToggles.length)
+        return A;
+    return b `
+    <section class="footer-controls controls">
+      <div
+        class="modes footer compact ${visibleToggles.length > 4
+        ? 'dense'
+        : ''}"
+        role="group"
+        aria-label="Footer controls"
+      >
+        ${visibleToggles.map((toggle) => {
+        const entityId = toggle.state.entity_id;
+        const state = String(toggle.state.state ?? '');
+        const active = state === 'on';
+        const label = toggle.name === false
+            ? false
+            : toggle.name || toggle.state.attributes?.friendly_name || entityId;
+        const icon = toggle.icon ?? toggle.state.attributes?.icon;
+        const domain = entityId.split('.')[0];
+        return b `
+            <div
+              class="mode-item footer-toggle ${safeClass(state)} domain-${safeClass(domain)} ${active ? 'active' : ''}"
+              role="button"
+              tabindex="0"
+              aria-pressed=${active ? 'true' : 'false'}
+              aria-label=${label || entityId}
+              title=${label || entityId}
+              @click=${() => toggleFooterEntity(entityId, !active)}
+              @keydown=${(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleFooterEntity(entityId, !active);
+            }
+        }}
+              @contextmenu=${(e) => {
+            e.preventDefault();
+            openEntityPopover(entityId);
+        }}
+            >
+              ${icon ? renderModeIcon(icon) : A}
+              ${label ? b `<span class="mode-label">${label}</span>` : A}
+            </div>
+          `;
+    })}
+      </div>
+    </section>
   `;
 }
 
@@ -6400,6 +7134,9 @@ const CONTROL_ORDER = [
 const CONTROL_METADATA_KEYS = ['entity', 'hide_when_off', 'hide_off_when_off'];
 function getConfiguredEntities(config) {
     return config.entities ?? [];
+}
+function getConfiguredFooter(config) {
+    return Array.isArray(config.footer) ? config.footer : [];
 }
 function shouldShowModeControl(type, modeOption, config) {
     const modeKey = String(modeOption);
@@ -6682,6 +7419,7 @@ class SimpleThermostat extends i$1 {
         this.modes = [];
         this._hass = {};
         this.entities = [];
+        this.footer = [];
         this.showEntities = true;
         this.name = '';
         this.stepSize = STEP_SIZE;
@@ -6707,6 +7445,12 @@ class SimpleThermostat extends i$1 {
             this._callAction(`homeassistant.turn_${el.checked ? 'on' : 'off'}`, {
                 entity_id: entityId,
             });
+        };
+        this.toggleFooterEntity = (entityId, checked) => {
+            this._callAction(`homeassistant.turn_${checked ? 'on' : 'off'}`, {
+                entity_id: entityId,
+            });
+            fireEvent(this, 'haptic', 'light');
         };
         this.setMode = (type, mode) => {
             if (type && mode) {
@@ -6856,6 +7600,7 @@ class SimpleThermostat extends i$1 {
             this._setpointDebounce = setpointDebounce;
         }
         this.entities = [];
+        this.footer = [];
         this.showEntities = true;
         this.toggleAttribute('embedded', this.config.embedded === true);
         if (this._hass?.states) {
@@ -6978,6 +7723,20 @@ class SimpleThermostat extends i$1 {
             this.showEntities = true;
             this.entities = [];
         }
+        this.footer = getConfiguredFooter(this.config)
+            .map(({ entity, name, icon, hide_when_off }) => {
+            const state = hass.states?.[entity];
+            if (!state)
+                return null;
+            return {
+                entity,
+                name,
+                icon,
+                hide_when_off,
+                state,
+            };
+        })
+            .filter((toggle) => !!toggle);
     }
     render({ _hide, _values, _updatingValues, config, entity } = this) {
         if (!config) {
@@ -7019,9 +7778,12 @@ class SimpleThermostat extends i$1 {
         const unit = this.getUnit();
         const entityDomain = config.entity.split('.')[0];
         const setpointCount = Object.keys(_values).length;
-        const stepLayout = this.config.enhanced_visuals === false
-            ? (this.config?.layout?.step ?? 'column')
-            : (this.config?.layout?.step ?? 'row');
+        const configuredStepLayout = this.config?.layout?.step;
+        const compactDualEntitySetpoints = !configuredStepLayout && this.showEntities && setpointCount > 1;
+        const stepLayout = configuredStepLayout ??
+            (this.config.enhanced_visuals === false || compactDualEntitySetpoints
+                ? 'column'
+                : 'row');
         const row = stepLayout === 'row';
         const isUnavailable = ['unavailable', 'unknown'].includes(entity.state);
         const safeClass = (value) => typeof value === 'string' ? value.replace(/[^a-z0-9_-]/gi, '') : '';
@@ -7107,6 +7869,12 @@ class SimpleThermostat extends i$1 {
               </section>
             `
             : A}
+        ${renderFooter({
+            toggles: this.footer,
+            mainState: entity.state,
+            toggleFooterEntity: this.toggleFooterEntity,
+            openEntityPopover: this.openEntityPopover,
+        })}
       </ha-card>
     `;
     }
@@ -7291,8 +8059,16 @@ class SimpleThermostat extends i$1 {
             }
             return (mode.list ?? []).some(({ hide_when_off }) => !(hide_when_off === true && this.entity?.state === HVAC_MODES.OFF));
         }).length ?? 0;
+        const footerRows = this.footer?.some(({ hide_when_off }) => !(hide_when_off === true && this.entity?.state === HVAC_MODES.OFF))
+            ? 1
+            : 0;
         const warningRows = this.stepSize < 1 && this.config.decimals === 0 ? 1 : 0;
-        return Math.max(1, headerRows + entityRows + setpointRows + modeRows + warningRows);
+        return Math.max(1, headerRows +
+            entityRows +
+            setpointRows +
+            modeRows +
+            footerRows +
+            warningRows);
     }
     getUnit() {
         if (['boolean', 'string'].includes(typeof this.config.unit)) {
@@ -7325,6 +8101,9 @@ __decorate([
 __decorate([
     n$2()
 ], SimpleThermostat.prototype, "entities", void 0);
+__decorate([
+    n$2()
+], SimpleThermostat.prototype, "footer", void 0);
 __decorate([
     n$2()
 ], SimpleThermostat.prototype, "showEntities", void 0);
