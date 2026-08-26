@@ -407,7 +407,7 @@ cards:
             entities:
               - entity: switch.blitzwolf_shp13_02_3ad702fe_on_off
                 name: Питание
-              - entity: binary_sensor.0x00158d000413b210_gas
+              - entity: binary_sensor.datchik_gaza_na_kukhne_gas
                 name: "Газ в воздухе"
               - entity: sensor.0x00158d000413b210_gas_density
                 name: "Концентрация"

@@ -1,0 +1,98 @@
+{
+  "entity": {
+    "button": {
+      "force_update": {
+        "default": "mdi:cloud-refresh"
+      }
+    },
+    "camera": {
+      "live_map": {
+        "default": "mdi:floor-plan"
+      }
+    },
+    "image": {
+      "live_map": {
+        "default": "mdi:floor-plan"
+      }
+    },
+    "binary_sensor": {
+      "is_map_empty": {
+        "default": "mdi:map-minus"
+      }
+    },
+    "sensor": {
+      "no_go_areas": {
+        "default": "mdi:floor-plan"
+      },
+      "charger_position": {
+        "default": "mdi:power-plug"
+      },
+      "vacuum_position": {
+        "default": "mdi:robot-vacuum"
+      },
+      "vacuum_room_id": {
+        "default": "mdi:floor-plan"
+      },
+      "vacuum_room_name": {
+        "default": "mdi:floor-plan"
+      },
+      "no_carpet_areas": {
+        "default": "mdi:floor-plan"
+      },
+      "no_mopping_areas": {
+        "default": "mdi:floor-plan"
+      },
+      "cleaned_rooms_ids": {
+        "default": "mdi:floor-plan"
+      },
+      "goto_position": {
+        "default": "mdi:target-variant"
+      },
+      "goto_path": {
+        "default": "mdi:map-marker-path"
+      },
+      "goto_predicted_path": {
+        "default": "mdi:map-marker-path"
+      },
+      "mop_path": {
+        "default": "mdi:map-marker-path"
+      },
+      "path": {
+        "default": "mdi:map-marker-path"
+      },
+      "obstacles": {
+        "default": "mdi:sign-caution"
+      },
+      "ignored_obstacles": {
+        "default": "mdi:sign-caution"
+      },
+      "obstacles_with_photo": {
+        "default": "mdi:sign-caution"
+      },
+      "ignored_obstacles_with_photo": {
+        "default": "mdi:sign-caution"
+      },
+      "walls": {
+        "default": "mdi:wall"
+      },
+      "zones": {
+        "default": "mdi:select-drag"
+      },
+      "map_name": {
+        "default": "mdi:map-search"
+      },
+      "rooms": {
+        "default": "mdi:floor-plan"
+      }
+    },
+    "switch": {
+      "auto_update": {
+        "default": "mdi:cloud-refresh",
+        "state": {
+          "on": "mdi:cloud-check",
+          "off": "mdi:cloud-cancel"
+        }
+      }
+    }
+  }
+}

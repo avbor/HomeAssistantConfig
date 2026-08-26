@@ -106,6 +106,72 @@ cards:
   - type: vertical-stack
     cards:
       - type: markdown
+        content: |
+          ### <center>Фильтрационный колодец</center>
+      - type: entities
+        entities:
+          - entity: switch.rch_0x880f62fffe03cc05
+            state_color: true
+            name: Питание насоса
+            icon: mdi:power
+          - entity: sensor.rch_0x880f62fffe03cc05_power
+            type: custom:multiple-entity-row
+            name: Потребление
+            icon: []
+            format: precision1
+            entities:
+              - entity: sensor.rch_0x880f62fffe03cc05_current
+                name: false
+                format: precision1
+          - entity: binary_sensor.rch_ch_filtration_well_pump_status
+            state_color: true
+            icon: mdi:water-pump
+            name: Статус насоса
+          - entity: binary_sensor.rch_ch_filtration_well_pump_status
+            type: custom:multiple-entity-row
+            name: Частота включения насоса
+            show_state: false
+            icon: []
+            entities:
+              - entity: sensor.rch_ch_filtration_well_pump_start_frequency_10m
+                name: 10 м
+              - entity: sensor.rch_ch_filtration_well_pump_start_frequency_60m
+                name: 60 м
+              - entity: sensor.rch_ch_filtration_well_pump_start_frequency_24h
+                name: 24 ч
+          - entity: binary_sensor.rch_ch_filtration_well_pump_status
+            type: custom:multiple-entity-row
+            name: Время работы насоса
+            show_state: false
+            icon: []
+            entities:
+              - entity: sensor.rch_ch_filtration_well_pump_run_time_10m
+                name: 10 м
+              - entity: sensor.rch_ch_filtration_well_pump_run_time_60m
+                name: 60 м
+              - entity: sensor.rch_ch_filtration_well_pump_run_time_24h
+                name: 24 ч
+          - entity: switch.rch_0xbc8d7efffe79db9f
+            state_color: true
+            name: Питание греющего кабеля
+            icon: mdi:power
+          - entity: binary_sensor.rch_ch_filtration_well_heating_cable_status
+            state_color: true
+            icon: mdi:heating-coil
+            name: Статус
+          - entity: sensor.rch_0xbc8d7efffe79db9f_power
+            type: custom:multiple-entity-row
+            name: Потребление
+            icon: []
+            format: precision1
+            entities:
+              - entity: sensor.rch_0xbc8d7efffe79db9f_current
+                name: false
+                format: precision1
+
+  - type: vertical-stack
+    cards:
+      - type: markdown
         content: >
           ### <center>Бойлер</center>
       - type: entities
@@ -153,10 +219,10 @@ cards:
   - type: vertical-stack
     cards:
       - type: markdown
-        content: >
+        content: |
           ### <center>Датчики протечки</center>
       - type: markdown
-        content: >
+        content: |
           #### <center>1 Этаж</center>
       - type: entity
         entity: binary_sensor.rch_0x00158d0006d3b285_water_leak
@@ -164,9 +230,15 @@ cards:
       - type: entity
         entity: binary_sensor.rch_0x00158d0006d3c775_water_leak
         name: Туалет (труба)
+      - type: entity
+        entity: binary_sensor.rch_0x00158d008b84da97_water_leak
+        name: Туалет (унитаз)
       - type: markdown
-        content: >
+        content: |
           #### <center>2 Этаж</center>
       - type: entity
         entity: binary_sensor.rch_0x00158d0006d3b20b_water_leak
         name: Туалет (под бойлером)
+      - type: entity
+        entity: binary_sensor.rch_0x00158d008b85d86d_water_leak
+        name: Туалет (унитаз)

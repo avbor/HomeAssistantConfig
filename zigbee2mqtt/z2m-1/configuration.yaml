@@ -46,10 +46,6 @@ devices:
     friendly_name: Датчик газа на Кухне
   '0x00158d00054eacc7':
     friendly_name: Реле Aqara Водопроводные краны
-  '0xa4c138792ba1d268':
-    friendly_name: Датчик присутствия в Ванной
-  '0xa4c138b96f4627bc':
-    friendly_name: Датчик присутствия в Туалете
   '0xd44867fffe60d52c':
     friendly_name: Датчик присутствия в Ванной - Sonoff
   '0x00124b0024c0489a':

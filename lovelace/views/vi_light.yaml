@@ -369,18 +369,18 @@ cards:
               entity: light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2
               name: У кровати Слева
               icon: mdi:lamp
-          - type: conditional
-            conditions:
-              - condition: state
-                entity: light.spalnia_stol
-                state_not: "unavailable"
-            card:
-              type: vertical-stack
-              cards:
-                - type: light
-                  entity: light.spalnia_stol
-                  name: Стол
-                  icon: mdi:desk-lamp
+#          - type: conditional
+#            conditions:
+#              - condition: state
+#                entity: light.spalnia_stol
+#                state_not: "unavailable"
+#            card:
+#              type: vertical-stack
+#              cards:
+#                - type: light
+#                  entity: light.spalnia_stol
+#                  name: Стол
+#                  icon: mdi:desk-lamp
       - type: button
         entity: input_boolean.bedroom_light_show_settings
         #name: "\U000021E7 Настройки \U000021E9"

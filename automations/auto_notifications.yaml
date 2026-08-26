@@ -84,7 +84,7 @@
   id: 0ca74008-65a2-4ed1-b860-e27e57b216f2
   triggers:
     trigger: state
-    entity_id: binary_sensor.0x00158d000413b210_gas
+    entity_id: binary_sensor.datchik_gaza_na_kukhne_gas
     from: "off"
     to: "on"
   actions:
