@@ -544,7 +544,7 @@ energy_pack:
       unique_id: 990a6af8-5655-4f9b-abb8-ebf686b748b5
       type: median
       entity_ids:
-        - sensor.tplink_smartplug_01_voltage
+        - sensor.rozetka_kojima_v_tualete_boiler_napriazhenie
         - sensor.gosund_sp111_03_volt
         - sensor.gosund_sp111_05_volt
 
@@ -741,7 +741,7 @@ energy_pack:
     # For Dishwasher
     socket_kitchen_dishwasher_energy_daily:
       name: Kitchen Dishwasher Daily Energy
-      source: sensor.gosund_sp111_06_todays_usage
+      source: sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_itogo_postavleno
       cycle: daily
       tariffs:
         - peak
@@ -750,7 +750,7 @@ energy_pack:
 
     socket_kitchen_dishwasher_energy_monthly:
       name: Kitchen Dishwasher Monthly Energy
-      source: sensor.gosund_sp111_06_todays_usage
+      source: sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_itogo_postavleno
       cycle: monthly
       tariffs:
         - peak
@@ -759,7 +759,7 @@ energy_pack:
 
     socket_kitchen_dishwasher_energy_monthly_sum:
       name: Kitchen Dishwasher Monthly Energy Total
-      source: sensor.gosund_sp111_06_todays_usage
+      source: sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_itogo_postavleno
       cycle: monthly
       tariffs:
         - total
@@ -767,7 +767,7 @@ energy_pack:
     # For Washing Machine
     socket_washmachine_energy_daily:
       name: Washmachine Daily Energy
-      source: sensor.tplink_smartplug_02_today_s_consumption
+      source: sensor.rozetka_kojima_v_kladovoi_stiralnaia_mashina_itogo_postavleno
       cycle: daily
       tariffs:
         - peak
@@ -776,7 +776,7 @@ energy_pack:
 
     socket_washmachine_energy_monthly:
       name: Washmachine Monthly Energy
-      source: sensor.tplink_smartplug_02_today_s_consumption
+      source: sensor.rozetka_kojima_v_kladovoi_stiralnaia_mashina_itogo_postavleno
       cycle: monthly
       tariffs:
         - peak
@@ -785,7 +785,7 @@ energy_pack:
 
     socket_washmachine_energy_monthly_sum:
       name: Washmachine Monthly Energy Total
-      source: sensor.tplink_smartplug_02_today_s_consumption
+      source: sensor.rozetka_kojima_v_kladovoi_stiralnaia_mashina_itogo_postavleno
       cycle: monthly
       tariffs:
         - total
@@ -819,7 +819,7 @@ energy_pack:
     # For Water Boiler
     socket_water_boiler_energy_daily:
       name: Water Boiler Daily Energy
-      source: sensor.tplink_smartplug_01_today_s_consumption
+      source: sensor.rozetka_kojima_v_tualete_boiler_itogo_postavleno
       cycle: daily
       tariffs:
         - peak
@@ -828,7 +828,7 @@ energy_pack:
 
     socket_water_boiler_energy_monthly:
       name: Water Boiler Monthly Energy
-      source: sensor.tplink_smartplug_01_today_s_consumption
+      source: sensor.rozetka_kojima_v_tualete_boiler_itogo_postavleno
       cycle: monthly
       tariffs:
         - peak
@@ -837,7 +837,7 @@ energy_pack:
 
     socket_water_boiler_energy_monthly_sum:
       name: Water Boiler Monthly Energy Total
-      source: sensor.tplink_smartplug_01_today_s_consumption
+      source: sensor.rozetka_kojima_v_tualete_boiler_itogo_postavleno
       cycle: monthly
       tariffs:
         - total

@@ -7,7 +7,7 @@
   - name: Boiler Status
     unique_id: 08d28b87-f038-4101-981e-ff737c121a1e
     device_class: heat
-    state: "{{ (states('sensor.tplink_smartplug_01_current') | float(0)) > 4 }}"
+    state: "{{ (states('sensor.rozetka_kojima_v_tualete_boiler_tok') | float(0)) > 4 }}"
     icon: mdi:water-boiler
 
   - name: Fridge Status
@@ -25,7 +25,7 @@
   - name: Dishwasher Status
     unique_id: 7d976e93-8e99-4de6-b853-1e8d9c0cd8e8
     device_class: power
-    state: "{{ (states('sensor.gosund_sp111_06_watt') | float(0)) > 1 }}"
+    state: "{{ (states('sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_moshchnost') | float(0)) > 1 }}"
     icon: mdi:dishwasher
 
   - name: Oven Status
@@ -37,7 +37,7 @@
   - name: Washer Status
     unique_id: 6307f3c8-e3b1-4b6b-b9db-d3e1f0637b7c
     device_class: power
-    state: "{{ (states('sensor.tplink_smartplug_02_current_consumption') | float(0)) > 3 }}"
+    state: "{{ (states('sensor.rozetka_kojima_v_kladovoi_stiralnaia_mashina_moshchnost') | float(0)) > 3 }}"
     delay_off:
       minutes: 1
     icon: mdi:washing-machine

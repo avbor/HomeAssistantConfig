@@ -181,10 +181,10 @@
         Гостинная: *{{ states('binary_sensor.0x158d0003d54725_contact') }}*
         Спальня: *{{ states('binary_sensor.0x158d0004073b67_contact') }}*
         `-= Крупная бытовая техника =-`
-        Водонагреватель: *{{ states('binary_sensor.boiler_status') }}* ({{ states('sensor.tplink_smartplug_01_current_consumption') }} W)
-        Стиральная машина: *{{ states('binary_sensor.washer_status') }}* ({{ states('sensor.tplink_smartplug_02_current_consumption') }} W)
+        Водонагреватель: *{{ states('binary_sensor.boiler_status') }}* ({{ states('sensor.rozetka_kojima_v_tualete_boiler_tok') }} W)
+        Стиральная машина: *{{ states('binary_sensor.washer_status') }}* ({{ states('sensor.rozetka_kojima_v_kladovoi_stiralnaia_mashina_tok') }} W)
         Сушильная машина: *{{ states('binary_sensor.dryer_status') }}* ({{ states('sensor.gosund_sp111_09_watt') }} W)
-        Посудомоечная машина: *{{ states('binary_sensor.dishwasher_status') }}* ({{ states('sensor.gosund_sp111_06_watt') }} W)
+        Посудомоечная машина: *{{ states('binary_sensor.dishwasher_status') }}* ({{ states('sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_moshchnost') }} W)
         Холодильник: *{{ states('binary_sensor.fridge_status') }}* ({{ states('sensor.gosund_sp111_04_watt') }} W)
         Духовой шкаф: *{{ states('binary_sensor.oven_status') }}* ({{ states('sensor.gosund_sp111_10_watt') }} W)
         `-= Свет =-`

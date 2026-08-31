@@ -94,13 +94,13 @@ cards:
       - type: entities
         state_color: true
         entities:
-          - entity: switch.tplink_smartplug_01
+          - entity: switch.rozetka_kojima_v_tualete_boiler
             name: Питание
             icon: mdi:water-boiler
       - type: conditional
         conditions:
           - condition: state
-            entity: switch.tplink_smartplug_01
+            entity: switch.rozetka_kojima_v_tualete_boiler
             state_not: "off"
         card:
           type: "custom:simple-thermostat"

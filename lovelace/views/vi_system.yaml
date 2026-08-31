@@ -303,10 +303,10 @@ cards:
             name: Розетка Mi SmartPlug WiFi 01
           - entity: switch.mi_smartplugwifi_02
             name: Розетка Mi SmartPlug WiFi 02
-          - entity: switch.tplink_smartplug_01
-            name: Розетка TP-Link SmartPlug 01
-          - entity: switch.tplink_smartplug_02
-            name: Розетка TP-Link SmartPlug 02
+          - entity: switch.rozetka_kojima_v_tualete_boiler
+            name: "Розетка Kojima - Бойлер"
+          - entity: switch.rozetka_kojima_v_kladovoi_stiralnaia_mashina
+            name: Розетка Kojima - Стиральная машина
           - entity: switch.tz3000_g5xawfcq_ts0121_switch
             name: Розетка BlitzWolf SHP13 01
           - entity: switch.blitzwolf_shp13_02_3ad702fe_on_off
@@ -319,8 +319,8 @@ cards:
             name: Розетка Gosund SP111 04
           - entity: switch.gosund_sp111_05_switch
             name: Розетка Gosund SP111 05
-          - entity: switch.gosund_sp111_06_switch
-            name: Розетка Gosund SP111 06
+          - entity: switch.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina
+            name: "Розетка NAS-WR01B - Посудомоечная машина"
           - entity: switch.gosund_sp111_09_switch
             name: Розетка Gosund SP111 09
           - entity: switch.gosund_sp111_10_switch
@@ -338,15 +338,15 @@ cards:
         entities:
           - switch.mi_smartplugwifi_01
           - switch.mi_smartplugwifi_02
-          - switch.tplink_smartplug_01
-          - switch.tplink_smartplug_02
+          - switch.rozetka_kojima_v_tualete_boiler
+          - switch.rozetka_kojima_v_kladovoi_stiralnaia_mashina
           - switch.tz3000_g5xawfcq_ts0121_switch
           - switch.blitzwolf_shp13_02_3ad702fe_on_off
           - switch.blitzwolf_shp15_01_switch
           - switch.gosund_sp111_03_switch
           - switch.gosund_sp111_04_switch
           - switch.gosund_sp111_05_switch
-          - switch.gosund_sp111_06_switch
+          - switch.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina
           - switch.gosund_sp111_09_switch
           - switch.gosund_sp111_10_switch
           - switch.tz3000_zloso4jk_ts011f_switch

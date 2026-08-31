@@ -136,8 +136,8 @@ cards:
             aggregate_func: max
             bar_spacing: 8
             entities:
-                - entity: sensor.gosund_sp111_06_todays_usage
-                - entity: sensor.gosund_sp111_06_watt
+                - entity: sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_itogo_postavleno
+                - entity: sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_moshchnost
                   show_state: true
                   show_graph: false
                   fixed_value: true
@@ -179,8 +179,8 @@ cards:
             aggregate_func: max
             bar_spacing: 8
             entities:
-                - entity: sensor.tplink_smartplug_02_today_s_consumption
-                - entity: sensor.tplink_smartplug_02_current_consumption
+                - entity: sensor.rozetka_kojima_v_kladovoi_stiralnaia_mashina_itogo_postavleno
+                - entity: sensor.rozetka_kojima_v_kladovoi_stiralnaia_mashina_moshchnost
                   show_state: true
                   show_graph: false
                   fixed_value: true
@@ -223,8 +223,8 @@ cards:
             aggregate_func: max
             bar_spacing: 8
             entities:
-                - entity: sensor.tplink_smartplug_01_today_s_consumption
-                - entity: sensor.tplink_smartplug_01_current_consumption
+                - entity: sensor.rozetka_kojima_v_tualete_boiler_itogo_postavleno
+                - entity: sensor.rozetka_kojima_v_tualete_boiler_tok
                   show_state: true
                   show_graph: false
                   fixed_value: true

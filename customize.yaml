@@ -72,22 +72,10 @@ sensor.blitzwolf_shp15_01_polledsmartenergysummation:
   friendly_name: Подсветка на окне в Детской
 sensor.tz3000_g5xawfcq_ts0121_smartenergysummation:
   friendly_name: Подсветка на окне в Гостиной
-switch.tplink_smartplug_02:
-  friendly_name: Стиральная машина
-sensor.tplink_smartplug_02_today_s_consumption:
-  friendly_name: Стиральная машина
 switch.gosund_sp111_09_switch:
   friendly_name: Сушильная машина
 sensor.gosund_sp111_09_todays_usage:
   friendly_name: Сушильная машина
-switch.tplink_smartplug_01:
-  friendly_name: Бойлер
-sensor.tplink_smartplug_01_today_s_consumption:
-  friendly_name: Бойлер
-switch.gosund_sp111_06_switch:
-  friendly_name: Посудомоечная машина
-sensor.gosund_sp111_06_todays_usage:
-  friendly_name: Посудомоечная машина
 sensor.blitzwolf_shp13_02_3ad702fe_smartenergy_metering_summation_delivered:
   friendly_name: Датчик газа
 switch.gosund_sp111_05_switch:
