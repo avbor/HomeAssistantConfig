@@ -13,6 +13,7 @@ from homeassistant.helpers.template import Template
 from .const import LOGGER
 from .entity_filtering import (
     IGNORED_ENTITY_DOMAINS,
+    NEVER_AN_ENTITY,
     async_drop_existing_action_names,
     async_get_all_entity_ids,
     async_get_all_services,
@@ -49,6 +50,7 @@ ADDITIONAL_DOMAINS = [
 
 # Build a list of all known domains
 KNOWN_DOMAINS = [platform.value for platform in Platform] + ADDITIONAL_DOMAINS
+
 
 # Home Assistant core entity ID validation patterns (from homeassistant/core.py)
 _OBJECT_ID = r"(?!_)[\da-z_]+(?<!_)"
@@ -114,10 +116,25 @@ _DEVICE_ENTITIES_PATTERN = re.compile(
 
 
 def is_template_string(value: str) -> bool:
-    """Check if a string looks like a Jinja2 template."""
+    """Check if a string looks like a Jinja2 template.
+
+    All three of Jinja's delimiters, comments included. A comment on its own
+    is a template as far as Home Assistant is concerned, and it will take one
+    as a shorthand condition, so anything that does not know that reads it as
+    the name of an integration instead. #1520.
+
+    Stricter than `homeassistant.helpers.template.is_template_string`, which
+    is happy with an opening delimiter and no closing one. That is deliberate
+    and tested: a half-written template is not something to go extracting
+    references out of.
+    """
     if not isinstance(value, str):
         return False
-    return ("{{" in value and "}}" in value) or ("{%" in value and "%}" in value)
+    return (
+        ("{{" in value and "}}" in value)
+        or ("{%" in value and "%}" in value)
+        or ("{#" in value and "#}" in value)
+    )
 
 
 async def async_extract_entities_from_template_string(
@@ -265,6 +282,8 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
 
             # For each entity ID (which might be comma-separated), add all valid ones
             for individual_id in split_comma_separated_entity_ids(entity_id):
+                if individual_id in NEVER_AN_ENTITY:
+                    continue
                 if valid_entity_id(individual_id):
                     entities.add(individual_id)
 
@@ -385,7 +404,8 @@ async def async_filter_known_entity_ids_with_templates(
             # Process as regular entity ID(s), handling comma-separated lists
             for entity_id in split_comma_separated_entity_ids(entity_id_raw):
                 if (
-                    not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
+                    entity_id not in NEVER_AN_ENTITY
+                    and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
                     and entity_id not in known_entity_ids
                     and valid_entity_id(entity_id)
                 ):

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.const import CONF_ENABLED
 
 from .const import LOGGER
-from .entity_filtering import async_get_all_services
+from .entity_filtering import NEVER_AN_ENTITY, async_get_all_services
 from .template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_template_string,
@@ -239,7 +239,7 @@ async def async_extract_entities_from_value(
                     value,
                     exc,
                 )
-        elif _ENTITY_ID_RE.match(value):
+        elif value not in NEVER_AN_ENTITY and _ENTITY_ID_RE.match(value):
             # Check if it matches the entity ID pattern with known domains
             entities.add(value)
     elif isinstance(value, list):
@@ -253,8 +253,8 @@ async def async_extract_entities_from_value(
             )
     elif (
         isinstance(value, dict)
-        and "entity" in value
-        and isinstance(value["entity"], str)
+        and isinstance(value.get("entity"), str)
+        and value["entity"] not in NEVER_AN_ENTITY
     ):
         # Handle entity dict format like {"entity": "light.living_room"}
         entities.add(value["entity"])

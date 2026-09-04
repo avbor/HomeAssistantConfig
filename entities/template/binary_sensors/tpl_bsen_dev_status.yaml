@@ -25,7 +25,9 @@
   - name: Dishwasher Status
     unique_id: 7d976e93-8e99-4de6-b853-1e8d9c0cd8e8
     device_class: power
-    state: "{{ (states('sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_moshchnost') | float(0)) > 1 }}"
+    state: "{{ (states('sensor.rozetka_nas_wr01b_03_na_kukhne_posudomoechnaia_mashina_moshchnost') | float(0)) > 3 }}"
+    delay_off:
+      minutes: 1
     icon: mdi:dishwasher
 
   - name: Oven Status

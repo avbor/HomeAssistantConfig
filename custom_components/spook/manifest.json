@@ -8,7 +8,9 @@
     "counter",
     "energy",
     "group",
+    "light",
     "proximity",
+    "script",
     "timer"
   ],
   "codeowners": [
@@ -34,5 +36,5 @@
   "requirements": [
     "cronsim==2.7"
   ],
-  "version": "5.1.0"
+  "version": "5.4.0"
 }

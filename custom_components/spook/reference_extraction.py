@@ -13,13 +13,19 @@ never to replace it.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
+from homeassistant.core import callback
+from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .template_extraction import is_template_string
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 # Direct reference keys, mapped to their reference type.
 # What the device registry hands out: `random_uuid_hex`, so 32 hex characters.
@@ -58,11 +64,26 @@ class ExtractedTargets:
     label_ids: set[str] = field(default_factory=set)
 
 
+def is_pattern_reference(value: str) -> bool:
+    """Return whether a reference is a pattern rather than a name.
+
+    Cards and helpers that take a filter read ``KG/*`` as every area under
+    ``KG``. Home Assistant has no area, floor or label called ``KG/*`` and
+    never will, so looking one up and finding nothing says nothing about
+    whether the dashboard works. Reported as #1514.
+
+    Only for areas, floors and labels. An entity ID has a shape, and
+    ``light.*`` is already turned away for not having it.
+    """
+    return "*" in value
+
+
 def _collect_ids(value: Any) -> set[str]:
     """Return the plain string IDs in a config value.
 
-    Templated values cannot be resolved statically and the ``all``/``none``
-    match constants are not references; both are skipped.
+    Templated values cannot be resolved statically, the ``all``/``none``
+    match constants are not references, and a pattern is not a name; all
+    three are skipped.
     """
     if isinstance(value, str):
         values = [value]
@@ -77,6 +98,7 @@ def _collect_ids(value: Any) -> set[str]:
         if item
         and item not in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
         and not is_template_string(item)
+        and not is_pattern_reference(item)
     }
 
 
@@ -157,7 +179,13 @@ def _walk_platform_keys(config: Any, found: ExtractedPlatformKeys) -> None:
         return
 
     if isinstance(condition := config.get("condition"), str):
-        found.condition_keys.add(condition)
+        # `condition: "{{ ... }}"` is Home Assistant's own shorthand for a
+        # template condition, and `cv.CONDITION_SCHEMA` takes it. The string
+        # is the condition itself, not the name of something that provides
+        # one, so reading it as a platform key reports the whole template
+        # back at somebody as an integration they do not have. #1520.
+        if not is_template_string(condition):
+            found.condition_keys.add(condition)
     else:
         # Only collect trigger keys outside condition configurations: the
         # trigger condition carries trigger IDs (not platform keys) in its
@@ -182,4 +210,69 @@ def extract_platform_keys_from_config(config: Any) -> ExtractedPlatformKeys:
     """
     found = ExtractedPlatformKeys()
     _walk_platform_keys(config, found)
+    return found
+
+
+# Only automations and scripts carry a raw configuration worth reading here.
+_CONFIGURED_DOMAINS = ("automation", "script")
+
+
+# Quoted literals inside a template, as in `{{ ['study', 'loft'] }}`.
+_QUOTED = re.compile(r"""['"]([^'"]+)['"]""")
+
+
+def _collect_every_string(node: Any, found: set[str]) -> None:
+    """Collect every string anywhere in a configuration, keys included.
+
+    Deliberately indiscriminate. This is not working out what a configuration
+    means; it is answering whether something is mentioned in it at all.
+
+    A template counts as one string and also as the literals inside it, since
+    `for_each: "{{ ['study'] }}"` names `study` as plainly as a list would.
+    Matching on substrings instead would be far too eager: an area called
+    `kitchen` would be found in `sensor.kitchen_temperature` and nothing would
+    ever be reported again.
+    """
+    if isinstance(node, str):
+        found.add(node)
+        if is_template_string(node):
+            found.update(_QUOTED.findall(node))
+    elif isinstance(node, Mapping):
+        for key, value in node.items():
+            if isinstance(key, str):
+                found.add(key)
+            _collect_every_string(value, found)
+    elif isinstance(node, (list, tuple, set)):
+        for item in node:
+            _collect_every_string(item, found)
+
+
+@callback
+def async_collect_mentioned_strings(hass: HomeAssistant) -> set[str]:
+    """Return every string appearing in any automation or script.
+
+    For deciding whether something is referenced, `referenced_areas` and
+    Spook's own target extraction are the right tools: they know what a
+    reference is.
+
+    This is for the other question, the one asked before offering to delete
+    something: might this be in use? An area listed in a `repeat` `for_each`
+    is a target of nothing and neither extraction reports it, yet the script
+    plainly needs it.
+
+    The answer is deliberately loose. A string that happens to match counts
+    the same as a real reference, so this proves nothing about what is in use.
+    It only decides whether Spook keeps quiet, and on something that offers to
+    delete, a coincidence is a fine reason to.
+    """
+    found: set[str] = set()
+
+    for domain in _CONFIGURED_DOMAINS:
+        if not (component := hass.data.get(DATA_INSTANCES, {}).get(domain)):
+            continue
+
+        for entity in component.entities:
+            if raw_config := getattr(entity, "raw_config", None):
+                _collect_every_string(raw_config, found)
+
     return found

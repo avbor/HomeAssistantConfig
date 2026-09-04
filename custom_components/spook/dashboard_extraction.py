@@ -14,9 +14,13 @@ so a benign string under a recognized key is dropped rather than reported.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .entity_filtering import split_comma_separated_entity_ids
+from .reference_extraction import is_pattern_reference
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 # Keys whose value holds one or more entity references, anywhere in a
 # dashboard configuration. Values may be a single entity ID, a
@@ -38,6 +42,64 @@ _ENTITY_REFERENCE_KEYS = frozenset(
 )
 
 
+# Keys whose subtree says which entities to pick rather than naming any.
+# `filter` is what auto-entities and the cards that copy it use, and what is
+# under one describes a selection: a domain, an area, a state, a pattern. None
+# of it names a particular entity, so reading it as a reference produces
+# repairs about dashboards that work perfectly well. #1514 was `area: KG/*`,
+# meaning every area under KG, reported as an area that had gone missing.
+_MATCHER_KEYS = frozenset({"filter"})
+
+# Except for this one. `options` is not a matcher: it is card configuration
+# handed to whatever matched, and it can name entities of its own, a nested
+# card with fixed rows among them. Those are on the dashboard and worth
+# checking, so the walk goes back in there.
+#
+# It is also where #1468 was found, `entity: this.entity_id` standing for
+# whichever entity matched. That one is turned away at the gate rather than
+# here, by not being an entity anybody could have.
+_NOT_A_MATCHER = "options"
+
+
+def _options_within(node: Any) -> Iterator[Any]:
+    """Yield the `options` blocks inside a matcher subtree."""
+    if isinstance(node, list):
+        for item in node:
+            yield from _options_within(item)
+        return
+
+    if not isinstance(node, dict):
+        return
+
+    for key, value in node.items():
+        if key == _NOT_A_MATCHER:
+            if isinstance(value, (dict, list)):
+                yield value
+        else:
+            yield from _options_within(value)
+
+
+def _worth_descending_into(node: dict[str, Any]) -> Iterator[Any]:
+    """Yield the subtrees of a node that can hold references."""
+    for key, value in node.items():
+        if key in _MATCHER_KEYS:
+            yield from _options_within(value)
+        elif isinstance(value, (dict, list)):
+            yield value
+
+
+# Placeholders a custom card hands to whatever it renders, standing for the
+# row's own entity. `template-entity-row` and the Mushroom templates both use
+# `config.entity`. Shaped exactly like an entity ID, so everything downstream
+# takes it for one.
+#
+# Kept here rather than in the shared `NEVER_AN_ENTITY`, which nine repairs
+# read. This is meaningless in a dashboard and could be a real dangling
+# reference in a scene or a customization, and only this walk knows which it
+# is looking at.
+_CARD_PLACEHOLDERS = frozenset({"config.entity"})
+
+
 def _collect_strings(value: Any, entities: set[str]) -> None:
     """Collect entity IDs from a recognized key's string or list value."""
     if isinstance(value, str):
@@ -46,6 +108,8 @@ def _collect_strings(value: Any, entities: set[str]) -> None:
         for item in value:
             if isinstance(item, str):
                 entities.update(split_comma_separated_entity_ids(item))
+
+    entities.difference_update(_CARD_PLACEHOLDERS)
 
 
 def _walk(node: Any, entities: set[str]) -> None:
@@ -62,9 +126,8 @@ def _walk(node: Any, entities: set[str]) -> None:
         if key in node:
             _collect_strings(node[key], entities)
 
-    for value in node.values():
-        if isinstance(value, (dict, list)):
-            _walk(value, entities)
+    for child in _worth_descending_into(node):
+        _walk(child, entities)
 
 
 def extract_entities_from_dashboard_node(node: Any) -> set[str]:
@@ -84,11 +147,19 @@ _AREA_REFERENCE_KEYS = frozenset({"area", "area_id"})
 
 
 def _collect_plain(value: Any, out: set[str]) -> None:
-    """Collect plain string IDs from a key's string or list value."""
+    """Collect plain string IDs from a key's string or list value.
+
+    A pattern is not a name, so `area: KG/*` is left where it is.
+    """
     if isinstance(value, str):
-        out.add(value)
+        if not is_pattern_reference(value):
+            out.add(value)
     elif isinstance(value, list):
-        out.update(item for item in value if isinstance(item, str))
+        out.update(
+            item
+            for item in value
+            if isinstance(item, str) and not is_pattern_reference(item)
+        )
 
 
 def _walk_areas(node: Any, areas: set[str]) -> None:
@@ -110,9 +181,8 @@ def _walk_areas(node: Any, areas: set[str]) -> None:
         for sub_key in ("hidden", "order"):
             _collect_plain(areas_display.get(sub_key), areas)
 
-    for value in node.values():
-        if isinstance(value, (dict, list)):
-            _walk_areas(value, areas)
+    for child in _worth_descending_into(node):
+        _walk_areas(child, areas)
 
 
 def extract_areas_from_dashboard_node(node: Any) -> set[str]:

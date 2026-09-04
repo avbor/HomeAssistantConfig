@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import automation, script
@@ -382,6 +383,29 @@ def async_get_all_device_ids(hass: HomeAssistant) -> set[str]:
     return device_ids | async_get_child_device_ids(device_registry)
 
 
+# A device ID is a `uuid4().hex`, which the registry hands out itself: nothing
+# else can set one. Home Assistant has no equivalent of `valid_entity_id` for
+# these, so the shape is written out here.
+#
+# Worth checking because `device_id` is not always a Home Assistant device.
+# Integrations take a field of that name meaning their own hardware, and RFLink
+# is one: `device_id: ev1527_0ddf80_0e` is a protocol address. Home Assistant's
+# own reference extraction reads `device_id` out of every action's data and
+# hands it over regardless, so without this the address comes back as a device
+# that has gone missing. #1536.
+#
+# A real device that was removed still leaves a `uuid4().hex` behind, so this
+# gives up nothing that matters: the references worth reporting are all shaped
+# like one.
+_DEVICE_ID_SHAPE = re.compile(r"\A[0-9a-f]{32}\Z")
+
+
+@callback
+def is_device_id_shaped(value: str) -> bool:
+    """Return whether this could be a device ID Home Assistant handed out."""
+    return bool(_DEVICE_ID_SHAPE.match(value))
+
+
 @callback
 def async_filter_known_device_ids(
     hass: HomeAssistant,
@@ -395,7 +419,7 @@ def async_filter_known_device_ids(
     return {
         device_id
         for device_id in device_ids - known_device_ids
-        if device_id and isinstance(device_id, str)
+        if device_id and isinstance(device_id, str) and is_device_id_shaped(device_id)
     }
 
 
@@ -434,6 +458,32 @@ def async_drop_existing_action_names(
     }
 
 
+# Placeholders that read exactly like an entity ID and are not one. `trigger`
+# is what a triggered automation is handed, `this` is what a template entity is
+# handed. Reported as unknown entities twice, #823 and #1468.
+#
+# Everything Home Assistant hands out goes here. A placeholder belonging to one
+# kind of configuration does not: this set is read by nine repairs, and what is
+# meaningless in a dashboard can be a real dangling reference in a scene. Those
+# live next to the extraction that knows about them.
+#
+# What they share is how they get this far. Written without the braces, as
+# `entity_id: trigger.entity_id` rather than `{{ trigger.entity_id }}`, they are
+# plain configuration values, so they pass everything here that reads
+# configuration. The last gate before an issue is raised asks `valid_entity_id`,
+# which answers whether a string is shaped like an entity ID rather than whether
+# anything answers to it, and both are shaped exactly right.
+#
+# Which is why these reports went nowhere for so long: everybody was looking at
+# the templates, and the templates were never it. Written *inside* a template
+# they are safe already, since `states(trigger.entity_id)` is a variable and
+# not a quoted string, and nothing here reads one. Safe, that is, only because
+# neither `trigger` nor `this` is a domain Home Assistant knows, off a list that
+# grows every release and was never chosen with these in mind. Named here so
+# that it is a decision.
+NEVER_AN_ENTITY = frozenset({"trigger.entity_id", "this.entity_id"})
+
+
 @callback
 def async_filter_known_entity_ids(
     hass: HomeAssistant,
@@ -456,7 +506,8 @@ def async_filter_known_entity_ids(
         # Process any comma-separated entity lists
         for entity_id in split_comma_separated_entity_ids(entity_id_raw):
             if (
-                not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
+                entity_id not in NEVER_AN_ENTITY
+                and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
                 and entity_id not in known_entity_ids
                 and valid_entity_id(entity_id)
             ):

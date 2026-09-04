@@ -370,9 +370,6 @@ cards:
               - entity: light.ikea_e27_kukhnia
                 name: Люстра на  Кухне
                 icon: mdi:ceiling-light
-              - entity: light.spalnia_stol
-                name: Лампа в Спальне
-                icon: mdi:desk-lamp
               - entity: light.sonoff_1000b6831b
                 name: Люстра в Кладовой
                 icon: mdi:vanity-light
