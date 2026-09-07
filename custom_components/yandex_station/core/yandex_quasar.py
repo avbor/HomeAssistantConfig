@@ -12,6 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 IOT_TYPES = {
     "on": "devices.capabilities.on_off",
+    "lock": "devices.capabilities.lock",
     "temperature": "devices.capabilities.range",
     "fan_speed": "devices.capabilities.mode",
     "thermostat": "devices.capabilities.mode",
@@ -28,6 +29,9 @@ IOT_TYPES = {
     "humidity": "devices.capabilities.range",
     "ionization": "devices.capabilities.toggle",
     "backlight": "devices.capabilities.toggle",
+    # fan
+    "oscillation": "devices.capabilities.toggle",
+    "controls_locked": "devices.capabilities.toggle",
     # climate
     "swing": "devices.capabilities.mode",
     # kettle:
