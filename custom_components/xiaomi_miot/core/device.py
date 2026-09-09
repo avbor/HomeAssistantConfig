@@ -25,7 +25,7 @@ from .hass_entity import XEntity, BasicEntity, convert_unique_id
 from .converters import (
     BaseConv, InfoConv, MiotPropConv,
     MiotPropValueConv, MiotActionConv,
-    AttrConv, MiotTargetPositionConv,
+    AttrConv, MiotTargetPositionConv, MiotTimePropConv,
 )
 from .coordinator import DataCoordinator
 from .miot_spec import MiotSpec, MiotProperty, MiotResults, MiotResult
@@ -298,19 +298,23 @@ class Device(CustomConfigHelper):
 
     @property
     def hass_device_info(self):
-        via_device = None
-        if self._proxy_device:
-            via_device = next(iter(self._proxy_device.identifiers))
-        return {
+        device_info = {
             'identifiers': self.identifiers,
             'name': self.name,
             'model': self.model,
             'manufacturer': (self.model or 'Xiaomi').split('.', 1)[0],
             'sw_version': self.sw_version,
             'suggested_area': self.info.room_name,
-            'via_device': via_device,
             'configuration_url': f'https://home.miot-spec.com/s/{self.model}',
         }
+        if self._proxy_device:
+            dev_reg = dr.async_get(self.hass)
+            if hasattr(dev_reg, 'async_get_device_by_identifier'):
+                if parent := self._proxy_device.hass_device:
+                    device_info['via_device_id'] = parent.id
+            else:
+                device_info['via_device'] = next(iter(self._proxy_device.identifiers))
+        return device_info
 
     @property
     def customizes(self):
@@ -365,6 +369,10 @@ class Device(CustomConfigHelper):
     @property
     def hass_device(self):
         dev_reg = dr.async_get(self.hass)
+        if hasattr(dev_reg, 'async_get_device_by_identifier'):
+            return dev_reg.async_get_device_by_identifier(
+                next(iter(self.identifiers)), self.entry.id
+            )
         return dev_reg.async_get_device(self.identifiers)
 
     @property
@@ -403,8 +411,14 @@ class Device(CustomConfigHelper):
         if not self.spec:
             return
 
+        custom_converters = self.custom_config('converters')
+        base_converters = (
+            GLOBAL_CONVERTERS
+            if custom_converters is None
+            else custom_converters
+        )
         appends = self.custom_config_list('append_converters') or []
-        for cfg in [*GLOBAL_CONVERTERS, *appends]:
+        for cfg in [*base_converters, *appends]:
             cls = cfg.get('class')
             kwargs = cfg.get('kwargs', {})
             if services := cfg.get('services'):
@@ -445,7 +459,7 @@ class Device(CustomConfigHelper):
 
         for d in [
             'button', 'sensor', 'binary_sensor', 'switch', 'number', 'select', 'text',
-            'number_select', 'scanner', 'target_position',
+            'time', 'number_select', 'scanner', 'target_position',
         ]:
             pls = self.custom_config_list(f'{d}_properties') or []
             if not pls:
@@ -484,6 +498,7 @@ class Device(CustomConfigHelper):
                 else:
                     conv_cls = {
                         'target_position': MiotTargetPositionConv,
+                        'time': MiotTimePropConv,
                     }.get(d) or MiotPropConv
                     conv = conv_cls(prop.full_name, platform, prop=prop)
                     conv.with_option(
@@ -891,6 +906,8 @@ class Device(CustomConfigHelper):
                 self._local_fails += 1
                 local_state = self._local_fails < 3
                 log = self.log.error
+                if is_offline_exception(exc):
+                    log = self.log.warning
                 if auto_cloud:
                     use_cloud = self.cloud
                     log = self.log.warning
@@ -937,7 +954,7 @@ class Device(CustomConfigHelper):
 
         if self.miot_results.updater != self.data.get('updater'):
             dev_reg = dr.async_get(self.hass)
-            if dev := dev_reg.async_get_device(self.identifiers):
+            if dev := self.hass_device:
                 self.data['updater'] = self.miot_results.updater
                 dev_reg.async_update_device(dev.id, sw_version=self.sw_version)
                 self.log.info('State updater: %s', self.sw_version)
@@ -1408,10 +1425,14 @@ class MiotDevice():
             resp = await self.miio.send(method, params[i : i + chunk])
             if not results:
                 self.handle_response(resp)
-            try:
-                results += resp['result']
-            except (KeyError, TypeError):
-                self.log.warning('Got miio chunked properties failed: %s', resp, exc_info=True)
+            if not isinstance(resp, dict) or 'result' not in resp:
+                self.log.warning('Got miio chunked properties failed: %s', resp)
+                return results
+            chunk_results = resp['result']
+            if not isinstance(chunk_results, list):
+                self.log.warning('Got invalid miio chunked properties result: %s', resp)
+                return results
+            results += chunk_results
         return results
 
     def handle_response(self, resp, with_empty=True):
