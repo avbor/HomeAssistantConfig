@@ -1,5 +1,5 @@
 (function() {
-    const env = {"DEBUG":true,"BUILD_TIME":"2026-08-23, 12:22 p.m."};
+    const env = {"DEBUG":true,"BUILD_TIME":"2026-09-10T16:42:21-02:30"};
     try {
         if (process) {
             process.env = Object.assign({}, process.env);
@@ -11,7 +11,7 @@
 })();
 
 var name = "simple-thermostat";
-var version = "4.3.0";
+var version = "4.4.0";
 
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -30,13 +30,13 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const t$2=globalThis,e$4=t$2.ShadowRoot&&(void 0===t$2.ShadyCSS||t$2.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,s$3=Symbol(),o$7=new WeakMap;let n$5 = class n{constructor(t,e,o){if(this._$cssResult$=true,o!==s$3)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e;}get styleSheet(){let t=this.o;const s=this.t;if(e$4&&void 0===t){const e=void 0!==s&&1===s.length;e&&(t=o$7.get(s)),void 0===t&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),e&&o$7.set(s,t));}return t}toString(){return this.cssText}};const r$6=t=>new n$5("string"==typeof t?t:t+"",void 0,s$3),i$4=(t,...e)=>{const o=1===t.length?t[0]:e.reduce(((e,s,o)=>e+(t=>{if(true===t._$cssResult$)return t.cssText;if("number"==typeof t)return t;throw Error("Value passed to 'css' function must be a 'css' function result: "+t+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(s)+t[o+1]),t[0]);return new n$5(o,t,s$3)},S$1=(s,o)=>{if(e$4)s.adoptedStyleSheets=o.map((t=>t instanceof CSSStyleSheet?t:t.styleSheet));else for(const e of o){const o=document.createElement("style"),n=t$2.litNonce;void 0!==n&&o.setAttribute("nonce",n),o.textContent=e.cssText,s.appendChild(o);}},c$3=e$4?t=>t:t=>t instanceof CSSStyleSheet?(t=>{let e="";for(const s of t.cssRules)e+=s.cssText;return r$6(e)})(t):t;
+const t$2=globalThis,e$4=t$2.ShadowRoot&&(void 0===t$2.ShadyCSS||t$2.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,s$3=Symbol(),o$7=new WeakMap;let n$5 = class n{constructor(t,e,o){if(this._$cssResult$=true,o!==s$3)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e;}get styleSheet(){let t=this.o;const s=this.t;if(e$4&&void 0===t){const e=void 0!==s&&1===s.length;e&&(t=o$7.get(s)),void 0===t&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),e&&o$7.set(s,t));}return t}toString(){return this.cssText}};const r$6=t=>new n$5("string"==typeof t?t:t+"",void 0,s$3),i$4=(t,...e)=>{const o=1===t.length?t[0]:e.reduce((e,s,o)=>e+(t=>{if(true===t._$cssResult$)return t.cssText;if("number"==typeof t)return t;throw Error("Value passed to 'css' function must be a 'css' function result: "+t+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(s)+t[o+1],t[0]);return new n$5(o,t,s$3)},S$1=(s,o)=>{if(e$4)s.adoptedStyleSheets=o.map(t=>t instanceof CSSStyleSheet?t:t.styleSheet);else for(const e of o){const o=document.createElement("style"),n=t$2.litNonce;void 0!==n&&o.setAttribute("nonce",n),o.textContent=e.cssText,s.appendChild(o);}},c$3=e$4?t=>t:t=>t instanceof CSSStyleSheet?(t=>{let e="";for(const s of t.cssRules)e+=s.cssText;return r$6(e)})(t):t;
 
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const{is:i$3,defineProperty:e$3,getOwnPropertyDescriptor:h$2,getOwnPropertyNames:r$5,getOwnPropertySymbols:o$6,getPrototypeOf:n$4}=Object,a$1=globalThis,c$2=a$1.trustedTypes,l$1=c$2?c$2.emptyScript:"",p$1=a$1.reactiveElementPolyfillSupport,d$1=(t,s)=>t,u$1={toAttribute(t,s){switch(s){case Boolean:t=t?l$1:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t);}return t},fromAttribute(t,s){let i=t;switch(s){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t);}catch(t){i=null;}}return i}},f$2=(t,s)=>!i$3(t,s),b$1={attribute:true,type:String,converter:u$1,reflect:false,useDefault:false,hasChanged:f$2};Symbol.metadata??=Symbol("metadata"),a$1.litPropertyMetadata??=new WeakMap;let y$1 = class y extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??=[]).push(t);}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,s=b$1){if(s.state&&(s.attribute=false),this._$Ei(),this.prototype.hasOwnProperty(t)&&((s=Object.create(s)).wrapped=true),this.elementProperties.set(t,s),!s.noAccessor){const i=Symbol(),h=this.getPropertyDescriptor(t,i,s);void 0!==h&&e$3(this.prototype,t,h);}}static getPropertyDescriptor(t,s,i){const{get:e,set:r}=h$2(this.prototype,t)??{get(){return this[s]},set(t){this[s]=t;}};return {get:e,set(s){const h=e?.call(this);r?.call(this,s),this.requestUpdate(t,h,i);},configurable:true,enumerable:true}}static getPropertyOptions(t){return this.elementProperties.get(t)??b$1}static _$Ei(){if(this.hasOwnProperty(d$1("elementProperties")))return;const t=n$4(this);t.finalize(),void 0!==t.l&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties);}static finalize(){if(this.hasOwnProperty(d$1("finalized")))return;if(this.finalized=true,this._$Ei(),this.hasOwnProperty(d$1("properties"))){const t=this.properties,s=[...r$5(t),...o$6(t)];for(const i of s)this.createProperty(i,t[i]);}const t=this[Symbol.metadata];if(null!==t){const s=litPropertyMetadata.get(t);if(void 0!==s)for(const[t,i]of s)this.elementProperties.set(t,i);}this._$Eh=new Map;for(const[t,s]of this.elementProperties){const i=this._$Eu(t,s);void 0!==i&&this._$Eh.set(i,t);}this.elementStyles=this.finalizeStyles(this.styles);}static finalizeStyles(s){const i=[];if(Array.isArray(s)){const e=new Set(s.flat(1/0).reverse());for(const s of e)i.unshift(c$3(s));}else void 0!==s&&i.push(c$3(s));return i}static _$Eu(t,s){const i=s.attribute;return  false===i?void 0:"string"==typeof i?i:"string"==typeof t?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=false,this.hasUpdated=false,this._$Em=null,this._$Ev();}_$Ev(){this._$ES=new Promise((t=>this.enableUpdating=t)),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach((t=>t(this)));}addController(t){(this._$EO??=new Set).add(t),void 0!==this.renderRoot&&this.isConnected&&t.hostConnected?.();}removeController(t){this._$EO?.delete(t);}_$E_(){const t=new Map,s=this.constructor.elementProperties;for(const i of s.keys())this.hasOwnProperty(i)&&(t.set(i,this[i]),delete this[i]);t.size>0&&(this._$Ep=t);}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return S$1(t,this.constructor.elementStyles),t}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(true),this._$EO?.forEach((t=>t.hostConnected?.()));}enableUpdating(t){}disconnectedCallback(){this._$EO?.forEach((t=>t.hostDisconnected?.()));}attributeChangedCallback(t,s,i){this._$AK(t,i);}_$ET(t,s){const i=this.constructor.elementProperties.get(t),e=this.constructor._$Eu(t,i);if(void 0!==e&&true===i.reflect){const h=(void 0!==i.converter?.toAttribute?i.converter:u$1).toAttribute(s,i.type);this._$Em=t,null==h?this.removeAttribute(e):this.setAttribute(e,h),this._$Em=null;}}_$AK(t,s){const i=this.constructor,e=i._$Eh.get(t);if(void 0!==e&&this._$Em!==e){const t=i.getPropertyOptions(e),h="function"==typeof t.converter?{fromAttribute:t.converter}:void 0!==t.converter?.fromAttribute?t.converter:u$1;this._$Em=e;const r=h.fromAttribute(s,t.type);this[e]=r??this._$Ej?.get(e)??r,this._$Em=null;}}requestUpdate(t,s,i){if(void 0!==t){const e=this.constructor,h=this[t];if(i??=e.getPropertyOptions(t),!((i.hasChanged??f$2)(h,s)||i.useDefault&&i.reflect&&h===this._$Ej?.get(t)&&!this.hasAttribute(e._$Eu(t,i))))return;this.C(t,s,i);} false===this.isUpdatePending&&(this._$ES=this._$EP());}C(t,s,{useDefault:i,reflect:e,wrapped:h},r){i&&!(this._$Ej??=new Map).has(t)&&(this._$Ej.set(t,r??s??this[t]),true!==h||void 0!==r)||(this._$AL.has(t)||(this.hasUpdated||i||(s=void 0),this._$AL.set(t,s)),true===e&&this._$Em!==t&&(this._$Eq??=new Set).add(t));}async _$EP(){this.isUpdatePending=true;try{await this._$ES;}catch(t){Promise.reject(t);}const t=this.scheduleUpdate();return null!=t&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(const[t,s]of this._$Ep)this[t]=s;this._$Ep=void 0;}const t=this.constructor.elementProperties;if(t.size>0)for(const[s,i]of t){const{wrapped:t}=i,e=this[s];true!==t||this._$AL.has(s)||void 0===e||this.C(s,void 0,i,e);}}let t=false;const s=this._$AL;try{t=this.shouldUpdate(s),t?(this.willUpdate(s),this._$EO?.forEach((t=>t.hostUpdate?.())),this.update(s)):this._$EM();}catch(s){throw t=false,this._$EM(),s}t&&this._$AE(s);}willUpdate(t){}_$AE(t){this._$EO?.forEach((t=>t.hostUpdated?.())),this.hasUpdated||(this.hasUpdated=true,this.firstUpdated(t)),this.updated(t);}_$EM(){this._$AL=new Map,this.isUpdatePending=false;}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return  true}update(t){this._$Eq&&=this._$Eq.forEach((t=>this._$ET(t,this[t]))),this._$EM();}updated(t){}firstUpdated(t){}};y$1.elementStyles=[],y$1.shadowRootOptions={mode:"open"},y$1[d$1("elementProperties")]=new Map,y$1[d$1("finalized")]=new Map,p$1?.({ReactiveElement:y$1}),(a$1.reactiveElementVersions??=[]).push("2.1.1");
+ */const{is:i$3,defineProperty:e$3,getOwnPropertyDescriptor:h$2,getOwnPropertyNames:r$5,getOwnPropertySymbols:o$6,getPrototypeOf:n$4}=Object,a$1=globalThis,c$2=a$1.trustedTypes,l$1=c$2?c$2.emptyScript:"",p$1=a$1.reactiveElementPolyfillSupport,d$1=(t,s)=>t,u$1={toAttribute(t,s){switch(s){case Boolean:t=t?l$1:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t);}return t},fromAttribute(t,s){let i=t;switch(s){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t);}catch(t){i=null;}}return i}},f$2=(t,s)=>!i$3(t,s),b$1={attribute:true,type:String,converter:u$1,reflect:false,useDefault:false,hasChanged:f$2};Symbol.metadata??=Symbol("metadata"),a$1.litPropertyMetadata??=new WeakMap;let y$1 = class y extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??=[]).push(t);}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,s=b$1){if(s.state&&(s.attribute=false),this._$Ei(),this.prototype.hasOwnProperty(t)&&((s=Object.create(s)).wrapped=true),this.elementProperties.set(t,s),!s.noAccessor){const i=Symbol(),h=this.getPropertyDescriptor(t,i,s);void 0!==h&&e$3(this.prototype,t,h);}}static getPropertyDescriptor(t,s,i){const{get:e,set:r}=h$2(this.prototype,t)??{get(){return this[s]},set(t){this[s]=t;}};return {get:e,set(s){const h=e?.call(this);r?.call(this,s),this.requestUpdate(t,h,i);},configurable:true,enumerable:true}}static getPropertyOptions(t){return this.elementProperties.get(t)??b$1}static _$Ei(){if(this.hasOwnProperty(d$1("elementProperties")))return;const t=n$4(this);t.finalize(),void 0!==t.l&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties);}static finalize(){if(this.hasOwnProperty(d$1("finalized")))return;if(this.finalized=true,this._$Ei(),this.hasOwnProperty(d$1("properties"))){const t=this.properties,s=[...r$5(t),...o$6(t)];for(const i of s)this.createProperty(i,t[i]);}const t=this[Symbol.metadata];if(null!==t){const s=litPropertyMetadata.get(t);if(void 0!==s)for(const[t,i]of s)this.elementProperties.set(t,i);}this._$Eh=new Map;for(const[t,s]of this.elementProperties){const i=this._$Eu(t,s);void 0!==i&&this._$Eh.set(i,t);}this.elementStyles=this.finalizeStyles(this.styles);}static finalizeStyles(s){const i=[];if(Array.isArray(s)){const e=new Set(s.flat(1/0).reverse());for(const s of e)i.unshift(c$3(s));}else void 0!==s&&i.push(c$3(s));return i}static _$Eu(t,s){const i=s.attribute;return  false===i?void 0:"string"==typeof i?i:"string"==typeof t?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=false,this.hasUpdated=false,this._$Em=null,this._$Ev();}_$Ev(){this._$ES=new Promise(t=>this.enableUpdating=t),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach(t=>t(this));}addController(t){(this._$EO??=new Set).add(t),void 0!==this.renderRoot&&this.isConnected&&t.hostConnected?.();}removeController(t){this._$EO?.delete(t);}_$E_(){const t=new Map,s=this.constructor.elementProperties;for(const i of s.keys())this.hasOwnProperty(i)&&(t.set(i,this[i]),delete this[i]);t.size>0&&(this._$Ep=t);}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return S$1(t,this.constructor.elementStyles),t}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(true),this._$EO?.forEach(t=>t.hostConnected?.());}enableUpdating(t){}disconnectedCallback(){this._$EO?.forEach(t=>t.hostDisconnected?.());}attributeChangedCallback(t,s,i){this._$AK(t,i);}_$ET(t,s){const i=this.constructor.elementProperties.get(t),e=this.constructor._$Eu(t,i);if(void 0!==e&&true===i.reflect){const h=(void 0!==i.converter?.toAttribute?i.converter:u$1).toAttribute(s,i.type);this._$Em=t,null==h?this.removeAttribute(e):this.setAttribute(e,h),this._$Em=null;}}_$AK(t,s){const i=this.constructor,e=i._$Eh.get(t);if(void 0!==e&&this._$Em!==e){const t=i.getPropertyOptions(e),h="function"==typeof t.converter?{fromAttribute:t.converter}:void 0!==t.converter?.fromAttribute?t.converter:u$1;this._$Em=e;const r=h.fromAttribute(s,t.type);this[e]=r??this._$Ej?.get(e)??r,this._$Em=null;}}requestUpdate(t,s,i,e=false,h){if(void 0!==t){const r=this.constructor;if(false===e&&(h=this[t]),i??=r.getPropertyOptions(t),!((i.hasChanged??f$2)(h,s)||i.useDefault&&i.reflect&&h===this._$Ej?.get(t)&&!this.hasAttribute(r._$Eu(t,i))))return;this.C(t,s,i);} false===this.isUpdatePending&&(this._$ES=this._$EP());}C(t,s,{useDefault:i,reflect:e,wrapped:h},r){i&&!(this._$Ej??=new Map).has(t)&&(this._$Ej.set(t,r??s??this[t]),true!==h||void 0!==r)||(this._$AL.has(t)||(this.hasUpdated||i||(s=void 0),this._$AL.set(t,s)),true===e&&this._$Em!==t&&(this._$Eq??=new Set).add(t));}async _$EP(){this.isUpdatePending=true;try{await this._$ES;}catch(t){Promise.reject(t);}const t=this.scheduleUpdate();return null!=t&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(const[t,s]of this._$Ep)this[t]=s;this._$Ep=void 0;}const t=this.constructor.elementProperties;if(t.size>0)for(const[s,i]of t){const{wrapped:t}=i,e=this[s];true!==t||this._$AL.has(s)||void 0===e||this.C(s,void 0,i,e);}}let t=false;const s=this._$AL;try{t=this.shouldUpdate(s),t?(this.willUpdate(s),this._$EO?.forEach(t=>t.hostUpdate?.()),this.update(s)):this._$EM();}catch(s){throw t=false,this._$EM(),s}t&&this._$AE(s);}willUpdate(t){}_$AE(t){this._$EO?.forEach(t=>t.hostUpdated?.()),this.hasUpdated||(this.hasUpdated=true,this.firstUpdated(t)),this.updated(t);}_$EM(){this._$AL=new Map,this.isUpdatePending=false;}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return  true}update(t){this._$Eq&&=this._$Eq.forEach(t=>this._$ET(t,this[t])),this._$EM();}updated(t){}firstUpdated(t){}};y$1.elementStyles=[],y$1.shadowRootOptions={mode:"open"},y$1[d$1("elementProperties")]=new Map,y$1[d$1("finalized")]=new Map,p$1?.({ReactiveElement:y$1}),(a$1.reactiveElementVersions??=[]).push("2.1.2");
 
 /**
  * @license
@@ -55,7 +55,7 @@ const t$1=globalThis,i$2=t=>t,s$2=t$1.trustedTypes,e$2=s$2?s$2.createPolicy("lit
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const o$3={attribute:true,type:String,converter:u$1,reflect:false,hasChanged:f$2},r$3=(t=o$3,e,r)=>{const{kind:n,metadata:i}=r;let s=globalThis.litPropertyMetadata.get(i);if(void 0===s&&globalThis.litPropertyMetadata.set(i,s=new Map),"setter"===n&&((t=Object.create(t)).wrapped=true),s.set(r.name,t),"accessor"===n){const{name:o}=r;return {set(r){const n=e.get.call(this);e.set.call(this,r),this.requestUpdate(o,n,t);},init(e){return void 0!==e&&this.C(o,void 0,t,e),e}}}if("setter"===n){const{name:o}=r;return function(r){const n=this[o];e.call(this,r),this.requestUpdate(o,n,t);}}throw Error("Unsupported decorator location: "+n)};function n$2(t){return (e,o)=>"object"==typeof o?r$3(t,e,o):((t,e,o)=>{const r=e.hasOwnProperty(o);return e.constructor.createProperty(o,t),r?Object.getOwnPropertyDescriptor(e,o):void 0})(t,e,o)}
+ */const o$3={attribute:true,type:String,converter:u$1,reflect:false,hasChanged:f$2},r$3=(t=o$3,e,r)=>{const{kind:n,metadata:i}=r;let s=globalThis.litPropertyMetadata.get(i);if(void 0===s&&globalThis.litPropertyMetadata.set(i,s=new Map),"setter"===n&&((t=Object.create(t)).wrapped=true),s.set(r.name,t),"accessor"===n){const{name:o}=r;return {set(r){const n=e.get.call(this);e.set.call(this,r),this.requestUpdate(o,n,t,true,r);},init(e){return void 0!==e&&this.C(o,void 0,t,e),e}}}if("setter"===n){const{name:o}=r;return function(r){const n=this[o];e.call(this,r),this.requestUpdate(o,n,t,true,r);}}throw Error("Unsupported decorator location: "+n)};function n$2(t){return (e,o)=>"object"==typeof o?r$3(t,e,o):((t,e,o)=>{const r=e.hasOwnProperty(o);return e.constructor.createProperty(o,t),r?Object.getOwnPropertyDescriptor(e,o):void 0})(t,e,o)}
 
 /**
  * @license
@@ -63,7 +63,10 @@ const t$1=globalThis,i$2=t=>t,s$2=t$1.trustedTypes,e$2=s$2?s$2.createPolicy("lit
  * SPDX-License-Identifier: BSD-3-Clause
  */function r$2(r){return n$2({...r,state:true,attribute:false})}
 
+var mdiArrowDown = "M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z";
+var mdiArrowUp = "M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z";
 var mdiBookOpenVariant = "M12 21.5C10.65 20.65 8.2 20 6.5 20C4.85 20 3.15 20.3 1.75 21.05C1.65 21.1 1.6 21.1 1.5 21.1C1.25 21.1 1 20.85 1 20.6V6C1.6 5.55 2.25 5.25 3 5C4.11 4.65 5.33 4.5 6.5 4.5C8.45 4.5 10.55 4.9 12 6C13.45 4.9 15.55 4.5 17.5 4.5C18.67 4.5 19.89 4.65 21 5C21.75 5.25 22.4 5.55 23 6V20.6C23 20.85 22.75 21.1 22.5 21.1C22.4 21.1 22.35 21.1 22.25 21.05C20.85 20.3 19.15 20 17.5 20C15.8 20 13.35 20.65 12 21.5M12 8V19.5C13.35 18.65 15.8 18 17.5 18C18.7 18 19.9 18.15 21 18.5V7C19.9 6.65 18.7 6.5 17.5 6.5C15.8 6.5 13.35 7.15 12 8M13 11.5C14.11 10.82 15.6 10.5 17.5 10.5C18.41 10.5 19.26 10.59 20 10.78V9.23C19.13 9.08 18.29 9 17.5 9C15.73 9 14.23 9.28 13 9.84V11.5M17.5 11.67C15.79 11.67 14.29 11.93 13 12.46V14.15C14.11 13.5 15.6 13.16 17.5 13.16C18.54 13.16 19.38 13.24 20 13.4V11.9C19.13 11.74 18.29 11.67 17.5 11.67M20 14.57C19.13 14.41 18.29 14.33 17.5 14.33C15.67 14.33 14.17 14.6 13 15.13V16.82C14.11 16.16 15.6 15.83 17.5 15.83C18.54 15.83 19.38 15.91 20 16.07V14.57Z";
+var mdiDeleteOutline = "M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z";
 
 function styleInject(css, ref) {
   if ( ref === void 0 ) ref = {};
@@ -172,15 +175,16 @@ ha-card.no-header {
   padding: calc(var(--st-spacing, var(--st-default-spacing)) * 4) 0;
 }
 
-ha-card.unavailable,
-ha-card.unknown {
+ha-card.unavailable .header__main,
+ha-card.unknown .header__main,
+ha-card.unavailable .current-wrapper,
+ha-card.unknown .current-wrapper,
+.mode-item[aria-disabled='true'] {
   opacity: 0.56;
-  pointer-events: none;
   filter: saturate(0.6);
 }
 
-ha-card.unavailable .mode-item,
-ha-card.unknown .mode-item,
+.mode-item[aria-disabled='true'],
 ha-card.unavailable .thermostat-trigger,
 ha-card.unknown .thermostat-trigger {
   cursor: default;
@@ -254,29 +258,38 @@ ha-card.loading {
 }
 
 .body {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(min-content, auto);
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
   align-items: center;
-  justify-items: center;
-  place-items: center;
+  justify-content: center;
   padding: 0 calc(var(--st-spacing, var(--st-default-spacing)) * 4);
 }
-.body.has-entities.setpoint-count-2 {
-  grid-template-columns:
-    minmax(min-content, max-content) minmax(max-content, 1fr)
-    minmax(max-content, 1fr);
+.body > .entities {
+  flex: 1 1 max-content;
+  min-width: 0;
+  max-width: 100%;
+  justify-content: center;
 }
-.body.has-entities.step-column.setpoint-count-1 {
-  grid-template-columns: minmax(0, 1fr) max-content;
+.setpoints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
+  flex: 1 0 max-content;
+  justify-content: space-around;
+  min-width: 0;
+  max-width: 100%;
 }
-.body.has-entities.step-column.setpoint-count-2 {
-  grid-template-columns:
-    minmax(var(--st-entity-column-min-width), max-content)
-      minmax(max-content, 1fr)
-    minmax(max-content, 1fr);
+.body.has-entities.step-column.setpoint-count-1 > .setpoints {
+  flex: 0 0 auto;
+  width: 35%;
+  min-width: -moz-max-content;
+  min-width: max-content;
 }
-
+.setpoints > .current-wrapper {
+  flex: 1 0 max-content;
+  width: auto;
+}
 .toggle-label {
   color: var(--st-toggle-label-color, var(--primary-text-color));
   --st-toggle-color: var(--primary-color);
@@ -397,7 +410,10 @@ ha-card.loading {
   }
 
 .entities.as-table.with-labels {
-    grid-template-columns: auto auto;
+    grid-template-columns: minmax(min-content, max-content) minmax(
+        min-content,
+        max-content
+      );
     grid-auto-flow: row;
     -moz-column-gap: 8px;
          column-gap: 8px;
@@ -420,7 +436,9 @@ ha-card.loading {
   font-weight: 300;
   padding-right: 8px;
   padding-bottom: 0;
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -437,6 +455,8 @@ ha-card.loading {
 .entity-action {
   grid-column: 1 / -1;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   min-width: 0;
   min-height: 28px;
   border: 0;
@@ -472,7 +492,12 @@ ha-card.loading {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.entity-action__label {
+  white-space: normal;
+  word-wrap: anywhere;
+}
 .entity-action__state {
+  flex-shrink: 0;
   color: var(--secondary-text-color);
   font-size: 0.9em;
 }
@@ -1361,8 +1386,12 @@ ha-card.drying {
   padding-bottom: var(--st-spacing, var(--st-default-spacing));
 }
 
-.modes.hvac.sparse .mode-item:not(.label-stacked):not(.label-column) .mode-label,
-.modes.state.sparse .mode-item:not(.label-stacked):not(.label-column) .mode-label {
+.modes.hvac.sparse
+  .mode-item:not(.label-stacked):not(.label-column)
+  .mode-label,
+.modes.state.sparse
+  .mode-item:not(.label-stacked):not(.label-column)
+  .mode-label {
   white-space: nowrap;
 }
 
@@ -1379,7 +1408,10 @@ ha-card.drying {
 }
 
 .modes.hvac.sparse .mode-item.label-stacked .mode-label-line + .mode-label-line,
-.modes.state.sparse .mode-item.label-stacked .mode-label-line + .mode-label-line {
+.modes.state.sparse
+  .mode-item.label-stacked
+  .mode-label-line
+  + .mode-label-line {
   margin-top: 1px;
 }
 
@@ -1863,6 +1895,7 @@ ha-card.standard-visuals .thermostat-trigger:active {
 
 .editor-extra-entities__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
@@ -1890,16 +1923,41 @@ ha-card.standard-visuals .thermostat-trigger:active {
   border-radius: var(--st-mode-radius, 8px);
 }
 
+.editor-entity-suggestions {
+  display: grid;
+  grid-gap: var(--st-spacing, var(--st-default-spacing));
+  gap: var(--st-spacing, var(--st-default-spacing));
+  margin-bottom: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
+  color: var(--secondary-text-color);
+}
+
+.editor-entity-suggestions__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--st-spacing, var(--st-default-spacing));
+}
+
 .editor-entity-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(120px, 0.7fr) auto auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   align-items: center;
   grid-gap: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
   gap: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
   margin-top: calc(var(--st-spacing, var(--st-default-spacing)) * 2);
 }
 
-@media (max-width: 720px) {
+.editor-entity-row > * {
+  min-width: 0;
+}
+
+.editor-row-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+@media (max-width: 420px) {
   .editor-extra-entities__header,
   .editor-entity-row {
     display: flex;
@@ -2304,7 +2362,8 @@ const LABELS = {
     unit: 'Unit',
     'layout.step': 'Step layout',
     step_size: 'Step size',
-    setpoint_debounce_ms: 'Target debounce',
+    setpoint_debounce_ms: 'Target debounce (ms)',
+    setpoint_hold_repeat: 'Repeat target changes while held',
     fallback: 'Fallback text',
     'hide.temperature': 'Hide current value',
     hide_current_value_when_off: 'Hide current value while off',
@@ -2312,6 +2371,7 @@ const LABELS = {
     'hide.setpoint_label': 'Hide target label',
     hide_setpoint_when_off: 'Hide target controls while off',
     hide_setpoint: 'Hide target controls',
+    disable_setpoint_change: 'Disable target changes',
     disable_setpoint_change_when_off: 'Disable target changes while off',
     'label.temperature': 'Current value label',
     'label.state': 'State label',
@@ -2387,12 +2447,14 @@ const DIRECT_FORM_PATHS = [
     'layout.entities.separator',
     'layout.entities.alignment',
     'setpoint_debounce_ms',
+    'setpoint_hold_repeat',
     'hide.temperature',
     'hide_current_value_when_off',
     'hide.state',
     'hide.setpoint_label',
     'hide_setpoint_when_off',
     'hide_setpoint',
+    'disable_setpoint_change',
     'disable_setpoint_change_when_off',
     'label.temperature',
     'label.state',
@@ -2471,17 +2533,22 @@ function getDefaultControlData(config) {
     }, {});
 }
 function getSupportedControlTypes(config, hass) {
-    if (!config.entity || !hass?.states?.[config.entity]) {
-        return [];
-    }
-    const entity = hass.states[config.entity];
-    const attributes = entity.attributes ?? {};
-    const [entityDomain] = config.entity.split('.');
+    const entity = hass?.states?.[config.entity];
+    const attributes = entity?.attributes ?? {};
+    const entityDomain = config.entity?.split('.')[0];
     const adapter = getAdapter(config.entity);
+    const configuredTypes = Array.isArray(config.control)
+        ? config.control
+        : isControlObject(config.control)
+            ? Object.keys(config.control)
+            : [];
     return CONTROL_TYPES.filter((type) => MODE_TYPES$1.includes(type) &&
-        (type === MODES.STATE
-            ? entityDomain === 'fan' || entityDomain === 'humidifier'
-            : typeof attributes[adapter.getModeAttribute(type)] !== 'undefined'));
+        (configuredTypes.includes(type) ||
+            (entity &&
+                (type === MODES.STATE
+                    ? entityDomain === 'fan' || entityDomain === 'humidifier'
+                    : typeof attributes[adapter.getModeAttribute(type)] !==
+                        'undefined'))));
 }
 function getControlFromForm(updated, config, hass) {
     const entity = String(updated.entity ?? config.entity ?? '');
@@ -2707,12 +2774,20 @@ function buildSchema(config, hass) {
                             schema: [
                                 { name: 'hide_setpoint', selector: { boolean: {} } },
                                 {
+                                    name: 'disable_setpoint_change',
+                                    selector: { boolean: {} },
+                                },
+                                {
                                     name: 'hide_setpoint_when_off',
                                     selector: { boolean: {} },
                                 },
                                 { name: 'hide.setpoint_label', selector: { boolean: {} } },
                                 {
                                     name: 'disable_setpoint_change_when_off',
+                                    selector: { boolean: {} },
+                                },
+                                {
+                                    name: 'setpoint_hold_repeat',
                                     selector: { boolean: {} },
                                 },
                             ],
@@ -2901,12 +2976,14 @@ class SimpleThermostatEditor extends i$1 {
             step_size: this.config.step_size != null ? String(this.config.step_size) : 'auto',
             fallback: this.config.fallback ?? '',
             setpoint_debounce_ms: this.config.setpoint_debounce_ms ?? '',
+            setpoint_hold_repeat: this.config.setpoint_hold_repeat === true,
             'hide.temperature': this.config.hide?.temperature === true,
             hide_current_value_when_off: this.config.hide_current_value_when_off === true ||
                 this.config.hide?.current_value_when_off === true ||
                 this.config.hide?.temperature_when_off === true,
             'hide.state': this.config.hide?.state === true,
             hide_setpoint: this.config.hide_setpoint === true,
+            disable_setpoint_change: this.config.disable_setpoint_change === true,
             disable_setpoint_change_when_off: this.config.disable_setpoint_change_when_off === true,
             'hide.setpoint_label': this.config.hide?.setpoint_label === true,
             hide_setpoint_when_off: this.config.hide_setpoint_when_off === true ||
@@ -2938,18 +3015,22 @@ class SimpleThermostatEditor extends i$1 {
         const formData = { ...currentFormData, ...updated };
         const copy = cloneDeep(this.config);
         this._applyDirectFormPaths(copy, formData, changedPaths);
-        if (formData.enhanced_visuals === false) {
-            copy.enhanced_visuals = false;
+        if (changedPaths.has('enhanced_visuals')) {
+            copy.enhanced_visuals = formData.enhanced_visuals !== false;
         }
-        else {
-            delete copy.enhanced_visuals;
+        if (changedPaths.has('hide_setpoint_when_off')) {
+            deleteNested(copy, 'hide.setpoint_when_off');
+        }
+        if (changedPaths.has('hide_current_value_when_off')) {
+            deleteNested(copy, 'hide.current_value_when_off');
+            deleteNested(copy, 'hide.temperature_when_off');
         }
         if (HEADER_FORM_PATHS.some((path) => changedPaths.has(path))) {
             if (formData.show_header === false) {
                 copy.header = false;
             }
             else {
-                this._applyHeaderFormChange(copy, formData);
+                this._applyHeaderFormChange(copy, formData, changedPaths);
             }
         }
         if (changedPaths.has('step_size')) {
@@ -2978,7 +3059,7 @@ class SimpleThermostatEditor extends i$1 {
             }
         }
     }
-    _applyHeaderFormChange(copy, updated) {
+    _applyHeaderFormChange(copy, updated, changedPaths) {
         if (copy.header === false || copy.header == null)
             copy.header = {};
         const header = copy.header;
@@ -2987,31 +3068,41 @@ class SimpleThermostatEditor extends i$1 {
         const toggleEntity = updated['toggle.entity'];
         const toggleLabel = updated['toggle.name'];
         const toggleIcon = updated['toggle.icon'];
-        if (typeof headerName === 'string' && headerName)
-            header.name = headerName;
-        else
-            delete header.name;
-        if (typeof headerIcon === 'string' && headerIcon)
-            header.icon = headerIcon;
-        else
-            delete header.icon;
+        if (changedPaths.has('name')) {
+            if (typeof headerName === 'string' && headerName)
+                header.name = headerName;
+            else
+                delete header.name;
+        }
+        if (changedPaths.has('icon')) {
+            if (typeof headerIcon === 'string' && headerIcon)
+                header.icon = headerIcon;
+            else
+                delete header.icon;
+        }
         if (typeof toggleEntity === 'string' && toggleEntity) {
+            if (!['toggle.entity', 'toggle.name', 'toggle.icon'].some((path) => changedPaths.has(path)))
+                return;
             header.toggle = header.toggle || { entity: toggleEntity };
             header.toggle.entity = toggleEntity;
-            if (typeof toggleLabel === 'string' && toggleLabel) {
-                header.toggle.name = toggleLabel;
+            if (changedPaths.has('toggle.name')) {
+                if (typeof toggleLabel === 'string' && toggleLabel) {
+                    header.toggle.name = toggleLabel;
+                }
+                else {
+                    delete header.toggle.name;
+                }
             }
-            else {
-                delete header.toggle.name;
-            }
-            if (typeof toggleIcon === 'string' && toggleIcon) {
-                header.toggle.icon = toggleIcon;
-            }
-            else {
-                delete header.toggle.icon;
+            if (changedPaths.has('toggle.icon')) {
+                if (typeof toggleIcon === 'string' && toggleIcon) {
+                    header.toggle.icon = toggleIcon;
+                }
+                else {
+                    delete header.toggle.icon;
+                }
             }
         }
-        else {
+        else if (changedPaths.has('toggle.entity')) {
             delete header.toggle;
         }
     }
@@ -3041,8 +3132,48 @@ class SimpleThermostatEditor extends i$1 {
     _addEntityRow() {
         this._commitEntityRows([...this._getExtraEntities(), { entity: '' }]);
     }
+    _addSuggestedEntity(entityId) {
+        this._commitEntityRows([...this._getExtraEntities(), { entity: entityId }]);
+    }
+    _getRelatedEntitySuggestions() {
+        const registry = this.hass?.entities;
+        const sourceDeviceId = registry?.[this.config.entity]?.device_id;
+        if (!sourceDeviceId)
+            return [];
+        const configured = new Set([
+            this.config.entity,
+            this.config.current_value_entity,
+            ...this._getExtraEntities().map((entity) => entity.entity),
+            ...this._getFooterRows().map((entity) => entity.entity),
+        ]);
+        return Object.entries(registry)
+            .filter(([entityId, entry]) => entry?.device_id === sourceDeviceId &&
+            !entry?.disabled_by &&
+            !entry?.hidden_by &&
+            !configured.has(entityId) &&
+            this.hass?.states?.[entityId])
+            .map(([entityId]) => entityId)
+            .sort((left, right) => this._getEntitySuggestionLabel(left).localeCompare(this._getEntitySuggestionLabel(right)));
+    }
+    _getEntitySuggestionLabel(entityId) {
+        const stateObj = this.hass?.states?.[entityId];
+        return (stateObj?.attributes?.friendly_name ??
+            entityId.split('.').pop()?.replace(/_/g, ' ') ??
+            entityId);
+    }
     _removeEntityRow(index) {
         this._commitEntityRows(this._getExtraEntities().filter((_, entityIndex) => entityIndex !== index));
+    }
+    _moveEntityRow(index, offset) {
+        const rows = [...this._getExtraEntities()];
+        const destination = index + offset;
+        if (index < 0 ||
+            index >= rows.length ||
+            destination < 0 ||
+            destination >= rows.length)
+            return;
+        rows.splice(destination, 0, rows.splice(index, 1)[0]);
+        this._commitEntityRows(rows);
     }
     _updateEntityRow(index, field, value) {
         const entities = this._getExtraEntities().map((entity, entityIndex) => {
@@ -3082,6 +3213,17 @@ class SimpleThermostatEditor extends i$1 {
     _removeFooterRow(index) {
         this._commitFooterRows(this._getFooterRows().filter((_, footerIndex) => footerIndex !== index));
     }
+    _moveFooterRow(index, offset) {
+        const rows = [...this._getFooterRows()];
+        const destination = index + offset;
+        if (index < 0 ||
+            index >= rows.length ||
+            destination < 0 ||
+            destination >= rows.length)
+            return;
+        rows.splice(destination, 0, rows.splice(index, 1)[0]);
+        this._commitFooterRows(rows);
+    }
     _updateFooterRow(index, field, value) {
         const footer = this._getFooterRows().map((row, footerIndex) => {
             if (footerIndex !== index)
@@ -3095,8 +3237,35 @@ class SimpleThermostatEditor extends i$1 {
         });
         this._commitFooterRows(footer);
     }
-    _renderExtraEntityRows() {
+    _renderRowActions(index, count, move, remove) {
+        return b `
+      <div class="editor-row-actions">
+        <ha-icon-button
+          label="Move up"
+          title="Move up"
+          .path=${mdiArrowUp}
+          .disabled=${index === 0}
+          @click=${() => move(-1)}
+        ></ha-icon-button>
+        <ha-icon-button
+          label="Move down"
+          title="Move down"
+          .path=${mdiArrowDown}
+          .disabled=${index === count - 1}
+          @click=${() => move(1)}
+        ></ha-icon-button>
+        <ha-icon-button
+          label="Remove"
+          title="Remove"
+          .path=${mdiDeleteOutline}
+          @click=${remove}
+        ></ha-icon-button>
+      </div>
+    `;
+    }
+    _renderExtraEntityRows(schema = []) {
         const entities = this._getExtraEntities();
+        const suggestions = this._getRelatedEntitySuggestions();
         return b `
       <section class="editor-extra-entities">
         <div class="editor-extra-entities__header">
@@ -3107,48 +3276,73 @@ class SimpleThermostatEditor extends i$1 {
           <ha-button @click=${this._addEntityRow}>Add row</ha-button>
         </div>
 
+        <ha-form
+          .hass=${this.hass}
+          .data=${this._buildFormData()}
+          .schema=${schema}
+          .computeLabel=${this._computeLabel}
+          @value-changed=${this._valueChanged}
+        ></ha-form>
+
+        ${suggestions.length
+            ? b `
+                <div class="editor-entity-suggestions">
+                  <span>Suggested from this device</span>
+                  <div class="editor-entity-suggestions__items">
+                    ${suggestions.map((entityId) => b `
+                        <ha-button
+                          @click=${() => this._addSuggestedEntity(entityId)}
+                          title=${entityId}
+                        >
+                          Add ${this._getEntitySuggestionLabel(entityId)}
+                        </ha-button>
+                      `)}
+                  </div>
+                </div>
+              `
+            : A}
         ${entities.length === 0
             ? b `<p class="editor-extra-entities__empty">
-              No extra rows configured.
-            </p>`
+                No extra rows configured.
+              </p>`
             : entities.map((entity, index) => b `
-                <div class="editor-entity-row">
-                  <ha-entity-picker
-                    .hass=${this.hass}
-                    .value=${entity.entity ?? ''}
-                    allow-custom-entity
-                    @value-changed=${(ev) => this._updateEntityRow(index, 'entity', ev.detail.value)}
-                  ></ha-entity-picker>
-                  <ha-textfield
-                    label="Name"
-                    .value=${entity.name ?? ''}
-                    @input=${(ev) => this._updateEntityRow(index, 'name', ev.target.value)}
-                  ></ha-textfield>
-                  <ha-icon-picker
-                    .hass=${this.hass}
-                    .value=${entity.icon ?? ''}
-                    @value-changed=${(ev) => this._updateEntityRow(index, 'icon', ev.detail.value)}
-                  ></ha-icon-picker>
-                  <ha-select
-                    label="Display"
-                    clearable
-                    .value=${entity.display ?? ''}
-                    @value-changed=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
-                    @selected=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
-                    @change=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
-                  >
-                    <mwc-list-item value="">Default</mwc-list-item>
-                    ${ENTITY_DISPLAY_OPTIONS.map((option) => b `
-                        <mwc-list-item value=${option.value}>
-                          ${option.label}
-                        </mwc-list-item>
-                      `)}
-                  </ha-select>
-                  <ha-button @click=${() => this._removeEntityRow(index)}>
-                    Remove
-                  </ha-button>
-                </div>
-              `)}
+                  <div class="editor-entity-row">
+                    <ha-entity-picker
+                      label="Entity"
+                      .hass=${this.hass}
+                      .value=${entity.entity ?? ''}
+                      allow-custom-entity
+                      @value-changed=${(ev) => this._updateEntityRow(index, 'entity', ev.detail.value)}
+                    ></ha-entity-picker>
+                    <ha-textfield
+                      label="Name"
+                      .value=${entity.name ?? ''}
+                      @input=${(ev) => this._updateEntityRow(index, 'name', ev.target.value)}
+                    ></ha-textfield>
+                    <ha-icon-picker
+                      label="Icon"
+                      .hass=${this.hass}
+                      .value=${entity.icon ?? ''}
+                      @value-changed=${(ev) => this._updateEntityRow(index, 'icon', ev.detail.value)}
+                    ></ha-icon-picker>
+                    <ha-select
+                      label="Display"
+                      clearable
+                      .value=${entity.display ?? ''}
+                      @value-changed=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
+                      @selected=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
+                      @change=${(ev) => this._updateEntityRow(index, 'display', getSelectValue(ev))}
+                    >
+                      <mwc-list-item value="">Default</mwc-list-item>
+                      ${ENTITY_DISPLAY_OPTIONS.map((option) => b `
+                          <mwc-list-item value=${option.value}>
+                            ${option.label}
+                          </mwc-list-item>
+                        `)}
+                    </ha-select>
+                    ${this._renderRowActions(index, entities.length, (offset) => this._moveEntityRow(index, offset), () => this._removeEntityRow(index))}
+                  </div>
+                `)}
       </section>
     `;
     }
@@ -3166,48 +3360,50 @@ class SimpleThermostatEditor extends i$1 {
 
         ${footer.length === 0
             ? b `<p class="editor-extra-entities__empty">
-              No footer controls configured.
-            </p>`
+                No footer controls configured.
+              </p>`
             : footer.map((row, index) => b `
-                <div class="editor-entity-row">
-                  <ha-entity-picker
-                    .hass=${this.hass}
-                    .value=${row.entity ?? ''}
-                    allow-custom-entity
-                    @value-changed=${(ev) => this._updateFooterRow(index, 'entity', ev.detail.value)}
-                  ></ha-entity-picker>
-                  <ha-textfield
-                    label="Name override"
-                    .value=${row.name ?? ''}
-                    @input=${(ev) => this._updateFooterRow(index, 'name', ev.target.value)}
-                  ></ha-textfield>
-                  <ha-icon-picker
-                    .hass=${this.hass}
-                    .value=${row.icon ?? ''}
-                    @value-changed=${(ev) => this._updateFooterRow(index, 'icon', ev.detail.value)}
-                  ></ha-icon-picker>
-                  <ha-button @click=${() => this._removeFooterRow(index)}>
-                    Remove
-                  </ha-button>
-                </div>
-              `)}
+                  <div class="editor-entity-row">
+                    <ha-entity-picker
+                      label="Entity"
+                      .hass=${this.hass}
+                      .value=${row.entity ?? ''}
+                      allow-custom-entity
+                      @value-changed=${(ev) => this._updateFooterRow(index, 'entity', ev.detail.value)}
+                    ></ha-entity-picker>
+                    <ha-textfield
+                      label="Name override"
+                      .value=${row.name ?? ''}
+                      @input=${(ev) => this._updateFooterRow(index, 'name', ev.target.value)}
+                    ></ha-textfield>
+                    <ha-icon-picker
+                      label="Icon"
+                      .hass=${this.hass}
+                      .value=${row.icon ?? ''}
+                      @value-changed=${(ev) => this._updateFooterRow(index, 'icon', ev.detail.value)}
+                    ></ha-icon-picker>
+                    ${this._renderRowActions(index, footer.length, (offset) => this._moveFooterRow(index, offset), () => this._removeFooterRow(index))}
+                  </div>
+                `)}
       </section>
     `;
     }
     render() {
         if (!this.hass || !this.config)
             return b ``;
+        const schema = buildSchema(this.config, this.hass);
+        const rowSection = schema.find((section) => section.title === 'Extra entity rows');
         return b `
       <div class="card-config">
         <ha-form
           .hass=${this.hass}
           .data=${this._buildFormData()}
-          .schema=${buildSchema(this.config, this.hass)}
+          .schema=${schema.filter((section) => section !== rowSection)}
           .computeLabel=${this._computeLabel}
           @value-changed=${this._valueChanged}
         ></ha-form>
 
-        ${this._renderExtraEntityRows()}
+        ${this._renderExtraEntityRows(rowSection?.schema)}
         ${this._renderFooterRows()}
 
         <div class="editor-footer">
@@ -3268,13 +3464,36 @@ function toEditableTarget(target) {
     return {
         ...target,
         entity: target?.entity ?? '',
-        name: target?.name ?? header.name,
-        icon: target?.icon ?? header.icon,
+        name: target?.name ??
+            (typeof header.name === 'string' ? header.name : undefined),
+        icon: target?.icon ??
+            (typeof header.icon === 'string' ? header.icon : undefined),
     };
 }
 function normalizeTargets(config) {
     const targets = (config.cards ?? config.entities ?? []).map(toEditableTarget);
     return targets.length ? targets : [{ entity: '' }, { entity: '' }];
+}
+function valuesEqual(left, right) {
+    if (Object.is(left, right))
+        return true;
+    if (Array.isArray(left) || Array.isArray(right)) {
+        return (Array.isArray(left) &&
+            Array.isArray(right) &&
+            left.length === right.length &&
+            left.every((value, index) => valuesEqual(value, right[index])));
+    }
+    if (!left ||
+        !right ||
+        typeof left !== 'object' ||
+        typeof right !== 'object') {
+        return false;
+    }
+    const leftObject = left;
+    const rightObject = right;
+    const keys = Object.keys(leftObject);
+    return (keys.length === Object.keys(rightObject).length &&
+        keys.every((key) => valuesEqual(leftObject[key], rightObject[key])));
 }
 class SimpleThermostatGroupEditor extends i$1 {
     constructor() {
@@ -3295,8 +3514,8 @@ class SimpleThermostatGroupEditor extends i$1 {
       }
 
       .target {
-        display: grid;
-        grid-template-columns: 1fr auto;
+        display: flex;
+        flex-wrap: wrap;
         gap: 8px;
         align-items: end;
         padding: 12px;
@@ -3330,12 +3549,14 @@ class SimpleThermostatGroupEditor extends i$1 {
 
       .target-fields {
         display: grid;
+        flex: 1 1 360px;
+        min-width: 0;
         gap: 8px;
       }
 
       .target-meta {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
         gap: 8px;
       }
 
@@ -3347,13 +3568,24 @@ class SimpleThermostatGroupEditor extends i$1 {
 
       .target-actions {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
+        margin-left: auto;
         gap: 8px;
         align-items: center;
       }
 
+      .target-order {
+        display: flex;
+        gap: 4px;
+      }
+
+      .editor-section + .editor-section {
+        margin-top: 24px;
+      }
+
       .target-editor {
-        grid-column: 1 / -1;
+        flex-basis: 100%;
+        min-width: 0;
         border-top: 1px solid var(--divider-color, rgba(127, 127, 127, 0.3));
         margin-top: 4px;
         padding-top: 12px;
@@ -3413,12 +3645,9 @@ class SimpleThermostatGroupEditor extends i$1 {
       }
 
       @media (max-width: 500px) {
-        .target {
-          grid-template-columns: 1fr;
-        }
-
         .target-actions {
           flex-direction: row;
+          flex-wrap: wrap;
           justify-content: flex-end;
         }
 
@@ -3453,14 +3682,28 @@ class SimpleThermostatGroupEditor extends i$1 {
     }
     updateTarget(index, patch) {
         const targets = this.getTargets();
-        targets[index] = { ...targets[index], ...patch };
+        const target = { ...targets[index], ...patch };
+        // The summary fields can originate from the embedded card's header.
+        if (target.header && typeof target.header === 'object') {
+            target.header = { ...target.header };
+            for (const field of ['name', 'icon']) {
+                if (!(field in patch) || !(field in target.header))
+                    continue;
+                const value = patch[field]?.trim();
+                if (value)
+                    target.header[field] = value;
+                else
+                    delete target.header[field];
+            }
+        }
+        targets[index] = target;
         this.commitTargets(targets);
     }
     cleanTargets(targets) {
         return targets.map((target) => {
             const entity = target.entity?.trim() ?? '';
-            const name = target.name?.trim();
-            const icon = target.icon?.trim();
+            const name = typeof target.name === 'string' ? target.name.trim() : undefined;
+            const icon = typeof target.icon === 'string' ? target.icon.trim() : undefined;
             const { name: _name, icon: _icon, entity: _entity, ...rest } = target;
             if (!name && !icon && Object.keys(rest).length === 0)
                 return entity;
@@ -3478,7 +3721,27 @@ class SimpleThermostatGroupEditor extends i$1 {
     }
     removeTarget(index) {
         const targets = this.getTargets().filter((_, targetIndex) => targetIndex !== index);
+        if (this.expandedTargetIndex === index)
+            this.expandedTargetIndex = null;
+        else if (this.expandedTargetIndex !== null &&
+            this.expandedTargetIndex > index)
+            this.expandedTargetIndex--;
         this.commitTargets(targets.length ? targets : [{ entity: '' }]);
+    }
+    moveTarget(index, offset) {
+        const targets = this.getTargets();
+        const destination = index + offset;
+        if (index < 0 ||
+            index >= targets.length ||
+            destination < 0 ||
+            destination >= targets.length)
+            return;
+        targets.splice(destination, 0, targets.splice(index, 1)[0]);
+        if (this.expandedTargetIndex === index)
+            this.expandedTargetIndex = destination;
+        else if (this.expandedTargetIndex === destination)
+            this.expandedTargetIndex = index;
+        this.commitTargets(targets);
     }
     commitTargets(targets) {
         const { entities: _entities, ...config } = this.config;
@@ -3511,6 +3774,7 @@ class SimpleThermostatGroupEditor extends i$1 {
       <ha-button
         class=${selected ? 'selected' : ''}
         appearance=${selected ? 'filled' : 'outlined'}
+        aria-pressed=${String(selected)}
         @click=${() => this.updateSelectorStyle(value)}
       >
         ${label}
@@ -3521,8 +3785,7 @@ class SimpleThermostatGroupEditor extends i$1 {
         const autoSelect = this.config.auto_select;
         return (autoSelect === true ||
             autoSelect === 'recent_activity' ||
-            (typeof autoSelect === 'object' &&
-                autoSelect?.mode === 'recent_activity'));
+            (typeof autoSelect === 'object' && autoSelect?.mode === 'recent_activity'));
     }
     updateAutoSelect(enabled) {
         const { auto_select: _autoSelect, ...config } = this.config;
@@ -3547,7 +3810,11 @@ class SimpleThermostatGroupEditor extends i$1 {
         });
     }
     getTargetCardConfig(target) {
-        const { name: name$1, icon, ...config } = target;
+        const { name: name$1, icon, ...targetConfig } = target;
+        const config = {
+            ...(this.config.card ?? {}),
+            ...targetConfig,
+        };
         const header = config.header && typeof config.header === 'object'
             ? { ...config.header }
             : {};
@@ -3578,12 +3845,19 @@ class SimpleThermostatGroupEditor extends i$1 {
     updateTargetCardConfig(index, ev) {
         ev.stopPropagation();
         const targets = this.getTargets();
-        targets[index] = toEditableTarget(ev.detail.config);
+        const updated = { ...(ev.detail.config ?? {}) };
+        const common = (this.config.card ?? {});
+        Object.keys(common).forEach((key) => {
+            if (key !== 'entity' && valuesEqual(updated[key], common[key])) {
+                delete updated[key];
+            }
+        });
+        delete updated.embedded;
+        targets[index] = toEditableTarget(updated);
         this.commitTargets(targets);
     }
     toggleTargetEditor(index) {
-        this.expandedTargetIndex =
-            this.expandedTargetIndex === index ? null : index;
+        this.expandedTargetIndex = this.expandedTargetIndex === index ? null : index;
     }
     renderEntityPicker(target, index) {
         return b `
@@ -3623,26 +3897,43 @@ class SimpleThermostatGroupEditor extends i$1 {
           <ha-button size="s" @click=${() => this.toggleTargetEditor(index)}>
             ${expanded ? 'Close' : 'Configure'}
           </ha-button>
-          ${this.getTargets().length > 1
+          <div class="target-order">
+            <ha-icon-button
+              label="Move up"
+              title="Move up"
+              .path=${mdiArrowUp}
+              .disabled=${index === 0}
+              @click=${() => this.moveTarget(index, -1)}
+            ></ha-icon-button>
+            <ha-icon-button
+              label="Move down"
+              title="Move down"
+              .path=${mdiArrowDown}
+              .disabled=${index === this.getTargets().length - 1}
+              @click=${() => this.moveTarget(index, 1)}
+            ></ha-icon-button>
+            ${this.getTargets().length > 1
             ? b `
-                <ha-icon-button
-                  label="Remove"
-                  .path=${'M19,13H5V11H19V13Z'}
-                  @click=${() => this.removeTarget(index)}
-                ></ha-icon-button>
-              `
+                    <ha-icon-button
+                      label="Remove"
+                      title="Remove"
+                      .path=${mdiDeleteOutline}
+                      @click=${() => this.removeTarget(index)}
+                    ></ha-icon-button>
+                  `
             : A}
+          </div>
         </div>
         ${expanded
             ? b `
-              <div class="target-editor">
-                <simple-thermostat-editor
-                  .hass=${this.hass}
-                  ${n((element) => this.configureNestedEditor(element, target))}
-                  @config-changed=${(ev) => this.updateTargetCardConfig(index, ev)}
-                ></simple-thermostat-editor>
-              </div>
-            `
+                <div class="target-editor">
+                  <simple-thermostat-editor
+                    .hass=${this.hass}
+                    ${n((element) => this.configureNestedEditor(element, target))}
+                    @config-changed=${(ev) => this.updateTargetCardConfig(index, ev)}
+                  ></simple-thermostat-editor>
+                </div>
+              `
             : A}
       </div>
     `;
@@ -3703,6 +3994,7 @@ class SimpleThermostatGroupEditor extends i$1 {
           <span class="option-description">${description}</span>
         </div>
         <ha-switch
+          aria-label=${title}
           .checked=${checked}
           @change=${(ev) => update(ev.currentTarget.checked)}
         ></ha-switch>
@@ -3719,6 +4011,14 @@ __decorate([
 __decorate([
     r$2()
 ], SimpleThermostatGroupEditor.prototype, "expandedTargetIndex", void 0);
+
+function isEntityAvailable(entity) {
+    if (typeof entity?.state !== 'string' || entity.state === 'unavailable')
+        return false;
+    // Momentary entities can be unknown until their first activation.
+    return (entity.state !== 'unknown' ||
+        ['button', 'input_button', 'scene'].includes(entity.entity_id?.split('.')[0] ?? ''));
+}
 
 function getEntityActionAttribute(entity) {
     if (typeof entity.entity_id !== 'string')
@@ -4071,6 +4371,7 @@ class SimpleThermostatGroup extends i$1 {
         this.embeddedCardPendingSignature = '';
         this.fadeInAfterSync = false;
         this.activitySignatures = new Map();
+        this.activityRecords = new Map();
         this.activitySignaturesInitialized = false;
         this.persistedActivityApplied = false;
         this.lastManualSelectionAt = 0;
@@ -4561,7 +4862,9 @@ class SimpleThermostatGroup extends i$1 {
         justify-content: center;
         width: var(--st-control-icon-size, 32px);
         height: var(--st-control-icon-size, 32px);
-        margin-right: calc(var(--st-spacing, var(--st-default-spacing, 4px)) * 2);
+        margin-right: calc(
+          var(--st-spacing, var(--st-default-spacing, 4px)) * 2
+        );
         color: var(--state-icon-color, var(--secondary-text-color));
         isolation: isolate;
         flex: 0 0 auto;
@@ -4744,6 +5047,21 @@ class SimpleThermostatGroup extends i$1 {
             },
         };
         this.targets = targets;
+        this.activityRecords.clear();
+        try {
+            const records = JSON.parse(window.localStorage.getItem(`${this.getActivityStorageKey(config)}:v2`) ?? '[]');
+            if (Array.isArray(records))
+                records.forEach((record) => {
+                    if (targets.some((target) => target.entity === record?.entity) &&
+                        typeof record.signature === 'string' &&
+                        Number.isFinite(record.timestamp)) {
+                        this.activityRecords.set(record.entity, record);
+                    }
+                });
+        }
+        catch {
+            /* Storage may be unavailable. Live tracking still works. */
+        }
         this.selectedEntity = this.getInitialSelection(config, targets);
         this.activitySignatures.clear();
         this.activitySignaturesInitialized = false;
@@ -4758,6 +5076,10 @@ class SimpleThermostatGroup extends i$1 {
     getCardSize() {
         if (!this.config || !this.targets.length)
             return 1;
+        const embeddedSize = this.embeddedCard?.getCardSize?.();
+        if (typeof embeddedSize === 'number' && Number.isFinite(embeddedSize)) {
+            return Math.max(1, embeddedSize);
+        }
         const target = this.getSelectedTarget();
         const cardConfig = this.getTargetCardConfig(target);
         const entityCount = Array.isArray(cardConfig.entities)
@@ -4985,37 +5307,15 @@ class SimpleThermostatGroup extends i$1 {
         if (!state)
             return '';
         const domain = getDomain(target.entity);
-        const attributes = state.attributes ?? {};
         const action = getEntityAction(state) ?? '';
-        const keys = domain === 'climate'
-            ? [
-                'hvac_action',
-                'temperature',
-                'target_temp_low',
-                'target_temp_high',
-                'preset_mode',
-                'fan_mode',
-                'swing_mode',
-                'swing_horizontal_mode',
-                'swing_vertical_mode',
-            ]
-            : domain === 'fan'
-                ? ['percentage', 'preset_mode', 'direction', 'oscillating']
-                : domain === 'humidifier'
-                    ? ['action', 'humidity', 'mode']
-                    : [];
-        const parts = [`state:${state.state}`, `action:${action}`];
-        keys.forEach((key) => {
-            parts.push(`${key}:${JSON.stringify(attributes[key] ?? null)}`);
-        });
-        return parts.join('|');
+        return `domain:${domain}|state:${state.state}|action:${action}`;
     }
     getActivityTimestamp(target) {
         const state = this.hass?.states?.[target.entity];
-        const activeRank = this.getActivityActiveRank(target);
-        const value = activeRank > 1
-            ? state?.last_updated ?? state?.last_changed
-            : state?.last_changed ?? state?.last_updated;
+        const record = this.activityRecords.get(target.entity);
+        if (record?.signature === this.getActivitySignature(target))
+            return record.timestamp;
+        const value = state?.last_changed ?? state?.last_updated;
         const timestamp = typeof value === 'string' ? Date.parse(value) : NaN;
         return Number.isFinite(timestamp) ? timestamp : 0;
     }
@@ -5024,11 +5324,19 @@ class SimpleThermostatGroup extends i$1 {
             target,
             timestamp,
             activeRank: this.getActivityActiveRank(target),
+            observed: this.activityRecords.get(target.entity)?.observed === true &&
+                this.activityRecords.get(target.entity)?.signature ===
+                    this.getActivitySignature(target),
         };
     }
     isBetterActivityCandidate(candidate, selected) {
         if (!selected)
             return true;
+        if (candidate.observed || selected.observed) {
+            if (candidate.observed !== selected.observed)
+                return candidate.observed === true;
+            return candidate.timestamp > selected.timestamp;
+        }
         if (candidate.activeRank !== selected.activeRank) {
             return candidate.activeRank > selected.activeRank;
         }
@@ -5051,7 +5359,9 @@ class SimpleThermostatGroup extends i$1 {
             return;
         }
         this.persistedActivityApplied = true;
-        const storedSelection = this.readStoredSelectionRecord(this.config);
+        const storedSelection = this.config.remember_selection === false
+            ? undefined
+            : this.readStoredSelectionRecord(this.config);
         const validStoredSelection = storedSelection &&
             this.targets.some((target) => target.entity === storedSelection.entity);
         const latest = this.getMostRecentStateActivityCandidate();
@@ -5072,7 +5382,9 @@ class SimpleThermostatGroup extends i$1 {
         }
         const storedTarget = this.targets.find((target) => target.entity === stored.entity);
         const currentSignature = nextSignatures.get(stored.entity);
-        if (storedTarget && currentSignature && currentSignature === stored.signature) {
+        if (storedTarget &&
+            currentSignature &&
+            currentSignature === stored.signature) {
             const storedCandidate = this.getActivityCandidate(storedTarget, stored.timestamp);
             if (latest && this.isBetterActivityCandidate(latest, storedCandidate)) {
                 this.selectMostRecentStateActivity(nextSignatures);
@@ -5134,20 +5446,42 @@ class SimpleThermostatGroup extends i$1 {
             return;
         const changedTargets = [];
         const nextSignatures = new Map();
+        let recordsChanged = false;
         this.targets.forEach((target) => {
             const signature = this.getActivitySignature(target);
             nextSignatures.set(target.entity, signature);
+            const previous = this.activityRecords.get(target.entity);
             if (this.activitySignaturesInitialized &&
                 signature &&
                 signature !== this.activitySignatures.get(target.entity)) {
-                this.writeStoredActivity({
+                const record = {
                     entity: target.entity,
                     signature,
                     timestamp: Date.now(),
-                });
+                    observed: true,
+                };
+                this.activityRecords.set(target.entity, record);
+                recordsChanged = true;
+                this.writeStoredActivity(record);
                 changedTargets.push(this.getActivityCandidate(target, Date.now()));
             }
+            else if (signature && previous?.signature !== signature) {
+                recordsChanged = true;
+                this.activityRecords.set(target.entity, {
+                    entity: target.entity,
+                    signature,
+                    timestamp: this.getActivityTimestamp(target),
+                    observed: false,
+                });
+            }
         });
+        if (recordsChanged)
+            try {
+                window.localStorage.setItem(`${this.getActivityStorageKey(this.config)}:v2`, JSON.stringify([...this.activityRecords.values()]));
+            }
+            catch {
+                /* Storage may be unavailable. Live tracking still works. */
+            }
         this.activitySignatures = nextSignatures;
         if (!this.activitySignaturesInitialized) {
             this.activitySignaturesInitialized = true;
@@ -5157,7 +5491,8 @@ class SimpleThermostatGroup extends i$1 {
         if (!changedTargets.length ||
             !this.isRecentActivityAutoSelectEnabled() ||
             this.menuOpen ||
-            Date.now() - this.lastManualSelectionAt < this.getAutoSelectManualPauseMs()) {
+            Date.now() - this.lastManualSelectionAt <
+                this.getAutoSelectManualPauseMs()) {
             return;
         }
         const latest = changedTargets.reduce((selected, candidate) => this.isBetterActivityCandidate(candidate, selected) ? candidate : selected);
@@ -5228,17 +5563,8 @@ class SimpleThermostatGroup extends i$1 {
         return this.getTargetCardConfig(target);
     }
     getEmbeddedConfigSignature(config) {
-        return JSON.stringify(config, (_key, value) => {
-            if (!value || typeof value !== 'object' || Array.isArray(value)) {
-                return value;
-            }
-            return Object.keys(value)
-                .sort()
-                .reduce((result, key) => {
-                result[key] = value[key];
-                return result;
-            }, {});
-        });
+        // Control and option key order affects rendering, even without an _order array.
+        return JSON.stringify(config);
     }
     getTargetCardConfig(target) {
         const commonConfig = (this.config?.card ?? {});
@@ -5249,11 +5575,6 @@ class SimpleThermostatGroup extends i$1 {
             ...sourceConfig,
             ...targetConfig,
         };
-        if (!mergedConfig.card_mod) {
-            const fallbackCardMod = this.getFallbackCardMod();
-            if (fallbackCardMod)
-                mergedConfig.card_mod = fallbackCardMod;
-        }
         return {
             ...mergedConfig,
             embedded: true,
@@ -5267,14 +5588,6 @@ class SimpleThermostatGroup extends i$1 {
             typeof item === 'object' &&
             item.entity === target.entity);
         return source && typeof source === 'object' ? source : {};
-    }
-    getFallbackCardMod() {
-        const commonCardMod = (this.config?.card ?? {}).card_mod;
-        if (commonCardMod)
-            return commonCardMod;
-        const sourceTargets = this.config?.cards ?? this.config?.entities ?? [];
-        const styledTarget = sourceTargets.find((item) => !!item && typeof item === 'object' && !!item.card_mod);
-        return styledTarget?.card_mod;
     }
     getCardHelpers() {
         if (!this.cardHelpersPromise) {
@@ -5300,7 +5613,8 @@ class SimpleThermostatGroup extends i$1 {
             this.embeddedCardPendingSignature = '';
             return;
         }
-        if (this.getEmbeddedConfigSignature(this.getEmbeddedConfig()) !== configSignature) {
+        if (this.getEmbeddedConfigSignature(this.getEmbeddedConfig()) !==
+            configSignature) {
             return;
         }
         this.embeddedCard = embedded;
@@ -5426,6 +5740,8 @@ class SimpleThermostatGroup extends i$1 {
     }
     toggleHeaderEntity(ev, entityId) {
         ev.stopPropagation();
+        if (!isEntityAvailable(this.hass?.states?.[entityId]))
+            return;
         const checked = Boolean(ev.target.checked);
         this.hass?.callService?.('homeassistant', `turn_${checked ? 'on' : 'off'}`, {
             entity_id: entityId,
@@ -5449,20 +5765,21 @@ class SimpleThermostatGroup extends i$1 {
             <div class="group-toggle">
               <ha-switch
                 .checked=${state?.state === 'on'}
+                .disabled=${!isEntityAvailable(state)}
                 @change=${(ev) => this.toggleHeaderEntity(ev, toggle.entity)}
               ></ha-switch>
               ${icon
                 ? b `<ha-icon
-                    title=${label || toggle.entity}
-                    icon=${icon}
-                  ></ha-icon>`
+                      title=${label || toggle.entity}
+                      icon=${icon}
+                    ></ha-icon>`
                 : label
                     ? b `<span class="group-toggle-label">${label}</span>`
                     : A}
               ${label && icon
                 ? b `<span class="group-toggle-label" title=${label}
-                    >${label}</span
-                  >`
+                      >${label}</span
+                    >`
                 : A}
             </div>
           `;
@@ -5551,7 +5868,7 @@ class SimpleThermostatGroup extends i$1 {
             return A;
         const action = getEntityAction(state) || String(state.state);
         const icon = typeof header.icon === 'object'
-            ? header.icon?.[action] ?? false
+            ? (header.icon?.[action] ?? false)
             : header.icon;
         if (!icon)
             return A;
@@ -5559,9 +5876,7 @@ class SimpleThermostatGroup extends i$1 {
         const stateClass = safeClass$3(state.state);
         return b `
       <span
-        class="header__icon-wrap ${stateClass}${actionClass} ${header.slashOffIcon
-            ? 'slash-off'
-            : ''}"
+        class="header__icon-wrap ${stateClass}${actionClass} ${header.slashOffIcon ? 'slash-off' : ''}"
       >
         <ha-icon
           class="header__icon ${stateClass}${actionClass}"
@@ -5609,15 +5924,15 @@ class SimpleThermostatGroup extends i$1 {
                 ${icon ? b `<ha-icon icon=${icon}></ha-icon>` : A}
                 ${selector.names !== false
                 ? b `
-                      <span class="group-tab-labels">
-                        <span class="group-tab-name">${label}</span>
-                        ${stateLabel
+                        <span class="group-tab-labels">
+                          <span class="group-tab-name">${label}</span>
+                          ${stateLabel
                     ? b `<span class="group-tab-state"
-                              >${stateLabel}</span
-                            >`
+                                  >${stateLabel}</span
+                                >`
                     : A}
-                      </span>
-                    `
+                        </span>
+                      `
                 : A}
               </button>
             `;
@@ -6002,9 +6317,7 @@ function renderIcon(icon, state, action, slashOffIcon = false) {
     return icon
         ? b `
         <span
-          class="header__icon-wrap ${state}${actionClass} ${slashOffIcon
-            ? 'slash-off'
-            : ''}"
+          class="header__icon-wrap ${state}${actionClass} ${slashOffIcon ? 'slash-off' : ''}"
         >
           <ha-icon
             class="header__icon ${state}${actionClass}"
@@ -6025,11 +6338,7 @@ function renderFaults(faults, openEntityPopover) {
         if (!state)
             return A;
         return b ` <ha-icon
-      class="fault-icon ${state.state === 'on'
-            ? 'active'
-            : hide_inactive
-                ? ' hide'
-                : ''}"
+      class="fault-icon ${state.state === 'on' ? 'active' : hide_inactive ? ' hide' : ''}"
       .icon=${icon || state.attributes?.icon}
       @click="${() => openEntityPopover(state.entity_id)}"
     ></ha-icon>`;
@@ -6060,14 +6369,10 @@ function renderToggles(toggles, openEntityPopover, toggleEntityChanged, hass, ma
         const toggleKindClass = getToggleKindClass(toggleKind);
         return b `
           <div
-            class="header__toggle ${toggleState || ''} ${toggleDomain
-            ? `domain-${toggleDomain}`
-            : ''} ${toggleKindClass}"
+            class="header__toggle ${toggleState || ''} ${toggleDomain ? `domain-${toggleDomain}` : ''} ${toggleKindClass}"
           >
             <span
-              class="clickable toggle-label ${toggleState || ''} ${toggleDomain
-            ? `domain-${toggleDomain}`
-            : ''} ${toggleKindClass}"
+              class="clickable toggle-label ${toggleState || ''} ${toggleDomain ? `domain-${toggleDomain}` : ''} ${toggleKindClass}"
               title=${toggle.label || toggle.entity?.attributes?.friendly_name}
               @click=${() => openEntityPopover(entityId)}
               >${toggle.icon !== false
@@ -6076,6 +6381,7 @@ function renderToggles(toggles, openEntityPopover, toggleEntityChanged, hass, ma
             </span>
             <ha-switch
               .checked=${toggle.entity?.state === 'on'}
+              .disabled=${!isEntityAvailable(toggle.entity)}
               @change=${(ev) => toggleEntityChanged(ev, entityId)}
             ></ha-switch>
           </div>
@@ -6084,12 +6390,6 @@ function renderToggles(toggles, openEntityPopover, toggleEntityChanged, hass, ma
     </div>
   `;
 }
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */class e extends i{constructor(i){if(super(i),this.it=A,i.type!==t.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(r){if(r===A||null==r)return this._t=void 0,this.it=r;if(r===E)return r;if("string"!=typeof r)throw Error(this.constructor.directiveName+"() called with a non-string value");if(r===this.it)return this._t;this.it=r;const s=[r];return s.raw=s,this._t={_$litType$:this.constructor.resultType,strings:s,values:[]}}}e.directiveName="unsafeHTML",e.resultType=1;const o=e$1(e);
 
 function escapeRegExp(value) {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -6327,6 +6627,51 @@ if (!customElements.get(TIMER_REMAINING_TAG)) {
     customElements.define(TIMER_REMAINING_TAG, SimpleThermostatTimerRemaining);
 }
 
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */class e extends i{constructor(i){if(super(i),this.it=A,i.type!==t.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(r){if(r===A||null==r)return this._t=void 0,this.it=r;if(r===E)return r;if("string"!=typeof r)throw Error(this.constructor.directiveName+"() called with a non-string value");if(r===this.it)return this._t;this.it=r;const s=[r];return s.raw=s,this._t={_$litType$:this.constructor.resultType,strings:s,values:[]}}}e.directiveName="unsafeHTML",e.resultType=1;const o=e$1(e);
+
+// HA's datetime is a property, not an attribute. Hydrate only our template output.
+class TemplateContent extends i$1 {
+    constructor() {
+        super(...arguments);
+        this.markup = '';
+    }
+    createRenderRoot() {
+        return this;
+    }
+    render() {
+        return o(this.markup);
+    }
+    updated() {
+        this.querySelectorAll('ha-relative-time').forEach((element) => {
+            const relative = element;
+            relative.datetime = element.getAttribute('datetime') ?? undefined;
+            relative.hass = this.hass;
+        });
+    }
+}
+__decorate([
+    n$2({ attribute: false })
+], TemplateContent.prototype, "markup", void 0);
+__decorate([
+    n$2({ attribute: false })
+], TemplateContent.prototype, "hass", void 0);
+if (!customElements.get('simple-thermostat-template-content')) {
+    customElements.define('simple-thermostat-template-content', TemplateContent);
+}
+function renderTemplateContent(markup, hass) {
+    return markup.includes('<ha-relative-time')
+        ? b `<simple-thermostat-template-content
+        style="display: contents"
+        .markup=${markup}
+        .hass=${hass}
+      ></simple-thermostat-template-content>`
+        : o(markup);
+}
+
 const TOGGLE_DOMAINS = [
     'automation',
     'fan',
@@ -6338,6 +6683,8 @@ const TOGGLE_DOMAINS = [
 const BUTTON_DOMAINS = ['button', 'input_button', 'script', 'scene'];
 const DISPLAY_VALUES = ['row', 'auto', 'button', 'toggle', 'chip'];
 function toggleEntity(hass, entityId, checked) {
+    if (!isEntityAvailable(hass.states?.[entityId]))
+        return;
     const service = `turn_${checked ? 'on' : 'off'}`;
     if (typeof hass.performAction === 'function') {
         hass.performAction({
@@ -6353,14 +6700,14 @@ function safeClass$1(value) {
     return String(value ?? '').replace(/[^a-z0-9_-]/gi, '');
 }
 function callEntityAction(hass, entityId, domain) {
+    if (!isEntityAvailable(hass.states?.[entityId]))
+        return;
     if (TOGGLE_DOMAINS.includes(domain)) {
         const checked = hass.states?.[entityId]?.state !== 'on';
         toggleEntity(hass, entityId, checked);
         return;
     }
-    const service = domain === 'button' || domain === 'input_button'
-        ? 'press'
-        : 'turn_on';
+    const service = domain === 'button' || domain === 'input_button' ? 'press' : 'turn_on';
     if (typeof hass.performAction === 'function') {
         hass.performAction({
             action: `${domain}.${service}`,
@@ -6417,19 +6764,73 @@ function resolveDisplay(display, domain) {
         return 'button';
     return 'chip';
 }
-function getEntityDisplayValue({ state, domain, hass, localize, }) {
-    if (domain === 'timer') {
+function isEntityState(state) {
+    return (!!state && typeof state === 'object' && typeof state.entity_id === 'string');
+}
+function renderInfoValue(state, details, hass, localize) {
+    const { template, attribute, decimals, unit, type, config, variables } = details;
+    const entityState = isEntityState(state);
+    if (template && entityState) {
+        return renderTemplateContent(appendUnit(renderTemplate({
+            template,
+            stateObj: state,
+            attribute,
+            hass,
+            config,
+            variables,
+            localize,
+        }), unit || false), hass);
+    }
+    const raw = entityState
+        ? attribute
+            ? state.attributes?.[attribute]
+            : state.state
+        : state;
+    if (type === 'relativetime') {
+        return b `<ha-relative-time
+      .datetime=${raw}
+      .hass=${hass}
+    ></ha-relative-time>`;
+    }
+    if (entityState && !attribute && state.entity_id.startsWith('timer.')) {
         return b `<simple-thermostat-timer-remaining
       .stateObj=${state}
       .hass=${hass}
     ></simple-thermostat-timer-remaining>`;
     }
-    if (typeof hass.formatEntityState === 'function') {
-        return hass.formatEntityState(state);
+    if (raw === null || typeof raw === 'undefined')
+        return config?.fallback ?? 'N/A';
+    if (typeof raw === 'object')
+        return JSON.stringify(raw);
+    let value = raw;
+    if (typeof decimals === 'number') {
+        value = formatNumber(raw, {
+            decimals,
+            locale: hass.locale,
+            fallback: config?.fallback,
+        });
     }
-    return localize
-        ? localize(state.state, `component.${domain}.state._.`)
-        : String(state.state);
+    else if (entityState) {
+        const domain = state.entity_id.split('.')[0];
+        value = attribute
+            ? typeof hass.formatEntityAttributeValue === 'function'
+                ? hass.formatEntityAttributeValue(state, attribute)
+                : raw
+            : typeof hass.formatEntityState === 'function'
+                ? hass.formatEntityState(state)
+                : localize
+                    ? localize(String(raw), `component.${domain}.state.${state.attributes?.device_class ?? '_'}.`)
+                    : raw;
+    }
+    const stateUnit = entityState && !attribute ? state.attributes?.unit_of_measurement : '';
+    const humidityUnit = entityState &&
+        !attribute &&
+        (state.attributes?.device_class === 'humidity' ||
+            state.entity_id.includes('humidity') ||
+            details.icon === 'mdi:water-percent')
+        ? '%'
+        : '';
+    return appendUnit(value, unit || stateUnit || humidityUnit || false, value);
 }
 function renderInfoItem({ hide = false, hass, state, details, localize, openEntityPopover, }) {
     if (hide || typeof state === 'undefined')
@@ -6453,11 +6854,11 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         variables,
         localize,
     });
-    const hasConfiguredUnit = typeof unit === 'string' && unit.length > 0;
-    const entityId = typeof state === 'object' ? state.entity_id : entity;
+    const stateIsEntity = isEntityState(state);
+    const entityId = stateIsEntity ? state.entity_id : entity;
     const canOpenEntity = entityId && typeof openEntityPopover === 'function';
     const entityTooltip = configuredTooltip ||
-        (typeof state === 'object'
+        (stateIsEntity
             ? state?.attributes?.friendly_name || state?.entity_id
             : entity
                 ? hass.states?.[entity]?.attributes?.friendly_name || entity
@@ -6467,32 +6868,8 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
     let isToggleEntity = false;
     let usesCompactEntityDisplay = false;
     let valueCell;
-    if (template && typeof state === 'object') {
-        const value = renderTemplate({
-            template,
-            stateObj: state,
-            attribute,
-            hass,
-            config,
-            variables,
-            localize,
-        });
-        valueCell = b `<div
-      class="entity-value ${canOpenEntity ? 'clickable' : ''}"
-      title=${entityTooltip}
-      @click="${canOpenEntity ? () => openEntityPopover(entityId) : null}"
-    >
-      ${o(appendUnit(value, hasConfiguredUnit ? unit : false))}
-    </div>`;
-    }
-    else if (type === 'relativetime') {
-        valueCell = b `
-      <div class="entity-value">
-        <ha-relative-time .datetime=${state} .hass=${hass}></ha-relative-time>
-      </div>
-    `;
-    }
-    else if (typeof state === 'object') {
+    const displayValue = renderInfoValue(state, details, hass, localize);
+    if (stateIsEntity) {
         const [domain] = state.entity_id.split('.');
         entityDomain = domain;
         entityState = state.state;
@@ -6517,24 +6894,23 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
             usesCompactEntityDisplay = true;
             const supportsAction = isToggleEntity || BUTTON_DOMAINS.includes(domain);
             const active = state.state === 'on';
-            const actionLabel = typeof heading === 'string'
-                ? heading
-                : state.attributes?.friendly_name || state.entity_id;
-            const fallbackIcon = renderedIcon || state.attributes?.icon || (isToggleEntity
-                ? 'mdi:toggle-switch'
-                : BUTTON_DOMAINS.includes(domain)
-                    ? 'mdi:gesture-tap-button'
-                    : undefined);
-            const displayValue = getEntityDisplayValue({
-                state,
-                domain,
-                hass,
-                localize,
-            });
+            const actionLabel = renderedHeading !== undefined
+                ? renderTemplateContent(renderedHeading, hass)
+                : typeof heading === 'string'
+                    ? heading
+                    : state.attributes?.friendly_name || state.entity_id;
+            const fallbackIcon = renderedIcon ||
+                state.attributes?.icon ||
+                (isToggleEntity
+                    ? 'mdi:toggle-switch'
+                    : BUTTON_DOMAINS.includes(domain)
+                        ? 'mdi:gesture-tap-button'
+                        : undefined);
             valueCell = b `
         <button
           class="entity-action ${entityClasses} ${active ? 'active' : ''}"
           type="button"
+          ?disabled=${supportsAction && !isEntityAvailable(state)}
           title=${entityTooltip}
           aria-pressed=${isToggleEntity ? String(active) : A}
           @click=${() => supportsAction
@@ -6551,19 +6927,18 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         </button>
       `;
         }
-        else if (domain === 'timer') {
+        else if (domain === 'timer' ||
+            !isToggleEntity ||
+            attribute ||
+            template ||
+            type === 'relativetime') {
             valueCell = b `
         <div
           class="entity-value ${canOpenEntity ? 'clickable' : ''}"
           title=${entityTooltip}
-          @click="${canOpenEntity
-                ? () => openEntityPopover(state.entity_id)
-                : null}"
+          @click="${canOpenEntity ? () => openEntityPopover(state.entity_id) : null}"
         >
-          <simple-thermostat-timer-remaining
-            .stateObj=${state}
-            .hass=${hass}
-          ></simple-thermostat-timer-remaining>
+          ${displayValue}
         </div>
       `;
         }
@@ -6572,63 +6947,20 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         <div class="entity-value ${entityClasses}">
           <ha-switch
             .checked=${state.state === 'on'}
+            .disabled=${!isEntityAvailable(state)}
             @change=${(ev) => toggleEntity(hass, state.entity_id, ev.target.checked)}
           ></ha-switch>
         </div>
       `;
         }
-        else {
-            const prefix = [
-                'component',
-                domain,
-                'state',
-                state.attributes?.device_class ?? '_',
-                '',
-            ].join('.');
-            let value = typeof hass.formatEntityState === 'function'
-                ? hass.formatEntityState(state)
-                : localize(state.state, prefix);
-            if (typeof decimals === 'number') {
-                value = formatNumber(state.state, {
-                    decimals,
-                    locale: hass.locale,
-                });
-            }
-            const stateUnit = state.attributes.unit_of_measurement ?? '';
-            const humidityUnit = state.attributes?.device_class === 'humidity' ||
-                state.entity_id?.includes('humidity') ||
-                icon === 'mdi:water-percent'
-                ? '%'
-                : '';
-            const configuredUnit = hasConfiguredUnit
-                ? unit
-                : stateUnit || humidityUnit;
-            valueCell = b `
-        <div
-          class="entity-value ${canOpenEntity ? 'clickable' : ''}"
-          title=${entityTooltip}
-          @click="${canOpenEntity
-                ? () => openEntityPopover(state.entity_id)
-                : null}"
-        >
-          ${appendUnit(value, configuredUnit, value)}
-        </div>
-      `;
-        }
     }
     else {
-        let value = typeof decimals === 'number'
-            ? formatNumber(state, {
-                decimals,
-                locale: hass.locale,
-            })
-            : state;
         valueCell = b `<div
       class="entity-value ${canOpenEntity ? 'clickable' : ''}"
       title=${entityTooltip || A}
       @click=${canOpenEntity ? () => openEntityPopover(entityId) : null}
     >
-      ${appendUnit(value, hasConfiguredUnit ? unit : false)}
+      ${displayValue}
     </div>`;
     }
     if (usesCompactEntityDisplay) {
@@ -6665,15 +6997,15 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
         ></ha-icon>
       `
         : typeof renderedHeading === 'string'
-            ? b `${o(renderedHeading)}`
+            ? renderTemplateContent(renderedHeading, hass)
             : ` ${heading}${separator === false ? '' : ':'} `;
     const headingCell = b `<div
-      class=${headingClasses}
-      title=${renderedIcon ? tooltip : A}
-      @click=${canOpenEntity ? () => openEntityPopover(entityId) : null}
-    >
-      ${headingResult}
-    </div>`;
+    class=${headingClasses}
+    title=${renderedIcon ? tooltip : A}
+    @click=${canOpenEntity ? () => openEntityPopover(entityId) : null}
+  >
+    ${headingResult}
+  </div>`;
     return [headingCell, valueCell];
 }
 
@@ -6834,6 +7166,7 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
         return null;
     }
     const modeAttribute = type === 'hvac' ? null : adapter.getModePayloadKey(type);
+    const disabled = !isEntityAvailable(options.entity ? hass?.states?.[options.entity] : entity);
     let localizePrefix = modeAttribute
         ? `state_attributes.${adapter.getLocalizationDomain()}.${modeAttribute}.`
         : '';
@@ -6848,14 +7181,14 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
         type === 'mode') {
         localizePrefix = '';
     }
-    const maybeRenderName = (name, value) => {
+    const maybeRenderName = (name, value, nameConfigured) => {
         if (name === false)
             return null;
         if (modeOptions?.names === false)
             return null;
-        if (name !== value) {
-            return localizePrefix ? localize(name, localizePrefix) : name;
-        }
+        if (nameConfigured === true ||
+            (nameConfigured === undefined && name !== value))
+            return name;
         if ((type === 'hvac' || type === 'state') &&
             typeof hass?.formatEntityState === 'function') {
             return hass.formatEntityState({ ...entity, state: value });
@@ -6865,7 +7198,8 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
             typeof hass?.formatEntityAttributeValue === 'function') {
             return hass.formatEntityAttributeValue(entity, modeAttribute, value);
         }
-        return localizePrefix ? localize(name, localizePrefix) : name;
+        const translated = localizePrefix ? localize(value, localizePrefix) : value;
+        return translated && translated !== value ? translated : name;
     };
     const maybeRenderIcon = (icon, iconConfigured = false) => {
         if (!icon)
@@ -6948,8 +7282,7 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
     const headings = modeOptions?.headings === true || heading === true;
     const showHeading = headings && title !== false;
     const isFanPreset = type === 'preset' && adapter.getLocalizationDomain() === 'fan';
-    const sparseMainControls = (type === 'hvac' || type === 'state' || type === 'fan') &&
-        list.length <= 4;
+    const sparseMainControls = (type === 'hvac' || type === 'state' || type === 'fan') && list.length <= 4;
     const compact = (type === 'preset' && list.length <= 4) ||
         [
             'swing',
@@ -6971,24 +7304,22 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
         ${presentation.lines.map((line) => b `<span class="mode-label-line">${line}</span>`)}
       </span>`;
         }
-        return b `<span class="mode-label">${presentation.lines[0] ?? label}</span>`;
+        return b `<span class="mode-label"
+      >${presentation.lines[0] ?? label}</span
+    >`;
     };
     return b `
     <div
-      class="modes ${type} ${isFanPreset ? 'fan-preset' : ''} ${showHeading
-        ? 'heading'
-        : ''} ${compact ? 'compact' : ''} ${dense
-        ? 'dense'
-        : ''} ${sparseMainControls ? 'sparse' : ''}"
+      class="modes ${type} ${isFanPreset ? 'fan-preset' : ''} ${showHeading ? 'heading' : ''} ${compact ? 'compact' : ''} ${dense ? 'dense' : ''} ${sparseMainControls ? 'sparse' : ''}"
       role="group"
       aria-label=${title || type}
     >
       ${showHeading ? b ` <div class="mode-title">${title}</div> ` : ''}
-      ${list.map(({ value, icon, iconConfigured, name, hide_when_off }) => {
+      ${list.map(({ value, icon, iconConfigured, name, nameConfigured, hide_when_off, }) => {
         if (hide_when_off === true && state === HVAC_MODES.OFF)
             return A;
         const modeClass = safeClass(value);
-        const displayName = maybeRenderName(name, value);
+        const displayName = maybeRenderName(name, value, nameConfigured);
         const labelPresentation = getModeLabelPresentation(String(value), displayName, sparseMainControls);
         const labelLayoutClass = labelPresentation.layout === 'stacked'
             ? 'label-stacked'
@@ -6997,25 +7328,30 @@ function renderModeType({ state, entity, hass, mode: options, adapter, modeOptio
                 : '';
         const tooltip = displayName ? A : controlTooltip || A;
         return b `
-          <div
-            class="mode-item ${modeClass} ${labelLayoutClass} ${value === mode ? 'active' : ''}"
-            role="button"
-            tabindex="0"
-            aria-pressed=${value === mode ? 'true' : 'false'}
-            aria-label=${name || value}
-            title=${tooltip}
-            @click=${() => setMode(type, value)}
-            @keydown=${(e) => {
+            <div
+              class="mode-item ${modeClass} ${labelLayoutClass} ${value === mode ? 'active' : ''}"
+              role="button"
+              tabindex=${disabled ? -1 : 0}
+              aria-disabled=${String(disabled)}
+              aria-pressed=${value === mode ? 'true' : 'false'}
+              aria-label=${name || value}
+              title=${tooltip}
+              @click=${() => {
+            if (!disabled)
+                setMode(type, value);
+        }}
+              @keydown=${(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                setMode(type, value);
+                if (!disabled)
+                    setMode(type, value);
             }
         }}
-          >
-            ${maybeRenderIcon(icon, iconConfigured)}
-            ${renderModeLabel(String(value), displayName)}
-          </div>
-        `;
+            >
+              ${maybeRenderIcon(icon, iconConfigured)}
+              ${renderModeLabel(String(value), displayName)}
+            </div>
+          `;
     })}
     </div>
   `;
@@ -7029,9 +7365,7 @@ function renderFooter({ toggles, mainState, toggleFooterEntity, openEntityPopove
     return b `
     <section class="footer-controls controls">
       <div
-        class="modes footer compact ${visibleToggles.length > 4
-        ? 'dense'
-        : ''}"
+        class="modes footer compact ${visibleToggles.length > 4 ? 'dense' : ''}"
         role="group"
         aria-label="Footer controls"
       >
@@ -7039,24 +7373,32 @@ function renderFooter({ toggles, mainState, toggleFooterEntity, openEntityPopove
         const entityId = toggle.state.entity_id;
         const state = String(toggle.state.state ?? '');
         const active = state === 'on';
+        const disabled = !isEntityAvailable(toggle.state);
         const label = toggle.name === false
             ? false
-            : toggle.name || toggle.state.attributes?.friendly_name || entityId;
+            : toggle.name ||
+                toggle.state.attributes?.friendly_name ||
+                entityId;
         const icon = toggle.icon ?? toggle.state.attributes?.icon;
         const domain = entityId.split('.')[0];
         return b `
             <div
               class="mode-item footer-toggle ${safeClass(state)} domain-${safeClass(domain)} ${active ? 'active' : ''}"
               role="button"
-              tabindex="0"
+              tabindex=${disabled ? -1 : 0}
+              aria-disabled=${String(disabled)}
               aria-pressed=${active ? 'true' : 'false'}
               aria-label=${label || entityId}
               title=${label || entityId}
-              @click=${() => toggleFooterEntity(entityId, !active)}
+              @click=${() => {
+            if (!disabled)
+                toggleFooterEntity(entityId, !active);
+        }}
               @keydown=${(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                toggleFooterEntity(entityId, !active);
+                if (!disabled)
+                    toggleFooterEntity(entityId, !active);
             }
         }}
               @contextmenu=${(e) => {
@@ -7107,6 +7449,13 @@ const SETPOINT_DEBOUNCE_TIMEOUT = 500;
 const STEP_SIZE = 0.5;
 const DECIMALS = 1;
 const UPDATING_TIMEOUT = 10000;
+const MISSING_ENTITY_GRACE_MS = 5000;
+const SETPOINT_REPEAT_DELAY_MS = 500;
+const SETPOINT_REPEAT_INTERVAL_MS = 250;
+const SETPOINT_SIBLING = {
+    target_temp_low: { field: 'target_temp_high', caps: 'max' },
+    target_temp_high: { field: 'target_temp_low', caps: 'min' },
+};
 const MODE_TYPES = Object.values(MODES);
 const ICONS = {
     UP: 'hass:chevron-up',
@@ -7236,6 +7585,7 @@ function getModeList(type, attributes, adapter, specification = {}) {
                     : undefined) ??
                 getModeIcon(modeKey),
             iconConfigured: typeof values.icon !== 'undefined',
+            nameConfigured: typeof configuredName !== 'undefined',
             value: modeKey,
             name,
         };
@@ -7270,6 +7620,7 @@ function getModeListFromSelect(stateObj, specification = {}) {
             hide_when_off: hideWhenOff || undefined,
             icon: values.icon ?? getModeIcon(modeKey),
             iconConfigured: typeof values.icon !== 'undefined',
+            nameConfigured: typeof configuredName !== 'undefined',
             value: modeKey,
             name,
         };
@@ -7285,30 +7636,25 @@ function getCardStyle(entityDomain, attributes) {
     const fanSpinDuration = Math.max(0.9, 3.2 - (normalizedPercentage / 100) * 2.1);
     return `--st-fan-spin-duration: ${fanSpinDuration.toFixed(2)}s;`;
 }
-function getCardModSurfaceDeclarations(cardMod) {
+function getEmbeddedCardModStyle(cardMod) {
     const style = cardMod?.style;
-    if (typeof style === 'object' && style) {
-        const cardStyle = style['ha-card'];
-        if (typeof cardStyle === 'string')
-            return cardStyle.trim();
-        const rootStyle = style['.'];
-        if (typeof rootStyle === 'string') {
-            const rootMatch = rootStyle.match(/ha-card\s*\{([\s\S]*?)\}/);
-            return (rootMatch?.[1] ?? '').trim();
-        }
-    }
-    if (typeof style !== 'string')
-        return '';
-    const match = style.match(/ha-card\s*\{([\s\S]*?)\}/);
-    return (match?.[1] ?? '').trim();
-}
-function getInlineCardStyle(config, entityDomain, attributes) {
-    return [
-        getCardModSurfaceDeclarations(config.card_mod),
-        getCardStyle(entityDomain, attributes),
-    ]
-        .filter((style) => !!style)
-        .join('; ');
+    // Keep static CSS scoped as written; card_mod owns templates and shadow traversal.
+    const css = typeof style === 'string'
+        ? style
+        : style && typeof style === 'object'
+            ? Object.entries(style)
+                .flatMap(([selector, rules]) => {
+                if (typeof rules !== 'string')
+                    return [];
+                if (selector === '.')
+                    return [rules];
+                if (selector === 'ha-card')
+                    return [`ha-card { ${rules} }`];
+                return [];
+            })
+                .join('\n')
+            : '';
+    return css.includes('{{') || css.includes('{%') ? '' : css;
 }
 function supportsModeType(type, entityDomain, attributes, adapter) {
     return (MODE_TYPES.includes(type) &&
@@ -7353,10 +7699,7 @@ function buildConfiguredControlModes(config, entityDomain, attributes, adapter, 
                 const controlEntity = definition === true || definition === false
                     ? undefined
                     : definition.entity;
-                const selectState = controlEntity
-                    ? hass?.states?.[controlEntity]
-                    : undefined;
-                return (isSelectModeEntity(selectState) ||
+                return (!!controlEntity ||
                     supportsModeType(type, entityDomain, attributes, adapter));
             })
                 .map(([type, definition]) => {
@@ -7371,14 +7714,17 @@ function buildConfiguredControlModes(config, entityDomain, attributes, adapter, 
                 };
                 return {
                     type,
-                    entity: useSelectEntity ? controlEntity : undefined,
+                    entity: controlEntity,
                     hide_when_off: hide_when_off ?? _hide_when_off,
                     icons: _icons,
                     heading: _heading,
                     name: _name,
                     preserve_option_order: Object.keys(controlField).length > 0,
-                    list: useSelectEntity
-                        ? getModeListFromSelect(selectState, modeSpecification)
+                    list: controlEntity
+                        ? useSelectEntity &&
+                            !['unknown', 'unavailable'].includes(String(selectState.state))
+                            ? getModeListFromSelect(selectState, modeSpecification)
+                            : []
                         : getModeList(type, attributes, adapter, modeSpecification),
                 };
             });
@@ -7411,7 +7757,8 @@ function shouldPreserveConfiguredControlOrder(control) {
         return true;
     if (!control || typeof control !== 'object')
         return false;
-    return Array.isArray(control._order);
+    return (Array.isArray(control._order) ||
+        Object.keys(control).some((key) => !key.startsWith('_')));
 }
 class SimpleThermostat extends i$1 {
     constructor() {
@@ -7432,7 +7779,11 @@ class SimpleThermostat extends i$1 {
         this._clickCount = 0;
         this._clickTimer = null;
         this._setpointUpdateTimer = null;
-        this._pendingSetpointValues = null;
+        this._pendingSetpointUpdate = null;
+        this._missingEntityTimer = null;
+        this._stepRepeatDelayTimer = null;
+        this._stepRepeatIntervalTimer = null;
+        this._stepRepeatFired = false;
         this._setpointDebounce = SETPOINT_DEBOUNCE_TIMEOUT;
         this.localize = (label, prefix = '') => {
             const key = `${prefix}${label}`;
@@ -7441,32 +7792,53 @@ class SimpleThermostat extends i$1 {
         this.toggleEntityChanged = (ev, entityId) => {
             if (!this.header || !entityId)
                 return;
+            if (!isEntityAvailable(this._hass?.states?.[entityId]))
+                return;
             const el = ev.target;
             this._callAction(`homeassistant.turn_${el.checked ? 'on' : 'off'}`, {
                 entity_id: entityId,
             });
         };
         this.toggleFooterEntity = (entityId, checked) => {
+            if (!isEntityAvailable(this._hass?.states?.[entityId]))
+                return;
             this._callAction(`homeassistant.turn_${checked ? 'on' : 'off'}`, {
                 entity_id: entityId,
             });
             fireEvent(this, 'haptic', 'light');
         };
+        this._stopSetpointRepeat = () => {
+            if (this._stepRepeatDelayTimer) {
+                clearTimeout(this._stepRepeatDelayTimer);
+                this._stepRepeatDelayTimer = null;
+            }
+            if (this._stepRepeatIntervalTimer) {
+                clearInterval(this._stepRepeatIntervalTimer);
+                this._stepRepeatIntervalTimer = null;
+            }
+        };
         this.setMode = (type, mode) => {
             if (type && mode) {
                 const adapter = getAdapter(this.config.entity);
-                if (type === MODES.STATE) {
-                    this._callAction(`${adapter.getLocalizationDomain()}.turn_${mode}`, {
-                        entity_id: this.config.entity,
+                const configuredMode = this.modes.find((entry) => entry.type === type);
+                if (configuredMode?.entity) {
+                    const selected = this._hass.states?.[configuredMode.entity];
+                    if (!isSelectModeEntity(selected) ||
+                        ['unknown', 'unavailable'].includes(String(selected.state)) ||
+                        !selected.attributes.options.includes(mode))
+                        return;
+                    this._callAction('select.select_option', {
+                        entity_id: configuredMode.entity,
+                        option: mode,
                     });
                     fireEvent(this, 'haptic', 'light');
                     return;
                 }
-                const configuredMode = this.modes.find((mode) => mode.type === type);
-                if (configuredMode?.entity) {
-                    this._callAction('select.select_option', {
-                        entity_id: configuredMode.entity,
-                        option: mode,
+                if (!isEntityAvailable(this._hass?.states?.[this.config.entity]))
+                    return;
+                if (type === MODES.STATE) {
+                    this._callAction(`${adapter.getLocalizationDomain()}.turn_${mode}`, {
+                        entity_id: this.config.entity,
                     });
                     fireEvent(this, 'haptic', 'light');
                     return;
@@ -7539,31 +7911,50 @@ class SimpleThermostat extends i$1 {
     static get styles() {
         return css_248z;
     }
-    _sendSetpointValues(values) {
-        const { domain, service, data = {} } = this.service;
+    _sendSetpointValues(update) {
+        if (!isEntityAvailable(this._hass?.states?.[update.entity]))
+            return;
+        const { domain, service, data = {} } = update.service;
         this._callAction(`${domain}.${service}`, {
-            entity_id: this.config.entity,
+            entity_id: update.entity,
             ...data,
-            ...values,
+            ...update.values,
         });
+    }
+    _flushPendingSetpointValues() {
+        if (this._setpointUpdateTimer) {
+            clearTimeout(this._setpointUpdateTimer);
+            this._setpointUpdateTimer = null;
+        }
+        const pendingUpdate = this._pendingSetpointUpdate;
+        this._pendingSetpointUpdate = null;
+        if (pendingUpdate)
+            this._sendSetpointValues(pendingUpdate);
     }
     _scheduleSetpointValues(values) {
         const wait = this._setpointDebounce;
         if (wait <= 0) {
-            this._sendSetpointValues(values);
+            this._sendSetpointValues({
+                entity: this.config.entity,
+                service: this.service,
+                values: { ...values },
+            });
             return;
         }
-        this._pendingSetpointValues = { ...values };
+        this._pendingSetpointUpdate = {
+            entity: this.config.entity,
+            service: this.service,
+            values: { ...values },
+        };
         if (this._setpointUpdateTimer) {
             clearTimeout(this._setpointUpdateTimer);
         }
         this._setpointUpdateTimer = setTimeout(() => {
-            const pendingValues = this._pendingSetpointValues;
+            const pendingUpdate = this._pendingSetpointUpdate;
             this._setpointUpdateTimer = null;
-            this._pendingSetpointValues = null;
-            if (pendingValues) {
-                this._sendSetpointValues(pendingValues);
-            }
+            this._pendingSetpointUpdate = null;
+            if (pendingUpdate)
+                this._sendSetpointValues(pendingUpdate);
         }, wait);
     }
     _getSetpointDebounce(config) {
@@ -7573,12 +7964,18 @@ class SimpleThermostat extends i$1 {
             : SETPOINT_DEBOUNCE_TIMEOUT;
     }
     _callAction(action, data) {
-        if (typeof this._hass.callService === 'function') {
-            const [domain, service] = action.split('.');
-            this._hass.callService(domain, service, data);
+        let result;
+        if (typeof this._hass.performAction === 'function') {
+            result = this._hass.performAction({ action, data });
         }
-        else if (typeof this._hass.performAction === 'function') {
-            this._hass.performAction({ action, data });
+        else if (typeof this._hass.callService === 'function') {
+            const [domain, service] = action.split('.');
+            result = this._hass.callService(domain, service, data);
+        }
+        if (result && typeof result.catch === 'function') {
+            result.catch((error) => {
+                console.error(`simple-thermostat: ${action} failed`, error);
+            });
         }
     }
     static getConfigElement() {
@@ -7591,6 +7988,12 @@ class SimpleThermostat extends i$1 {
         return { entity: entity ?? '' };
     }
     setConfig(config) {
+        if (!config?.entity || typeof config.entity !== 'string') {
+            throw new Error('Simple Thermostat requires an entity');
+        }
+        this._flushPendingSetpointValues();
+        const previousEntity = this.config?.entity;
+        this._clearMissingEntityTimer();
         this.config = normalizeConfig({
             decimals: DECIMALS,
             ...config,
@@ -7602,10 +8005,30 @@ class SimpleThermostat extends i$1 {
         this.entities = [];
         this.footer = [];
         this.showEntities = true;
+        if (previousEntity && previousEntity !== this.config.entity) {
+            this._clearOptimisticSetpointState();
+        }
         this.toggleAttribute('embedded', this.config.embedded === true);
-        if (this._hass?.states) {
+        if (this._hass?.states?.[this.config.entity]) {
             this.updateFromHass(this._hass);
         }
+        else if (this._hass?.states) {
+            this.entity = undefined;
+        }
+    }
+    _clearMissingEntityTimer() {
+        if (!this._missingEntityTimer)
+            return;
+        clearTimeout(this._missingEntityTimer);
+        this._missingEntityTimer = null;
+    }
+    _scheduleMissingEntity() {
+        if (this._missingEntityTimer)
+            return;
+        this._missingEntityTimer = setTimeout(() => {
+            this._missingEntityTimer = null;
+            this.entity = undefined;
+        }, MISSING_ENTITY_GRACE_MS);
     }
     set hass(hass) {
         if (hass?.states) {
@@ -7619,15 +8042,14 @@ class SimpleThermostat extends i$1 {
         }
         const entity = hass.states[this.config.entity];
         if (!entity) {
+            this._scheduleMissingEntity();
             return;
         }
+        this._clearMissingEntityTimer();
         this.updateFromHass(hass);
     }
     disconnectedCallback() {
-        if (this._updatingValuesTimeout) {
-            clearTimeout(this._updatingValuesTimeout);
-            this._updatingValuesTimeout = null;
-        }
+        this._clearOptimisticSetpointState();
         if (this._holdTimer) {
             clearTimeout(this._holdTimer);
             this._holdTimer = null;
@@ -7636,12 +8058,16 @@ class SimpleThermostat extends i$1 {
             clearTimeout(this._clickTimer);
             this._clickTimer = null;
         }
-        if (this._setpointUpdateTimer) {
-            clearTimeout(this._setpointUpdateTimer);
-            this._setpointUpdateTimer = null;
-        }
-        this._pendingSetpointValues = null;
+        this._clearMissingEntityTimer();
+        this._stopSetpointRepeat();
+        this._flushPendingSetpointValues();
         super.disconnectedCallback();
+    }
+    connectedCallback() {
+        super.connectedCallback();
+        if (this.config?.entity && this._hass?.states?.[this.config.entity]) {
+            this.updateFromHass(this._hass);
+        }
     }
     updateFromHass(hass) {
         const entity = hass.states[this.config.entity];
@@ -7699,12 +8125,9 @@ class SimpleThermostat extends i$1 {
                 if (entity) {
                     state = hass.states[entity];
                     names.push(state?.attributes?.friendly_name);
-                    if (attribute && !template) {
-                        state = state?.attributes?.[attribute];
-                    }
                 }
                 else if (attribute && attribute in (this.entity.attributes ?? {})) {
-                    state = template ? this.entity : this.entity.attributes[attribute];
+                    state = this.entity;
                     names.push(attribute);
                 }
                 names.push(entity);
@@ -7743,6 +8166,14 @@ class SimpleThermostat extends i$1 {
             return b `<ha-card class="loading"></ha-card>`;
         }
         const warnings = [];
+        this.modes
+            .filter((mode) => mode.entity && mode.list.length === 0)
+            .forEach((mode) => {
+            warnings.push(b `<ha-alert alert-type="warning"
+            >Control entity unavailable or without options:
+            ${mode.entity}</ha-alert
+          >`);
+        });
         if (this.stepSize < 1 && this.config.decimals === 0) {
             warnings.push(b `
         <ha-alert alert-type="warning">
@@ -7754,17 +8185,13 @@ class SimpleThermostat extends i$1 {
         }
         if (!entity && !this._hass?.states) {
             return b `<ha-card
-        class="loading ${config.enhanced_visuals === false
-                ? 'standard-visuals'
-                : ''}"
+        class="loading ${config.enhanced_visuals === false ? 'standard-visuals' : ''}"
       ></ha-card>`;
         }
         if (!entity) {
             return b `
         <ha-card
-          class="missing-entity ${config.enhanced_visuals === false
-                ? 'standard-visuals'
-                : ''}"
+          class="missing-entity ${config.enhanced_visuals === false ? 'standard-visuals' : ''}"
         >
           <ha-alert alert-type="error">
             Entity not available: ${config.entity}
@@ -7777,7 +8204,9 @@ class SimpleThermostat extends i$1 {
         const { min: minValue, max: maxValue } = adapter.getRange(entity.attributes);
         const unit = this.getUnit();
         const entityDomain = config.entity.split('.')[0];
-        const setpointCount = Object.keys(_values).length;
+        const setpointCount = this.areSetpointsHidden()
+            ? 0
+            : Object.keys(_values).length;
         const configuredStepLayout = this.config?.layout?.step;
         const compactDualEntitySetpoints = !configuredStepLayout && this.showEntities && setpointCount > 1;
         const stepLayout = configuredStepLayout ??
@@ -7803,9 +8232,10 @@ class SimpleThermostat extends i$1 {
             `setpoint-count-${setpointCount}`,
         ].filter((cx) => !!cx);
         const embedded = config.embedded === true;
-        const cardStyle = embedded
-            ? getInlineCardStyle(config, entityDomain, entity.attributes)
-            : getCardStyle(entityDomain, entity.attributes);
+        const cardStyle = getCardStyle(entityDomain, entity.attributes);
+        const embeddedStyle = embedded
+            ? getEmbeddedCardModStyle(config.card_mod)
+            : '';
         const entitiesHtml = this.showEntities
             ? renderEntities({
                 _hide,
@@ -7830,33 +8260,43 @@ class SimpleThermostat extends i$1 {
             });
         return b `
       <ha-card class="${classes.join(' ')}" style=${cardStyle}>
+        ${embeddedStyle
+            ? b `<style>
+                ${embeddedStyle}
+              </style>`
+            : A}
         ${config.styles
             ? b `<style>
-              ${config.styles}
-            </style>`
+                ${config.styles}
+              </style>`
             : A}
-        ${warnings}
-        ${headerHtml}
+        ${warnings} ${headerHtml}
         <section class="${bodyClasses.join(' ')}">
           ${entitiesHtml}
-          ${this.renderSetpoints({
-            values: _values,
-            minValue,
-            maxValue,
-            unit,
-            row,
-            stepLayout,
-            isOff: entity.state === HVAC_MODES.OFF,
-            disableSteppers: entityDomain === 'climate' &&
-                entity.state === HVAC_MODES.OFF &&
-                this.config.disable_setpoint_change_when_off === true,
-        })}
+          ${setpointCount
+            ? b `<div class="setpoints">
+                  ${this.renderSetpoints({
+                values: _values,
+                minValue,
+                maxValue,
+                unit,
+                row,
+                stepLayout,
+                isOff: entity.state === HVAC_MODES.OFF,
+                disableSteppers: !isEntityAvailable(entity) ||
+                    this.config.disable_setpoint_change === true ||
+                    (entityDomain === 'climate' &&
+                        entity.state === HVAC_MODES.OFF &&
+                        this.config.disable_setpoint_change_when_off === true),
+            })}
+                </div>`
+            : A}
         </section>
 
         ${this.modes.length
             ? b `
-              <section class="controls">
-                ${this.modes.map((mode) => renderModeType({
+                <section class="controls">
+                  ${this.modes.map((mode) => renderModeType({
                 state: entity.state,
                 entity,
                 hass: this._hass,
@@ -7866,8 +8306,8 @@ class SimpleThermostat extends i$1 {
                 modeOptions: this.config?.layout?.mode ?? {},
                 setMode: this.setMode,
             }))}
-              </section>
-            `
+                </section>
+              `
             : A}
         ${renderFooter({
             toggles: this.footer,
@@ -7896,6 +8336,12 @@ class SimpleThermostat extends i$1 {
             disableSteppers,
         }));
     }
+    areSetpointsHidden() {
+        return (this.config.hide_setpoint === true ||
+            ((this.config.hide_setpoint_when_off === true ||
+                this.config.hide?.setpoint_when_off === true) &&
+                this.entity?.state === HVAC_MODES.OFF));
+    }
     renderSetpointControl(options) {
         const { row, stepLayout } = options;
         const decreaseButton = this.renderSetpointStepper(options, 'decrease');
@@ -7922,18 +8368,19 @@ class SimpleThermostat extends i$1 {
         return b `<div class="current--label">${label}</div>`;
     }
     renderSetpointStepper({ field, value, minValue, maxValue, row, disableSteppers, }, direction) {
+        const bounds = this._setpointBounds(field, minValue, maxValue);
         const numericValue = Number(value);
         const hasNumericValue = !Number.isNaN(numericValue);
         const decreasing = direction === 'decrease';
         const disabled = disableSteppers ||
             (decreasing
                 ? value === null ||
-                    (minValue !== null && hasNumericValue && numericValue <= minValue)
-                : (value === null && minValue === null) ||
+                    (bounds.min !== null && hasNumericValue && numericValue <= bounds.min)
+                : (value === null && bounds.min === null) ||
                     (value !== null &&
-                        maxValue !== null &&
+                        bounds.max !== null &&
                         hasNumericValue &&
-                        numericValue >= maxValue));
+                        numericValue >= bounds.max));
         const icon = decreasing
             ? row
                 ? ICONS.MINUS
@@ -7947,15 +8394,91 @@ class SimpleThermostat extends i$1 {
         ?disabled=${disabled}
         class="thermostat-trigger ${direction}"
         aria-label=${`${decreasing ? 'Decrease' : 'Increase'} ${field}`}
-        @click="${() => decreasing
-            ? this.setTemperature(-this.stepSize, field)
-            : value === null && minValue !== null
-                ? this.setTemperature(0, field, minValue)
-                : this.setTemperature(this.stepSize, field)}"
+        @pointerdown=${(event) => this._startSetpointRepeat(event, field, decreasing ? -1 : 1, minValue, maxValue)}
+        @pointerup=${this._stopSetpointRepeat}
+        @pointercancel=${this._stopSetpointRepeat}
+        @pointerleave=${this._stopSetpointRepeat}
+        @click=${() => {
+            if (this._stepRepeatFired) {
+                this._stepRepeatFired = false;
+                return;
+            }
+            this._stepSetpoint(field, decreasing ? -1 : 1, minValue, maxValue);
+        }}
       >
         <ha-icon .icon=${icon}></ha-icon>
       </button>
     `;
+    }
+    _setpointBounds(field, minValue, maxValue) {
+        const relation = SETPOINT_SIBLING[field];
+        if (!relation)
+            return { min: minValue, max: maxValue };
+        const sibling = Number(this._values[relation.field]);
+        if (!Number.isFinite(sibling))
+            return { min: minValue, max: maxValue };
+        return relation.caps === 'max'
+            ? {
+                min: minValue,
+                max: maxValue === null ? sibling : Math.min(maxValue, sibling),
+            }
+            : {
+                min: minValue === null ? sibling : Math.max(minValue, sibling),
+                max: maxValue,
+            };
+    }
+    _stepSetpoint(field, direction, minValue, maxValue) {
+        if (!isEntityAvailable(this._hass?.states?.[this.config.entity]))
+            return false;
+        const { min, max } = this._setpointBounds(field, minValue, maxValue);
+        const rawValue = this._values[field];
+        if (rawValue === null || rawValue === undefined) {
+            if (direction > 0 && min !== null) {
+                this.setTemperature(0, field, min);
+            }
+            return false;
+        }
+        const value = Number(rawValue);
+        if (!Number.isFinite(value))
+            return false;
+        if (direction > 0 && max !== null && value >= max)
+            return false;
+        if (direction < 0 && min !== null && value <= min)
+            return false;
+        const requestedValue = value + direction * this.stepSize;
+        const boundedValue = direction > 0 && max !== null
+            ? Math.min(requestedValue, max)
+            : direction < 0 && min !== null
+                ? Math.max(requestedValue, min)
+                : requestedValue;
+        this.setTemperature(0, field, boundedValue);
+        return true;
+    }
+    _startSetpointRepeat(event, field, direction, minValue, maxValue) {
+        if (event.pointerType === 'mouse' && event.button !== 0)
+            return;
+        this._stepRepeatFired = false;
+        if (this.config.setpoint_hold_repeat !== true)
+            return;
+        this._stopSetpointRepeat();
+        this._stepRepeatDelayTimer = setTimeout(() => {
+            this._stepRepeatDelayTimer = null;
+            this._stepRepeatFired = this._stepSetpoint(field, direction, minValue, maxValue);
+            if (!this._stepRepeatFired)
+                return;
+            this._stepRepeatIntervalTimer = setInterval(() => {
+                if (!this._stepSetpoint(field, direction, minValue, maxValue)) {
+                    this._stopSetpointRepeat();
+                }
+            }, SETPOINT_REPEAT_INTERVAL_MS);
+        }, SETPOINT_REPEAT_DELAY_MS);
+    }
+    _clearOptimisticSetpointState() {
+        this._updatingValues = false;
+        if (this._updatingValuesTimeout) {
+            clearTimeout(this._updatingValuesTimeout);
+            this._updatingValuesTimeout = null;
+        }
     }
     renderSetpointValue({ field, value, unit, isOff }) {
         const hasValue = ['string', 'number'].includes(typeof value) &&
@@ -7996,12 +8519,16 @@ class SimpleThermostat extends i$1 {
             .join(' ')}
       >
         ${valueText}${unitText
-            ? b `${unitSeparator}<span class="current--unit">${unitText}</span>`
+            ? b `${unitSeparator}<span class="current--unit"
+                  >${unitText}</span
+                >`
             : A}
       </h3>
     `;
     }
     setTemperature(change, field, baseValue) {
+        if (!isEntityAvailable(this._hass?.states?.[this.config.entity]))
+            return;
         this._updatingValues = true;
         if (this._updatingValuesTimeout) {
             clearTimeout(this._updatingValuesTimeout);
@@ -8009,6 +8536,8 @@ class SimpleThermostat extends i$1 {
         this._updatingValuesTimeout = setTimeout(() => {
             this._updatingValues = false;
             this._updatingValuesTimeout = null;
+            if (this._hass?.states?.[this.config.entity])
+                this.updateFromHass(this._hass);
         }, UPDATING_TIMEOUT);
         const previousValue = baseValue ?? this._values[field];
         const newValue = Number(previousValue) + change;
@@ -8054,7 +8583,8 @@ class SimpleThermostat extends i$1 {
             ? 0
             : 1;
         const modeRows = this.modes?.filter((mode) => {
-            if (mode.hide_when_off === true && this.entity?.state === HVAC_MODES.OFF) {
+            if (mode.hide_when_off === true &&
+                this.entity?.state === HVAC_MODES.OFF) {
                 return false;
             }
             return (mode.list ?? []).some(({ hide_when_off }) => !(hide_when_off === true && this.entity?.state === HVAC_MODES.OFF));
