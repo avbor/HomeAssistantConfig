@@ -74,8 +74,12 @@ doorbell_pack:
               conditions: >
                 {{
                   is_state('input_boolean.doorbell_mute', 'off') and
-                  is_state('switch.sonoff_mini_r2_01_doorbell','off')
+                  not is_state('switch.sonoff_mini_r2_01_doorbell','on')
                 }}
+#              conditions: >
+#                {{
+#                  is_state('input_boolean.doorbell_mute', 'off')
+#                }}
               sequence:
                 - action: switch.turn_on
                   target:
@@ -86,6 +90,14 @@ doorbell_pack:
                 - action: button.press
                   target:
                     entity_id: button.galaxy_tab_a_8_0_2019_load_start_url
+                - action: media_player.play_media
+                  target:
+                    entity_id: media_player.yandex_station_mini2_gostinaia
+                  data:
+                    media_content_id: "Внимание, в дверь звонят!"
+                    media_content_type: text
+                    extra:
+                      volume_level: "{% set time = now().hour %}{% if time >= 21 or time < 9 %}0.5{% else %}0.7{% endif %}"
                 - action: telegram_bot.send_photo
                   data:
                     chat_id: !secret tlg_group_flat_1
