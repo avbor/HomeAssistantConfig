@@ -94,9 +94,9 @@ api:
   encryption:
     key: $api_key
   reboot_timeout: 0s
-  services:
+  actions:
     # Accept call service for Home Assistant
-    - service: accept_call
+    - action: accept_call
       then:
         - logger.log: "Call service 'Accept Call'"
         - if:
@@ -108,7 +108,7 @@ api:
               logger.log: "No incoming call"
 
     # Reject call service for Home Assistant
-    - service: reject_call
+    - action: reject_call
       then:
         - logger.log: "Call service 'Reject Call'"
         - if:
@@ -120,7 +120,7 @@ api:
               logger.log: "No incoming call"
 
     # Led brightness
-    - service: set_brightness
+    - action: set_brightness
       variables:
         brightness: float
       then:
