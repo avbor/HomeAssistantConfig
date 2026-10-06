@@ -32,11 +32,20 @@
     "cron": {
       "trigger": "mdi:calendar-clock"
     },
+    "device_added": {
+      "trigger": "mdi:devices"
+    },
+    "device_discovered": {
+      "trigger": "mdi:magnify-plus"
+    },
     "debounce": {
       "trigger": "mdi:sine-wave"
     },
     "flapping": {
       "trigger": "mdi:bird"
+    },
+    "integration_added": {
+      "trigger": "mdi:puzzle-plus"
     },
     "integration_failed": {
       "trigger": "mdi:trophy-broken"
@@ -61,6 +70,9 @@
     },
     "while": {
       "trigger": "mdi:repeat"
+    },
+    "user_added": {
+      "trigger": "mdi:account-plus"
     }
   }
 }

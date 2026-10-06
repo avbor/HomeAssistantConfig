@@ -1,5 +1,5 @@
 (function() {
-    const env = {"DEBUG":true,"BUILD_TIME":"2026-09-20T21:21:02-02:30"};
+    const env = {"DEBUG":true,"BUILD_TIME":"2026-10-02T16:09:58-02:30"};
     try {
         if (process) {
             process.env = Object.assign({}, process.env);
@@ -11,7 +11,7 @@
 })();
 
 var name = "simple-thermostat";
-var version = "4.5.0";
+var version = "4.5.1";
 
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -243,6 +243,24 @@ ha-card.loading {
 
   45% {
     transform: scale(1.045);
+  }
+
+  100% {
+    transform: scale(1);
+    text-shadow: none;
+  }
+}
+
+@supports (color: color-mix(in lch, red, blue)) {
+
+@keyframes st-value-pulse {
+  0% {
+    transform: scale(1);
+    text-shadow: none;
+  }
+
+  45% {
+    transform: scale(1.045);
     text-shadow: 0 0 8px
       color-mix(
         in srgb,
@@ -255,6 +273,7 @@ ha-card.loading {
     transform: scale(1);
     text-shadow: none;
   }
+}
 }
 
 .body {
@@ -900,6 +919,7 @@ ha-card.cooling .header__icon-wrap::before {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+  touch-action: manipulation;
   position: relative;
   display: inline-grid;
   align-items: center;
@@ -5123,6 +5143,7 @@ class SimpleThermostatGroup extends i$1 {
         this.persistedActivityApplied = false;
     }
     updated() {
+        this.reconcileAvailableSelection();
         this.syncAutoSelectRecentActivity();
         this.syncEmbeddedCard();
         this.syncOutsideClickListener();
@@ -5134,13 +5155,15 @@ class SimpleThermostatGroup extends i$1 {
         this.resumeAutoSelectAfterReconnect();
     }
     getCardSize() {
-        if (!this.config || !this.targets.length)
+        if (!this.config || !this.getAvailableTargets().length)
             return 1;
         const embeddedSize = this.embeddedCard?.getCardSize?.();
         if (typeof embeddedSize === 'number' && Number.isFinite(embeddedSize)) {
             return Math.max(1, embeddedSize);
         }
         const target = this.getSelectedTarget();
+        if (!target)
+            return 1;
         const cardConfig = this.getTargetCardConfig(target);
         const entityCount = Array.isArray(cardConfig.entities)
             ? cardConfig.entities.length
@@ -5300,12 +5323,31 @@ class SimpleThermostatGroup extends i$1 {
         this.scheduleAutoSelectResume(this.getAutoSelectManualPauseMs() - elapsed);
     }
     getSelectedTarget() {
-        return (this.targets.find((target) => target.entity === this.selectedEntity) ??
-            this.targets[0]);
+        const targets = this.getAvailableTargets();
+        return (targets.find((target) => target.entity === this.selectedEntity) ??
+            targets[0]);
+    }
+    getAvailableTargets() {
+        if (!this.hass)
+            return this.targets;
+        return this.targets.filter((target) => isEntityAvailable(this.hass.states?.[target.entity]));
+    }
+    reconcileAvailableSelection() {
+        const targets = this.getAvailableTargets();
+        if (!targets.length) {
+            this.menuOpen = false;
+            return;
+        }
+        if (!targets.some((target) => target.entity === this.selectedEntity)) {
+            this.menuOpen = false;
+            this.cardFading = false;
+            this.fadeInAfterSync = false;
+            this.selectedEntity = targets[0].entity;
+        }
     }
     getSelectedState() {
         const target = this.getSelectedTarget();
-        return this.hass?.states?.[target.entity];
+        return target ? this.hass?.states?.[target.entity] : undefined;
     }
     openSelectedPopover() {
         const target = this.getSelectedTarget();
@@ -5359,7 +5401,7 @@ class SimpleThermostatGroup extends i$1 {
         return getCardStyle$1(getDomain(state.entity_id), state.attributes);
     }
     getSelectedIndex() {
-        const index = this.targets.findIndex((target) => target.entity === this.selectedEntity);
+        const index = this.getAvailableTargets().findIndex((target) => target.entity === this.selectedEntity);
         return index === -1 ? 0 : index;
     }
     isRecentActivityAutoSelectEnabled() {
@@ -5447,7 +5489,7 @@ class SimpleThermostatGroup extends i$1 {
         return candidate.timestamp >= selected.timestamp;
     }
     getMostRecentStateActivityCandidate() {
-        return this.targets
+        return this.getAvailableTargets()
             .map((target) => this.getActivityCandidate(target))
             .filter((candidate) => candidate.timestamp > 0)
             .reduce((selected, candidate) => {
@@ -5517,7 +5559,7 @@ class SimpleThermostatGroup extends i$1 {
     }
     getActivityActiveRank(target) {
         const state = this.hass?.states?.[target.entity];
-        if (!state)
+        if (!isEntityAvailable(state))
             return 0;
         const domain = getDomain(target.entity);
         const action = getEntityAction(state) ?? state.attributes?.action;
@@ -5599,7 +5641,10 @@ class SimpleThermostatGroup extends i$1 {
                 this.getAutoSelectManualPauseMs()) {
             return;
         }
-        const latest = changedTargets.reduce((selected, candidate) => this.isBetterActivityCandidate(candidate, selected) ? candidate : selected);
+        const selectableChanges = changedTargets.filter((candidate) => this.getAvailableTargets().some((target) => target.entity === candidate.target.entity));
+        if (!selectableChanges.length)
+            return;
+        const latest = selectableChanges.reduce((selected, candidate) => this.isBetterActivityCandidate(candidate, selected) ? candidate : selected);
         this.selectEntity(latest.target.entity, false);
     }
     getTargetLabel(target) {
@@ -5664,6 +5709,8 @@ class SimpleThermostatGroup extends i$1 {
     }
     getEmbeddedConfig() {
         const target = this.getSelectedTarget();
+        if (!target)
+            return undefined;
         return this.getTargetCardConfig(target);
     }
     getEmbeddedConfigSignature(config) {
@@ -5717,8 +5764,9 @@ class SimpleThermostatGroup extends i$1 {
             this.embeddedCardPendingSignature = '';
             return;
         }
-        if (this.getEmbeddedConfigSignature(this.getEmbeddedConfig()) !==
-            configSignature) {
+        const currentConfig = this.getEmbeddedConfig();
+        if (!currentConfig ||
+            this.getEmbeddedConfigSignature(currentConfig) !== configSignature) {
             return;
         }
         this.embeddedCard = embedded;
@@ -5736,9 +5784,14 @@ class SimpleThermostatGroup extends i$1 {
         if (!this.config || !this.hass)
             return;
         const host = this.renderRoot.querySelector('.embedded-card-host');
-        if (!host)
-            return;
         const embeddedConfig = this.getEmbeddedConfig();
+        if (!host || !embeddedConfig) {
+            this.embeddedCard = undefined;
+            this.embeddedCardEntity = '';
+            this.embeddedCardConfigSignature = '';
+            this.embeddedCardPendingSignature = '';
+            return;
+        }
         const configSignature = this.getEmbeddedConfigSignature(embeddedConfig);
         if (!this.embeddedCard ||
             this.embeddedCardEntity !== embeddedConfig.entity ||
@@ -5860,11 +5913,11 @@ class SimpleThermostatGroup extends i$1 {
             this.writeStoredSelection(entity);
     }
     selectOffset(offset) {
-        if (this.targets.length < 2)
+        const targets = this.getAvailableTargets();
+        if (targets.length < 2)
             return;
-        const next = (this.getSelectedIndex() + offset + this.targets.length) %
-            this.targets.length;
-        this.selectEntity(this.targets[next].entity);
+        const next = (this.getSelectedIndex() + offset + targets.length) % targets.length;
+        this.selectEntity(targets[next].entity);
     }
     toggleHeaderEntity(ev, entityId) {
         ev.stopPropagation();
@@ -5916,7 +5969,7 @@ class SimpleThermostatGroup extends i$1 {
     `;
     }
     toggleMenu() {
-        if (this.targets.length < 2)
+        if (this.getAvailableTargets().length < 2)
             return;
         this.menuOpen = !this.menuOpen;
     }
@@ -5965,9 +6018,10 @@ class SimpleThermostatGroup extends i$1 {
     renderPicker() {
         if (!this.menuOpen)
             return A;
+        const targets = this.getAvailableTargets();
         return b `
       <div class="group-picker" role="menu">
-        ${this.targets.map((target) => {
+        ${targets.map((target) => {
             const label = this.getTargetLabel(target);
             const icon = this.getTargetIcon(target);
             const selected = target.entity === this.selectedEntity;
@@ -6024,10 +6078,11 @@ class SimpleThermostatGroup extends i$1 {
     }
     renderTabSelector() {
         const selector = this.config?.selector ?? DEFAULT_SELECTOR;
+        const targets = this.getAvailableTargets();
         return b `
       <div class="group-selector tabs">
         <div class="group-tabs" role="tablist">
-          ${this.targets.map((target) => {
+          ${targets.map((target) => {
             const label = this.getTargetLabel(target);
             const icon = this.getTargetIcon(target);
             const selected = target.entity === this.selectedEntity;
@@ -6074,6 +6129,9 @@ class SimpleThermostatGroup extends i$1 {
             return this.renderTabSelector();
         }
         const target = this.getSelectedTarget();
+        if (!target)
+            return A;
+        const targetCount = this.getAvailableTargets().length;
         const label = this.getTargetLabel(target);
         const previousLabel = this.localizeNavigationLabel('ui.common.previous', 'Previous device');
         const nextLabel = this.localizeNavigationLabel('ui.common.next', 'Next device');
@@ -6098,7 +6156,7 @@ class SimpleThermostatGroup extends i$1 {
             class="group-nav previous"
             type="button"
             aria-label=${previousLabel}
-            ?disabled=${this.targets.length < 2}
+            ?disabled=${targetCount < 2}
             @click=${() => this.selectOffset(-1)}
           >
             <ha-icon icon="mdi:chevron-left"></ha-icon>
@@ -6107,7 +6165,7 @@ class SimpleThermostatGroup extends i$1 {
             class="group-nav next"
             type="button"
             aria-label=${nextLabel}
-            ?disabled=${this.targets.length < 2}
+            ?disabled=${targetCount < 2}
             @click=${() => this.selectOffset(1)}
           >
             <ha-icon icon="mdi:chevron-right"></ha-icon>
@@ -6118,7 +6176,7 @@ class SimpleThermostatGroup extends i$1 {
             aria-label=${menuLabel}
             aria-haspopup="menu"
             aria-expanded=${this.menuOpen ? 'true' : 'false'}
-            ?disabled=${this.targets.length < 2}
+            ?disabled=${targetCount < 2}
             @click=${() => this.toggleMenu()}
           >
             <ha-icon icon="mdi:dots-vertical"></ha-icon>
@@ -6137,6 +6195,8 @@ class SimpleThermostatGroup extends i$1 {
     render() {
         if (!this.config)
             return b `<ha-card></ha-card>`;
+        if (!this.getAvailableTargets().length)
+            return A;
         return b `
       <div
         class=${this.getGroupCardClasses()}
@@ -8974,6 +9034,16 @@ if (!w.customCards.find((c) => c.type === name)) {
         preview: true,
         description: 'A different take on the thermostat card',
         documentationURL: 'https://github.com/Wheemer/simple-thermostat',
+        getEntitySuggestion: (_hass, entityId) => {
+            if (entityId.split('.')[0] !== 'climate')
+                return null;
+            return {
+                config: {
+                    type: `custom:${name}`,
+                    entity: entityId,
+                },
+            };
+        },
     });
 }
 if (!w.customCards.find((c) => c.type === `${name}-group`)) {

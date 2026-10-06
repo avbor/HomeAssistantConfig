@@ -217,6 +217,150 @@ light_set_effect:
       selector:
         text:
 
+calendar_delete_event:
+  name: Delete event 👻
+  description: >-
+    Deletes events from a calendar, found by their title or uid in a stretch
+    of time.
+  target:
+    entity:
+      domain: calendar
+      supported_features:
+        - calendar.CalendarEntityFeature.DELETE_EVENT
+  fields:
+    summary:
+      required: false
+      example: Dentist
+      selector:
+        text:
+    uid:
+      required: false
+      selector:
+        text:
+    start_date_time:
+      required: false
+      example: "2026-10-04 08:00:00"
+      selector:
+        datetime:
+    end_date_time:
+      required: false
+      example: "2026-10-04 20:00:00"
+      selector:
+        datetime:
+    duration:
+      required: false
+      selector:
+        duration:
+    whole_series:
+      required: false
+      default: false
+      selector:
+        boolean:
+
+calendar_update_event:
+  name: Update event 👻
+  description: >-
+    Changes events in a calendar, found by their title or uid in a stretch of
+    time.
+  target:
+    entity:
+      domain: calendar
+      supported_features:
+        - calendar.CalendarEntityFeature.UPDATE_EVENT
+  fields:
+    summary:
+      required: false
+      example: Dentist
+      selector:
+        text:
+    uid:
+      required: false
+      selector:
+        text:
+    start_date_time:
+      required: false
+      example: "2026-10-04 08:00:00"
+      selector:
+        datetime:
+    end_date_time:
+      required: false
+      example: "2026-10-04 20:00:00"
+      selector:
+        datetime:
+    duration:
+      required: false
+      selector:
+        duration:
+    new_summary:
+      required: false
+      example: Orthodontist
+      selector:
+        text:
+    description:
+      required: false
+      selector:
+        text:
+          multiline: true
+    location:
+      required: false
+      selector:
+        text:
+    new_start:
+      required: false
+      selector:
+        datetime:
+    new_end:
+      required: false
+      selector:
+        datetime:
+    shift:
+      required: false
+      selector:
+        duration:
+          allow_negative: true
+
+climate_increase_temperature:
+  name: Increase temperature 👻
+  description: >-
+    Turns a thermostat's setpoint up a step, both setpoints for one that heats and cools.
+  target:
+    entity:
+      domain: climate
+      supported_features:
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+  fields:
+    step:
+      required: false
+      example: 0.5
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
+climate_decrease_temperature:
+  name: Decrease temperature 👻
+  description: >-
+    Turns a thermostat's setpoint down a step, both setpoints for one that heats and cools.
+  target:
+    entity:
+      domain: climate
+      supported_features:
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+  fields:
+    step:
+      required: false
+      example: 0.5
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-
@@ -2550,3 +2694,237 @@ group_set_members:
       selector:
         entity:
           multiple: true
+
+water_heater_increase_temperature:
+  name: Increase temperature 👻
+  description: >-
+    Turns a water heater's setpoint up a step.
+  target:
+    entity:
+      domain: water_heater
+      supported_features:
+        - water_heater.WaterHeaterEntityFeature.TARGET_TEMPERATURE
+  fields:
+    step:
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
+water_heater_decrease_temperature:
+  name: Decrease temperature 👻
+  description: >-
+    Turns a water heater's setpoint down a step.
+  target:
+    entity:
+      domain: water_heater
+      supported_features:
+        - water_heater.WaterHeaterEntityFeature.TARGET_TEMPERATURE
+  fields:
+    step:
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
+humidifier_increase_humidity:
+  name: Increase humidity 👻
+  description: >-
+    Turns a humidifier's target humidity up a step.
+  target:
+    entity:
+      domain: humidifier
+  fields:
+    step:
+      required: false
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+humidifier_decrease_humidity:
+  name: Decrease humidity 👻
+  description: >-
+    Turns a humidifier's target humidity down a step.
+  target:
+    entity:
+      domain: humidifier
+  fields:
+    step:
+      required: false
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+cover_increase_position:
+  name: Increase position 👻
+  description: >-
+    Moves a cover a step further open.
+  target:
+    entity:
+      domain: cover
+      supported_features:
+        - cover.CoverEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+cover_decrease_position:
+  name: Decrease position 👻
+  description: >-
+    Moves a cover a step further closed.
+  target:
+    entity:
+      domain: cover
+      supported_features:
+        - cover.CoverEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+valve_increase_position:
+  name: Increase position 👻
+  description: >-
+    Moves a valve a step further open.
+  target:
+    entity:
+      domain: valve
+      supported_features:
+        - valve.ValveEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+valve_decrease_position:
+  name: Decrease position 👻
+  description: >-
+    Moves a valve a step further closed.
+  target:
+    entity:
+      domain: valve
+      supported_features:
+        - valve.ValveEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+media_player_increase_volume:
+  name: Increase volume 👻
+  description: >-
+    Turns a media player's volume up by the step you give.
+  target:
+    entity:
+      domain: media_player
+      supported_features:
+        - media_player.MediaPlayerEntityFeature.VOLUME_SET
+  fields:
+    step:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 0.5
+          max: 100
+          step: 0.5
+          unit_of_measurement: "%"
+          mode: box
+
+media_player_decrease_volume:
+  name: Decrease volume 👻
+  description: >-
+    Turns a media player's volume down by the step you give.
+  target:
+    entity:
+      domain: media_player
+      supported_features:
+        - media_player.MediaPlayerEntityFeature.VOLUME_SET
+  fields:
+    step:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 0.5
+          max: 100
+          step: 0.5
+          unit_of_measurement: "%"
+          mode: box
+
+todo_move_item:
+  name: Move item 👻
+  description: >-
+    Moves an item in a to-do list to the top, the bottom, or after another
+    item.
+  target:
+    entity:
+      domain: todo
+      supported_features:
+        - todo.TodoListEntityFeature.MOVE_TODO_ITEM
+  fields:
+    item:
+      required: true
+      example: Take out the bins
+      selector:
+        text:
+    after:
+      required: false
+      example: Do the dishes
+      selector:
+        text:
+    position:
+      required: false
+      selector:
+        select:
+          translation_key: todo_move_position
+          options:
+            - top
+            - bottom

@@ -6,6 +6,7 @@ cron:
       selector:
         text:
 
+device_discovered:
 stale:
   target:
   fields:
@@ -15,6 +16,7 @@ stale:
       selector:
         duration:
 
+device_added:
 recovered:
   target:
   fields:
@@ -24,6 +26,7 @@ recovered:
       selector:
         duration:
 
+integration_added:
 integration_failed:
   fields:
     for:
@@ -146,3 +149,4 @@ flapping:
       example: "00:05:00"
       selector:
         duration:
+user_added:
