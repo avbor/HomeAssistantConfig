@@ -1,5 +1,5 @@
 (function() {
-    const env = {"DEBUG":true,"BUILD_TIME":"2026-10-02T16:09:58-02:30"};
+    const env = {"DEBUG":true,"BUILD_TIME":"2026-10-07T18:06:36-02:30"};
     try {
         if (process) {
             process.env = Object.assign({}, process.env);
@@ -11,7 +11,7 @@
 })();
 
 var name = "simple-thermostat";
-var version = "4.5.1";
+var version = "4.5.2";
 
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -4073,6 +4073,37 @@ function isEntityAvailable(entity) {
         ['button', 'input_button', 'scene'].includes(entity.entity_id?.split('.')[0] ?? ''));
 }
 
+const TOGGLE_DOMAINS = [
+    'automation',
+    'fan',
+    'humidifier',
+    'input_boolean',
+    'light',
+    'switch',
+];
+const BUTTON_DOMAINS = ['button', 'input_button', 'script', 'scene'];
+function callEntityAction(hass, entityId, checked) {
+    const state = hass.states?.[entityId];
+    if (!isEntityAvailable(state))
+        return;
+    const [domain] = entityId.split('.');
+    const isToggle = TOGGLE_DOMAINS.includes(domain);
+    const service = isToggle
+        ? `turn_${checked ?? (state.state !== 'on') ? 'on' : 'off'}`
+        : domain === 'button' || domain === 'input_button'
+            ? 'press'
+            : 'turn_on';
+    const actionDomain = isToggle ? 'homeassistant' : domain;
+    if (typeof hass.performAction === 'function') {
+        hass.performAction({
+            action: `${actionDomain}.${service}`,
+            data: { entity_id: entityId },
+        });
+    }
+    else {
+        hass.callService?.(actionDomain, service, { entity_id: entityId });
+    }
+}
 function getEntityActionAttribute(entity) {
     if (typeof entity.entity_id !== 'string')
         return undefined;
@@ -6923,51 +6954,9 @@ function renderTemplateContent(markup, hass) {
         : o(markup);
 }
 
-const TOGGLE_DOMAINS = [
-    'automation',
-    'fan',
-    'humidifier',
-    'input_boolean',
-    'light',
-    'switch',
-];
-const BUTTON_DOMAINS = ['button', 'input_button', 'script', 'scene'];
 const DISPLAY_VALUES = ['row', 'auto', 'button', 'toggle', 'chip'];
-function toggleEntity(hass, entityId, checked) {
-    if (!isEntityAvailable(hass.states?.[entityId]))
-        return;
-    const service = `turn_${checked ? 'on' : 'off'}`;
-    if (typeof hass.performAction === 'function') {
-        hass.performAction({
-            action: `homeassistant.${service}`,
-            data: { entity_id: entityId },
-        });
-    }
-    else {
-        hass.callService('homeassistant', service, { entity_id: entityId });
-    }
-}
 function safeClass$1(value) {
     return String(value ?? '').replace(/[^a-z0-9_-]/gi, '');
-}
-function callEntityAction(hass, entityId, domain) {
-    if (!isEntityAvailable(hass.states?.[entityId]))
-        return;
-    if (TOGGLE_DOMAINS.includes(domain)) {
-        const checked = hass.states?.[entityId]?.state !== 'on';
-        toggleEntity(hass, entityId, checked);
-        return;
-    }
-    const service = domain === 'button' || domain === 'input_button' ? 'press' : 'turn_on';
-    if (typeof hass.performAction === 'function') {
-        hass.performAction({
-            action: `${domain}.${service}`,
-            data: { entity_id: entityId },
-        });
-    }
-    else {
-        hass.callService(domain, service, { entity_id: entityId });
-    }
 }
 function renderIconTemplate({ icon, state, attribute, hass, config, variables, localize, }) {
     if (typeof icon !== 'string' ||
@@ -7181,7 +7170,7 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
           title=${entityTooltip}
           aria-pressed=${isToggleEntity ? String(active) : A}
           @click=${() => supportsAction
-                ? callEntityAction(hass, state.entity_id, domain)
+                ? callEntityAction(hass, state.entity_id)
                 : canOpenEntity
                     ? openEntityPopover(state.entity_id)
                     : undefined}
@@ -7215,7 +7204,7 @@ function renderInfoItem({ hide = false, hass, state, details, localize, openEnti
           <ha-switch
             .checked=${state.state === 'on'}
             .disabled=${!isEntityAvailable(state)}
-            @change=${(ev) => toggleEntity(hass, state.entity_id, ev.target.checked)}
+            @change=${(ev) => callEntityAction(hass, state.entity_id, ev.target.checked)}
           ></ha-switch>
         </div>
       `;
@@ -8114,11 +8103,9 @@ class SimpleThermostat extends i$1 {
             });
         };
         this.toggleFooterEntity = (entityId, checked) => {
-            if (!isEntityAvailable(this._hass?.states?.[entityId]))
+            if (!this._hass)
                 return;
-            this._callAction(`homeassistant.turn_${checked ? 'on' : 'off'}`, {
-                entity_id: entityId,
-            });
+            callEntityAction(this._hass, entityId, checked);
             fireEvent(this, 'haptic', 'light');
         };
         this._stopSetpointRepeat = () => {

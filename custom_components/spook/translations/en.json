@@ -1,5 +1,9 @@
 {
   "triggers": {
+    "automation_turned_off": {
+      "name": "Automation turned off",
+      "description": "Fires when somebody, or something, turns an automation off. Leave the target empty to watch every automation."
+    },
     "debounce": {
       "name": "Once it settles",
       "description": "Fires once a trigger has stopped firing for a while, so a burst of them arrives as one. A motion sensor does not report motion once, it reports it twenty times.",
@@ -182,6 +186,34 @@
         }
       }
     },
+    "target_temperature_reached": {
+      "name": "Target temperature reached",
+      "description": "Fires when the temperature of a thermostat or water heater reaches its target, or jumps past it. Changing the target does not count, and neither does a device that is off.",
+      "fields": {
+        "tolerance": {
+          "name": "Tolerance",
+          "description": "How close to the target still counts as there, in the device's unit. For a thermostat that settles just short of its setpoint. Zero means the target itself."
+        }
+      }
+    },
+    "update_installed": {
+      "name": "Update installed",
+      "description": "Fires when an update entity reports a different installed version, whether somebody pressed install, the device updated itself, or it was updated outside of Home Assistant."
+    },
+    "position_reached": {
+      "name": "Position reached",
+      "description": "Fires when a cover or valve gets to a position, or moves past it. One that is already there, or comes back from unavailable at it, does not count.",
+      "fields": {
+        "position": {
+          "name": "Position",
+          "description": "The position to reach, from 0 (closed) to 100 (open)."
+        }
+      }
+    },
+    "script_started": {
+      "name": "Script started",
+      "description": "Fires when a script starts a run. A run the script refuses, because it is already running, does not count. Leave the target empty to watch every script."
+    },
     "user_added": {
       "name": "User added",
       "description": "Fires when somebody is given a login to Home Assistant. Users Home Assistant creates for its own integrations are left out."
@@ -203,6 +235,20 @@
     }
   },
   "conditions": {
+    "is_at_target_temperature": {
+      "name": "Temperature at its target",
+      "description": "Passes when the temperature of a thermostat or water heater is at its target. A device that is off is not at its target, and one that is unavailable is left out.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior",
+          "description": "Whether any of the devices being there is enough, or all of them have to be."
+        },
+        "tolerance": {
+          "name": "Tolerance",
+          "description": "How close to the target still counts as there, in the device's unit. For a thermostat that settles just short of its setpoint. Zero means the target itself."
+        }
+      }
+    },
     "repair_issue_present": {
       "name": "Repair issue outstanding",
       "description": "Passes while a repair issue is outstanding. Issues somebody has ignored do not count.",
@@ -1309,21 +1355,29 @@
     },
     "homeassistant_disable_config_entry": {
       "name": "Disable an integration",
-      "description": "Disables an integration entry.",
+      "description": "Disables integration entries, by entry or every entry of an integration.",
       "fields": {
         "config_entry_id": {
           "name": "Integration entry",
           "description": "The integration entry to disable."
+        },
+        "domain": {
+          "name": "Integration",
+          "description": "Disable every entry of these integrations, the ones added later included."
         }
       }
     },
     "homeassistant_enable_config_entry": {
       "name": "Enable an integration",
-      "description": "Enables an integration entry.",
+      "description": "Enables integration entries, by entry or every entry of an integration.",
       "fields": {
         "config_entry_id": {
           "name": "Integration entry",
           "description": "The integration entry to enable."
+        },
+        "domain": {
+          "name": "Integration",
+          "description": "Enable every entry of these integrations, the ones added later included."
         }
       }
     },
@@ -1983,6 +2037,10 @@
         }
       }
     },
+    "input_select_reverse": {
+      "name": "Reverse options",
+      "description": "Reverses the order of the selectable options for an `input_select` entity, back to front. This is not persistent and will be undone once reloaded or Home Assistant restarts."
+    },
     "input_select_shuffle": {
       "name": "Shuffle options",
       "description": "Shuffles the list of selectable options for an `input_select` entity. This is not persistent and will be undone once reloaded or Home Assistant restarts."
@@ -2054,6 +2112,24 @@
     "input_number_min": {
       "name": "Set minimum value",
       "description": "Set an input number entity to its minimum value."
+    },
+    "input_number_set_range": {
+      "name": "Set range",
+      "description": "Changes the minimum, maximum or step of an input number made in the UI, the same as editing it. A value outside the new range is moved inside it.",
+      "fields": {
+        "min": {
+          "name": "Minimum",
+          "description": "The new minimum value."
+        },
+        "max": {
+          "name": "Maximum",
+          "description": "The new maximum value."
+        },
+        "step": {
+          "name": "Step",
+          "description": "The new step size."
+        }
+      }
     },
     "counter_create": {
       "name": "Create a counter",
@@ -2367,7 +2443,13 @@
     },
     "repairs_ignore_all": {
       "name": "Ignore all issues",
-      "description": "Ignore all issues currently raised in Home Assistant Repairs."
+      "description": "Ignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
+      "fields": {
+        "domain": {
+          "name": "Domain",
+          "description": "Only ignore the issues raised by these integrations."
+        }
+      }
     },
     "repairs_list": {
       "name": "List issues",
@@ -2399,7 +2481,13 @@
     },
     "repairs_unignore_all": {
       "name": "Unignore all issues",
-      "description": "Unignore all issues currently raised in Home Assistant Repairs."
+      "description": "Unignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
+      "fields": {
+        "domain": {
+          "name": "Domain",
+          "description": "Only unignore the issues raised by these integrations."
+        }
+      }
     },
     "sensor_set_display_precision": {
       "name": "Set display precision",
@@ -2484,6 +2572,10 @@
         "radius": {
           "name": "Radius",
           "description": "Radius of the zone"
+        },
+        "passive": {
+          "name": "Passive",
+          "description": "A passive zone is only there for automations: it is not shown on the map, and does not change where people and device trackers are."
         }
       }
     },
@@ -2514,6 +2606,10 @@
         "radius": {
           "name": "Radius",
           "description": "Radius of the zone"
+        },
+        "passive": {
+          "name": "Passive",
+          "description": "A passive zone is only there for automations: it is not shown on the map, and does not change where people and device trackers are."
         }
       }
     },

@@ -527,26 +527,46 @@ homeassistant_delete_area:
 homeassistant_disable_config_entry:
   name: Disable an integration 👻
   description: >-
-    Disables an integration entry.
+    Disables integration entries, by entry or every entry of an integration.
   fields:
     config_entry_id:
       name: Integration entry
       description: The integration entry to disable.
-      required: true
+      required: false
       selector:
         config_entry:
+    domain:
+      name: Integration
+      description: >-
+        Disable every entry of these integrations, the ones added later
+        included.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
 
 homeassistant_enable_config_entry:
   name: Enable an integration 👻
   description: >-
-    Enables an integration entry.
+    Enables integration entries, by entry or every entry of an integration.
   fields:
     config_entry_id:
       name: Integration entry
       description: The integration entry to enable.
-      required: true
+      required: false
       selector:
         config_entry:
+    domain:
+      name: Integration
+      description: >-
+        Enable every entry of these integrations, the ones added later
+        included.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
 
 homeassistant_disable_device:
   name: Disable a device 👻
@@ -1641,6 +1661,16 @@ input_select_random:
       selector:
         object:
 
+input_select_reverse:
+  name: Reverse options 👻
+  description: >-
+    Reverses the order of the selectable options for an `input_select`
+    entity, back to front. This is not persistent and will be undone once
+    reloaded or Home Assistant restarts.
+  target:
+    entity:
+      domain: input_select
+
 input_select_shuffle:
   name: Shuffle options 👻
   description: >-
@@ -1778,6 +1808,44 @@ input_number_min:
   target:
     entity:
       domain: input_number
+
+input_number_set_range:
+  name: Set range 👻
+  description: >-
+    Changes the minimum, maximum or step of an input number made in the UI,
+    the same as editing it. A value outside the new range is moved inside it.
+  target:
+    entity:
+      domain: input_number
+  fields:
+    min:
+      name: Minimum
+      description: The new minimum value.
+      required: false
+      example: 0
+      selector:
+        number:
+          mode: box
+          step: any
+    max:
+      name: Maximum
+      description: The new maximum value.
+      required: false
+      example: 3600
+      selector:
+        number:
+          mode: box
+          step: any
+    step:
+      name: Step
+      description: The new step size.
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.000000001
+          mode: box
+          step: any
 
 counter_create:
   name: Create a counter 👻
@@ -2341,7 +2409,17 @@ repairs_create:
 repairs_ignore_all:
   name: Ignore all issues 👻
   description: >-
-    Ignore all issues currently raised in Home Assistant Repairs.
+    Ignore all issues currently raised in Home Assistant Repairs, or only
+    those raised by particular integrations.
+  fields:
+    domain:
+      name: Domain
+      description: Only ignore the issues raised by these integrations.
+      required: false
+      example: hacs
+      selector:
+        text:
+          multiple: true
 
 repairs_list:
   name: List issues 👻
@@ -2394,7 +2472,17 @@ repairs_remove:
 repairs_unignore_all:
   name: Unignore all issues 👻
   description: >-
-    Unignore all issues currently raised in Home Assistant Repairs.
+    Unignore all issues currently raised in Home Assistant Repairs, or only
+    those raised by particular integrations.
+  fields:
+    domain:
+      name: Domain
+      description: Only unignore the issues raised by these integrations.
+      required: false
+      example: hacs
+      selector:
+        text:
+          multiple: true
 
 sensor_set_display_precision:
   name: Set display precision 👻
@@ -2540,6 +2628,15 @@ zone_create:
           max: 999999999999
           unit_of_measurement: m
           mode: box
+    passive:
+      name: Passive
+      description: >-
+        A passive zone is only there for automations: it is not shown on the
+        map, and does not change where people and device trackers are.
+      required: false
+      default: false
+      selector:
+        boolean:
 
 zone_update:
   name: Update a zone 👻
@@ -2591,6 +2688,14 @@ zone_update:
           step: any
           unit_of_measurement: m
           mode: box
+    passive:
+      name: Passive
+      description: >-
+        A passive zone is only there for automations: it is not shown on the
+        map, and does not change where people and device trackers are.
+      required: false
+      selector:
+        boolean:
 
 zone_delete:
   name: Delete a zone 👻
