@@ -2,11 +2,6 @@
     "config": {
         "abort": {
             "already_spooked": "ใช่ ... ดี..!"
-        },
-        "step": {
-            "user": {
-                "description": "คุณอ่าน? คุณอ่านใบอนุญาต? คุณแน่ใจว่า?"
-            }
         }
     },
     "entity": {

@@ -2,11 +2,6 @@
     "config": {
         "abort": {
             "already_spooked": "Ja... äbe... nei. Okay, merci, uf widerluege!"
-        },
-        "step": {
-            "user": {
-                "description": "Häsch du d readme gläse? Häsch du d Lizänz gläse? Bisch du sicher?"
-            }
         }
     },
     "entity": {

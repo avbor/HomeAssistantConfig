@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from contextlib import asynccontextmanager, suppress
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
@@ -125,6 +126,38 @@ def _first_sentence(text: str) -> str:
 def _error(message: str) -> ToolResult:
     """Return a refusal or failure the model can read and pass on."""
     return ToolResult(data={"error": message}, error=True)
+
+
+def _reference(value: str) -> str:
+    """Return a reference to look for, without stray spaces or capitals.
+
+    Done here and not with probatio's Strip and Lower. Once Home Assistant
+    converts the schema for a model, those turn a plain string into an
+    `allOf` with formats no JSON Schema knows.
+    """
+    return probatio.Length(min=1)(value.strip().lower())
+
+
+def _draft_config(config: dict[str, Any]) -> dict[str, Any]:
+    """Return the draft to check, also when it came in as a JSON string.
+
+    Gemini takes no object without fixed properties, so Home Assistant's
+    Gemini integration hands it the draft as an object holding one string,
+    `json`. Read as it came, that draft names nothing, and nothing is clean.
+    """
+    if set(config) != {"json"} or not isinstance(config["json"], str):
+        return config
+
+    try:
+        draft = json.loads(config["json"])
+    except ValueError as err:
+        message = f"The draft is not valid JSON: {err}"
+        raise DraftError(message) from err
+
+    if not isinstance(draft, dict):
+        message = "The draft should be a JSON object."
+        raise DraftError(message)
+    return draft
 
 
 class _IssueStrings:
@@ -498,9 +531,7 @@ class FindUsagesTool(_SpookTool):
                     "What to look for, like 'light.kitchen', 'notify.mobile_app', "
                     "or the ID of a label, area or floor."
                 ),
-            ): probatio.All(
-                str, probatio.Strip, probatio.Lower, probatio.Length(min=1)
-            ),
+            ): probatio.All(str, _reference),
             probatio.Optional(
                 "kind",
                 description=(
@@ -694,9 +725,14 @@ class CheckReferencesTool(_SpookTool):
     description = (
         "Check a draft automation, script, scene or dashboard card before "
         "saving it, the way Spook's repairs would check it after: entities, "
-        "actions, devices, areas, floors, labels, triggers and conditions "
-        "that do not exist. Missing entities come with what Spook knows, like "
-        "a likely rename. An empty result means the draft is clean."
+        "actions, devices, areas, floors, labels, triggers, conditions and "
+        "integration entries that do not exist, users that were removed, "
+        "attributes an entity never has, and states an entity is never in, "
+        "or values its attributes never have. Missing entities come with what "
+        "Spook knows, like a likely rename, and the rest with the one most "
+        "likely meant. A field that takes an entity ID but holds something "
+        "that is not one is listed under not_entity_ids. An empty result "
+        "means the draft is clean."
     )
     annotations = _READ_ONLY
     parameters = probatio.Schema(
@@ -721,7 +757,7 @@ class CheckReferencesTool(_SpookTool):
         """Check the draft."""
         try:
             unknown: dict[str, Any] = await async_check_draft(
-                hass, args["kind"], args["config"]
+                hass, args["kind"], _draft_config(args["config"])
             )
         except DraftError as err:
             return _error(str(err))

@@ -2,11 +2,6 @@
     "config": {
         "abort": {
             "already_spooked": "Ja ... wel ... nee. Regso, dankie, totsiens!"
-        },
-        "step": {
-            "user": {
-                "description": "Het jy die readme gelees ? Het jy die lisensie gelees ? Is jy regtig seker ?"
-            }
         }
     },
     "entity": {

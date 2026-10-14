@@ -18,30 +18,48 @@ from homeassistant.components import automation, script
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.script import Script
 
+from .action_extraction import ActionDescriptionsUnavailableError
+from .const import LOGGER
 from .dashboard_extraction import (
     extract_actions_from_dashboard_node,
     extract_areas_from_dashboard_node,
     extract_entities_from_dashboard_node,
+    extract_not_entity_ids_from_dashboard_node,
+    is_view_node,
 )
 from .ectoplasms.automation.repairs import (
+    never_true_templates as automation_templates,
     unknown_area_references as automation_areas,
+    unknown_attribute_references as automation_attributes,
     unknown_condition_references as automation_conditions,
+    unknown_config_entry_references as automation_config_entries,
     unknown_device_references as automation_devices,
     unknown_entity_references as automation_entities,
     unknown_floor_references as automation_floors,
+    unknown_icons as automation_icons,
     unknown_label_references as automation_labels,
     unknown_service_references as automation_services,
+    unknown_state_references as automation_states,
+    unknown_trigger_id_references as automation_trigger_ids,
     unknown_trigger_references as automation_triggers,
+    unknown_user_references as automation_users,
 )
+from .ectoplasms.lovelace.entity_names import async_check_dashboard_draft
 from .ectoplasms.script.repairs import (
+    never_true_templates as script_templates,
     unknown_area_references as script_areas,
+    unknown_attribute_references as script_attributes,
     unknown_condition_references as script_conditions,
+    unknown_config_entry_references as script_config_entries,
     unknown_device_references as script_devices,
     unknown_entity_references as script_entities,
     unknown_floor_references as script_floors,
+    unknown_icons as script_icons,
     unknown_label_references as script_labels,
     unknown_service_references as script_services,
+    unknown_state_references as script_states,
     unknown_trigger_references as script_triggers,
+    unknown_user_references as script_users,
 )
 from .entity_filtering import (
     async_filter_known_area_ids,
@@ -50,8 +68,15 @@ from .entity_filtering import (
     async_get_all_entity_ids,
     async_get_deleted_entities,
     async_get_rename_suggestion_cache,
+    is_not_an_entity_id,
 )
 from .entity_suggestions import async_warm_rename_suggestions
+from .repairs import AbstractSpookUnknownEntityNamesRepair
+from .user_references import (
+    async_get_user_ids,
+    extract_user_ids_from_dashboard_node,
+    extract_user_ids_from_view,
+)
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -71,23 +96,36 @@ DRAFT_KINDS: tuple[DraftKind, ...] = ("automation", "script", "scene", "dashboar
 DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
     automation.DOMAIN: (
         automation_areas,
+        automation_attributes,
         automation_conditions,
+        automation_config_entries,
         automation_devices,
         automation_entities,
         automation_floors,
+        automation_icons,
         automation_labels,
         automation_services,
+        automation_states,
+        automation_templates,
+        automation_trigger_ids,
         automation_triggers,
+        automation_users,
     ),
     script.DOMAIN: (
         script_areas,
+        script_attributes,
         script_conditions,
+        script_config_entries,
         script_devices,
         script_entities,
         script_floors,
+        script_icons,
         script_labels,
         script_services,
+        script_states,
+        script_templates,
         script_triggers,
+        script_users,
     ),
 }
 
@@ -96,7 +134,7 @@ class DraftError(Exception):
     """A draft that cannot be read as what it says it is."""
 
 
-class _DraftEntity:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+class _DraftEntity:
     """What the repairs read off an automation or script, made from a draft.
 
     The repairs take an entity, because that is what they find in a running
@@ -132,11 +170,34 @@ class _DraftEntity:  # pylint: disable=too-few-public-methods,too-many-instance-
         self.action_script = loaded
         self.script = loaded
 
-        self.referenced_areas = loaded.referenced_areas
-        self.referenced_devices = loaded.referenced_devices
-        self.referenced_entities = loaded.referenced_entities
-        self.referenced_floors = loaded.referenced_floors
-        self.referenced_labels = loaded.referenced_labels
+    # Read when a repair asks, not copied in up front. Home Assistant raises
+    # on some action data, and the repairs know how to carry on without it.
+    # Copied here, the draft would fail before a single repair got to look.
+
+    @property
+    def referenced_areas(self) -> set[str]:
+        """Return the areas Home Assistant says the steps reference."""
+        return self.script.referenced_areas
+
+    @property
+    def referenced_devices(self) -> set[str]:
+        """Return the devices Home Assistant says the steps reference."""
+        return self.script.referenced_devices
+
+    @property
+    def referenced_entities(self) -> set[str]:
+        """Return the entities Home Assistant says the steps reference."""
+        return self.script.referenced_entities
+
+    @property
+    def referenced_floors(self) -> set[str]:
+        """Return the floors Home Assistant says the steps reference."""
+        return self.script.referenced_floors
+
+    @property
+    def referenced_labels(self) -> set[str]:
+        """Return the labels Home Assistant says the steps reference."""
+        return self.script.referenced_labels
 
 
 async def _async_check_with_repairs(
@@ -150,13 +211,38 @@ async def _async_check_with_repairs(
         repair: AbstractSpookEntityComponentUnknownReferencesRepair = (
             module.SpookRepair(hass)
         )
+        # The attribute and state repairs work out a whole round in one go,
+        # from the entities a round goes by, and a draft is not one of them.
+        if isinstance(repair, AbstractSpookUnknownEntityNamesRepair):
+            if found_names := await repair.async_check_draft(draft):
+                unknown[repair.reference_label] = found_names
+            continue
+
         # The two hooks a repair runs on every entity in a round, in the
         # order it runs them. Protected, as they are not meant to be called
         # from outside a round; this is the one round that has no house.
-        # pylint: disable-next=protected-access
-        await repair._async_setup_inspection()  # noqa: SLF001
+        # Reading what every action takes can fail. That should cost this
+        # one check only, not the rest of the draft.
+        try:
+            # pylint: disable-next=protected-access
+            await repair._async_setup_inspection()  # noqa: SLF001
+        except ActionDescriptionsUnavailableError as exc:
+            LOGGER.debug("Skipped %s on a draft: %s", repair.repair, exc.__cause__)
+            continue
+
         # pylint: disable-next=protected-access
         found = await repair._async_compute_unknown_references(draft)  # noqa: SLF001
+
+        # Like the repair says in its issue, something where an entity ID goes
+        # that is no entity ID at all is said apart from an entity that does
+        # not exist.
+        if repair.references_are_entities:
+            if not_entity_ids := {
+                value for value in found if is_not_an_entity_id(value)
+            }:
+                unknown["not_entity_ids"] = sorted(not_entity_ids)
+            found -= not_entity_ids
+
         if found:
             unknown[repair.reference_label] = sorted(found)
 
@@ -179,13 +265,36 @@ def _check_scene(hass: HomeAssistant, config: dict[str, Any]) -> dict[str, list[
     return {"entities": sorted(unknown)} if unknown else {}
 
 
-def _check_dashboard(
+def _extract_draft_user_ids(config: dict[str, Any]) -> set[str]:
+    """Return the user IDs a draft card, view or dashboard names.
+
+    A view handed over on its own has its own `visible` too, which a card
+    does not have and the dashboard reader only reads below `views`. Like
+    the repair, a dashboard run by a strategy has no users of its own: the
+    views left stored next to it are never shown. A card has a type and a
+    dashboard does not, so a custom card with options of those names is
+    still read as a card.
+    """
+    if "type" not in config and "views" in config and "strategy" in config:
+        return set()
+
+    if "views" not in config and is_view_node(config):
+        return extract_user_ids_from_view(config)
+
+    return extract_user_ids_from_dashboard_node(config)
+
+
+async def _async_check_dashboard(
     hass: HomeAssistant, config: dict[str, Any]
 ) -> dict[str, list[str]]:
     """Return what a draft card, view or dashboard names that does not exist.
 
     The dashboard readers take any node, so a single card is as welcome as a
-    whole dashboard. Filtered the way the dashboard repairs filter.
+    whole dashboard. Filtered the way the dashboard repairs filter, and the
+    attributes and states held against what the entities have, like they are
+    for an automation. Like the repair, a core card's entity field holding
+    something that is no entity ID at all is said apart from an entity that
+    does not exist.
     """
     checks = {
         "entities": async_filter_known_entity_ids(
@@ -193,14 +302,19 @@ def _check_dashboard(
             entity_ids=extract_entities_from_dashboard_node(config),
             known_entity_ids=async_get_all_entity_ids(hass, include_all_none=True),
         ),
+        "not_entity_ids": extract_not_entity_ids_from_dashboard_node(config),
         "areas": async_filter_known_area_ids(
             hass, area_ids=extract_areas_from_dashboard_node(config)
         ),
         "services": async_filter_known_services(
             hass, services=extract_actions_from_dashboard_node(config)
         ),
+        "users": _extract_draft_user_ids(config) - await async_get_user_ids(hass),
     }
-    return {label: sorted(found) for label, found in checks.items() if found}
+    return {
+        **{label: sorted(found) for label, found in checks.items() if found},
+        **await async_check_dashboard_draft(hass, config),
+    }
 
 
 async def async_describe_unknown_entities(
@@ -238,5 +352,5 @@ async def async_check_draft(
     if kind == "scene":
         return _check_scene(hass, config)
     if kind == "dashboard":
-        return _check_dashboard(hass, config)
+        return await _async_check_dashboard(hass, config)
     return await _async_check_with_repairs(hass, kind, config)

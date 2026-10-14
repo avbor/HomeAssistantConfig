@@ -298,11 +298,20 @@
     "homeassistant_unhide_entity": {
       "service": "mdi:eye"
     },
+    "homeassistant_update_area": {
+      "service": "mdi:home-edit"
+    },
     "homeassistant_update_category": {
       "service": "mdi:shape-outline"
     },
+    "homeassistant_update_device": {
+      "service": "mdi:pencil-box"
+    },
     "homeassistant_update_entity_id": {
       "service": "mdi:identifier"
+    },
+    "homeassistant_update_floor": {
+      "service": "mdi:layers-edit"
     },
     "homeassistant_update_label": {
       "service": "mdi:tag-edit"
@@ -438,6 +447,15 @@
     },
     "repairs_unignore_all": {
       "service": "mdi:checkbox-multiple-marked"
+    },
+    "schedule_create": {
+      "service": "mdi:calendar-plus"
+    },
+    "schedule_delete": {
+      "service": "mdi:delete"
+    },
+    "schedule_set_day": {
+      "service": "mdi:calendar-edit"
     },
     "select_random": {
       "service": "mdi:dice-multiple"

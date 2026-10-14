@@ -13,16 +13,30 @@ DOCUMENTATION_URL: Final = "https://spook.boo"
 REPAIR_DOCUMENTATION: Final = {
     "alert_unknown_entity_references": "alert#unknown-watched-entity",
     "alert_unknown_notifiers": "alert#unknown-notifiers",
+    "assist_duplicate_names": "conversation#names-assist-cannot-tell-apart",
+    "automation_never_true_templates": "automation#templates-that-can-never-pass",
     "automation_unknown_area_references": "automation#unknown-referenced-areas",
+    "automation_unknown_attribute_references": (
+        "automation#unknown-referenced-attributes"
+    ),
     "automation_unknown_condition_references": (
         "automation#unknown-referenced-conditions"
+    ),
+    "automation_unknown_config_entry_references": (
+        "automation#unknown-referenced-integration-entries"
     ),
     "automation_unknown_device_references": "automation#unknown-referenced-devices",
     "automation_unknown_entity_references": "automation#unknown-referenced-entities",
     "automation_unknown_floor_references": "automation#unknown-referenced-floors",
+    "automation_unknown_icons": "automation#unknown-icons",
     "automation_unknown_label_references": "automation#unknown-referenced-labels",
     "automation_unknown_service_references": "automation#unknown-referenced-actions",
+    "automation_unknown_state_references": "automation#unknown-referenced-states",
+    "automation_unknown_trigger_id_references": (
+        "automation#unknown-referenced-trigger-ids"
+    ),
     "automation_unknown_trigger_references": "automation#unknown-referenced-triggers",
+    "automation_unknown_user_references": "automation#removed-users",
     "empty_areas": "homeassistant#empty-areas",
     "empty_floors": "homeassistant#empty-floors",
     "energy_unknown_references": "energy#unknown-referenced-entities",
@@ -31,8 +45,14 @@ REPAIR_DOCUMENTATION: Final = {
     "lovelace_duplicate_resources": "lovelace#duplicate-dashboard-resources",
     "lovelace_missing_resources": "lovelace#missing-dashboard-resources",
     "lovelace_unknown_area_references": "lovelace#unknown-referenced-areas",
+    "lovelace_unknown_attribute_references": "lovelace#unknown-referenced-attributes",
     "lovelace_unknown_entity_references": "lovelace#unknown-referenced-entities",
+    "lovelace_unknown_icons": "lovelace#unknown-icons",
     "lovelace_unknown_service_references": "lovelace#unknown-actions",
+    "lovelace_unknown_theme_references": "lovelace#unknown-themes",
+    "lovelace_unknown_user_references": "lovelace#removed-users",
+    "lovelace_unknown_view_references": "lovelace#unknown-views",
+    "lovelace_unknown_state_references": "lovelace#unknown-referenced-states",
     "min_max_unknown_sources": "homeassistant#unknown-min-max-helper-members",
     "notify_unknown_group_members": "notify#unknown-group-members",
     "orphaned_statistics": "recorder#orphaned-long-term-statistics",
@@ -43,20 +63,30 @@ REPAIR_DOCUMENTATION: Final = {
     ),
     "proximity_unknown_zone": "proximity#unknown-zone",
     "scene_unknown_entity_references": "scene#unknown-referenced-entities",
+    "script_never_true_templates": "script#templates-that-can-never-pass",
     "script_unknown_area_references": "script#unknown-referenced-areas",
+    "script_unknown_attribute_references": "script#unknown-referenced-attributes",
     "script_unknown_condition_references": "script#unknown-referenced-conditions",
+    "script_unknown_config_entry_references": (
+        "script#unknown-referenced-integration-entries"
+    ),
     "script_unknown_device_references": "script#unknown-referenced-devices",
     "script_unknown_entity_references": "script#unknown-referenced-entities",
     "script_unknown_floor_references": "script#unknown-referenced-floors",
+    "script_unknown_icons": "script#unknown-icons",
     "script_unknown_label_references": "script#unknown-referenced-labels",
     "script_unknown_service_references": "script#unknown-referenced-actions",
+    "script_unknown_state_references": "script#unknown-referenced-states",
     "script_unknown_trigger_references": "script#unknown-referenced-triggers",
+    "script_unknown_user_references": "script#removed-users",
+    "template_unknown_attribute_references": "template#unknown-referenced-attributes",
     "template_unknown_entity_references": "template#unknown-referenced-entities",
     "template_unknown_service_references": "template#unknown-referenced-actions",
     "unknown_area_sensors": "homeassistant#unknown-area-sensors",
     "unknown_customized_entities": "homeassistant#unknown-customized-entities",
     "unknown_engines": "assist-pipeline#unknown-engines",
     "unknown_helper_source_references": "homeassistant#unknown-helper-sources",
+    "unknown_icons": "homeassistant#unknown-icons",
     "unused_blueprints": "homeassistant#unused-blueprints",
     "unused_labels": "homeassistant#unused-labels",
 }

@@ -41,6 +41,7 @@ from homeassistant.helpers import (
     label_registry as lr,
 )
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.helpers.template.helpers import resolve_area_id
 from homeassistant.util.hass_dict import HassKey
 
 from .const import LOGGER
@@ -117,6 +118,26 @@ def _async_get_cache(hass: HomeAssistant) -> EntityIDsCache:
     return hass.data[DATA_ALL_ENTITY_IDS_CACHE]
 
 
+@callback
+def _forget_rename_suggestions_in(cache: EntityIDsCache, domain: str) -> None:
+    """Forget the rename suggestions for unknown entities in one domain.
+
+    A suggestion is only ever drawn from the unknown entity's own domain, so
+    an entity coming or going in another one cannot change it. A house with
+    an integration still adding sensors keeps its suggestions for lights,
+    scripts and everything else.
+    """
+    if (suggestions := cache.rename_suggestions) is None:
+        return
+
+    for entity_id in [
+        entity_id
+        for entity_id in suggestions
+        if entity_id.lower().split(".", 1)[0] == domain
+    ]:
+        del suggestions[entity_id]
+
+
 def async_setup_all_entity_ids_cache_invalidation(
     hass: HomeAssistant,
 ) -> Callable[[], None]:
@@ -171,15 +192,17 @@ def async_setup_all_entity_ids_cache_invalidation(
         an entity registered, unregistered, or renamed. Registry entries are
         written for plenty of other reasons (an icon, a category, a device
         being reassigned), and none of those change what an entity is called.
+        And then only those in its domain: a rename cannot change the domain,
+        Home Assistant refuses that.
         """
         data = event.data
-        pool_moved = data["action"] != "update" or "entity_id" in data["changes"]
+        _clear_cache()
 
-        if pool_moved:
-            _clear_cache_and_suggestions()
+        if data["action"] == "update" and "entity_id" not in data["changes"]:
             return
 
-        _clear_cache()
+        cache.deleted_entities = None
+        _forget_rename_suggestions_in(cache, data["entity_id"].split(".", 1)[0])
 
     # Listen for entity registry updates
     unsub_registry_update = hass.bus.async_listen(
@@ -189,10 +212,13 @@ def async_setup_all_entity_ids_cache_invalidation(
     unsub_hass_start = async_listen_once_tracked(
         hass, EVENT_HOMEASSISTANT_START, _clear_cache_and_suggestions
     )
-    # Listen for components loading
-    unsub_component_loaded = hass.bus.async_listen(
-        EVENT_COMPONENT_LOADED, _clear_cache_and_suggestions
-    )
+    # Listen for components loading. The suggestions are left standing: a
+    # component loading does not name anything itself. Whatever entities it
+    # brings register, which is handled above, or arrive as states only, which
+    # is handled below. Throwing them all away here had the next inspection
+    # work every one of them out again, for every integration still loading
+    # after a start. #1898.
+    unsub_component_loaded = hass.bus.async_listen(EVENT_COMPONENT_LOADED, _clear_cache)
     # Listen for state-only entities being added or removed. The suggestions
     # are left standing here: an entity arriving or leaving the state machine
     # without touching the registry is the noisiest event in the house, and a
@@ -653,6 +679,75 @@ def async_filter_known_label_ids(
 
 
 @callback
+def async_template_areas_not_found(hass: HomeAssistant, values: set[str]) -> set[str]:
+    """Return the values `area_entities` and `area_devices` find no area for.
+
+    They take an area ID, or an area name or alias in any case and spacing.
+    Nothing else: an entity or device ID in an area is taken as an area ID
+    (`area_name` finds an area for it), which no area has, and one without
+    an area finds none either. The way to get there is
+    `area_entities(area_id('light.x'))`. A name that is also an entity or
+    device ID in an area finds nothing too, but is not worth telling apart.
+    """
+    area_registry = ar.async_get(hass)
+    return {
+        value
+        for value in values
+        if area_registry.async_get_area(value) is None
+        and area_registry.async_get_area_by_name(value) is None
+        and not area_registry.async_get_areas_by_alias(value)
+    }
+
+
+@callback
+def async_template_floors_not_found(hass: HomeAssistant, values: set[str]) -> set[str]:
+    """Return the values `floor_areas` and `floor_entities` find no floor for.
+
+    They take a floor ID, or a floor name or alias in any case and spacing.
+    Before the name, they ask `floor_name`, which finds a floor for an area
+    too: when the value resolves to an area on a floor, by name, alias,
+    entity or device ID, it is taken as a floor ID. So a floor called
+    `Attic` finds nothing as long as an area on a floor is called that as
+    well, and an entity or device ID never finds a floor.
+    """
+    area_registry = ar.async_get(hass)
+    floor_registry = fr.async_get(hass)
+
+    def _finds_a_floor(value: str) -> bool:
+        if floor_registry.async_get_floor(value) is not None:
+            return True
+        if floor_registry.async_get_floor_by_name(
+            value
+        ) is None and not floor_registry.async_get_floors_by_alias(value):
+            return False
+
+        # The name only counts when `floor_name` did not take it first.
+        if (area_id := resolve_area_id(hass, value)) is None or (
+            area := area_registry.async_get_area(area_id)
+        ) is None:
+            return True
+        return not (area.floor_id and floor_registry.async_get_floor(area.floor_id))
+
+    return {value for value in values if not _finds_a_floor(value)}
+
+
+@callback
+def async_template_labels_not_found(hass: HomeAssistant, values: set[str]) -> set[str]:
+    """Return the values the label lookups find no label for.
+
+    `label_areas`, `label_devices` and `label_entities` take a label ID, or
+    a label name in any case and spacing. Labels have no aliases.
+    """
+    label_registry = lr.async_get(hass)
+    return {
+        value
+        for value in values
+        if label_registry.async_get_label(value) is None
+        and label_registry.async_get_label_by_name(value) is None
+    }
+
+
+@callback
 def async_get_all_services(hass: HomeAssistant) -> set[str]:
     """Return all services, known to Home Assistant."""
     return {
@@ -727,6 +822,35 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
     return [entity_id]
 
 
+# Filled in by something before it is used: Jinja, or a card's own
+# placeholders, like button-card's `[[[ ]]]` and decluttering-card's
+# `[[entity]]`, or config-template-card's `${ }`. No entity ID or area ID has
+# a brace or a bracket in it, so neither is one that is wrong.
+FILLED_IN_LATER = ("{", "[")
+
+
+def is_not_an_entity_id(value: str) -> bool:
+    """Return whether a value where an entity ID goes is no entity ID at all.
+
+    Like `cover.blind.current_position`: no lookup ever finds that. An entity
+    ID with capitals is one, since Home Assistant lower cases it first, and
+    is reported as written elsewhere. What the entity readers let go on
+    purpose is let go here too: `all` and `none`, the variables that are
+    never an entity, the domains they skip, patterns and placeholders.
+    """
+    lower_cased = value.lower()
+    return not (
+        # Left empty by an editor halfway through.
+        not value.strip()
+        or valid_entity_id(lower_cased)
+        or lower_cased in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
+        or lower_cased.startswith((*NEVER_AN_ENTITY_PREFIXES, *IGNORED_ENTITY_DOMAINS))
+        # A pattern, like `light.*`, is never meant as one entity.
+        or "*" in value
+        or any(mark in value for mark in FILLED_IN_LATER)
+    )
+
+
 @callback
 def async_find_services_in_sequence(  # noqa: C901
     sequence: Sequence[dict[str, Any]],
@@ -746,11 +870,10 @@ def async_find_services_in_sequence(  # noqa: C901
 
         action = cv.determine_script_action(step)
 
-        if action == cv.SCRIPT_ACTION_CALL_SERVICE and CONF_SERVICE in step:
-            called_services.add(step[CONF_SERVICE])
-
-        if action == cv.SCRIPT_ACTION_CALL_SERVICE and "action" in step:
-            called_services.add(step["action"])
+        if action == cv.SCRIPT_ACTION_CALL_SERVICE:
+            called_services.update(
+                step[key] for key in (CONF_SERVICE, "action") if key in step
+            )
 
         if action == cv.SCRIPT_ACTION_CHOOSE:
             for choice in step[CONF_CHOOSE]:
@@ -780,6 +903,13 @@ def async_find_services_in_sequence(  # noqa: C901
         if action == cv.SCRIPT_ACTION_REPEAT:
             called_services |= async_find_services_in_sequence(
                 step[CONF_REPEAT][CONF_SEQUENCE], include_disabled=include_disabled
+            )
+
+        # The editor's "sequence" building block: a step that is nothing but
+        # a nested list of steps, run in order like any other.
+        if action == cv.SCRIPT_ACTION_SEQUENCE:
+            called_services |= async_find_services_in_sequence(
+                step[CONF_SEQUENCE], include_disabled=include_disabled
             )
 
     return called_services

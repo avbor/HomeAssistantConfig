@@ -429,6 +429,24 @@
         },
         "zone_not_editable": {
             "message": "Ova zona ne može da se menja: {entity_id}."
+        },
+        "area_cannot_update": {
+            "message": "Prostorija {area_id} se ne može promeniti na taj način: {error}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Iznos {amount} ne odgovara entitetu {entity_id}, koji se pomera u koracima od {step}. Koristite umnožak koraka {step}, ili izostavite iznos da biste se pomerili za jedan korak."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} je raspored iz vaše YAML konfiguracije, koji Spook ne može da promeni. Umesto toga, uredi ga direktno u vašoj konfiguraciji."
+        },
+        "area_nothing_to_update": {
+            "message": "Nema ništa za ažuriranje u prostoriji {area_id}: navedite barem jedno od polja {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Nema ništa za ažuriranje na uređaju {device_id}: navedite barem jedno od polja {fields}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Nema ništa za ažuriranje na spratu {floor_id}: navedite barem jedno od polja {fields}."
         }
     },
     "issues": {
@@ -885,6 +903,82 @@
                     "changed": "Ovi senzori su ponovo dostupni ili podešavanja sada ukazuju na drugu lokaciju otkako ih je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             }
+        },
+        "lovelace_unknown_view_references": {
+            "title": "Nepoznati prikazi na koje vodi kontrolna tabla: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla vodi do sledećih prikaza koji ne postoje:\n\n{paths}\n\n\n\nDugme ili kartica koja vodi do nekog od njih će umesto toga otvoriti prvi prikaz te kontrolne table, bez ikakvog upozorenja. Ovo se često dešava kada je prikaz preimenovan, pomeren ili uklonjen. Da biste ispravili ovu grešku, uredite [kontrolnu tablu]({edit}) i usmerite ih na prikaz koji postoji.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_attribute_references": {
+            "title": "Nepoznati atributi u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo unaokolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće atribute koje njeni entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima.\n\n{attributes}\n\nPokretač ili uslov koji čeka atribut koji se nikada ne pojavljuje nikada se neće aktivirati, a da o tome ne dobijate nikakvo obaveštenje. Šablon koji ga čita neće dobiti nikakvu vrednost. Da biste ovo popravili, [uredite automatizaciju]({edit}) i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_attribute_references": {
+            "title": "Nepoznati atributi na kontrolnoj tabli: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla prikazuje ili proverava sledeće atribute koje njeni entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima:\n\n{attributes}\n\n\n\nKartica koja prikazuje atribut koji se nikada ne pojavljuje ostaće prazna, a uslov vidljivosti ili filter koji ga proverava nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Da biste ovo popravili, uredite kontrolnu tablu [{edit}] i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_attribute_references": {
+            "title": "Nepoznati atributi u: {script}",
+            "description": "Spook je pronašao duha u Vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće atribute koje njeni entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima:\n\n{attributes}\n\n\n\nPokretač ili uslov koji čeka atribut koji se nikada ne pojavljuje nikada se neće aktivirati, a da o tome ne dobijate nikakvo obaveštenje. Šablon koji ga čita neće dobiti nikakvu vrednost. Da biste ovo popravili, uredite skriptu [{edit}] i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "template_unknown_attribute_references": {
+            "title": "Nepoznati atributi u šablonskom pomoćniku: {helper}",
+            "description": "Spook je pronašao duha u vašim šablonskim pomoćnicima 👻\n\nDok je lebdeo okolo, Spook je naišao na sledećeg šablonskog pomoćnika:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nOvaj šablonski pomoćnik koristi sledeće atribute koje njegovi entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima:\n\n{attributes}\n\n\n\nŠablon koji čita atribut koji se nikada ne pojavljuje neće dobiti nikakvu vrednost, a uslov u jednoj od njegovih akcija koji čeka na taj atribut nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Da biste ovo popravili, [uredite šablonskog pomoćnika]({edit}) i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_state_references": {
+            "title": "Nepoznata stanja u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo unaokolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija čeka ili proverava sledeća stanja u kojima se njeni entiteti nikada ne nalaze: niti ta vrsta entiteta može poprimiti takvo stanje, niti je ono među opcijama koje entitet nudi, a nema ga ni bilo gde u istoriji zapisa o njima:\n\n{states}\n\n\n\nPokretač koji čeka stanje koje se nikada ne aktivira neće se ni izvršiti, uslov koji ga proverava nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Stanja razlikuju velika i mala slova: „On“ nije isto što i „on“. Da biste ovo popravili, [uredite automatizaciju]({edit}) i upotrebite stanje u kojem taj entitet može biti.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_state_references": {
+            "title": "Nepoznata stanja na kontrolnoj tabli: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla proverava sledeća stanja u kojima se njeni entiteti nikada ne nalaze: niti ta vrsta entiteta može poprimiti takvo stanje, niti je ono među opcijama koje entitet nudi, a nema ga ni bilo gde u istoriji zapisa o njima:\n\n{states}\n\n\n\nUslov vidljivosti ili filter koji proverava stanje koje ne postoji nikada neće proći, a slika podešena za to stanje nikada se neće prikazati, a da o tome ne dobijate nikakvo obaveštenje. Stanja razlikuju velika i mala slova: „On“ nije isto što i „on“. Da biste ovo popravili, uredite [kontrolnu tablu]({edit}) i upotrebite stanje u kojem taj entitet može biti.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_state_references": {
+            "title": "Nepoznata stanja u: {script}",
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta čeka ili proverava sledeća stanja u kojima se njeni entiteti nikada ne nalaze: niti ta vrsta entiteta može poprimiti takvo stanje, niti je ono među opcijama koje entitet nudi, a nema ga ni bilo gde u istoriji zapisa o njima:\n\n{states}\n\n\n\nPokretač koji čeka stanje koje se nikada ne aktivira neće se ni izvršiti, uslov koji ga proverava nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Stanja razlikuju velika i mala slova: „On“ nije isto što i „on“. Da biste ovo popravili, [uredite skriptu]({edit}) i upotrebite stanje u kojem taj entitet može biti.\n\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Nepoznati ID pokretača u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija proverava sledeće ID-jeve pokretača (trigger ID), koje nijedan od njenih sopstvenih pokretača nema:\n\n{trigger_ids}\n\n\n\nProvera ID-ja koji nijedan pokretač ne prosleđuje uvek daje isti rezultat: uslov pokretača koji se zahteva nikada nije ispunjen, pa se blok koji on štiti nikada ne izvršava, a da o tome ne dobijate nikakvo obaveštenje. ID-jevi pokretača razlikuju velika i mala slova, a pokretač bez sopstvenog ID-ja identifikuje se na osnovu svoje pozicije na listi, počevši od „0“. Da biste ovo popravili, [uredite automatizaciju]]({edit}) i upotrebite ID jednog od njenih pokretača, ili dodelite pokretaču ID koji automatizacija zahteva\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "assist_duplicate_names": {
+            "title": "Asist ne može da ih razlikuje: {name}",
+            "description": "Spook je pronašao duha u vašim glasovnim pomoćnicima 👻\n\nSledeći entiteti su izloženi funkciji Assist i svi odgovaraju na ime {name}:\n\n{entities}\n\nKada su imena ista, Assist ih razlikuje samo po prostoriji: onoj koju navedete ili onoj u kojoj se nalazi vaš glasovni satelit. Neki od njih dele istu prostoriju ili uopšte nemaju dodeljenu prostoriju, pa Asist ne može da ih prepozna po tom imenu sa bilo kog mesta. Zahtev za {name} tada ne uspeva, a da pritom ne dobijate obaveštenje o tome koji entiteti prave problem.\n\nDa biste ovo ispravili, dajte svakom entitetu sopstveno ime ili pseudonim, ili ih premestite u različite prostorije. Pseudonime entiteta, kao i to da li ih Assist uopšte vidi, možete promeniti u odeljku [Izloženi entiteti](/config/voice-assistants/expose). Prostorije se podešavaju na stranici sa [prostorijama](/config/areas/dashboard).\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_user_references": {
+            "title": "Uklonjeni korisnici navedeni u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija navodi sledeće korisnike koji više ne postoje:\n\n{users}\n\n\n\nHome Assistant nikada ne dodeljuje isti ID korisnika dvaput, što znači da su ovi korisnici uklonjeni. Pokretač koji čeka nekog od njih nikada se neće aktivirati, a šablon koji se poredi sa nekim od njih nikada neće napraviti podudaranje, a da Vam sistem to ne signalizira. Da biste ovo ispravili, [uredite automatizaciju]({edit}) i upotrebite ID korisnika koji postoji, ili uklonite tu proveru.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Uklonjeni korisnici navedeni na kontrolnoj tabli: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla navodi sledeće korisnike koji više ne postoje:\n\n{users}\n\n\n\nHome Assistant nikada ne dodeljuje isti ID korisnika dvaput, što znači da su ovi korisnici uklonjeni. Kartica, bedž, odeljak ili pregled koji su se prikazivali samo njima, sada se ne prikazuju nikome, a da Vam sistem to ne signalizira. Izuzeće od potvrde za njih više nema nikakvu funkciju. Da biste ovo ispravili, [uredite kontrolnu tablu]({edit}) i izaberite korisnike koji bi trebali da je vide, ili uklonite taj uslov.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_user_references": {
+            "title": "Uklonjeni korisnici navedeni u skripti: {script}",
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta navodi sledeće korisnike koji više ne postoje:\n\n{users}\n\n\n\nHome Assistant nikada ne dodeljuje isti ID korisnika dvaput, što znači da su ovi korisnici uklonjeni. Šablon koji se poredi sa nekim od njih nikada neće napraviti podudaranje, a pokretač koji čeka nekog od njih nikada se neće aktivirati, a da Vam sistem to ne signalizira. Da biste ovo ispravili, [uredite skriptut]({edit}) i upotrebite ID korisnika koji postoji, ili uklonite tu proveru.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija prosleđuje svojim akcijama sledeće unose integracija, koji su nepoznati Home Assistant-u ili pripadaju nekoj drugoj integraciji u odnosu na onu koju akcija zahteva:\n\n{config_entries}\n\nHome Assistant ih odbija u trenutku pokretanja tog koraka. Ovo se obično dešava nakon što je integracija uklonjena pa ponovo dodata: tada dobija novi unos integracije sa novim ID-jem.\n\nDa biste ispravili ovu grešku, uredite automatizaciju i ponovo izaberite unos integracije u ovim akcijama.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_icons": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija dodeljuje sledeće ikone, koje ne postoje u Material Design Icons paketu koji dolazi uz Home Assistant:\n\n{icons}\n\n\n\nSvaka od njih se prikazuje kao prazno mesto, bez ijedne reči. Ovo se često dešava kada je naziv ikone pogrešno otkucan, promenjen ili uklonjen, ili ako je izabrana iz novije verzije Material Design Icons paketa u odnosu na onu koja dolazi uz Home Assistant. Da biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i zamenite ih ikonama koje postoje.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_never_true_templates": {
+            "description": "Spook je pronašao duha u Vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija sadrži sledeće šablone, koji nikada ne mogu da prođu, šta god da se desi u vašem domu:\n\n{templates}\n\n\n\nUslov šablona (template condition) prolazi samo kada vrati vrednost `true`, kao i `wait_template`, osim ako se kasnije ne promeni u nešto što se čita kao tačno. Pokretač šablona se aktivira kada se njegov šablon promeni u nešto što se čita kao tačno, poput `true`, `on`, `yes` ili `1`. Ovi šabloni uvek vraćaju nešto drugo, zbog načina na koji su napisani. Uobičajeni uzroci su:\n\n- Navodnici oko šablona. `>-` blok ih prihvata kao tekst, pa oni na kraju završe u rezultatu.\n- Uopšte nema graničnika šablona (template delimiters), pa se tekst uzima onakav kakav jeste.\n- YAML kod je kopiran u polje za šablon.\n- YAML komentar sa znakom `#` unutar Jinja koda, što Jinja ispisuje kao tekst.\n- Uslov koji vraća on umesto `true`.\n\nSistem Vam ništa ne signalizira: uslov nikada ne prolazi, čekanje (wait) se završava tek kada istekne vremensko ograničenje (timeout), a pokretač se nikada ne aktivira. Da biste ovo ispravili, [uredite automatizaciju]({edit}) i podesite šablon tako da vrati `true`kada treba da prođe.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće ikone, koje ne postoje u Material Design Icons paketu koji dolazi uz Home Assistant (verzija {version}):\n\n{icons}\n\n\n\nSvaka od njih se prikazuje kao prazno mesto, bez ijedne reči. Ovo se često dešava kada je naziv ikone pogrešno otkucan, promenjen ili uklonjen, ili ako je izabrana iz novije verzije Material Design Icons paketa u odnosu na onu koja dolazi uz Home Assistant. Da biste ispravili ovu grešku, uredite kontrolnu tablu i zamenite ih ikonama koje postoje. Ikona kontrolne table u bočnoj traci menja se u podešavanjima Vaših kontrolnih tabli.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook je pronašao duha na Vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće teme, koje ne postoje:\n\n{themes}\n\n\n\nKartica, odeljak ili pregled sa jednom od ovih tema umesto toga dobijaju podrazumevani izgled, a da Vam sistem to ne signalizira. Ovo se često dešava kada je tema promenila naziv ili kada je uklonjena. Da biste ispravili ovu grešku, [uredite kontrolnu tablu]({edit}) i izaberite temu koja postoji, ili ponovo dodajte tu temu.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook je pronašao duha u Vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta prosleđuje svojim akcijama sledeće unose integracija, koji su nepoznati Home Assistant-u ili pripadaju nekoj drugoj integraciji u odnosu na onu koju akcija zahteva:\n\n{config_entries}\n\nHome Assistant ih odbija u trenutku pokretanja tog koraka. Ovo se obično dešava nakon što je integracija uklonjena pa ponovo dodata: tada dobija novi unos integracije sa novim ID-jem.\n\nDa biste ispravili ovu grešku, uredite skriptu i ponovo izaberite unos integracije u ovim akcijama.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_never_true_templates": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta sadrži sledeće šablone (templates), koji nikada ne mogu da prođu, šta god da se desi u vašem domu:\n\n{templates}\n\n\n\nUslov šablona (template condition) prolazi samo kada vrati vrednost `true`, kao i `wait_template`, osim ako se kasnije ne promeni u nešto što se čita kao tačno. Pokretač šablona unutar `wait_for_trigger` se aktivira kada se njegov šablon promeni u nešto što se čita kao tačno, poput `true`, `on`, `yes` ili `1`. Ovi šabloni uvek vraćaju nešto drugo, zbog načina na koji su napisani. Uobičajeni uzroci su:\n\n- Navodnici oko šablona. `>-` blok ih prihvata kao tekst, pa oni na kraju završe u rezultatu.\n- Uopšte nema graničnika šablona (template delimiters), pa se tekst uzima onakav kakav jeste.\n- YAML kod je kopiran u polje za šablon.\n- YAML komentar sa znakom `#` unutar Jinja koda, što Jinja ispisuje kao tekst.\n- Uslov koji vraća `on` umesto tr`true`.\n\nSistem vam ništa ne signalizira: uslov nikada ne prolazi, a čekanje se završava tek kada istekne vremensko ograničenje. Da biste ovo ispravili, uredite skriptu i podesite šablon tako da vrati true kada treba da prođe.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_icons": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi ili dodeljuje sledeće ikone, koje ne postoje u Material Design Icons paketu koji dolazi uz Home Assistant:\n\n{icons}\n\n\n\nSvaka od njih se prikazuje kao prazno mesto, bez ijedne reči. Ovo se često dešava kada je naziv ikone pogrešno otkucan, promenjen ili uklonjen, ili ako je izabrana iz novije verzije Material Design Icons paketa u odnosu na onu koja dolazi uz Home Assistant. Da biste ispravili ovu grešku, [uredite skriptu]({edit}) i zamenite ih ikonama koje postoje.\n\nSpook 👻 Vaš pomoćnik."
         }
     },
     "services": {
@@ -2667,6 +2761,120 @@
         "input_select_reverse": {
             "name": "Obrni opcije",
             "description": "Obrće redosled dostupnih opcija za `input_select` entitet, od poslednje ka prvoj. Ovo nije trajno i biće poništeno nakon ponovnog učitavanja ili ponovnog pokretanja Home Assistant-a."
+        },
+        "homeassistant_update_area": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi"
+                },
+                "area_id": {
+                    "name": "ID prostorije"
+                },
+                "floor_id": {
+                    "name": "ID sprata"
+                },
+                "humidity_entity_id": {
+                    "name": "Senzor vlažnosti"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona koja će se koristiti za prostoriju."
+                },
+                "labels": {
+                    "name": "Oznake"
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za prostoriju."
+                },
+                "picture": {
+                    "name": "Slika"
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi"
+                },
+                "floor_id": {
+                    "name": "ID sprata"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona koja će se koristiti za sprat."
+                },
+                "level": {
+                    "name": "Nivo"
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za sprat."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "fields": {
+                "area_id": {
+                    "name": "ID prostorije"
+                },
+                "device_id": {
+                    "name": "ID uređaja"
+                },
+                "disabled_by": {
+                    "name": "Onemogućeno od",
+                    "description": "Postavite na korisnika da biste onemogućili uređaj, ili na null da biste ga ponovo omogućili. Ovo funkcioniše isto kao i akcije za onemogućavanje i omogućavanje uređaja."
+                },
+                "labels": {
+                    "name": "Oznake"
+                },
+                "name_by_user": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za uređaj."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Kreiraj raspored",
+            "description": "Kreira novog pomoćnika za raspored u letu, koji je uključen tokom zadatih vremenskih blokova za svaki dan u nedelji. Vraća ID entiteta novog rasporeda.",
+            "fields": {
+                "friday": {
+                    "name": "Petak"
+                },
+                "icon": {
+                    "name": "Ikona"
+                },
+                "monday": {
+                    "name": "Ponedeljak"
+                },
+                "name": {
+                    "name": "Naziv"
+                },
+                "saturday": {
+                    "name": "Subota"
+                },
+                "schedule_id": {
+                    "name": "ID entiteta rasporeda"
+                }
+            }
+        },
+        "schedule_set_day": {
+            "fields": {
+                "day": {
+                    "name": "Dan"
+                }
+            },
+            "description": "Zamenjuje vremenske blokove za jedan ili više dana u pomoćniku za raspored koji je napravljen u korisničkom interfejsu. Rasporedi podešeni preko YAML-a ne mogu se menjati pomoću Spook-a.",
+            "name": "Podešavanje vremenskih blokova za dan"
+        },
+        "schedule_delete": {
+            "name": "Obriši raspored",
+            "description": "Briše pomoćnike za rasporede napravljene u korisničkom interfejsu. Rasporedi podešeni preko YAML-a ne mogu se obrisati pomoću Spook-a.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta"
+                }
+            }
         }
     },
     "conditions": {
@@ -2755,6 +2963,16 @@
             },
             "name": "Temperatura je na ciljnoj vrednosti",
             "description": "Odobrava se kada je temperatura termostata ili bojlera na ciljnoj vrednosti. Za uređaj koji je isključen smatra se da nije na cilju, dok se nedostupni uređaji izuzimaju."
+        },
+        "is_available": {
+            "fields": {
+                "behavior": {
+                    "name": "Ponašanje",
+                    "description": "Određuje da li je dovoljno da bilo koji od entiteta bude prisutan, ili moraju svi."
+                }
+            },
+            "name": "Entitet je dostupan",
+            "description": "Prolazi kada je entitet dostupan za komunikaciju: bilo šta osim nedostupnog ili nepoznatog stanja. Korisno za zvučnik ili pametnu utičnicu koji nisu uvek pod naponom."
         }
     },
     "triggers": {
@@ -2975,6 +3193,92 @@
                 }
             },
             "name": "Ciljna temperatura je dostignuta"
+        },
+        "state_changed": {
+            "fields": {
+                "attribute_changes": {
+                    "description": "Takođe se aktivira kada se promeni samo atribut, a stanje ostane isto. Nema efekta kada se već prati određeni atribut.",
+                    "name": "Brojanje promena atributa"
+                },
+                "attribute": {
+                    "name": "Atribut",
+                    "description": "Prati ovaj atribut umesto stanja."
+                },
+                "behavior": {
+                    "name": "Ponašanje",
+                    "description": "Aktivira se za svaki entitet, za prvi entitet iz ciljne grupe koji stigne tamo, ili kada svi stignu. Za prvu opciju i za opciju „Svi“ potrebno je podesiti uslov „Na stanje“ ili „Bilo koje stanje osim“. Iako se nedostupna i nepoznata stanja ignorišu, entiteti u tim stanjima ne učestvuju u brojanju."
+                },
+                "delay": {
+                    "name": "Kašnjenje",
+                    "description": "Sačekaj ovoliko dugo pre aktiviranja, bez obzira na to šta se u međuvremenu dogodi. Slično kao kašnjenje na početku akcija."
+                },
+                "device_class": {
+                    "name": "Klase uređaja",
+                    "description": "Samo entiteti ovih klasa uređaja, poput vrata ili prozora. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "domain": {
+                    "name": "Domeni",
+                    "description": "Samo entiteti ovih domena, poput binary_sensor ili cover. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "exclude_target": {
+                    "description": "Entiteti, uređaji, prostorije, spratovi ili oznake koje treba izuzeti. Sve što se nalazi u njima biće izuzeto, uključujući i dijagnostičke entitete.",
+                    "name": "Izuzmi"
+                },
+                "exclude_device_class": {
+                    "name": "Izuzmi klase uređaja",
+                    "description": "Izuzmi entitete ovih klasa uređaja."
+                },
+                "exclude_domain": {
+                    "name": "Izuzmi domene",
+                    "description": "Izuzmi entitete ovih domena. Ako je polje za izuzimanje prazno, ovo se primenjuje na sve što cilj obuhvata."
+                },
+                "exclude_integration": {
+                    "description": "Izuzmi entitete koje pružaju ove integracije.",
+                    "name": "Izuzmi integracije"
+                },
+                "exclude_config_entry": {
+                    "name": "Izuzmi stavku integracije",
+                    "description": "Izuzmi entitete ove stavke integracije."
+                },
+                "blip_tolerance": {
+                    "description": "Dok se odbrojava vreme u trajanju, ako stanje postane nedostupno ili nepoznato i vrati se na prethodnu vrednost unutar ovog vremenskog perioda, odbrojavanje se neće pokrenuti ispočetka. Radi samo u kombinaciji sa opcijom „U trajanju od“",
+                    "name": "Tolerancija na kratkotrajne prekide signala"
+                },
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Aktivira se tek kada novo stanje potraje ovoliko dugo. Bilo koja druga promena u međuvremenu poništava pokretanje."
+                },
+                "from": {
+                    "name": "Sa stanja",
+                    "description": "Samo promene koje dolaze sa jednog od ovih stanja."
+                },
+                "ignore_unavailable": {
+                    "name": "Zanemari nedostupna i nepoznata stanja",
+                    "description": "Izostavi promene sa nedostupnih i nepoznatih stanja ili na njih, kako ponovno pokretanje sistema ili rutera ne bi aktiviralo akcije za sve stavke. Isključite ovu opciju ako želite da ih koristite u poljima „Sa stanja“ ili „Na stanje“."
+                },
+                "config_entry": {
+                    "name": "Stavka integracije",
+                    "description": "Samo entiteti ove stavke integracije. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "integration": {
+                    "name": "Integracije",
+                    "description": "Samo entiteti koje pružaju ove integracije, poput zha ili hue. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "not_from": {
+                    "name": "Bilo koje stanje osim",
+                    "description": "Samo promene koje ne dolaze sa jednog od ovih stanja."
+                },
+                "not_to": {
+                    "name": "Bilo koje stanje osim",
+                    "description": "Samo promene koje ne idu na jedno od ovih stanja."
+                },
+                "to": {
+                    "description": "Samo promene које idu na jedno od ovih stanja.",
+                    "name": "Na stanje"
+                }
+            },
+            "description": "Aktivira se kada entitet promeni stanje, i to za sve što cilj obuhvata: entitete, uređaje, prostorije, spratove i oznake. Možete ga suziti po domenu, integraciji ili klasi uređaja, ili ostaviti cilj praznim i dozvoliti tim filterima da izaberu entitete iz celog sistema. Takođe možete ponovo izuzeti određene stavke i odlučiti koliko dugo promena mora da traje da bi se uračunala.",
+            "name": "Spook pokretač stanja"
         }
     },
     "selector": {
@@ -2989,6 +3293,13 @@
             "options": {
                 "bottom": "Dole",
                 "top": "Gore"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "friday": "Petak",
+                "monday": "Ponedeljak",
+                "saturday": "Subota"
             }
         }
     },

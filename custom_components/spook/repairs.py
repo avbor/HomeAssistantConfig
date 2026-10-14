@@ -6,19 +6,21 @@ from abc import ABC, abstractmethod
 import asyncio
 from contextlib import suppress
 from dataclasses import dataclass, field
+from datetime import timedelta
 import hashlib
 import importlib
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, final
 
 from homeassistant.components import blueprint, lovelace as lovelace_const
-from homeassistant.components.automation import automations_with_entity
+from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
 from homeassistant.components.energy.data import (
     async_get_manager as async_get_energy_manager,
 )
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
-from homeassistant.components.script import scripts_with_entity
+from homeassistant.components.script import DOMAIN as SCRIPT_DOMAIN
 from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
@@ -39,13 +41,16 @@ from homeassistant.helpers import (
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES
-from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.helpers.event import async_call_later, async_track_time_interval
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
+from .attribute_checking import async_unknown_attributes
+from .attribute_value_checking import as_yaml, async_unknown_attribute_values
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
+from .ectoplasms.spook.triggers.state_changed import async_watched_entity_ids
 from .energy_preferences import (
     async_unknown_energy_entities,
     energy_preferences_without,
@@ -54,6 +59,7 @@ from .entity_filtering import (
     async_filter_known_entity_ids,
     async_get_all_entity_ids,
     async_name_helper_in_the_registry,
+    is_not_an_entity_id,
 )
 from .entity_suggestions import (
     async_describe_warmed_unknown_entities,
@@ -65,14 +71,22 @@ from .helper_sources import (
     async_unknown_helper_sources,
     async_unknown_min_max_members,
 )
-from .reference_extraction import async_collect_mentioned_strings
+from .reference_extraction import (
+    AttributeValue,
+    NamedReferences,
+    async_collect_mentioned_strings,
+    async_referencing,
+    extract_attribute_references_from_config,
+    extract_state_references_from_config,
+)
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
 from .repair_documentation import repair_documentation_url
+from .state_checking import async_unknown_states
 from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Iterable, Mapping, Sized
-    from datetime import datetime, timedelta
+    from datetime import datetime
     from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
@@ -100,6 +114,12 @@ _FINGERPRINT_LENGTH = 8
 # not prune it below this.
 _MIN_MAX_MINIMUM_MEMBERS = 2
 
+# How long the first round of inspections after a start is spread over. All
+# of them looking at once, on an instance that has only just started and
+# often still has integrations adding devices, is a solid block of work at
+# the worst moment for it. #1898.
+FIRST_INSPECTIONS_SPREAD_OVER = timedelta(minutes=2)
+
 
 def _plural(items: Sized) -> str:
     """Return the plural suffix for a sized collection."""
@@ -109,6 +129,26 @@ def _plural(items: Sized) -> str:
 def _bulleted(items: Iterable[str]) -> str:
     """Return the markdown list a repair puts its findings in."""
     return "\n".join(f"- `{item}`" for item in items)
+
+
+def format_config_entry_references(
+    hass: HomeAssistant, entry_ids: Iterable[str]
+) -> str:
+    """Return the markdown list of config entries an action cannot use.
+
+    One that exists was reported for being of another integration than the
+    action asks for, so it says whose it is. That is usually the clue: the ID
+    was copied over from an action of that other integration.
+    """
+    lines = []
+    for entry_id in entry_ids:
+        if (entry := hass.config_entries.async_get_entry(entry_id)) is None:
+            lines.append(f"- `{entry_id}`")
+        else:
+            lines.append(
+                f"- `{entry_id}` (belongs to {entry.title}, of `{entry.domain}`)"
+            )
+    return "\n".join(lines)
 
 
 def _fingerprint(references: Iterable[str]) -> str:
@@ -318,6 +358,13 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     #: time alone (e.g. something going stale), not in response to an event.
     inspect_interval: timedelta | None = None
 
+    #: Wait this long after activating before looking at all, and ignore
+    #: everything that would trigger a look until then. For repairs that ask
+    #: the recorder, which has its hands full right after a start. After a
+    #: start the repair manager hands every repair without one its own turn
+    #: instead, so they do not all look at the same moment.
+    first_inspection_delay: timedelta | None = None
+
     #: Re-run the inspection when an entity appears or goes. Needed by repairs
     #: about entity references, as plenty of entities never touch the entity
     #: registry: one set by a script or a template without a unique ID arrives
@@ -334,11 +381,12 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         super().__init__(hass)
         self._event_subs = set()
         self.possible_issue_ids = set()
+        self._waiting_for_first_inspection = False
 
     async def _async_inspect_with_cleanup(self) -> None:
         """Run an inspection and clean up issues that are no longer valid."""
-        # Don't inspect if we are stopping
-        if self.hass.is_stopping:
+        # Don't inspect if we are stopping, or should not look yet
+        if self.hass.is_stopping or self._waiting_for_first_inspection:
             return
 
         if not self.automatically_clean_up_issues:
@@ -396,8 +444,22 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             function=self._async_inspect_with_cleanup,
         )
 
-        # Spook says: Bounce!
-        await self.inspect_debouncer.async_call()
+        if self.first_inspection_delay is None:
+            # Spook says: Bounce!
+            await self.inspect_debouncer.async_call()
+        else:
+            self._waiting_for_first_inspection = True
+
+            @callback
+            def _async_first_inspection(_: datetime) -> None:
+                self._waiting_for_first_inspection = False
+                self.inspect_debouncer.async_schedule_call()
+
+            self._event_subs.add(
+                async_call_later(
+                    self.hass, self.first_inspection_delay, _async_first_inspection
+                )
+            )
 
         async def _async_call_inspect_debouncer(_: Event) -> None:
             # Trigger an inspection when an event is received from the event bus.
@@ -538,10 +600,26 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
 
     def _format_references(self, references: list[str]) -> str:
         """Return the bulleted reference list for the issue message."""
-        if self.references_are_entities:
+        if not self.references_are_entities:
+            return "\n".join(f"- `{reference}`" for reference in references)
+
+        # Something that is no entity ID at all comes after the entities that
+        # do not exist, said to be what it is. No guess at what was meant:
+        # `cover.blind.position` may have meant the cover, its position or
+        # something else entirely, and a wrong suggestion is worse than none.
+        lines = [
             # Warmed for the whole round in `async_inspect` already.
-            return async_describe_warmed_unknown_entities(self.hass, references)
-        return "\n".join(f"- `{reference}`" for reference in references)
+            async_describe_warmed_unknown_entities(
+                self.hass,
+                [entity for entity in references if not is_not_an_entity_id(entity)],
+            ),
+            *(
+                f"- `{value}` (not an entity ID)"
+                for value in references
+                if is_not_an_entity_id(value)
+            ),
+        ]
+        return "\n".join(line for line in lines if line)
 
     async def _async_setup_inspection(self) -> None:
         """Prepare per-inspection state (called once per inspection cycle).
@@ -633,7 +711,12 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         if self.references_are_entities and findings:
             await async_warm_rename_suggestions(
                 self.hass,
-                {reference for _, references in findings for reference in references},
+                {
+                    reference
+                    for _, references in findings
+                    for reference in references
+                    if not is_not_an_entity_id(reference)
+                },
             )
 
         for entity, sorted_unknown in findings:
@@ -654,6 +737,310 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
                 self.reference_label.capitalize(),
                 ", ".join(sorted_unknown),
             )
+
+
+def _finding_reference(entity_id: str, name: str | AttributeValue) -> str:
+    """Return how an unknown attribute or state is written down in an issue.
+
+    A value of an attribute keeps its type: `2` and `"2"` are not the same
+    thing to an attribute. One compared as text, like Spook's own trigger
+    does, is kept apart too: it can have another best guess than the same
+    value compared the way core does, and both belong in the issue.
+    """
+    if isinstance(name, AttributeValue):
+        reference = f"{entity_id}[{name.attribute}]:{json.dumps(name.value)}"
+        return f"{reference}:as-text" if name.as_text else reference
+    return f"{entity_id}:{name}"
+
+
+@dataclass(frozen=True, slots=True)
+class _UnknownName:
+    """Something an entity never has, named in an automation or script."""
+
+    entity_id: str
+    name: str | AttributeValue
+    suggestion: str | None
+
+
+class AbstractSpookUnknownEntityNamesRepair(
+    AbstractSpookEntityComponentUnknownReferencesRepair, ABC
+):
+    """Base for repairs about what an entity never has: an attribute, a state.
+
+    A trigger or condition waiting on one loads fine and never fires, and
+    says nothing about it. What an entity has is only known at runtime, and
+    the last place to look is the recorder, so this does not look right at
+    the start, when the recorder has its hands full. After that it looks
+    whenever one of its own entities is added or removed, which is how a
+    reload that changed something ends, on the usual events, and once a day
+    for what changes with time alone: history being written.
+
+    The whole round's references are worked out up front, so the recorder is
+    asked once per round rather than once per automation.
+    """
+
+    first_inspection_delay = timedelta(minutes=10)
+    inspect_interval = timedelta(days=1)
+
+    #: How one finding reads in the issue, with ``{name}`` and ``{entity_id}``.
+    finding_line: str
+
+    _unknown_by_owner: dict[str, set[str]]
+    _unknown_by_reference: dict[str, _UnknownName]
+    _inspected_configs: dict[str, Any]
+    _named: dict[str, tuple[Any, NamedReferences]]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._named = {}
+        self._inspected_configs = {}
+        self._unknown_by_owner = {}
+        self._unknown_by_reference = {}
+
+    @abstractmethod
+    def _references_in(self, config: dict[str, Any]) -> NamedReferences:
+        """Return what a configuration names, and of which entities."""
+
+    @abstractmethod
+    async def _async_unknown(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
+        """Return the (entity ID, name) pairs the entity never has."""
+
+    async def async_activate(self) -> None:
+        """Look again once one of its own entities was added or removed.
+
+        A reload removes what changed and adds it back once it is done, so
+        that is when there is something new to look at. The reload service
+        being called is too early: nothing has been reloaded yet.
+        """
+        await super().async_activate()
+
+        prefix = f"{self.domain}."
+
+        @callback
+        def _own_entity_added_or_removed(event_data: Mapping[str, Any]) -> bool:
+            """Return whether one of this domain's entities appeared or went."""
+            return event_data["entity_id"].startswith(prefix) and (
+                event_data.get("old_state") is None
+                or event_data.get("new_state") is None
+            )
+
+        @callback
+        def _look_again(_: Event) -> None:
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _look_again,
+                event_filter=_own_entity_added_or_removed,
+            )
+        )
+
+    def _named_in(
+        self, entity: Any, config: dict[str, Any]
+    ) -> set[tuple[str, str | AttributeValue]]:
+        """Return the (entity ID, name) pairs a configuration names.
+
+        Read once per configuration, remembered against the configuration
+        itself: a reload hands over a new one.
+        """
+        named = self._named.get(entity.entity_id)
+        if named is None or named[0] is not config:
+            named = (config, self._references_in(config))
+        self._named[entity.entity_id] = named
+        references = named[1]
+
+        # Resolved every round rather than remembered: what a registry ID
+        # stands for moves when the entity is renamed, and what Spook's own
+        # trigger watches moves with the registry. That one is asked of the
+        # trigger itself, so it is exactly what the trigger would watch.
+        pairs = {
+            (entity_id, name)
+            for reference, name in references.pairs
+            if (
+                entity_id := er.async_resolve_entity_id(self.entity_registry, reference)
+            )
+        }
+        for trigger_config, name in references.followed:
+            pairs.update(
+                (entity_id, name)
+                for entity_id in async_watched_entity_ids(self.hass, trigger_config)
+            )
+        return pairs
+
+    def _is_inspected(self, entity: Any) -> bool:
+        """Return whether the round looks at this entity, the way the base does."""
+        unavailable_class = self.unavailable_entity_class
+        # pylint: disable-next=isinstance-second-argument-not-valid-type
+        if unavailable_class is not None and isinstance(entity, unavailable_class):
+            return False
+        return self._should_inspect_entity(entity)
+
+    async def _async_setup_inspection(self) -> None:
+        """Work out everything unknown of the round, in one go."""
+        entities = list(self.hass.data[DATA_INSTANCES][self.domain].entities)
+
+        configs: dict[str, Any] = {}
+        named: dict[str, set[tuple[str, str | AttributeValue]]] = {}
+        for entity in entities:
+            # Reading a configuration is CPU-bound, and one can be big: the
+            # event loop gets a turn after each.
+            await asyncio.sleep(0)
+
+            config = getattr(entity, "raw_config", None)
+            if not isinstance(config, dict) or not self._is_inspected(entity):
+                continue
+
+            configs[entity.entity_id] = config
+            named[entity.entity_id] = self._named_in(entity, config)
+
+        # Whatever is gone or not looked at this round is forgotten.
+        self._named = {
+            entity_id: remembered
+            for entity_id, remembered in self._named.items()
+            if entity_id in named
+        }
+
+        unknown = await self._async_unknown(
+            {pair for pairs in named.values() for pair in pairs}
+        )
+        by_pair = {(finding.entity_id, finding.name): finding for finding in unknown}
+
+        self._inspected_configs = configs
+        self._unknown_by_reference = {
+            _finding_reference(*pair): finding for pair, finding in by_pair.items()
+        }
+        self._unknown_by_owner = {
+            owner: {_finding_reference(*pair) for pair in pairs & by_pair.keys()}
+            for owner, pairs in named.items()
+        }
+
+    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+        """Return what this entity names that its entities never have.
+
+        Only for the very configuration it was worked out from, on the
+        entity that is there now. One that was reloaded while the recorder
+        was being asked, or while this round went by, may say something else
+        entirely, and the next round looks at that.
+        """
+        current = self.hass.data[DATA_INSTANCES][self.domain].get_entity(
+            entity.entity_id
+        )
+        if (
+            current is not entity
+            or self._inspected_configs.get(entity.entity_id) is None
+            or getattr(entity, "raw_config", None)
+            is not self._inspected_configs[entity.entity_id]
+        ):
+            return set()
+        return self._unknown_by_owner.get(entity.entity_id, set())
+
+    async def async_check_draft(self, draft: Any) -> list[str]:
+        """Return what a draft names that is unknown, each with its best guess.
+
+        A draft is in no round: it is not among the entities a round goes by,
+        so it is asked about on its own, with the same readers.
+        """
+        unknown = await self._async_unknown(self._named_in(draft, draft.raw_config))
+
+        found = []
+        for finding in unknown:
+            if isinstance(name := finding.name, AttributeValue):
+                line = f"{name.attribute} of {finding.entity_id}: {as_yaml(name.value)}"
+            else:
+                line = _finding_reference(finding.entity_id, name)
+            if finding.suggestion is not None:
+                line += f" (did you mean {finding.suggestion}?)"
+            found.append(line)
+        return sorted(found)
+
+    def _format_references(self, references: list[str]) -> str:
+        """Return the list of findings, each with its entity and best guess."""
+        lines = []
+        for reference in references:
+            finding = self._unknown_by_reference[reference]
+            if isinstance(name := finding.name, AttributeValue):
+                line = (
+                    f"- `{name.attribute}` of `{finding.entity_id}`: "
+                    f"`{as_yaml(name.value)}`"
+                )
+            else:
+                line = self.finding_line.format(name=name, entity_id=finding.entity_id)
+            if finding.suggestion is not None:
+                line += f" (did you mean `{finding.suggestion}`?)"
+            lines.append(line)
+        return "\n".join(lines)
+
+
+class AbstractSpookUnknownAttributesRepair(AbstractSpookUnknownEntityNamesRepair, ABC):
+    """Base for repairs about attributes an entity never had."""
+
+    reference_label = "attributes"
+    finding_line = "- `{name}` of `{entity_id}`"
+
+    def _references_in(self, config: dict[str, Any]) -> NamedReferences:
+        """Return the attributes a configuration names, and of which entities."""
+        return extract_attribute_references_from_config(config)
+
+    async def _async_unknown(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
+        """Return the (entity ID, attribute) pairs the entity never had."""
+        attributes = {
+            (entity_id, name) for entity_id, name in pairs if isinstance(name, str)
+        }
+        return {
+            _UnknownName(finding.entity_id, finding.attribute, finding.suggestion)
+            for finding in await async_unknown_attributes(self.hass, attributes)
+        }
+
+
+class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, ABC):
+    """Base for repairs about states an entity is never in.
+
+    Only for entities whose states are a fixed set; `state_checking` says
+    which those are. The values of an attribute a trigger or condition waits
+    for are in here too: the same mistake, made one level down, and fixed in
+    the same place. `attribute_value_checking` says which attributes.
+    """
+
+    reference_label = "states"
+    finding_line = "- `{name}` for `{entity_id}`"
+
+    def _references_in(self, config: dict[str, Any]) -> NamedReferences:
+        """Return the states a configuration names, and of which entities."""
+        return extract_state_references_from_config(config)
+
+    async def _async_unknown(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
+        """Return the (entity ID, state or attribute value) pairs never there."""
+        states: set[tuple[str, str]] = set()
+        values: set[tuple[str, AttributeValue]] = set()
+        for entity_id, name in pairs:
+            if isinstance(name, AttributeValue):
+                values.add((entity_id, name))
+            else:
+                states.add((entity_id, name))
+
+        unknown = {
+            _UnknownName(finding.entity_id, finding.state, finding.suggestion)
+            for finding in await async_unknown_states(self.hass, states)
+        }
+        unknown.update(
+            _UnknownName(
+                finding.entity_id,
+                AttributeValue(
+                    finding.attribute, finding.value, as_text=finding.as_text
+                ),
+                finding.suggestion,
+            )
+            for finding in await async_unknown_attribute_values(self.hass, values)
+        )
+        return unknown
 
 
 class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):
@@ -683,8 +1070,15 @@ class SpookRepairManager:
         self.issue_registry = ir.async_get(self.hass)
         LOGGER.debug("Spook repair manager initialized")
 
-    async def async_setup(self) -> None:
-        """Set up the Spook repairs."""
+    async def async_setup(self, *, spread_first_inspections: bool = False) -> None:
+        """Set up the Spook repairs.
+
+        Right after a start, the first inspections are spread out rather than
+        all run at once. Anything that happens before a repair's turn comes
+        is not looked at separately, as that first look sees how things ended
+        up anyway. On a reload or a first setup on a running instance, the
+        house is quiet and everything looks straight away, like it always did.
+        """
         LOGGER.debug("Setting up Spook repairs")
 
         modules: list[ModuleType] = []
@@ -700,21 +1094,37 @@ class SpookRepairManager:
                 modules.append(importlib.import_module(f".{module_path}", __package__))
 
         await self.hass.async_add_import_executor_job(_load_all_repair_modules)
+
+        first_inspection_delays = (
+            _first_inspection_delays(modules) if spread_first_inspections else {}
+        )
+
         await asyncio.gather(
             *(
-                create_eager_task(self._async_setup_repair_module(module))
+                create_eager_task(
+                    self._async_setup_repair_module(
+                        module, first_inspection_delays.get(module.__name__)
+                    )
+                )
                 for module in modules
             )
         )
 
-    async def _async_setup_repair_module(self, module: ModuleType) -> None:
+    async def _async_setup_repair_module(
+        self, module: ModuleType, first_inspection_delay: timedelta | None = None
+    ) -> None:
         """Set up a single repair module, isolating failures.
 
         A repair that fails to set up must not prevent the rest of Spook
         from loading.
         """
         try:
-            await self.async_activate(module.SpookRepair(self.hass))
+            repair = module.SpookRepair(self.hass)
+
+            if first_inspection_delay is not None:
+                repair.first_inspection_delay = first_inspection_delay
+
+            await self.async_activate(repair)
         # pylint: disable-next=broad-exception-caught
         except Exception:  # noqa: BLE001
             LOGGER.exception(
@@ -765,6 +1175,35 @@ class SpookRepairManager:
                 repair.repair,
             )
             await repair.async_deactivate()
+
+
+def _takes_a_turn(repair_class: type | None) -> bool:
+    """Return whether a repair waits for a turn at its first look."""
+    return (
+        isinstance(repair_class, type)
+        and issubclass(repair_class, AbstractSpookRepair)
+        and repair_class.first_inspection_delay is None
+    )
+
+
+def _first_inspection_delays(modules: Iterable[ModuleType]) -> dict[str, timedelta]:
+    """Give every repair module its turn for a first look, evenly spread.
+
+    In order of module name, so the same repair always looks at the same
+    moment after a start, which keeps it predictable for people and tests.
+    Repairs that set their own delay keep it: they wait for the recorder,
+    which is a later moment than any of these turns.
+    """
+    taking_turns = sorted(
+        module.__name__
+        for module in modules
+        if _takes_a_turn(getattr(module, "SpookRepair", None))
+    )
+    if not taking_turns:
+        return {}
+
+    turn = FIRST_INSPECTIONS_SPREAD_OVER / len(taking_turns)
+    return {name: turn * index for index, name in enumerate(taking_turns)}
 
 
 class RestartRequiredFixFlow(RepairsFlow):
@@ -1354,8 +1793,16 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         automations: set[str] = set()
         scripts: set[str] = set()
         for entity in er.async_entries_for_config_entry(entity_registry, entry_id):
-            automations.update(automations_with_entity(self.hass, entity.entity_id))
-            scripts.update(scripts_with_entity(self.hass, entity.entity_id))
+            automations.update(
+                async_referencing(
+                    self.hass, AUTOMATION_DOMAIN, "entities", entity.entity_id
+                )
+            )
+            scripts.update(
+                async_referencing(
+                    self.hass, SCRIPT_DOMAIN, "entities", entity.entity_id
+                )
+            )
 
         if not automations and not scripts:
             return "It is not used by any automation or script."

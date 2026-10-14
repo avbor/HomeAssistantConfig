@@ -2,11 +2,6 @@
     "config": {
         "abort": {
             "already_spooked": "Ie... wel... na. Iawn, diolch, hwyl!"
-        },
-        "step": {
-            "user": {
-                "description": "A wnaethoch chi ddarllen y readme? A wnaethoch chi ddarllen y drwydded? Ydych chi'n siŵr?"
-            }
         }
     },
     "entity": {

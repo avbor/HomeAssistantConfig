@@ -2,11 +2,6 @@
     "config": {
         "abort": {
             "already_spooked": "Da... pa... ne. K, thx, bok!"
-        },
-        "step": {
-            "user": {
-                "description": "Jeste li pročitali readme? Jeste li pročitali licencu? Jeste li stvarno sigurni?"
-            }
         }
     },
     "entity": {
