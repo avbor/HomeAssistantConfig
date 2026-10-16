@@ -46,12 +46,15 @@ from ..const import (
     CONSTRAINT_IMPEDANCE_MIN,
     CONSTRAINT_WEIGHT_MAX,
     CONSTRAINT_WEIGHT_MIN,
+    DUAL_IMPEDANCE_WINDOW,
     IMPEDANCE_MODE_DUAL,
     IMPEDANCE_MODE_NONE,
     IMPEDANCE_MODE_STANDARD,
     PENDING_MEASUREMENT_TIMEOUT,
     PROBLEM_NONE,
     PROFILE_METHOD_NEAREST,
+    STABILIZED_MEASUREMENT_WINDOW,
+    STABILIZED_NOTIFY_DELAY,
     UNIT_POUNDS,
 )
 from ..models import Gender, Metric
@@ -314,6 +317,17 @@ class BodyScaleMetricsHandler:
         self._pending_impedance: dict[Metric, tuple[float, State]] = {}
         self._replaying: bool = False
         self._pending_timeout_cancel: CALLBACK_TYPE | None = None
+        # Notification mode + stabilized sensor: the notification is sent on
+        # the stabilized OFF→ON transition instead of on every weight write.
+        self._stabilized_trigger: bool = False
+        self._stabilized_notify_cancel: CALLBACK_TYPE | None = None
+        # last_measurement_time handling (see _stamp_measurement_time):
+        # - _weight_accepted_at: monotonic time of the last accepted weight
+        # - _known_weight: last valid weight exposed by the scale sensor, used
+        #   to ignore a sensor coming back from unavailable with the same value
+        self._stabilized_stamp_cancel: CALLBACK_TYPE | None = None
+        self._weight_accepted_at: float | None = None
+        self._known_weight: float | None = None
         # filled after HA starts
         self._sensors_set: frozenset[str] = frozenset()
 
@@ -322,6 +336,10 @@ class BodyScaleMetricsHandler:
         # filters without relying on the stored metric (which could be from
         # a previous session and belong to a different user).
         self._last_accepted_weight: float | None = None
+
+        # Monotonic time at which each impedance reading was accepted, used to
+        # pair the two dual-frequency readings of the same measurement.
+        self._impedance_received_at: dict[Metric, float] = {}
 
         # True only while the initial sensor-state replay runs in
         # _setup_listeners (HA restart / entry reload). Suppresses side
@@ -371,6 +389,14 @@ class BodyScaleMetricsHandler:
                 self._last_accepted_weight = bootstrap_weight
                 self._update_available_metric(Metric.WEIGHT, bootstrap_weight)
 
+        sensors, stabilized_id = self._collect_sensors(impedance_mode)
+        self._sensors_set = frozenset(sensors)
+        self._last_reported_ts: dict[str, float] = {}
+        self._remove_listener: CALLBACK_TYPE | None = None
+        self._setup_listeners(sensors, stabilized_id)
+
+    def _collect_sensors(self, impedance_mode: str) -> tuple[list[str], str | None]:
+        """Return the source sensors to track and the stabilized sensor id."""
         sensors = [self._config[CONF_SENSOR_WEIGHT]]
 
         # Subscribe to sensors based on impedance mode
@@ -390,14 +416,20 @@ class BodyScaleMetricsHandler:
         if stabilized_id:
             sensors.append(stabilized_id)
 
-        self._sensors_set = frozenset(sensors)
-        self._last_reported_ts: dict[str, float] = {}
-        self._remove_listener: CALLBACK_TYPE | None = None
-        self._setup_listeners(sensors, stabilized_id)
+        return sensors, stabilized_id
 
     def _setup_listeners(self, sensors: list[str], stabilized_id: str | None) -> None:
         """Subscribe to state_changed and state_reported for measurement sensors."""
         measurement_sensors = [s for s in sensors if s != stabilized_id]
+        impedance_sensors = {
+            self._config[key]
+            for key in (
+                CONF_SENSOR_IMPEDANCE,
+                CONF_SENSOR_IMPEDANCE_LOW,
+                CONF_SENSOR_IMPEDANCE_HIGH,
+            )
+            if self._config.get(key)
+        }
         _LOGGER.debug(
             "[%s] subscribing to state_changed+state_reported for %s",
             self._name,
@@ -416,6 +448,10 @@ class BodyScaleMetricsHandler:
             if self._last_reported_ts.get(entity_id) == ts:
                 return
             self._last_reported_ts[entity_id] = ts
+            if self._is_weight_restore(
+                entity_id, event.data.get("old_state"), new_state
+            ):
+                return
             self._state_changed(entity_id, new_state)
 
         @callback
@@ -427,6 +463,18 @@ class BodyScaleMetricsHandler:
             if new_state is None:
                 return
             self._last_reported_ts[entity_id] = new_state.last_reported.timestamp()
+            if entity_id in impedance_sensors:
+                # state_reported means the value did not change. Scale
+                # integrations such as xiaomi_ble re-publish every known value
+                # on each advertisement, so an unchanged impedance is the
+                # previous measurement (possibly another user's), not a new
+                # reading — e.g. a weight-only weigh-in after a full one.
+                _LOGGER.debug(
+                    "[%s][state_reported] %s unchanged — stale impedance ignored",
+                    self._name,
+                    entity_id,
+                )
+                return
             self._state_changed(entity_id, new_state)
 
         removers: list[CALLBACK_TYPE] = [
@@ -451,6 +499,14 @@ class BodyScaleMetricsHandler:
                 entity_id = event.data.get("entity_id")
                 if entity_id is None or new_state is None:
                     return
+                old_state = event.data.get("old_state")
+                if (
+                    new_state.state == "on"
+                    and old_state is not None
+                    and old_state.state != "on"
+                ):
+                    self._schedule_stabilized_notification()
+                    self._schedule_stabilized_stamp()
                 self._state_changed(entity_id, new_state)
 
             removers.append(
@@ -536,6 +592,130 @@ class BodyScaleMetricsHandler:
         self._pending_impedance.clear()
         self._last_accepted_weight = None
 
+    def _start_pending_notification(self, val: float, state: State) -> None:
+        """Store the measurement as pending and ask users who is weighing."""
+        self._cancel_pending_timeout()
+        self._pending_weight = val
+        self._pending_state = state
+        self._pending_impedance.clear()
+        self._last_accepted_weight = None
+
+        self._pending_timeout_cancel = async_call_later(
+            self._hass,
+            PENDING_MEASUREMENT_TIMEOUT,
+            self._expire_pending_measurement,
+        )
+        if self._notification_coordinator is not None:
+            self._hass.async_create_task(
+                self._notification_coordinator.async_notify(val)
+            )
+
+    def _schedule_stabilized_notification(self) -> None:
+        """Send the notification shortly after the stabilized sensor turns ON.
+
+        The stabilized and weight entities are written by different platforms
+        from the same advertisement, in no guaranteed order. Waiting a moment
+        ensures the weight sensor already holds the stabilized value.
+        """
+        if self._notification_coordinator is None or self._bootstrapping:
+            return
+        if self._stabilized_notify_cancel is not None:
+            self._stabilized_notify_cancel()
+        self._stabilized_notify_cancel = async_call_later(
+            self._hass, STABILIZED_NOTIFY_DELAY, self._notify_on_stabilized
+        )
+
+    @callback
+    def _notify_on_stabilized(self, _now: datetime) -> None:
+        """Notify with the current weight once the measurement is stabilized."""
+        self._stabilized_notify_cancel = None
+        state = self._hass.states.get(self._config[CONF_SENSOR_WEIGHT])
+        if state is None:
+            return
+        _LOGGER.debug(
+            "[%s][stabilized] ON — sending notification for %s",
+            self._name,
+            state.state,
+        )
+        self._stabilized_trigger = True
+        try:
+            self._process_weight(state)
+        finally:
+            self._stabilized_trigger = False
+
+    def _is_weight_restore(
+        self, entity_id: str, old_state: State | None, new_state: State
+    ) -> bool:
+        """Return True if the weight sensor only came back with its last value.
+
+        Scale entities often become unavailable (or are recreated at startup)
+        and then reappear with the same last reading. That is not a new
+        measurement and must not trigger a notification or move
+        last_measurement_time.
+        """
+        if entity_id != self._config[CONF_SENSOR_WEIGHT] or self._known_weight is None:
+            return False
+        if old_state is not None and old_state.state not in (
+            STATE_UNAVAILABLE,
+            STATE_UNKNOWN,
+        ):
+            return False
+        val = self._weight_kg(new_state)
+        if val is None or val != self._known_weight:
+            return False
+        _LOGGER.debug(
+            "[%s] Weight sensor back with its last value %.2f kg — ignored",
+            self._name,
+            val,
+        )
+        return True
+
+    @staticmethod
+    def _weight_kg(state: State) -> float | None:
+        """Return the weight in kg from a sensor state, or None if not numeric."""
+        try:
+            val = float(state.state)
+        except ValueError:
+            return None
+        if state.attributes.get(ATTR_UNIT_OF_MEASUREMENT) == UNIT_POUNDS:
+            val *= 0.45359237
+        return val
+
+    def _stamp_measurement_time(self) -> None:
+        """Set last_measurement_time to now."""
+        self._update_available_metric(Metric.LAST_MEASUREMENT_TIME, dt_util.utcnow())
+
+    def _schedule_stabilized_stamp(self) -> None:
+        """Stamp last_measurement_time shortly after stabilized turns ON.
+
+        As for the notification, the weight sensor may be written just after
+        the stabilized sensor, so the check is delayed slightly.
+        """
+        if self._bootstrapping:
+            return
+        if self._stabilized_stamp_cancel is not None:
+            self._stabilized_stamp_cancel()
+        self._stabilized_stamp_cancel = async_call_later(
+            self._hass, STABILIZED_NOTIFY_DELAY, self._stamp_on_stabilized
+        )
+
+    @callback
+    def _stamp_on_stabilized(self, _now: datetime) -> None:
+        """Stamp the measurement if this profile accepted the weight just now."""
+        self._stabilized_stamp_cancel = None
+        if (
+            self._weight_accepted_at is None
+            or time.monotonic() - self._weight_accepted_at
+            > STABILIZED_MEASUREMENT_WINDOW
+        ):
+            _LOGGER.debug(
+                "[%s][stabilized] ON — no weight accepted for this profile, "
+                "last_measurement_time unchanged",
+                self._name,
+            )
+            return
+        self._stamp_measurement_time()
+
     @callback
     def accept_pending_measurement(self) -> None:
         """Replay the pending measurement after the user confirms via notification."""
@@ -584,6 +764,11 @@ class BodyScaleMetricsHandler:
     def unload(self) -> None:
         """Unload the handler."""
         self._cancel_pending_timeout()
+        for cancel in (self._stabilized_notify_cancel, self._stabilized_stamp_cancel):
+            if cancel is not None:
+                cancel()
+        self._stabilized_notify_cancel = None
+        self._stabilized_stamp_cancel = None
 
         if self._remove_listener is not None:
             self._remove_listener()
@@ -664,6 +849,8 @@ class BodyScaleMetricsHandler:
         # Restore _last_accepted_weight so impedance validation works after restart
         if metric is Metric.WEIGHT:
             self._last_accepted_weight = val
+            if self._known_weight is None:
+                self._known_weight = val
 
         self._update_available_metric(metric, val)
 
@@ -714,22 +901,36 @@ class BodyScaleMetricsHandler:
             self._clear_sensor_problem(entity_id)
 
         if valid:
-            impedance_mode = self._config.get(CONF_IMPEDANCE_MODE, IMPEDANCE_MODE_NONE)
             if entity_id == self._config[CONF_SENSOR_WEIGHT]:
                 # Weight received — compute weight-only metrics immediately
+                self._weight_accepted_at = time.monotonic()
                 self._trigger_weight_only_metrics()
-                if impedance_mode == IMPEDANCE_MODE_NONE:
-                    # No impedance expected — full cycle complete
-                    self._update_available_metric(
-                        Metric.LAST_MEASUREMENT_TIME, dt_util.utcnow()
-                    )
+                # With a stabilized sensor, the measurement time is stamped on
+                # its OFF→ON transition only (see _stamp_on_stabilized): the
+                # weight is re-written on every advertisement by integrations
+                # such as xiaomi_ble. A replay at startup is not a measurement.
+                if not self._bootstrapping and not self._config.get(
+                    CONF_SENSOR_STABILIZED
+                ):
+                    self._stamp_measurement_time()
             elif entity_id == self._config.get(CONF_SENSOR_IMPEDANCE):
                 # Standard impedance — compute impedance-dependent metrics
                 self._trigger_impedance_metrics()
-            elif entity_id == self._config.get(CONF_SENSOR_IMPEDANCE_HIGH):
-                # Dual mode: impedance_high is the last packet — compute all
-                self._trigger_impedance_metrics()
-            # impedance_low in dual mode → wait for impedance_high, do nothing
+            elif entity_id in (
+                self._config.get(CONF_SENSOR_IMPEDANCE_LOW),
+                self._config.get(CONF_SENSOR_IMPEDANCE_HIGH),
+            ):
+                # Dual mode: both frequencies arrive in separate packets whose
+                # order is not guaranteed (Bluetooth proxies, lost or delayed
+                # packets). Compute as soon as both readings of the same
+                # measurement are available, whichever comes last.
+                if self._dual_impedance_complete():
+                    self._trigger_impedance_metrics()
+                else:
+                    _LOGGER.debug(
+                        "[%s] Dual impedance: waiting for the other frequency",
+                        self._name,
+                    )
 
     # ── Process helpers ─────────────────────────────────────────────────────
 
@@ -746,8 +947,11 @@ class BodyScaleMetricsHandler:
             return False, "invalid_format"
 
         if val < CONSTRAINT_WEIGHT_MIN:
-            # Scale reset to zero — clear last accepted weight for this cycle
+            # Scale reset to zero — clear last accepted weight for this cycle.
+            # The next reading is a new measurement even if it equals the
+            # previous weight (e.g. ESPHome scales resetting to 0).
             self._last_accepted_weight = None
+            self._known_weight = None
             if val == 0.0:
                 _LOGGER.debug(
                     "[%s] Weight 0.0 kg — scale reset, ignoring silently", self._name
@@ -761,26 +965,42 @@ class BodyScaleMetricsHandler:
         if state.attributes.get(ATTR_UNIT_OF_MEASUREMENT) == UNIT_POUNDS:
             val *= 0.45359237
 
+        self._known_weight = val
+
         # ── Mode notification ─────────────────────────────────────────────────
         if (
             self._notification_coordinator is not None
             and not self._replaying
             and not self._bootstrapping
         ):
-            self._cancel_pending_timeout()
-            self._pending_weight = val
-            self._pending_state = state
-            self._pending_impedance.clear()
-            self._last_accepted_weight = None
-
-            self._pending_timeout_cancel = async_call_later(
-                self._hass,
-                PENDING_MEASUREMENT_TIMEOUT,
-                self._expire_pending_measurement,
-            )
-            self._hass.async_create_task(
-                self._notification_coordinator.async_notify(val)
-            )
+            if (
+                self._config.get(CONF_SENSOR_STABILIZED)
+                and not self._stabilized_trigger
+            ):
+                # Many scales (e.g. xiaomi_ble) rewrite the weight sensor on
+                # every advertisement, including idle and periodic
+                # rebroadcasts. With a stabilized sensor, only its OFF→ON
+                # transition marks a new measurement.
+                _LOGGER.debug(
+                    "[%s] Weight %.2f kg — waiting for stabilized before notifying",
+                    self._name,
+                    val,
+                )
+                return False, None
+            if (
+                not self._stabilized_trigger
+                and self._pending_timeout_cancel is not None
+                and self._pending_weight == val
+            ):
+                # Same measurement re-reported while still awaiting
+                # confirmation — do not notify again.
+                _LOGGER.debug(
+                    "[%s] Weight %.2f kg already pending — notification not repeated",
+                    self._name,
+                    val,
+                )
+                return False, None
+            self._start_pending_notification(val, state)
             return False, None
 
         if not self._profile_filter.accepts(self._hass, self._config, val):
@@ -793,6 +1013,7 @@ class BodyScaleMetricsHandler:
             self._available_metrics.pop(Metric.IMPEDANCE, None)
             self._available_metrics.pop(Metric.IMPEDANCE_LOW, None)
             self._available_metrics.pop(Metric.IMPEDANCE_HIGH, None)
+            self._impedance_received_at.clear()
             # Invalidate the last accepted weight too: otherwise the next
             # impedance reading (which belongs to another user's weight)
             # would be re-validated against this profile's own stale weight
@@ -856,6 +1077,7 @@ class BodyScaleMetricsHandler:
                 _LOGGER.debug("Profile filter rejected impedance: %.2f", val)
                 return False, None
 
+        self._impedance_received_at[metric] = time.monotonic()
         self._update_available_metric(metric, val)
 
         return True, None
@@ -928,6 +1150,21 @@ class BodyScaleMetricsHandler:
                 and Metric.IMPEDANCE_HIGH in self._available_metrics
             )
         return False
+
+    def _dual_impedance_complete(self) -> bool:
+        """Return True if both dual-frequency readings belong to one measurement.
+
+        Both values must be available and have been received within
+        DUAL_IMPEDANCE_WINDOW seconds of each other, so a fresh reading is
+        never combined with a stale one from a previous weigh-in.
+        """
+        if not self._has_impedance():
+            return False
+        t_low = self._impedance_received_at.get(Metric.IMPEDANCE_LOW)
+        t_high = self._impedance_received_at.get(Metric.IMPEDANCE_HIGH)
+        if t_low is None or t_high is None:
+            return False
+        return abs(t_low - t_high) <= DUAL_IMPEDANCE_WINDOW
 
     def _can_compute(self, metric: Metric) -> bool:
         """Return True if all dependencies for this metric are satisfied."""
@@ -1027,9 +1264,8 @@ class BodyScaleMetricsHandler:
                     )
 
     def _trigger_weight_only_metrics(self) -> None:
-        """Compute weight-only metrics and stamp measurement time."""
+        """Compute weight-only metrics."""
         _LOGGER.debug("[%s][recalc] Weight-only pass", self._name)
-        self._update_available_metric(Metric.LAST_MEASUREMENT_TIME, dt_util.utcnow())
         for metric in self._topological_order():
             if metric in self._WEIGHT_ONLY_METRICS:
                 self._compute_metric(metric)
