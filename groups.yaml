@@ -69,9 +69,8 @@ all_lamps:
     - light.kukhnia_lenta
 #    - light.kukhnia_liustra
     - light.ikea_e27_kukhnia
-    - light.sonoff_1000b72483
+    - light.kukhnia_spoty
     - light.sonoff_1000b6831b
-    - light.spalnia_stol
     - light.sonoff_1000f3035d
     - light.sonoff_1000f30a9e
     - light.sonoff_1000f2f14a
@@ -120,7 +119,7 @@ light_kukhnia:
     - light.kukhnia_lenta
 #    - light.kukhnia_liustra
     - light.ikea_e27_kukhnia
-    - light.sonoff_1000b72483
+    - light.kukhnia_spoty
 
 light_kladovaya:
   name: Весь свет в Кладовой
@@ -130,7 +129,6 @@ light_kladovaya:
 light_spalnia:
   name: Весь свет в Спальне
   entities:
-    - light.spalnia_stol
     - light.sonoff_01minizb_47ef08fe_on_off
     - light.sonoff_1001045426
     - light.sonoff_1001053235

@@ -4,6 +4,13 @@
 
 kitchen_light_pack:
 
+  # Light
+  light:
+
+    - platform: switch
+      name: Кухня - Споты
+      entity_id: switch.kukhnia_rele_sonoff_zbminir2_01_na_kukhne
+
   # Input Boolean
   input_boolean:
 

@@ -255,11 +255,11 @@ cards:
       - type: conditional
         conditions:
           - condition: state
-            entity: light.sonoff_1000b72483
+            entity: light.kukhnia_spoty
             state_not: "unavailable"
         card:
           type: light
-          entity: light.sonoff_1000b72483
+          entity: light.kukhnia_spoty
           name: Споты
           icon: mdi:light-recessed
       - type: horizontal-stack

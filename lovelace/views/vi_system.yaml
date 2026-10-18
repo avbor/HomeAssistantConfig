@@ -382,7 +382,7 @@ cards:
               - entity: light.ikea_e27_level_light_color_on_off
                 name: Лампа на столе в Гостиной
                 icon: mdi:desk-lamp
-              - entity: light.sonoff_1000b72483
+              - entity: light.kukhnia_spoty
                 name: Споты на Кухне
                 icon: mdi:light-recessed
               - entity: light.sonoff_1000ab3c28

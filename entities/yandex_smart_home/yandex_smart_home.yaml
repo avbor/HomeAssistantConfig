@@ -37,7 +37,7 @@ filter:
     - switch.mi_smartplugwifi_02 # Гостиная - Ёлка
     - media_player.ue46es5507 # Гостиная - Телевизор
     # Кухня
-    - light.sonoff_1000b72483 # Кухня - Споты
+    - light.kukhnia_spoty # Кухня - Споты
     - light.ikea_e27_kukhnia # Кухня - Люстра
     - light.kukhnia_lenta # Кухня - Подсветка
     - cover.tze200_rddyvrci_ts0601_5c2fbdfe_window_covering # Кухня - Штора Левая
@@ -58,7 +58,6 @@ filter:
     - light.sonoff_1001045426 # Спальня - Бра справа
     - climate.daikin_bedroom # Спальня - Кондиционер
     - media_player.ue43ru7470 # Спальня - Телевизор
-    - light.spalnia_stol # Спальня - Ламка на столе
     - humidifier.smartmi_humidifier_02_spalnia # Спальня - Увлажнитель
     - light.ikea_of_sweden_tradfri_bulb_e14_ws_opal_600lm_light_2 # Спальня - Лампа у кровати слева
     # Дача
@@ -115,7 +114,7 @@ entity_config:
     name: Лампа на столе
     room: Гостиная
 
-  light.sonoff_1000b72483:
+  light.kukhnia_spoty:
     name: Споты
     room: Кухня
 

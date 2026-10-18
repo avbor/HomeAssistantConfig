@@ -100,7 +100,7 @@
     device_class: power
     default_entity_id: binary_sensor.lamp_status_kukhnia_spots
     icon: mdi:light-recessed
-    state: "{{ is_state('light.sonoff_1000b72483', 'on') }}"
+    state: "{{ is_state('light.kukhnia_spoty', 'on') }}"
 
   - name: Люстра в Кладовой
     unique_id: 91544185-5d5b-4df0-bd24-be71491cdb34

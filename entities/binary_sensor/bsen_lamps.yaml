@@ -87,7 +87,7 @@
 #      device_class: power
 #      friendly_name: Споты на Кухне
 #      icon_template: mdi:light-recessed
-#      value_template: "{{ is_state('light.sonoff_1000b72483', 'on') }}"
+#      value_template: "{{ is_state('light.kukhnia_spoty', 'on') }}"
 #
 #    lamp_status_kladovaya:
 #      device_class: power
