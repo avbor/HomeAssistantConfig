@@ -11,7 +11,7 @@ cards:
           include:
             - group: group.battery_devices
           exclude:
-            - entity_id: sensor.mirobot_1s_battery
+            - entity_id: sensor.gostinaia_xiaomi_vacuum_cleaner_battery
         sort:
           method: state
           numeric: true

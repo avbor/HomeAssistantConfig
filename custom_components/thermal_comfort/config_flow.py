@@ -21,6 +21,7 @@ from .sensor import (
     CONF_ENABLED_SENSORS,
     CONF_HUMIDITY_SENSOR,
     CONF_POLL,
+    CONF_PRESSURE_SENSOR,
     CONF_SCAN_INTERVAL,
     CONF_TEMPERATURE_SENSOR,
     POLL_DEFAULT,
@@ -31,6 +32,10 @@ from .sensor import (
 _LOGGER = logging.getLogger(__name__)
 
 SECTION_ADVANCED = "advanced"
+PRESSURE_DEVICE_CLASSES = [
+    SensorDeviceClass.ATMOSPHERIC_PRESSURE,
+    SensorDeviceClass.PRESSURE,
+]
 
 
 def get_sensors_by_device_class(
@@ -156,7 +161,7 @@ def get_sensors_by_device_class(
             "$",
             "¢",
             # Time units
-            "μs",
+            "µs",
             "ms",
             "s",
             "min",
@@ -223,7 +228,7 @@ def get_sensors_by_device_class(
             # Concentration units
             "µg/m³",
             "mg/m³",
-            "μg/ft³",
+            "µg/ft³",
             "p/m³",
             "ppm",
             "ppb",
@@ -281,6 +286,10 @@ def get_sensors_by_device_class(
         unit_of_measurement = state.attributes.get(
             "unit_of_measurement", state.attributes.get("native_unit_of_measurement")
         )
+        if isinstance(unit_of_measurement, str):
+            # The list spells micro as U+00B5, the Home Assistant unit
+            # enumerators use U+03BC, so compare them as the same character.
+            unit_of_measurement = unit_of_measurement.replace("\u03bc", "\u00b5")
         return unit_of_measurement not in units_for_exclude
 
     def filter_thermal_comfort_ids(entity_id: str) -> bool:
@@ -395,6 +404,20 @@ def build_schema(
                     }
                 }
             ),
+            # Optional, without it the standard pressure of 101325 Pa is used
+            vol.Optional(
+                CONF_PRESSURE_SENSOR,
+                description={
+                    "suggested_value": get_value(config_entry, CONF_PRESSURE_SENSOR)
+                },
+            ): selector(
+                {
+                    "entity": {
+                        "domain": Platform.SENSOR,
+                        "device_class": PRESSURE_DEVICE_CLASSES,
+                    }
+                }
+            ),
         },
     )
     advanced = {
@@ -458,6 +481,12 @@ def check_input(hass: HomeAssistant, user_input: dict) -> dict:
 
     if p_sensor is None:
         result["base"] = "humidity_not_found"
+
+    if (
+        user_input.get(CONF_PRESSURE_SENSOR)
+        and hass.states.get(user_input[CONF_PRESSURE_SENSOR]) is None
+    ):
+        result["base"] = "pressure_not_found"
 
     # ToDo: we should not trust user and check:
     #  - that CONF_TEMPERATURE_SENSOR is temperature sensor and have state_class measurement
@@ -543,6 +572,12 @@ class ThermalComfortOptionsFlow(config_entries.OptionsFlowWithReload):
         errors = {}
         if user_input is not None:
             user_input = flatten_input(user_input)
+            if not user_input.get(CONF_PRESSURE_SENSOR) and get_value(
+                self.config_entry, CONF_PRESSURE_SENSOR
+            ):
+                # The options win over the data, so removing the sensor must
+                # be stored, the missing key would bring back the old one.
+                user_input[CONF_PRESSURE_SENSOR] = None
             _LOGGER.debug("OptionsFlow: going to update configuration %s", user_input)
             if not (errors := check_input(self.hass, user_input)):
                 return self.async_create_entry(title="", data=user_input)

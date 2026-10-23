@@ -15,7 +15,7 @@ cards:
           - entity: sensor.mirobot_1s_current_fan_speed
             name: "Текущий режим:"
             icon: mdi:speedometer
-          - entity: sensor.mirobot_1s_battery
+          - entity: sensor.gostinaia_xiaomi_vacuum_cleaner_battery
             name: "Заряд батареи:"
       - type: markdown
         content: >

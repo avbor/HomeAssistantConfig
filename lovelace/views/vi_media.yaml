@@ -257,153 +257,153 @@ cards:
             card: !include samsung_tv_remote_c.yaml
 
       # --- Microsoft
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Microsoft</center>
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.xbox_v_gostinoi
-            state: "off"
-        card:
-          type: markdown
-          content: >
-            *Нет включенных устройств...*
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.xbox_v_gostinoi
-            state_not: "off"
-        card:
-          type: media-control
-          entity: media_player.xbox_v_gostinoi
+#  - type: vertical-stack
+#    cards:
+#      - type: markdown
+#        content: >
+#          ### <center>Microsoft</center>
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.xbox_v_gostinoi
+#            state: "off"
+#        card:
+#          type: markdown
+#          content: >
+#            *Нет включенных устройств...*
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.xbox_v_gostinoi
+#            state_not: "off"
+#        card:
+#          type: media-control
+#          entity: media_player.xbox_v_gostinoi
 
-  # --- Plex
-  - type: vertical-stack
-    cards:
-      - type: markdown
-        content: >
-          ### <center>Plex</center>
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_tv_ue46es5507
-            state: "unavailable"
-          - condition: state
-            entity: media_player.plex_tv_ue32es5500
-            state: "unavailable"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
-            state: "unavailable"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
-            state: "unavailable"
-          - condition: state
-            entity: media_player.plex_guest_plex_cast_chromecast
-            state: "unavailable"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_2019
-            state: "unavailable"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
-            state: "unavailable"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
-            state: "unavailable"
-        card:
-          type: markdown
-          content: >
-            *Все выключенно...*
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_tv_ue46es5507
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_tv_ue46es5507
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_tv_ue46es5507
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_tv_ue32es5500
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_tv_ue32es5500
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_tv_ue32es5500
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_guest_plex_cast_chromecast
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_guest_plex_cast_chromecast
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_guest_plex_cast_chromecast
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_2019
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_samsung_tv_2019
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_guest_plex_for_samsung_tv_2019
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
-            state_not: "off"
-          - condition: state
-            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
-            state_not: "unavailable"
-        card:
-          type: media-control
-          entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+#  # --- Plex
+#  - type: vertical-stack
+#    cards:
+#      - type: markdown
+#        content: >
+#          ### <center>Plex</center>
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_tv_ue46es5507
+#            state: "unavailable"
+#          - condition: state
+#            entity: media_player.plex_tv_ue32es5500
+#            state: "unavailable"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+#            state: "unavailable"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
+#            state: "unavailable"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_cast_chromecast
+#            state: "unavailable"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_2019
+#            state: "unavailable"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
+#            state: "unavailable"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+#            state: "unavailable"
+#        card:
+#          type: markdown
+#          content: >
+#            *Все выключенно...*
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_tv_ue46es5507
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_tv_ue46es5507
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_tv_ue46es5507
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_tv_ue32es5500
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_tv_ue32es5500
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_tv_ue32es5500
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_guest_plex_for_samsung_tv_ue32es5500
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_guest_plex_for_samsung_tv_ue46es5507
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_guest_plex_cast_chromecast
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_cast_chromecast
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_guest_plex_cast_chromecast
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_2019
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_samsung_tv_2019
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_guest_plex_for_samsung_tv_2019
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_guest_plex_for_android_mobile_sm_t295
+#      - type: conditional
+#        conditions:
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+#            state_not: "off"
+#          - condition: state
+#            entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.plex_guest_plex_for_android_mobile_sm_t295_2
 
   # --- Google
   - type: vertical-stack

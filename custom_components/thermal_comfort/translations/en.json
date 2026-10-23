@@ -2,14 +2,20 @@
   "options": {
     "error": {
       "temperature_not_found": "Temperature sensor not found",
-      "humidity_not_found": "Humidity sensor not found"
+      "humidity_not_found": "Humidity sensor not found",
+      "pressure_not_found": "Pressure sensor not found"
     },
     "step": {
       "init": {
         "title": "Thermal comfort settings",
         "data": {
+          "name": "Device name",
           "temperature_sensor": "Temperature sensor",
-          "humidity_sensor": "Humidity sensor"
+          "humidity_sensor": "Humidity sensor",
+          "pressure_sensor": "Pressure sensor (optional)"
+        },
+        "data_description": {
+          "name": "Used as the device name and as the prefix of the sensor names, for example the name of the room."
         },
         "sections": {
           "advanced": {
@@ -31,15 +37,20 @@
     },
     "error": {
       "temperature_not_found": "Temperature sensor not found",
-      "humidity_not_found": "Humidity sensor not found"
+      "humidity_not_found": "Humidity sensor not found",
+      "pressure_not_found": "Pressure sensor not found"
     },
     "step": {
       "user": {
         "title": "Thermal comfort settings",
         "data": {
-          "name": "Name",
+          "name": "Device name",
           "temperature_sensor": "Temperature sensor",
-          "humidity_sensor": "Humidity sensor"
+          "humidity_sensor": "Humidity sensor",
+          "pressure_sensor": "Pressure sensor (optional)"
+        },
+        "data_description": {
+          "name": "Used as the device name and as the prefix of the sensor names, for example the name of the room."
         },
         "sections": {
           "advanced": {
@@ -49,6 +60,9 @@
               "scan_interval": "Poll interval (seconds)",
               "custom_icons": "Use custom icons pack",
               "enabled_sensors": "Enabled sensors"
+            },
+            "data_description": {
+              "enabled_sensors": "Sensors you do not select are still created, but disabled. You can enable them later in the entity settings."
             }
           }
         }

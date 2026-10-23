@@ -134,14 +134,14 @@ toilet_light_pack:
                     - action: fan.turn_off
                       target:
                         entity_id: fan.toilet_extractor
-          - alias: Presence
-            conditions:
-              - condition: trigger
-                id: "presence_on"
-            sequence:
-              - action: timer.start
-                target:
-                  entity_id: timer.bathroom_presence
+          #- alias: Presence
+          #  conditions:
+          #    - condition: trigger
+          #      id: "presence_on"
+          #  sequence:
+          #    - action: timer.start
+          #      target:
+          #        entity_id: timer.bathroom_presence
           - alias: Motion
             conditions:
               - condition: trigger

@@ -65,18 +65,18 @@ vacuum_cleaner:
         default_entity_id: sensor.mirobot_1s_current_fan_speed
         state: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'fan_speed') }}"
 
-      - name: Xiaomi Vacuum Cleaner 1S Battery
-        unique_id: 4805977f-0d9b-4763-a9c0-9601bb891139
-        device_class: battery
-        unit_of_measurement: '%'
-        default_entity_id: sensor.mirobot_1s_battery
-        icon: >-
-          {% if not state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}
-            mdi:battery-unknown
-          {% else %}
-            {{state_attr('vacuum.xiaomi_vacuum_cleaner','battery_icon')}}
-          {% endif %}'
-        state: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_level') }}"
+#      - name: Xiaomi Vacuum Cleaner 1S Battery
+#        unique_id: 4805977f-0d9b-4763-a9c0-9601bb891139
+#        device_class: battery
+#        unit_of_measurement: '%'
+#        default_entity_id: sensor.mirobot_1s_battery
+#        icon: >-
+#          {% if not state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_icon') %}
+#            mdi:battery-unknown
+#          {% else %}
+#            {{state_attr('vacuum.xiaomi_vacuum_cleaner','battery_icon')}}
+#          {% endif %}'
+#        state: "{{ state_attr('vacuum.xiaomi_vacuum_cleaner', 'battery_level') }}"
 
       - name: Xiaomi Vacuum Cleaner 1S Main Brush Hours Remaining
         unique_id: 220c4ce6-6ca0-4dd9-88c3-a3a46783ab03
