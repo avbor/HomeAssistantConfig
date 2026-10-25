@@ -12,8 +12,7 @@ devices_to_map:
   all: true
   entities:
     - device_tracker.2602bpc18g
-    - device_tracker.2109119dg
-    - device_tracker.mi8_miphone_2
+    - device_tracker.2602bpc18g_2
 
 persons_to_map:
   all: true
