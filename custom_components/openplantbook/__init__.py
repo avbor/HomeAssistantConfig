@@ -7,6 +7,7 @@ import re
 import urllib.parse
 from asyncio import timeout as async_timeout
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import voluptuous as vol
 from homeassistant import exceptions
@@ -37,19 +38,17 @@ from .const import (
     DATA_COMPONENT,
     DATA_SEARCH_ENTITY,
     DATA_SPECIES_ENTITIES,
+    DLI_SANITY_MAX,
     DOMAIN,
     FLOW_DOWNLOAD_IMAGES,
     FLOW_DOWNLOAD_PATH,
     FLOW_SEND_LANG,
-    MMOL_LUX_RATIO_MAX,
-    MMOL_LUX_RATIO_MIN,
     MMOL_TO_DLI_FACTOR,
     OPB_ATTR_INCLUDES,
     OPB_ATTR_RESULTS,
     OPB_ATTR_TIMESTAMP,
     OPB_DISPLAY_PID,
     OPB_MAX_DLI,
-    OPB_MAX_LIGHT_LUX,
     OPB_MAX_LIGHT_MMOL,
     OPB_MIN_DLI,
     OPB_MIN_LIGHT_MMOL,
@@ -72,52 +71,51 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _enrich_plant_data_with_dli(plant_data: dict) -> None:
-    """Convert OpenPlantbook mmol light values to DLI (mol/d/m²).
+    """Convert OpenPlantbook mmol light values to DLI (mol/m²/d).
 
     Adds max_dli and min_dli attributes to the plant data dict.
 
-    The conversion depends on what the mmol values represent, detected via
-    the mmol/lux ratio:
-    - Ratio 0.02–0.5: mmol encodes PPFD × photoperiod → multiply by 0.0036
-    - Ratio > 0.5: mmol is likely a daily integral in mmol/d/m² → divide by 1000
-    - Ratio < 0.02 or no lux data: use × 0.0036 as default, log a warning
+    OPB mmol values are daily integrals (mmol/m²/d) — a plain mmol→mol unit
+    conversion (MMOL_TO_DLI_FACTOR) yields mol/m²/d (DLI). No ratio-based
+    auto-detection needed; the PPFD x photoperiod interpretation was incorrect.
+
+    The result is clamped to the physical maximum DLI: OPB aggregates loosely
+    validated, multi-source data, so a stray unit mix-up could otherwise yield
+    a biologically impossible threshold.
     """
+    pid = plant_data.get(OPB_DISPLAY_PID, "unknown")
     max_mmol = plant_data.get(OPB_MAX_LIGHT_MMOL)
     min_mmol = plant_data.get(OPB_MIN_LIGHT_MMOL)
-    max_lux = plant_data.get(OPB_MAX_LIGHT_LUX)
-
-    # Determine conversion method via ratio check
-    factor = MMOL_TO_DLI_FACTOR  # default: × 0.0036
-    if max_mmol is not None and max_lux and float(max_lux) > 0:
-        ratio = float(max_mmol) / float(max_lux)
-        if ratio > MMOL_LUX_RATIO_MAX:
-            # mmol values are likely daily integrals in mmol/d/m²
-            factor = 0.001  # / 1000
-            _LOGGER.info(
-                "mmol/lux ratio %.4f for %s is above %.2f — interpreting "
-                "mmol values as daily integrals (DLI = mmol / 1000). "
-                "max_mmol=%s, max_lux=%s",
-                ratio,
-                plant_data.get(OPB_DISPLAY_PID, "unknown"),
-                MMOL_LUX_RATIO_MAX,
-                max_mmol,
-                max_lux,
-            )
-        elif ratio < MMOL_LUX_RATIO_MIN:
-            _LOGGER.warning(
-                "Unusual mmol/lux ratio %.4f for %s (below %.2f). "
-                "DLI thresholds may be inaccurate. max_mmol=%s, max_lux=%s",
-                ratio,
-                plant_data.get(OPB_DISPLAY_PID, "unknown"),
-                MMOL_LUX_RATIO_MIN,
-                max_mmol,
-                max_lux,
-            )
 
     if max_mmol is not None:
-        plant_data[OPB_MAX_DLI] = round(float(max_mmol) * factor, 1)
+        plant_data[OPB_MAX_DLI] = _clamp_dli(
+            round(float(max_mmol) * MMOL_TO_DLI_FACTOR, 1), "max", pid
+        )
     if min_mmol is not None:
-        plant_data[OPB_MIN_DLI] = round(float(min_mmol) * factor, 1)
+        plant_data[OPB_MIN_DLI] = _clamp_dli(
+            round(float(min_mmol) * MMOL_TO_DLI_FACTOR, 1), "min", pid
+        )
+
+
+def _clamp_dli(value: float, bound: str, pid: str) -> float:
+    """Clamp a converted DLI to the physical maximum, warning if exceeded.
+
+    Only an upper guard is applied: terrestrial DLI cannot exceed ~65 mol/m²/d,
+    so a higher value signals suspect OPB data. There is deliberately no lower
+    guard — legitimate deep-shade species have minimums that round toward 0, and
+    clamping those would corrupt valid data.
+    """
+    if value > DLI_SANITY_MAX:
+        _LOGGER.warning(
+            "%s DLI %s mol/m²/d for %s exceeds the plausible maximum %s; "
+            "clamping (check the OpenPlantbook source data)",
+            bound,
+            value,
+            pid,
+            DLI_SANITY_MAX,
+        )
+        return DLI_SANITY_MAX
+    return value
 
 
 def _parse_includes(include: str | None) -> set[str]:
@@ -249,15 +247,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 ) from err
             except PermissionError as err:
                 plant_data = None
-                _LOGGER.error(
+                _LOGGER.exception(
                     "Authentication failed while fetching data for %s. Please reconfigure the integration",
                     species,
                 )
                 del hass.data[DOMAIN][ATTR_SPECIES][species]
+                entry.async_start_reauth(hass)
                 raise InvalidAuth("Authentication failed") from err
             except MissingClientIdOrSecret:
                 plant_data = None
-                _LOGGER.error(
+                _LOGGER.exception(
                     "Missing client ID or secret. Please set up the integration again"
                 )
                 del hass.data[DOMAIN][ATTR_SPECIES][species]
@@ -280,19 +279,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     # saved filename stays stable across refreshes.
                     filename = slugify(
                         urllib.parse.unquote(
-                            os.path.basename(
+                            Path(
                                 urllib.parse.urlparse(plant_data[ATTR_IMAGE]).path
-                            )
+                            ).name
                         ),
                         separator=" ",
                     ).replace(" jpg", ".jpg")
                     raise_if_invalid_filename(filename)
                     download_path = entry.options.get(FLOW_DOWNLOAD_PATH)
-                    if not os.path.isabs(download_path):
+                    if not Path(download_path).is_absolute():
                         download_path = hass.config.path(download_path)
 
-                    final_path = os.path.join(download_path, filename)
-                    if os.path.isfile(final_path):
+                    final_path = str(Path(download_path) / filename)
+                    if await hass.async_add_executor_job(Path(final_path).is_file):
                         _LOGGER.warning("Filename %s already exists", final_path)
                         downloaded_file = final_path
                     else:
@@ -326,7 +325,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 return plant_data
             del hass.data[DOMAIN][ATTR_SPECIES][species]
             return {}
-        elif OPB_PID not in hass.data[DOMAIN][ATTR_SPECIES][species]:
+        if OPB_PID not in hass.data[DOMAIN][ATTR_SPECIES][species]:
             # If more than one "get_plant" is triggered for the same species, we wait for up to
             # 10 seconds for the first process to complete the API request.
             # We don't want to return immediately, as we want the state object to be set by
@@ -353,17 +352,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 await asyncio.sleep(1)
             _LOGGER.debug("The other process completed successfully")
             return hass.data[DOMAIN][ATTR_SPECIES][species]
-        elif datetime.now() < datetime.fromisoformat(
+        if datetime.now() < datetime.fromisoformat(
             hass.data[DOMAIN][ATTR_SPECIES][species][OPB_ATTR_TIMESTAMP]
         ) + timedelta(hours=CACHE_TIME):
             # We already have the data we need, so let's just return
             _LOGGER.debug("We already have cached data for %s", species)
             return hass.data[DOMAIN][ATTR_SPECIES][species]
-        else:
-            del hass.data[DOMAIN][ATTR_SPECIES][species]
-            raise OpenPlantbookException(
-                "an unknown error occurred while fetching data for species %s", species
-            )
+        del hass.data[DOMAIN][ATTR_SPECIES][species]
+        raise OpenPlantbookException(
+            "an unknown error occurred while fetching data for species %s", species
+        )
 
     async def search_plantbook(call: ServiceCall) -> ServiceResponse:
         if DOMAIN not in hass.data:
@@ -383,13 +381,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 "OpenPlantbook API rate limit exceeded. Please try again later."
             ) from err
         except PermissionError as err:
-            _LOGGER.error(
+            _LOGGER.exception(
                 "Authentication failed while searching for %s. Please reconfigure the integration",
                 alias,
             )
+            entry.async_start_reauth(hass)
             raise InvalidAuth("Authentication failed") from err
         except MissingClientIdOrSecret:
-            _LOGGER.error(
+            _LOGGER.exception(
                 "Missing client ID or secret. Please set up the integration again"
             )
             raise
@@ -452,7 +451,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     def _write_file(path: str, data: bytes) -> None:
         """Write binary data to a file (runs in executor)."""
-        with open(path, "wb") as fil:
+        with Path(path).open("wb") as fil:
             fil.write(data)
 
     async def async_download_image(url: str, download_to: str) -> str | bool:

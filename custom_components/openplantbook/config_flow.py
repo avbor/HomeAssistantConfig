@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import logging
-import os
+from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 import voluptuous as vol
@@ -63,10 +64,12 @@ async def validate_input(hass: core.HomeAssistant, data: dict) -> dict[str, str]
         raise ValueError from ex
     # If any of credentials are empty
     except (KeyError, MissingClientIdOrSecret) as ex:
+        # Logs the exception object, not any credential value (false positive).
+        # nosemgrep: python.lang.security.audit.logging.logger-credential-leak.python-logger-credential-disclosure
         _LOGGER.debug("API client_id and/or client secret are invalid: %s", ex)
         raise ValueError from ex
-    except Exception as ex:
-        _LOGGER.error("Unable to connect to OpenPlantbook: %s", ex)
+    except Exception:
+        _LOGGER.exception("Unable to connect to OpenPlantbook")
         raise
 
     return {TITLE: "Openplantbook API"}
@@ -87,18 +90,26 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Create the options flow."""
         return OptionsFlowHandler()
 
+    async def _async_validate_credentials(
+        self, user_input: dict[str, Any]
+    ) -> dict[str, str]:
+        """Validate API credentials, returning a (possibly empty) errors dict."""
+        errors: dict[str, str] = {}
+        try:
+            await validate_input(self.hass, user_input)
+        except ValueError:
+            errors[CONF_CLIENT_ID] = "invalid_auth"
+        except Exception:
+            errors["base"] = "cannot_connect"
+        return errors
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle the initial step."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            try:
-                await validate_input(self.hass, user_input)
-            except ValueError:
-                errors[CONF_CLIENT_ID] = "invalid_auth"
-            except Exception:
-                errors["base"] = "cannot_connect"
+            errors = await self._async_validate_credentials(user_input)
 
             if not errors:
                 # Persist the client_id as the entry's unique_id (stable per
@@ -140,6 +151,58 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={
                 "sensor_data_url": "https://open.plantbook.io/ui/sensor-data/",
                 "common_names_url": "https://github.com/slaxor505/OpenPlantbook-client/wiki/Plant-Common-names",
+            },
+        )
+
+    async def async_step_reauth(
+        self, entry_data: Mapping[str, Any]
+    ) -> ConfigFlowResult:
+        """Handle re-authentication when the stored credentials stop working."""
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Prompt for new credentials and update the existing entry."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            errors = await self._async_validate_credentials(user_input)
+            if not errors:
+                return self.async_update_reload_and_abort(
+                    self._get_reauth_entry(),
+                    unique_id=user_input[CONF_CLIENT_ID],
+                    data_updates=user_input,
+                )
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=DATA_SCHEMA,
+            errors=errors,
+            description_placeholders={
+                "apikey_url": "https://open.plantbook.io/apikey/show/"
+            },
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Let the user change the API credentials of an existing entry."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            errors = await self._async_validate_credentials(user_input)
+            if not errors:
+                return self.async_update_reload_and_abort(
+                    self._get_reconfigure_entry(),
+                    unique_id=user_input[CONF_CLIENT_ID],
+                    data_updates=user_input,
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=DATA_SCHEMA,
+            errors=errors,
+            description_placeholders={
+                "apikey_url": "https://open.plantbook.io/apikey/show/"
             },
         )
 
@@ -217,10 +280,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             return True
         download_path = user_input.get(FLOW_DOWNLOAD_PATH)
         # If path is relative, we assume relative to Home Assistant config dir
-        if not os.path.isabs(download_path):
+        if not Path(download_path).is_absolute():
             download_path = self.hass.config.path(download_path)
 
-        if not os.path.isdir(download_path):
+        if not await self.hass.async_add_executor_job(Path(download_path).is_dir):
             _LOGGER.error(
                 "Download path %s is invalid",
                 download_path,
