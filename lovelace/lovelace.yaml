@@ -4,28 +4,27 @@
 
 resource_mode: yaml
 resources:
-  - url: /hacsfiles/flex-table-card/flex-table-card.js
+  - url: /local/community/flex-table-card/flex-table-card.js
     type: module
-  - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+  - url: /local/community/mini-graph-card/mini-graph-card-bundle.js
     type: module
-  #  - url: /hacsfiles/simple-thermostat/simple-thermostat.js
   - url: /local/community/simple-thermostat/simple-thermostat.js
     type: module
-  - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
+  - url: /local/community/vertical-stack-in-card/vertical-stack-in-card.js
     type: module
-  - url: /hacsfiles/zha-network-card/zha-network-card.js
+  - url: /local/community/zha-network-card/zha-network-card.js
     type: module
-  - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+  - url: /local/community/lovelace-auto-entities/auto-entities.js
     type: module
-  - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
+  - url: /local/community/lovelace-multiple-entity-row/multiple-entity-row.js
     type: module
-  - url: /hacsfiles/ha-yandex-icons/yandex-icons.js
+  - url: /local/community/ha-yandex-icons/yandex-icons.js
     type: module
   - url: /local/community/custom-brand-icons/custom-brand-icons.js
     type: js
-  - url: /hacsfiles/lovelace-flower-card/flower-card.js
-    type: module
-  - url: /hacsfiles/lovelace-card-mod/card-mod.js
+  #- url: /local/community/lovelace-flower-card/flower-card.js
+  #  type: module
+  - url: /local/community/lovelace-card-mod/card-mod.js
     type: module
 dashboards:
   lovelace:

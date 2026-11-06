@@ -26,7 +26,8 @@ from homeassistant.const import (
     STATE_UNKNOWN,
     Platform,
 )
-from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.core import Event, HomeAssistant, ServiceCall, callback
+from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
@@ -96,6 +97,7 @@ from .const import (
     STATE_HIGH,
     STATE_LOW,
 )
+from .frontend import async_setup_card
 from .plant_helpers import PlantHelper
 
 _LOGGER = logging.getLogger(__name__)
@@ -228,6 +230,8 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 "Please remove the '%s:' section from configuration.yaml",
                 DOMAIN,
             )
+
+    await async_setup_card(hass)
     return True
 
 
@@ -259,11 +263,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # resets it cleanly on unload/reload.
     component = _get_plant_component(hass)
     if not await component.async_setup_entry(entry):
-        _LOGGER.error(
-            "Failed to set up the plant entity platform for entry %s",
-            entry.entry_id,
+        raise ConfigEntryError(
+            translation_domain=DOMAIN, translation_key="platform_setup_failed"
         )
-        return False
 
     # Set up utility sensor
     hass.data.setdefault(DATA_UTILITY, {})
@@ -333,13 +335,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     websocket_api.async_register_command(hass, ws_get_info)
 
     if plant.hass is None:
-        _LOGGER.error(
-            "Plant entity %s was not added to Home Assistant "
-            "(possible duplicate unique_id). Aborting setup for %s",
-            plant.entity_id,
-            entry.title,
+        raise ConfigEntryError(
+            translation_domain=DOMAIN,
+            translation_key="plant_entity_not_added",
+            translation_placeholders={"entity_id": plant.entity_id},
         )
-        return False
+
+    @callback
+    def _reload_on_rename(event: Event[er.EventEntityRegistryUpdatedData]) -> None:
+        """Reload when one of this plant's entities gets a new entity_id.
+
+        VPD and the light integrals subscribe to their sources by entity_id;
+        a reload resubscribes them under the new ids.
+        """
+        if event.data["action"] != "update" or "old_entity_id" not in event.data:
+            return
+        reg_entry = er.async_get(hass).async_get(event.data["entity_id"])
+        if reg_entry is not None and reg_entry.config_entry_id == entry.entry_id:
+            hass.config_entries.async_schedule_reload(entry.entry_id)
+
+    entry.async_on_unload(
+        hass.bus.async_listen(er.EVENT_ENTITY_REGISTRY_UPDATED, _reload_on_rename)
+    )
 
     plant.async_schedule_update_ha_state(True)
 
@@ -1729,6 +1746,16 @@ class PlantDevice(RestoreEntity):
                     self.hass, RESTORE_GRACE_PERIOD, self._end_restore_window
                 )
             )
+
+    @callback
+    def async_entity_id_changed(self, old_entity_id: str) -> None:
+        """Take entity_id changes in place (HA 2026.11+).
+
+        A rename of a plant entity reloads the plant, which resubscribes
+        everything under the new entity_id (see async_setup_entry).
+        """
+        if (parent := getattr(super(), "async_entity_id_changed", None)) is not None:
+            parent(old_entity_id)
 
     @callback
     def _end_restore_window(self, _now: datetime | None = None) -> None:

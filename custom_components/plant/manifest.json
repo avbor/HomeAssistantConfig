@@ -7,16 +7,24 @@
     "openplantbook",
     "integration",
     "statistics",
-    "utility_meter"
+    "utility_meter",
+    "frontend",
+    "lovelace"
+  ],
+  "categories": [
+    "garden_plants"
   ],
   "codeowners": [
     "@Olen"
   ],
   "config_flow": true,
+  "dependencies": [
+    "http"
+  ],
   "documentation": "https://github.com/Olen/homeassistant-plant/",
   "issue_tracker": "https://github.com/Olen/homeassistant-plant/issues",
   "requirements": [
     "async-timeout>=4.0.2"
   ],
-  "version": "2026.9.0"
+  "version": "2026.11.0"
 }

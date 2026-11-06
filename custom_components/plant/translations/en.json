@@ -127,6 +127,7 @@
         "title": "Select sensors",
         "description": "All sensors are optional. Sensors can also be added or changed later.",
         "data": {
+          "source_device": "Fill sensors from device",
           "temperature_sensor": "Temperature sensor",
           "moisture_sensor": "Soil moisture sensor",
           "conductivity_sensor": "Conductivity sensor",
@@ -134,6 +135,9 @@
           "humidity_sensor": "Air humidity sensor",
           "co2_sensor": "CO2 sensor",
           "soil_temperature_sensor": "Soil temperature sensor"
+        },
+        "data_description": {
+          "source_device": "Pick a device, such as a soil sensor, and submit the form to fill the fields below from its entities. The form opens again so you can review them before continuing; fields you have already set are kept."
         }
       },
       "limits": {
@@ -196,6 +200,7 @@
         "title": "Replace sensors",
         "description": "Replace external sensors for **{plant_name}**. Clear a field to remove that sensor.",
         "data": {
+          "source_device": "Fill sensors from device",
           "temperature_sensor": "Temperature sensor",
           "moisture_sensor": "Soil moisture sensor",
           "conductivity_sensor": "Conductivity sensor",
@@ -203,6 +208,9 @@
           "humidity_sensor": "Air humidity sensor",
           "co2_sensor": "CO2 sensor",
           "soil_temperature_sensor": "Soil temperature sensor"
+        },
+        "data_description": {
+          "source_device": "Pick a device, such as a soil sensor, and submit the form to fill the fields below from its entities. The form opens again so you can review them before continuing; fields you have already set are kept."
         }
       }
     }
@@ -837,6 +845,20 @@
           "description": "The sensor must have been stale for at least this long for the condition to pass."
         }
       }
+    }
+  },
+  "exceptions": {
+    "platform_setup_failed": {
+      "message": "The plant entity platform could not be set up."
+    },
+    "plant_entity_not_added": {
+      "message": "The plant entity {entity_id} was not added to Home Assistant, possibly because its unique ID is already in use."
+    }
+  },
+  "issues": {
+    "other_flower_card": {
+      "title": "Flower card is installed twice",
+      "description": "The flower card now comes with the Plant Monitor integration. Your dashboards also load another copy: {urls}\n\nRemove that copy: uninstall Flower Card in HACS, or delete the resource you added yourself (under Settings → Dashboards → Resources, or from the `lovelace` resources in your YAML configuration). Your dashboards keep working in the meantime. Plant Monitor takes over as soon as the other copy is gone; if your resources are in YAML, restart Home Assistant first. Refresh the browser afterwards."
     }
   }
 }

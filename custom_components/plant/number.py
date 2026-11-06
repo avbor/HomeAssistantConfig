@@ -21,7 +21,8 @@ from homeassistant.const import (
     UnitOfConductivity,
     UnitOfTemperature,
 )
-from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import (
     Entity,
@@ -320,6 +321,11 @@ class PlantMinMax(RestoreNumber):
     _attr_mode = NumberMode.BOX
     # Subclasses should override this for entity_id generation
     _entity_id_key: str | None = None
+    # Whether a value restored in another unit is converted into the
+    # entity's own. Only the temperature thresholds can be stored in °C or
+    # °F; everywhere else the unit belongs to the entity type and the
+    # restored one is ignored.
+    _converts_restored_unit = False
 
     def __init__(
         self, hass: HomeAssistant, config: ConfigEntry, plantdevice: Entity
@@ -328,6 +334,7 @@ class PlantMinMax(RestoreNumber):
         self._config = config
         self.hass = hass
         self._plant = plantdevice
+        self._own_state_unsub: CALLBACK_TYPE | None = None
         # Only force entity_id for existing entities (backwards compat).
         # New entities let has_entity_name derive the entity_id automatically,
         # which enables auto-rename when the device is renamed.
@@ -381,11 +388,21 @@ class PlantMinMax(RestoreNumber):
         self.state_changed(
             old_state=event.data.get("old_state").state,
             new_state=event.data.get("new_state").state,
+            unit=event.data.get("new_state").attributes.get(ATTR_UNIT_OF_MEASUREMENT),
         )
 
     @callback
-    def state_changed(self, old_state: str | None, new_state: str | None) -> None:
-        """Store the state if changed from the UI."""
+    def state_changed(
+        self,
+        old_state: str | None,
+        new_state: str | None,
+        unit: str | None = None,
+    ) -> None:
+        """Store the state if changed from the UI.
+
+        The state is in the displayed unit, which for a temperature can
+        differ from the native one, so it is converted back before storing.
+        """
         _LOGGER.debug(
             "State of %s changed from %s to %s, native_value = %s",
             self.entity_id,
@@ -393,13 +410,24 @@ class PlantMinMax(RestoreNumber):
             new_state,
             self._attr_native_value,
         )
-        if new_state is not None:
-            try:
-                self._attr_native_value = float(new_state)
-            except (ValueError, TypeError):
-                self._attr_native_value = new_state
-        else:
+        if new_state is None:
             self._attr_native_value = new_state
+            return
+        try:
+            value = float(new_state)
+        except (ValueError, TypeError):
+            self._attr_native_value = new_state
+            return
+        native_unit = self._attr_native_unit_of_measurement
+        if (
+            unit is not None
+            and native_unit is not None
+            and unit != native_unit
+            and unit in TemperatureConverter.VALID_UNITS
+            and native_unit in TemperatureConverter.VALID_UNITS
+        ):
+            value = TemperatureConverter.convert(value, unit, native_unit)
+        self._attr_native_value = value
 
     @callback
     def state_attributes_changed(
@@ -423,6 +451,7 @@ class PlantMinMax(RestoreNumber):
     async def async_added_to_hass(self) -> None:
         """Restore state of thresholds on startup."""
         await super().async_added_to_hass()
+        self.async_on_remove(self._untrack_own_state)
         if self._is_new_entity:
             _LOGGER.debug(
                 "New entity %s, using default %s (skipping restore)",
@@ -430,11 +459,7 @@ class PlantMinMax(RestoreNumber):
                 self._default_value,
             )
             self.async_write_ha_state()
-            async_track_state_change_event(
-                self.hass,
-                [self.entity_id],
-                self._state_changed_event,
-            )
+            self._track_own_state()
             return
         state = await self.async_get_last_number_data()
         if not state:
@@ -444,11 +469,7 @@ class PlantMinMax(RestoreNumber):
                 self._default_value,
             )
             self.async_write_ha_state()
-            async_track_state_change_event(
-                self.hass,
-                [self.entity_id],
-                self._state_changed_event,
-            )
+            self._track_own_state()
             return
         _LOGGER.debug(
             "Restoring %s: native_value=%r, unit=%s",
@@ -467,9 +488,9 @@ class PlantMinMax(RestoreNumber):
                     self._default_value,
                 )
             else:
-                self._attr_native_value = state.native_value
-        if state.native_unit_of_measurement is not None:
-            self._attr_native_unit_of_measurement = state.native_unit_of_measurement
+                self._attr_native_value = self._in_own_unit(
+                    state.native_value, state.native_unit_of_measurement
+                )
         # Final safety net: ensure we always have a valid numeric value
         if self._attr_native_value is None:
             _LOGGER.warning(
@@ -480,11 +501,51 @@ class PlantMinMax(RestoreNumber):
             self._attr_native_value = self._default_value
         # We track changes to our own state so we can update ourselves if state is changed
         # from the UI or by other means
-        async_track_state_change_event(
-            self.hass,
-            [self.entity_id],
-            self._state_changed_event,
+        self._track_own_state()
+
+    @callback
+    def async_entity_id_changed(self, old_entity_id: str) -> None:
+        """Take entity_id changes in place (HA 2026.11+).
+
+        A rename of a plant entity reloads the plant, which resubscribes
+        everything under the new entity_id (see async_setup_entry); the own
+        listener moves right away so no edit is lost in between.
+        """
+        self._track_own_state()
+        if (parent := getattr(super(), "async_entity_id_changed", None)) is not None:
+            parent(old_entity_id)
+
+    def _in_own_unit(self, value, unit: str | None):
+        """Return a restored ``value`` converted from ``unit`` into the
+        entity's own unit, where that unit can vary."""
+        own_unit = self._attr_native_unit_of_measurement
+        if not self._converts_restored_unit or unit is None or unit == own_unit:
+            return value
+        try:
+            return round(TemperatureConverter.convert(float(value), unit, own_unit))
+        except (ValueError, TypeError, HomeAssistantError):
+            _LOGGER.warning(
+                "Cannot convert restored %s %s for %s, using default %s",
+                value,
+                unit,
+                self.entity_id,
+                self._default_value,
+            )
+            return self._default_value
+
+    @callback
+    def _track_own_state(self) -> None:
+        """Follow edits of this entity's own state, under its current entity_id."""
+        self._untrack_own_state()
+        self._own_state_unsub = async_track_state_change_event(
+            self.hass, [self.entity_id], self._state_changed_event
         )
+
+    @callback
+    def _untrack_own_state(self) -> None:
+        if self._own_state_unsub is not None:
+            self._own_state_unsub()
+            self._own_state_unsub = None
 
     @callback
     def _schedule_immediate_update(self):
@@ -541,6 +602,7 @@ class PlantMaxTemperature(PlantMinMax):
     """Entity class for max temperature threshold"""
 
     _attr_device_class = NumberDeviceClass.TEMPERATURE
+    _converts_restored_unit = True
     _attr_icon = ICON_TEMPERATURE
     _attr_native_max_value = TEMPERATURE_MAX_VALUE
     _attr_native_min_value = TEMPERATURE_MIN_VALUE
@@ -638,6 +700,7 @@ class PlantMinTemperature(PlantMinMax):
     """Entity class for min temperature threshold"""
 
     _attr_device_class = NumberDeviceClass.TEMPERATURE
+    _converts_restored_unit = True
     _attr_icon = ICON_TEMPERATURE
     _attr_native_max_value = TEMPERATURE_MAX_VALUE
     _attr_native_min_value = TEMPERATURE_MIN_VALUE
@@ -1005,6 +1068,7 @@ class PlantMaxSoilTemperature(PlantMinMax):
     """Entity class for max soil temperature threshold"""
 
     _attr_device_class = NumberDeviceClass.TEMPERATURE
+    _converts_restored_unit = True
     _attr_icon = ICON_SOIL_TEMPERATURE
     _attr_native_max_value = TEMPERATURE_MAX_VALUE
     _attr_native_min_value = TEMPERATURE_MIN_VALUE
@@ -1086,6 +1150,7 @@ class PlantMinSoilTemperature(PlantMinMax):
     """Entity class for min soil temperature threshold"""
 
     _attr_device_class = NumberDeviceClass.TEMPERATURE
+    _converts_restored_unit = True
     _attr_icon = ICON_SOIL_TEMPERATURE
     _attr_native_max_value = TEMPERATURE_MAX_VALUE
     _attr_native_min_value = TEMPERATURE_MIN_VALUE

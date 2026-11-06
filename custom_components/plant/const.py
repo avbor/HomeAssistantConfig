@@ -5,6 +5,12 @@ from datetime import timedelta
 DOMAIN = "plant"
 DOMAIN_PLANTBOOK = "openplantbook"
 
+# Bundled flower card
+CARD_FILENAME = "flower-card.js"
+CARD_VERSION_FILENAME = "flower-card.version"
+CARD_URL_PATH = "/plant/flower-card.js"
+ISSUE_OTHER_FLOWER_CARD = "other_flower_card"
+
 # URL patterns
 URL_SCHEME_HTTP = "http"
 URL_SCHEME_MEDIA_SOURCE = "media-source://"
@@ -43,6 +49,7 @@ ATTR_SENSOR = "sensor"
 ATTR_METERS = "meters"
 ATTR_THRESHOLDS = "thresholds"
 ATTR_ENTITY = "entity"
+ATTR_DEVICE = "device"
 ATTR_SELECT = "select"
 ATTR_OPTIONS = "options"
 ATTR_PLANT = "plant"
@@ -191,6 +198,7 @@ FLOW_SENSOR_ILLUMINANCE = "illuminance_sensor"
 FLOW_SENSOR_HUMIDITY = "humidity_sensor"
 FLOW_SENSOR_CO2 = "co2_sensor"
 FLOW_SENSOR_SOIL_TEMPERATURE = "soil_temperature_sensor"
+FLOW_SENSOR_SOURCE_DEVICE = "source_device"
 
 FLOW_TEMP_UNIT = "temperature_unit"
 FLOW_ILLUMINANCE_TRIGGER = "illuminance_trigger"
